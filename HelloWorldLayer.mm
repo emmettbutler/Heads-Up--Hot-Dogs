@@ -15,7 +15,7 @@
 //Box2D is optimized for objects of 1x1 metre therefore it makes sense
 //to define the ratio so that your most common object type is 1x1 metre.
 #define PTM_RATIO 32
-#define VELOCITY_MULT 95
+#define VELOCITY_MULT 45
 
 // enums that will be used as tags
 enum {
@@ -177,7 +177,7 @@ enum {
         hitAnim = [CCAnimation animationWithFrames:hitAnimFrames delay:0.1f];
         flyAnim = [CCAnimation animationWithFrames:flyAnimFrames delay:0.1f];
         
-        for(float i = 0.0f; i < 2*M_PI; i += M_PI/8){
+        for(float i = 0.0f; i < 2*M_PI; i += M_PI/4){
             [self putBox:CGPointMake(winSize.width/2, winSize.height/2) xVel:VELOCITY_MULT*sin(i) yVel:VELOCITY_MULT*cos(i)];
         }
 
@@ -288,7 +288,12 @@ enum {
             }
 		}
     }
-    for(float i = 0.0f; i < 2*M_PI; i += M_PI/8){
+    
+    CCMoveBy* waitAction = [CCDelayTime actionWithDuration:3.0f];
+    CCCallFunc* functionAction = [CCCallFuncO actionWithTarget:self selector:@selector(boxCircle)];
+    CCSequence* compositeAction = [CCSequence actions:waitAction, functionAction, nil];
+    
+    for(float i = 0.0f; i < 2*M_PI; i += M_PI/4){
 		[self putBox:location xVel:VELOCITY_MULT*sin(i) yVel:VELOCITY_MULT*cos(i)];
 	}
 }
