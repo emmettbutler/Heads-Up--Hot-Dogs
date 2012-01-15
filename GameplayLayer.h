@@ -13,8 +13,7 @@
 #import "GLES-Render.h"
 #import "MyContactListener.h"
 
-// HelloWorldLayer
-@interface HelloWorldLayer : CCLayer
+@interface GameplayLayer : CCLayer
 {
 	b2World *_world;
 	b2Body *_groundBody;

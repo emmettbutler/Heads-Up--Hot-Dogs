@@ -8,7 +8,7 @@
 
 
 // Import the interfaces
-#import "HelloWorldLayer.h"
+#import "GameplayLayer.h"
 #import "TitleScene.h"
 
 //Pixel to metres ratio. Box2D uses metres as the unit for measurement.
@@ -27,7 +27,7 @@ enum {
 
 
 // HelloWorldLayer implementation
-@implementation HelloWorldLayer
+@implementation GameplayLayer
 
 @synthesize box = _box;
 @synthesize flyAction = _flyAction;
@@ -39,7 +39,7 @@ enum {
 	CCScene *scene = [CCScene node];
 	
 	// 'layer' is an autorelease object.
-	HelloWorldLayer *layer = [HelloWorldLayer node];
+	GameplayLayer *layer = [GameplayLayer node];
 	
 	// add layer as a child to scene
 	[scene addChild: layer];

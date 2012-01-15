@@ -7,7 +7,7 @@
 //
 
 #import "TitleScene.h"
-#import "HelloWorldLayer.h"
+#import "GameplayLayer.h"
 
 @implementation TitleLayer
 
@@ -48,7 +48,7 @@
 }
 
 - (void)switchScene{
-    CCTransitionRotoZoom *transition = [CCTransitionRotoZoom transitionWithDuration:1.0 scene:[HelloWorldLayer scene]];
+    CCTransitionRotoZoom *transition = [CCTransitionRotoZoom transitionWithDuration:1.0 scene:[GameplayLayer scene]];
     [[CCDirector sharedDirector] replaceScene:transition];
 }
 
