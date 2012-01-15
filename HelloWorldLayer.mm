@@ -91,6 +91,8 @@ enum {
 //this seems to only work on one sprite at a time
 -(void)runBoxLoop:(id)sender{
     CCSprite *sprite = (CCSprite *)sender;
+    self.flyAction = [CCRepeatForever actionWithAction:
+                      [CCAnimate actionWithAnimation:flyAnim restoreOriginalFrame:NO]];
     [sprite runAction: _flyAction];
 }
 

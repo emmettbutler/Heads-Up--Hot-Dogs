@@ -29,6 +29,11 @@
 -(id) init{
     if ((self = [super init])){
         CGSize size = [[CCDirector sharedDirector] winSize];
+
+        CCSprite *sprite = [CCSprite spriteWithFile:@"now_way!.jpg"];
+        sprite.anchorPoint = CGPointZero;
+        [self addChild:sprite z:-1];
+
         CCLabelTTF *label = [CCLabelTTF labelWithString:@"Sandbox" fontName:@"Marker Felt" fontSize:32.0];
         CCMenuItem *button = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(switchScene)];
         CCMenu *menu = [CCMenu menuWithItems:button, nil];
