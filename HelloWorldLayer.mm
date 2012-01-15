@@ -9,6 +9,7 @@
 
 // Import the interfaces
 #import "HelloWorldLayer.h"
+#import "TitleScene.h"
 
 //Pixel to metres ratio. Box2D uses metres as the unit for measurement.
 //This ratio defines how many pixels correspond to 1 Box2D "metre"
@@ -93,15 +94,24 @@ enum {
     [sprite runAction: _flyAction];
 }
 
+- (void)switchScene{
+    CCTransitionRotoZoom *transition = [CCTransitionRotoZoom transitionWithDuration:1.0 scene:[TitleLayer scene]];
+    [[CCDirector sharedDirector] replaceScene:transition];
+}
+
 // on "init" you need to initialize your instance
 -(id) init
 {
 	// always call "super" init
 	// Apple recommends to re-assign "self" with the "super" return value
 	if( (self=[super init])) {
-		
-		
 		CGSize winSize = [CCDirector sharedDirector].winSize;
+
+        CCLabelTTF *label = [CCLabelTTF labelWithString:@"Title screen" fontName:@"Marker Felt" fontSize:18.0];
+        CCMenuItem *button = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(switchScene)];
+        CCMenu *menu = [CCMenu menuWithItems:button, nil];
+        [menu setPosition:ccp(40, winSize.height-10)];
+        [self addChild:menu];
         
         self.isAccelerometerEnabled = YES;
         self.isTouchEnabled = YES;
