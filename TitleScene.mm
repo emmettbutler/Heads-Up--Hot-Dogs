@@ -29,11 +29,15 @@
 -(id) init{
     if ((self = [super init])){
         CGSize size = [[CCDirector sharedDirector] winSize];
-        CCLabelTTF *label = [CCLabelTTF labelWithString:@"Tap Here" fontName:@"Helvetica" fontSize:32.0];
+        CCLabelTTF *label = [CCLabelTTF labelWithString:@"Sandbox" fontName:@"Marker Felt" fontSize:32.0];
         CCMenuItem *button = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(switchScene)];
         CCMenu *menu = [CCMenu menuWithItems:button, nil];
         [menu setPosition:ccp(size.width / 2, size.height / 2)];
         [self addChild:menu];
+        
+        CCLabelTTF *byline = [CCLabelTTF labelWithString:@"by Emmett" fontName:@"Marker Felt" fontSize:22.0];
+        [byline setPosition:ccp((size.width/2), (size.height/2)-50)];
+        [self addChild:byline];
     }
     return self;
 }
