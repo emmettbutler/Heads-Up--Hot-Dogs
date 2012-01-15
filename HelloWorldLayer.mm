@@ -16,7 +16,7 @@
 //Box2D is optimized for objects of 1x1 metre therefore it makes sense
 //to define the ratio so that your most common object type is 1x1 metre.
 #define PTM_RATIO 32
-#define VELOCITY_MULT 5
+#define VELOCITY_MULT 35
 
 // enums that will be used as tags
 enum {
