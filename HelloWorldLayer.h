@@ -30,7 +30,6 @@
     CCSpriteBatchNode *spriteSheet;
     BOOL _moving;
 
-	NSMutableArray *boxes;
 	NSMutableArray *_touchLocations;
     NSString *currentAnimation;
 
