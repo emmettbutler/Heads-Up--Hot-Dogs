@@ -165,34 +165,27 @@ enum {
     for(int i = 114; i <= 159; i += 15){
         [positions addObject:[NSNumber numberWithInt:i]];
     }
+    NSNumber* position = [positions objectAtIndex:arc4random() % [positions count]];
+    CCLOG(@"Add sprite %d",position.intValue);
+    yPos = [NSNumber numberWithInt:position.intValue];
     
-    static int counter = 0;
-    counter++;
-    
-    //if(counter < 6){
-        if( xPos.intValue == winSize.width ){
-            xPos = [NSNumber numberWithInt:-20];
-        }
-        else {
-            xPos = [NSNumber numberWithInt:winSize.width];
-        }
-        NSNumber* position = [positions objectAtIndex:arc4random() % [positions count]];
-        CCLOG(@"Add sprite %d",position.intValue);
-        yPos = [NSNumber numberWithInt:position.intValue];
+    positions = [[NSMutableArray alloc] initWithCapacity:2];;
+    [positions addObject:[NSNumber numberWithInt:winSize.width]];
+    [positions addObject:[NSNumber numberWithInt:0]];
+    position = [positions objectAtIndex:arc4random() % [positions count]];
+    xPos = [NSNumber numberWithInt:position.intValue];
         
-        NSMutableArray *parameters = [[NSMutableArray alloc] initWithCapacity:2];
-        [parameters addObject:xPos];
-        [parameters addObject:yPos];
+    NSMutableArray *parameters = [[NSMutableArray alloc] initWithCapacity:2];
+    [parameters addObject:xPos];
+    [parameters addObject:yPos];
         
-        [self walkIn:self data:params];
+    [self walkIn:self data:params];
         
-        double time = 5.0f;
-        id delay = [CCDelayTime actionWithDuration:time];
-        id callBackAction = [CCCallFuncND actionWithTarget: self selector: @selector(callback:data:) data:parameters];
-        id sequence = [CCSequence actions: delay, callBackAction, nil];
-        [self runAction:sequence];
-    //}
-    
+    double time = 1.0f;
+    id delay = [CCDelayTime actionWithDuration:time];
+    id callBackAction = [CCCallFuncND actionWithTarget: self selector: @selector(callback:data:) data:parameters];
+    id sequence = [CCSequence actions: delay, callBackAction, nil];
+    [self runAction:sequence];    
 }
 
 // on "init" you need to initialize your instance
@@ -338,6 +331,8 @@ enum {
 	
 	int32 velocityIterations = 8;
 	int32 positionIterations = 1;
+
+    CGSize winSize = [CCDirector sharedDirector].winSize;
 	
 	// Instruct the world to perform a single step of simulation. It is
 	// generally best to keep the time step and iterations fixed.
@@ -359,8 +354,15 @@ enum {
 		if (b->GetUserData() != NULL) {
 			//Synchronize the AtlasSprites position and rotation with the corresponding body
 			CCSprite *myActor = (CCSprite*)b->GetUserData();
-			myActor.position = CGPointMake( b->GetPosition().x * PTM_RATIO, b->GetPosition().y * PTM_RATIO);
-			myActor.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
+            if(myActor.position.x > winSize.width || myActor.position.x < 0){
+                [self removeChild:myActor cleanup:YES];
+                _world->DestroyBody(b);
+                [myActor removeFromParentAndCleanup:YES];
+            }
+            else {
+    			myActor.position = CGPointMake( b->GetPosition().x * PTM_RATIO, b->GetPosition().y * PTM_RATIO);
+    			myActor.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
+            }
 		}	
 	}
 
@@ -464,6 +466,7 @@ enum {
     }  
 }
 
+/*
 - (void)accelerometer:(UIAccelerometer*)accelerometer didAccelerate:(UIAcceleration*)acceleration
 {	
 	static float prevX=0, prevY=0;
@@ -483,7 +486,8 @@ enum {
 	
 	_world->SetGravity( gravity );
 }
-
+*/
+ 
 // on "dealloc" you need to release all your retained objects
 - (void) dealloc
 {
