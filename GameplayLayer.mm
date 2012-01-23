@@ -30,6 +30,7 @@ enum {
 @implementation GameplayLayer
 
 @synthesize box = _box;
+@synthesize person = _person;
 @synthesize flyAction = _flyAction;
 @synthesize hitAction = _hitAction;
 
@@ -51,17 +52,18 @@ enum {
 -(void)putBox:(CGPoint)location xVel:(float)xVel yVel:(float)yVel{
     CCLOG(@"Add sprite %0.2f x %02.f",location.x,location.y);
 
-    self.box = [CCSprite spriteWithSpriteFrameName:@"box_1.png"];
+    self.box = [CCSprite spriteWithSpriteFrameName:@"business82x228.png"];
     
     location.y += 18; 
     _box.position = ccp( location.x, location.y);
     _box.tag = 2;
     
-    self.hitAction = [CCAnimate actionWithAnimation:hitAnim restoreOriginalFrame:YES];
+    /*self.hitAction = [CCAnimate actionWithAnimation:hitAnim restoreOriginalFrame:YES];
     self.flyAction = [CCRepeatForever actionWithAction:
                       [CCAnimate actionWithAnimation:flyAnim restoreOriginalFrame:NO]];
-    
-    [_box runAction:_flyAction];
+    */
+     
+    //[_box runAction:_flyAction];
     [spriteSheet addChild:_box];
 
     b2BodyDef boxBodyDef;
@@ -81,24 +83,116 @@ enum {
     boxShapeDef.restitution = 0.9f;
     boxShapeDef.userData = (void *)2;
     boxShapeDef.filter.categoryBits = BOX;
-    boxShapeDef.filter.maskBits = BALL | BOUNDARY;
+    boxShapeDef.filter.maskBits = WEINER;
     _boxFixture = _boxBody->CreateFixture(&boxShapeDef);
     
     b2Vec2 force = b2Vec2(xVel, yVel);
     _boxBody->ApplyLinearImpulse(force, boxBodyDef.position);
 }
 
+-(void)walkIn:(id)sender data:(void *)params {
+    CGSize winSize = [CCDirector sharedDirector].winSize;
+    
+    NSMutableArray *incomingArray = (NSMutableArray *) params;
+    NSNumber *xPos = (NSNumber *)[incomingArray objectAtIndex:0];
+    NSNumber *yPos = (NSNumber *)[incomingArray objectAtIndex:1];
+    
+    self.person = [CCSprite spriteWithSpriteFrameName:@"business82x228.png"];
+    _person.position = ccp(xPos.intValue, yPos.intValue);
+    _person.tag = 3;
+
+    [spriteSheet addChild:_person];
+
+    b2BodyDef personBodyDef;
+    personBodyDef.type = b2_dynamicBody;
+    personBodyDef.position.Set(xPos.intValue/PTM_RATIO, yPos.intValue/PTM_RATIO);
+    personBodyDef.userData = _person;
+    _personBody = _world->CreateBody(&personBodyDef);
+
+    b2PolygonShape personShape;
+    personShape.SetAsBox(41.0/PTM_RATIO, 40.0/PTM_RATIO, b2Vec2(0, 2.1), 0);
+
+    b2FixtureDef personShapeDef;
+    personShapeDef.shape = &personShape;
+    personShapeDef.density = 10.0f;
+    personShapeDef.friction = 1.0f;
+    personShapeDef.restitution = 0.2f;
+    personShapeDef.userData = (void *)3;
+    personShapeDef.filter.categoryBits = BOX;
+    personShapeDef.filter.maskBits = WEINER;
+    _personFixture = _personBody->CreateFixture(&personShapeDef);
+    
+    b2PrismaticJointDef jointDef;
+    b2Vec2 worldAxis(1.0f, 0.0f);
+    jointDef.collideConnected = true;
+    jointDef.Initialize(_personBody, _groundBody, _personBody->GetWorldCenter(), worldAxis);
+    _world->CreateJoint(&jointDef);
+    
+    int xVel;
+    
+    if( xPos.intValue == winSize.width ){
+        xVel = -100;
+    }
+    else {
+        xVel = 100;
+    }
+
+    b2Vec2 force = b2Vec2(xVel, 0);
+    _personBody->ApplyLinearImpulse(force, personBodyDef.position);
+}
+
 //this seems to only work on one sprite at a time
 -(void)runBoxLoop:(id)sender{
     CCSprite *sprite = (CCSprite *)sender;
-    self.flyAction = [CCRepeatForever actionWithAction:
-                      [CCAnimate actionWithAnimation:flyAnim restoreOriginalFrame:NO]];
-    [sprite runAction: _flyAction];
+    //self.flyAction = [CCRepeatForever actionWithAction:
+    //                  [CCAnimate actionWithAnimation:flyAnim restoreOriginalFrame:NO]];
+    //[sprite runAction: _flyAction];
 }
 
 - (void)switchScene{
     CCTransitionRotoZoom *transition = [CCTransitionRotoZoom transitionWithDuration:1.0 scene:[TitleLayer scene]];
     [[CCDirector sharedDirector] replaceScene:transition];
+}
+
+-(void)callback:(id)sender data:(void *)params {
+    CGSize winSize = [CCDirector sharedDirector].winSize;
+    
+    NSMutableArray *incomingArray = (NSMutableArray *) params;
+    NSNumber *xPos = (NSNumber *)[incomingArray objectAtIndex:0];
+    NSNumber *yPos = (NSNumber *)[incomingArray objectAtIndex:1];
+    
+    NSMutableArray *positions = [[NSMutableArray alloc] initWithCapacity:3];;
+    for(int i = 114; i <= 159; i += 15){
+        [positions addObject:[NSNumber numberWithInt:i]];
+    }
+    
+    static int counter = 0;
+    counter++;
+    
+    //if(counter < 6){
+        if( xPos.intValue == winSize.width ){
+            xPos = [NSNumber numberWithInt:-20];
+        }
+        else {
+            xPos = [NSNumber numberWithInt:winSize.width];
+        }
+        NSNumber* position = [positions objectAtIndex:arc4random() % [positions count]];
+        CCLOG(@"Add sprite %d",position.intValue);
+        yPos = [NSNumber numberWithInt:position.intValue];
+        
+        NSMutableArray *parameters = [[NSMutableArray alloc] initWithCapacity:2];
+        [parameters addObject:xPos];
+        [parameters addObject:yPos];
+        
+        [self walkIn:self data:params];
+        
+        double time = 5.0f;
+        id delay = [CCDelayTime actionWithDuration:time];
+        id callBackAction = [CCCallFuncND actionWithTarget: self selector: @selector(callback:data:) data:parameters];
+        id sequence = [CCSequence actions: delay, callBackAction, nil];
+        [self runAction:sequence];
+    //}
+    
 }
 
 // on "init" you need to initialize your instance
@@ -107,7 +201,7 @@ enum {
 	// always call "super" init
 	// Apple recommends to re-assign "self" with the "super" return value
 	if( (self=[super init])) {
-		CGSize winSize = [CCDirector sharedDirector].winSize;
+		CGSize winSize = [CCDirector sharedDirector].winSize; 
 
         CCLabelTTF *label = [CCLabelTTF labelWithString:@"Title screen" fontName:@"Marker Felt" fontSize:18.0];
         CCMenuItem *button = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(switchScene)];
@@ -123,7 +217,18 @@ enum {
         
         bool doSleep = true;
         _world = new b2World(gravity, doSleep);
-        _world->SetGravity( b2Vec2(0,0) );
+        
+        // Debug Draw functions
+        m_debugDraw = new GLESDebugDraw( PTM_RATIO );
+        _world->SetDebugDraw(m_debugDraw);
+        
+        uint32 flags = 0;
+        flags += b2DebugDraw::e_shapeBit;
+        flags += b2DebugDraw::e_jointBit;
+        flags += b2DebugDraw::e_aabbBit;
+        flags += b2DebugDraw::e_pairBit;
+        flags += b2DebugDraw::e_centerOfMassBit;
+        m_debugDraw->SetFlags(flags);  
         
         // Create edges around the entire screen
         b2BodyDef groundBodyDef;
@@ -132,6 +237,7 @@ enum {
         b2PolygonShape groundBox;
         b2FixtureDef groundBoxDef;
         groundBoxDef.shape = &groundBox;
+        
         groundBox.SetAsEdge(b2Vec2(0,0), b2Vec2(winSize.width/PTM_RATIO, 0));
         _bottomFixture = _groundBody->CreateFixture(&groundBoxDef);
         groundBox.SetAsEdge(b2Vec2(0,0), b2Vec2(0, winSize.height/PTM_RATIO));
@@ -143,41 +249,40 @@ enum {
                             b2Vec2(winSize.width/PTM_RATIO, 0));
         _groundBody->CreateFixture(&groundBoxDef);
 
+        [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile: @"sprites_default.plist"];
+        spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_default.png"];
+        [self addChild:spriteSheet];
 
         // Create sprite and add it to the layer
-        CCSprite *ball = [CCSprite spriteWithFile:@"circlesprite.png" rect:CGRectMake(0, 0, 15, 15)];
-        ball.position = ccp(100, 100);
-        ball.tag = 1;
-        [self addChild:ball z:9];
+        weiner = [CCSprite spriteWithSpriteFrameName:@"dog54x12.png"];
+        weiner.position = ccp(100, 100);
+        weiner.tag = 1;
+        [self addChild:weiner z:9];
         
-        // Create ball body and shape
-        b2BodyDef ballBodyDef;
-        ballBodyDef.type = b2_dynamicBody;
-        ballBodyDef.position.Set(100/PTM_RATIO, 180/PTM_RATIO);
-        ballBodyDef.userData = ball;
-        b2Body * ballBody = _world->CreateBody(&ballBodyDef);
+        // Create weiner body and shape
+        b2BodyDef weinerBodyDef;
+        weinerBodyDef.type = b2_dynamicBody;
+        weinerBodyDef.position.Set(100/PTM_RATIO, 180/PTM_RATIO);
+        weinerBodyDef.userData = weiner;
+        weinerBody = _world->CreateBody(&weinerBodyDef);
         
-        b2CircleShape circle;
-        circle.m_radius = 7.5f/PTM_RATIO;
+        b2PolygonShape weinerShape;
+        weinerShape.SetAsBox(weiner.contentSize.width/PTM_RATIO/2, weiner.contentSize.height/PTM_RATIO/2);
         
-        b2FixtureDef ballShapeDef;
-        ballShapeDef.shape = &circle;
-        ballShapeDef.density = 10.0f;
-        ballShapeDef.friction = 0.f;
-        ballShapeDef.userData = (void *)1;
-        ballShapeDef.restitution = 0.8f;
-        ballShapeDef.filter.categoryBits = BALL;
-	    ballShapeDef.filter.maskBits = BOX | BOUNDARY;
-        _ballFixture = ballBody->CreateFixture(&ballShapeDef);
+        b2FixtureDef weinerShapeDef;
+        weinerShapeDef.shape = &weinerShape;
+        weinerShapeDef.density = 1.0f;
+        weinerShapeDef.friction = 1.0f;
+        weinerShapeDef.userData = (void *)1;
+        weinerShapeDef.restitution = 0.5f;
+        weinerShapeDef.filter.categoryBits = WEINER;
+	    weinerShapeDef.filter.maskBits = BOX | BOUNDARY;
+        _weinerFixture = weinerBody->CreateFixture(&weinerShapeDef);
 
         b2Vec2 force = b2Vec2(0.3f,0.9f);
-        ballBody->ApplyLinearImpulse(force, ballBodyDef.position);
+        weinerBody->ApplyLinearImpulse(force, weinerBodyDef.position);
         
-        [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile: @"spritesheet_default.plist"];
-        spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"spritesheet_default.png"];
-        [self addChild:spriteSheet];
-        
-        NSMutableArray *flyAnimFrames = [NSMutableArray array];
+        /*NSMutableArray *flyAnimFrames = [NSMutableArray array];
         for(int i = 1; i <= 3; ++i){
             [flyAnimFrames addObject:
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -188,14 +293,19 @@ enum {
         [hitAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"box_hit.png"]];
         hitAnim = [CCAnimation animationWithFrames:hitAnimFrames delay:0.1f];
-        flyAnim = [CCAnimation animationWithFrames:flyAnimFrames delay:0.9f];
+        flyAnim = [CCAnimation animationWithFrames:flyAnimFrames delay:0.9f];*/
         
-        for(float i = 0.0f; i < 2*M_PI; i += M_PI/4){
-            [self putBox:CGPointMake(winSize.width/2, winSize.height/2) xVel:VELOCITY_MULT*sin(i) yVel:VELOCITY_MULT*cos(i)];
-        }
+        [self putBox:CGPointMake(-100, winSize.height/2) xVel:0 yVel:0];
 
         contactListener = new MyContactListener();
 		_world->SetContactListener(contactListener);
+        
+        NSMutableArray *params = [[NSMutableArray alloc] initWithCapacity:2];
+        NSNumber *yPos = [NSNumber numberWithInt:winSize.height-20];
+        NSNumber *xPos = [NSNumber numberWithInt:winSize.width]; 
+        [params addObject:xPos];
+        [params addObject:yPos];
+        [self callback:self data:params];
 		
 		[self schedule: @selector(tick:)];
 	}
@@ -217,7 +327,6 @@ enum {
 	glEnable(GL_TEXTURE_2D);
 	glEnableClientState(GL_COLOR_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
 }
 
 -(void) tick: (ccTime) dt
@@ -265,11 +374,11 @@ enum {
         CCSprite *sprite = (CCSprite *)body->GetUserData();
 		CGPoint position = contactNode.position;
         
-        if(sprite.tag == 2){
+        /*if(sprite.tag == 2){
             [sprite stopAllActions];
             [sprite runAction:[CCSequence actions:_hitAction,
                                [CCCallFuncN actionWithTarget:self selector:@selector(runBoxLoop:)],nil]];
-        }
+        }*/
 
 		CCParticleSun* explosion = [[CCParticleSun alloc] initWithTotalParticles:200];
 		explosion.autoRemoveOnFinish = YES;
@@ -284,7 +393,7 @@ enum {
 	contactListener->contacts.clear();
 }
 
-- (void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+/*- (void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
 	//Add a new body/atlas sprite at the touched location
 	UITouch *myTouch = [touches anyObject];
@@ -302,9 +411,57 @@ enum {
 		}
     }
     
-    for(float i = 0.0f; i < 2*M_PI; i += M_PI/4){
-		[self putBox:location xVel:VELOCITY_MULT*sin(i) yVel:VELOCITY_MULT*cos(i)];
-	}
+	[self putBox:location xVel:0 yVel:0];
+}*/
+
+- (void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+    
+    if (_mouseJoint != NULL) return;
+    
+    UITouch *myTouch = [touches anyObject];
+    CGPoint location = [myTouch locationInView:[myTouch view]];
+    location = [[CCDirector sharedDirector] convertToGL:location];
+    b2Vec2 locationWorld = b2Vec2(location.x/PTM_RATIO, location.y/PTM_RATIO);
+    
+    if (_weinerFixture->TestPoint(locationWorld)) {
+        b2MouseJointDef md;
+        md.bodyA = _groundBody;
+        md.bodyB = weinerBody;
+        md.target = locationWorld;
+        md.collideConnected = true;
+        md.maxForce = 1000.0f * weinerBody->GetMass();
+        
+        _mouseJoint = (b2MouseJoint *)_world->CreateJoint(&md);
+        weinerBody->SetAwake(true);
+    }
+    
+}
+
+-(void)ccTouchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
+    if(_mouseJoint == NULL) return;
+    
+    UITouch *myTouch = [touches anyObject];
+    CGPoint location = [myTouch locationInView:[myTouch view]];
+    location = [[CCDirector sharedDirector] convertToGL:location];
+    b2Vec2 locationWorld = b2Vec2(location.x/PTM_RATIO, location.y/PTM_RATIO);
+    
+    _mouseJoint->SetTarget(locationWorld);
+}
+
+-(void)ccTouchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
+    
+    if (_mouseJoint) {
+        _world->DestroyJoint(_mouseJoint);
+        _mouseJoint = NULL;
+    }
+    
+}
+
+- (void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+    if (_mouseJoint) {
+        _world->DestroyJoint(_mouseJoint);
+        _mouseJoint = NULL;
+    }  
 }
 
 - (void)accelerometer:(UIAccelerometer*)accelerometer didAccelerate:(UIAcceleration*)acceleration
@@ -335,8 +492,9 @@ enum {
     [[CCTextureCache sharedTextureCache] removeUnusedTextures]; 
     
 	self.box = nil;
-	self.flyAction = nil;
-    self.hitAction = nil;
+    self.person = nil;
+	//self.flyAction = nil;
+    //self.hitAction = nil;
 
     delete _world;
 	_world = NULL;

@@ -16,12 +16,19 @@
 @interface GameplayLayer : CCLayer
 {
 	b2World *_world;
+    GLESDebugDraw *m_debugDraw;
 	b2Body *_groundBody;
 	b2Fixture *_bottomFixture;
-	b2Fixture *_ballFixture;
+	b2Fixture *_weinerFixture;
 	b2Fixture *_boxFixture;
 	b2Body *_boxBody;
+    b2Body *weinerBody;
     CCSprite *_box;
+    CCSprite *weiner;
+    b2Fixture *_personFixture;
+    b2Body *_personBody;
+    CCSprite *_person;
+    b2MouseJoint *_mouseJoint;
     CCAction *_flyAction;
     CCAnimation *flyAnim;
     CCFiniteTimeAction *_hitAction;
@@ -35,13 +42,14 @@
 	enum _entityCategory {
 		BOUNDARY = 0x0001,
     	BOX =     0x0002,
-    	BALL =     0x0004,
+    	WEINER =     0x0004,
   	};
 
   	MyContactListener *contactListener;
 }
 
 @property (nonatomic, retain) CCSprite *box;
+@property (nonatomic, retain) CCSprite *person;
 @property (nonatomic, retain) CCAction *flyAction;
 @property (nonatomic, retain) CCAction *hitAction;
 
