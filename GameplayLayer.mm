@@ -211,6 +211,10 @@ enum {
 	if( (self=[super init])) {
 		CGSize winSize = [CCDirector sharedDirector].winSize; 
         
+        CCSprite *background = [CCSprite spriteWithFile:@"bg_philly.png"];
+        background.anchorPoint = CGPointZero;
+        [self addChild:background z:-1];
+        
         CCLabelTTF *label = [CCLabelTTF labelWithString:@"Title screen" fontName:@"Marker Felt" fontSize:18.0];
         CCMenuItem *button = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(switchScene)];
         label = [CCLabelTTF labelWithString:@"Debug draw" fontName:@"Marker Felt" fontSize:18.0];
@@ -428,19 +432,21 @@ enum {
     
     for (b2Body* body = _world->GetBodyList(); body; body = body->GetNext()){
         if (body->GetUserData() != NULL) {
-			b2Fixture *fixture = body->GetFixtureList();
-			CCSprite *sprite = (CCSprite *)body->GetUserData();
-            if(sprite.tag == 1){
-                if (fixture->TestPoint(locationWorld)) {
-                     body->SetLinearVelocity(b2Vec2(0, 0));
-                    _touchedDog = YES;
-                }
-                else {
-                    _touchedDog = NO;
+            for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
+    			CCSprite *sprite = (CCSprite *)body->GetUserData();
+                if(sprite.tag == 1){
+                    if (fixture->TestPoint(locationWorld)) {
+                         body->SetLinearVelocity(b2Vec2(0, 0));
+                        _touchedDog = YES;
+                    }
+                    else {
+                        _touchedDog = NO;
+                    }
                 }
             }
 		}
     }
+    CCLOG(@"Touched Dog: %d", _touchedDog);
     if(!_touchedDog){
         [self putDog:location];
     }

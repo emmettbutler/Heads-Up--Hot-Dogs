@@ -30,7 +30,7 @@
     if ((self = [super init])){
         CGSize size = [[CCDirector sharedDirector] winSize];
 
-        CCSprite *sprite = [CCSprite spriteWithFile:@"now_way!.jpg"];
+        CCSprite *sprite = [CCSprite spriteWithFile:@"bg_philly.png"];
         sprite.anchorPoint = CGPointZero;
         [self addChild:sprite z:-1];
 
