@@ -384,6 +384,7 @@ enum {
                     
                     _mouseJoint = (b2MouseJoint *)_world->CreateJoint(&md);
                     body->SetAwake(true);
+                    break;
                 }
             }
 		}
