@@ -49,45 +49,41 @@ enum {
 	return scene;
 }
 
--(void)putBox:(CGPoint)location xVel:(float)xVel yVel:(float)yVel{
-    CCLOG(@"Add sprite %0.2f x %02.f",location.x,location.y);
+-(void)putDog:(CGPoint)location {
+    // Create sprite and add it to the layer
+    weiner = [CCSprite spriteWithSpriteFrameName:@"dog54x12.png"];
+    weiner.position = ccp(location.x, location.y);
+    weiner.tag = 1;
+    [self addChild:weiner z:9];
+    
+    // Create weiner body and shape
+    b2BodyDef weinerBodyDef;
+    weinerBodyDef.type = b2_dynamicBody;
+    weinerBodyDef.position.Set(location.x/PTM_RATIO, location.y/PTM_RATIO);
+    weinerBodyDef.userData = weiner;
+    weinerBody = _world->CreateBody(&weinerBodyDef);
+    
+    b2PolygonShape weinerShape;
+    weinerShape.SetAsBox(weiner.contentSize.width/PTM_RATIO/2, weiner.contentSize.height/PTM_RATIO/2);
+    
+    b2FixtureDef weinerShapeDef;
+    weinerShapeDef.shape = &weinerShape;
+    weinerShapeDef.density = 1.0f;
+    weinerShapeDef.friction = 1.0f;
+    weinerShapeDef.userData = (void *)1;
+    weinerShapeDef.restitution = 0.5f;
+    weinerShapeDef.filter.categoryBits = WEINER;
+    weinerShapeDef.filter.maskBits = BOX | BOUNDARY | WEINER;
+    _weinerFixture = weinerBody->CreateFixture(&weinerShapeDef);
 
-    self.box = [CCSprite spriteWithSpriteFrameName:@"business82x228.png"];
-    
-    location.y += 18; 
-    _box.position = ccp( location.x, location.y);
-    _box.tag = 2;
-    
-    /*self.hitAction = [CCAnimate actionWithAnimation:hitAnim restoreOriginalFrame:YES];
-    self.flyAction = [CCRepeatForever actionWithAction:
-                      [CCAnimate actionWithAnimation:flyAnim restoreOriginalFrame:NO]];
-    */
-     
-    //[_box runAction:_flyAction];
-    [spriteSheet addChild:_box];
+    b2PolygonShape weinerGrabShape;
+    weinerShape.SetAsBox((weiner.contentSize.width+30)/PTM_RATIO/2, (weiner.contentSize.height+30)/PTM_RATIO/2);
 
-    b2BodyDef boxBodyDef;
-    boxBodyDef.type = b2_dynamicBody;
-    boxBodyDef.position.Set(location.x/PTM_RATIO, location.y/PTM_RATIO);
-    boxBodyDef.userData = _box;
-    _boxBody = _world->CreateBody(&boxBodyDef);
-    
-    b2PolygonShape boxShape;
-    boxShape.SetAsBox(_box.contentSize.width/PTM_RATIO/2,
-                      _box.contentSize.height/PTM_RATIO/2);
-    
-    b2FixtureDef boxShapeDef;
-    boxShapeDef.shape = &boxShape;
-    boxShapeDef.density = 10.0f;
-    boxShapeDef.friction= 0.4f;
-    boxShapeDef.restitution = 0.9f;
-    boxShapeDef.userData = (void *)2;
-    boxShapeDef.filter.categoryBits = BOX;
-    boxShapeDef.filter.maskBits = WEINER;
-    _boxFixture = _boxBody->CreateFixture(&boxShapeDef);
-    
-    b2Vec2 force = b2Vec2(xVel, yVel);
-    _boxBody->ApplyLinearImpulse(force, boxBodyDef.position);
+    b2FixtureDef weinerGrabShapeDef;
+    weinerGrabShapeDef.shape = &weinerShape;
+    weinerGrabShapeDef.filter.categoryBits = WEINER;
+    weinerGrabShapeDef.filter.maskBits = 0x0000;
+    _weinerFixture = weinerBody->CreateFixture(&weinerGrabShapeDef);
 }
 
 -(void)walkIn:(id)sender data:(void *)params {
@@ -98,6 +94,17 @@ enum {
     NSNumber *yPos = (NSNumber *)[incomingArray objectAtIndex:1];
     
     self.person = [CCSprite spriteWithSpriteFrameName:@"business82x228.png"];
+    
+    int xVel;
+    
+    if( xPos.intValue == winSize.width ){
+        xVel = -100;
+    }
+    else {
+        self.person = [CCSprite spriteWithSpriteFrameName:@"business_facing_right.png"];
+        xVel = 100;
+    }
+    
     _person.position = ccp(xPos.intValue, yPos.intValue);
     _person.tag = 3;
 
@@ -110,7 +117,7 @@ enum {
     _personBody = _world->CreateBody(&personBodyDef);
 
     b2PolygonShape personShape;
-    personShape.SetAsBox(41.0/PTM_RATIO, 40.0/PTM_RATIO, b2Vec2(0, 2.1), 0);
+    personShape.SetAsBox(31.0/PTM_RATIO, 40.0/PTM_RATIO, b2Vec2(0, 2.1), 0);
 
     b2FixtureDef personShapeDef;
     personShapeDef.shape = &personShape;
@@ -127,15 +134,6 @@ enum {
     jointDef.collideConnected = true;
     jointDef.Initialize(_personBody, _groundBody, _personBody->GetWorldCenter(), worldAxis);
     _world->CreateJoint(&jointDef);
-    
-    int xVel;
-    
-    if( xPos.intValue == winSize.width ){
-        xVel = -100;
-    }
-    else {
-        xVel = 100;
-    }
 
     b2Vec2 force = b2Vec2(xVel, 0);
     _personBody->ApplyLinearImpulse(force, personBodyDef.position);
@@ -181,11 +179,28 @@ enum {
         
     [self walkIn:self data:params];
         
-    double time = 1.0f;
+    double time = 5.0f;
     id delay = [CCDelayTime actionWithDuration:time];
     id callBackAction = [CCCallFuncND actionWithTarget: self selector: @selector(callback:data:) data:parameters];
     id sequence = [CCSequence actions: delay, callBackAction, nil];
     [self runAction:sequence];    
+}
+
+-(void)debugDraw{
+    // Debug Draw functions
+    if(!m_debugDraw){
+        m_debugDraw = new GLESDebugDraw( PTM_RATIO );
+        uint32 flags = 0;
+        flags += b2DebugDraw::e_shapeBit;
+        flags += b2DebugDraw::e_jointBit;
+        flags += b2DebugDraw::e_aabbBit;
+        flags += b2DebugDraw::e_pairBit;
+        flags += b2DebugDraw::e_centerOfMassBit;
+        m_debugDraw->SetFlags(flags); 
+    } else {
+        m_debugDraw = nil;
+    }
+    _world->SetDebugDraw(m_debugDraw);
 }
 
 // on "init" you need to initialize your instance
@@ -195,11 +210,14 @@ enum {
 	// Apple recommends to re-assign "self" with the "super" return value
 	if( (self=[super init])) {
 		CGSize winSize = [CCDirector sharedDirector].winSize; 
-
+        
         CCLabelTTF *label = [CCLabelTTF labelWithString:@"Title screen" fontName:@"Marker Felt" fontSize:18.0];
         CCMenuItem *button = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(switchScene)];
-        CCMenu *menu = [CCMenu menuWithItems:button, nil];
-        [menu setPosition:ccp(40, winSize.height-10)];
+        label = [CCLabelTTF labelWithString:@"Debug draw" fontName:@"Marker Felt" fontSize:18.0];
+        CCMenuItem *debug = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(debugDraw)];
+        CCMenu *menu = [CCMenu menuWithItems:button, debug, nil];
+        [menu setPosition:ccp(40, winSize.height-30)];
+        [menu alignItemsVertically];
         [self addChild:menu];
         
         self.isAccelerometerEnabled = YES;
@@ -210,18 +228,6 @@ enum {
         
         bool doSleep = true;
         _world = new b2World(gravity, doSleep);
-        
-        // Debug Draw functions
-        m_debugDraw = new GLESDebugDraw( PTM_RATIO );
-        _world->SetDebugDraw(m_debugDraw);
-        
-        uint32 flags = 0;
-        flags += b2DebugDraw::e_shapeBit;
-        flags += b2DebugDraw::e_jointBit;
-        flags += b2DebugDraw::e_aabbBit;
-        flags += b2DebugDraw::e_pairBit;
-        flags += b2DebugDraw::e_centerOfMassBit;
-        m_debugDraw->SetFlags(flags);  
         
         // Create edges around the entire screen
         b2BodyDef groundBodyDef;
@@ -245,35 +251,6 @@ enum {
         [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile: @"sprites_default.plist"];
         spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_default.png"];
         [self addChild:spriteSheet];
-
-        // Create sprite and add it to the layer
-        weiner = [CCSprite spriteWithSpriteFrameName:@"dog54x12.png"];
-        weiner.position = ccp(100, 100);
-        weiner.tag = 1;
-        [self addChild:weiner z:9];
-        
-        // Create weiner body and shape
-        b2BodyDef weinerBodyDef;
-        weinerBodyDef.type = b2_dynamicBody;
-        weinerBodyDef.position.Set(100/PTM_RATIO, 180/PTM_RATIO);
-        weinerBodyDef.userData = weiner;
-        weinerBody = _world->CreateBody(&weinerBodyDef);
-        
-        b2PolygonShape weinerShape;
-        weinerShape.SetAsBox(weiner.contentSize.width/PTM_RATIO/2, weiner.contentSize.height/PTM_RATIO/2);
-        
-        b2FixtureDef weinerShapeDef;
-        weinerShapeDef.shape = &weinerShape;
-        weinerShapeDef.density = 1.0f;
-        weinerShapeDef.friction = 1.0f;
-        weinerShapeDef.userData = (void *)1;
-        weinerShapeDef.restitution = 0.5f;
-        weinerShapeDef.filter.categoryBits = WEINER;
-	    weinerShapeDef.filter.maskBits = BOX | BOUNDARY;
-        _weinerFixture = weinerBody->CreateFixture(&weinerShapeDef);
-
-        b2Vec2 force = b2Vec2(0.3f,0.9f);
-        weinerBody->ApplyLinearImpulse(force, weinerBodyDef.position);
         
         /*NSMutableArray *flyAnimFrames = [NSMutableArray array];
         for(int i = 1; i <= 3; ++i){
@@ -287,8 +264,6 @@ enum {
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"box_hit.png"]];
         hitAnim = [CCAnimation animationWithFrames:hitAnimFrames delay:0.1f];
         flyAnim = [CCAnimation animationWithFrames:flyAnimFrames delay:0.9f];*/
-        
-        [self putBox:CGPointMake(-100, winSize.height/2) xVel:0 yVel:0];
 
         contactListener = new MyContactListener();
 		_world->SetContactListener(contactListener);
@@ -395,27 +370,6 @@ enum {
 	contactListener->contacts.clear();
 }
 
-/*- (void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
-{
-	//Add a new body/atlas sprite at the touched location
-	UITouch *myTouch = [touches anyObject];
-	CGPoint location = [myTouch locationInView:[myTouch view]];
-	location = [[CCDirector sharedDirector] convertToGL:location];
-	
-    for (b2Body* body = _world->GetBodyList(); body; body = body->GetNext()){
-        if (body->GetUserData() != NULL) {
-			CCSprite *sprite = (CCSprite *)body->GetUserData();
-            if(sprite.tag == 2){
-                [self removeChild:sprite cleanup:YES];
-		        _world->DestroyBody(body);
-                [sprite removeFromParentAndCleanup:YES];
-            }
-		}
-    }
-    
-	[self putBox:location xVel:0 yVel:0];
-}*/
-
 - (void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     
     if (_mouseJoint != NULL) return;
@@ -425,18 +379,26 @@ enum {
     location = [[CCDirector sharedDirector] convertToGL:location];
     b2Vec2 locationWorld = b2Vec2(location.x/PTM_RATIO, location.y/PTM_RATIO);
     
-    if (_weinerFixture->TestPoint(locationWorld)) {
-        b2MouseJointDef md;
-        md.bodyA = _groundBody;
-        md.bodyB = weinerBody;
-        md.target = locationWorld;
-        md.collideConnected = true;
-        md.maxForce = 1000.0f * weinerBody->GetMass();
-        
-        _mouseJoint = (b2MouseJoint *)_world->CreateJoint(&md);
-        weinerBody->SetAwake(true);
+    for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
+        if (body->GetUserData() != NULL) {
+            b2Fixture *fixture = body->GetFixtureList();
+			CCSprite *sprite = (CCSprite *)body->GetUserData();
+            if(sprite.tag == 1){
+                if (fixture->TestPoint(locationWorld)) {
+                    CCLOG(@"Touching hotdog");
+                    b2MouseJointDef md;
+                    md.bodyA = _groundBody;
+                    md.bodyB = body;
+                    md.target = locationWorld;
+                    md.collideConnected = true;
+                    md.maxForce = 10000.0f * body->GetMass();
+                    
+                    _mouseJoint = (b2MouseJoint *)_world->CreateJoint(&md);
+                    body->SetAwake(true);
+                }
+            }
+		}
     }
-    
 }
 
 -(void)ccTouchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -446,6 +408,8 @@ enum {
     CGPoint location = [myTouch locationInView:[myTouch view]];
     location = [[CCDirector sharedDirector] convertToGL:location];
     b2Vec2 locationWorld = b2Vec2(location.x/PTM_RATIO, location.y/PTM_RATIO);
+    
+    CCLOG(@"Mousejoint target @ %0.2f x %0.2f", location.x, location.y);
     
     _mouseJoint->SetTarget(locationWorld);
 }
@@ -463,30 +427,29 @@ enum {
     if (_mouseJoint) {
         _world->DestroyJoint(_mouseJoint);
         _mouseJoint = NULL;
-    }  
-}
+    }
 
-/*
-- (void)accelerometer:(UIAccelerometer*)accelerometer didAccelerate:(UIAcceleration*)acceleration
-{	
-	static float prevX=0, prevY=0;
-	
-	//#define kFilterFactor 0.05f
-#define kFilterFactor 1.0f	// don't use filter. the code is here just as an example
-	
-	float accelX = (float) acceleration.x * kFilterFactor + (1- kFilterFactor)*prevX;
-	float accelY = (float) acceleration.y * kFilterFactor + (1- kFilterFactor)*prevY;
-	
-	prevX = accelX;
-	prevY = accelY;
-	
-	// accelerometer values are in "Portrait" mode. Change them to Landscape left
-	// multiply the gravity by 10
-	b2Vec2 gravity( -accelY * 10, accelX * 10);
-	
-	_world->SetGravity( gravity );
+    UITouch *myTouch = [touches anyObject];
+    CGPoint location = [myTouch locationInView:[myTouch view]];
+    location = [[CCDirector sharedDirector] convertToGL:location];
+    b2Vec2 locationWorld = b2Vec2(location.x/PTM_RATIO, location.y/PTM_RATIO);
+    
+    for (b2Body* body = _world->GetBodyList(); body; body = body->GetNext()){
+        if (body->GetUserData() != NULL) {
+			CCSprite *sprite = (CCSprite *)body->GetUserData();
+            //things that need to happen to many sprites go here
+		}
+    }
+    
+    
+    if (_weinerFixture && _weinerFixture->TestPoint(locationWorld)) {
+
+    }
+    else {
+        [self putDog:location];
+    }
+    //weinerBody->SetLinearVelocity(b2Vec2(0, 0));
 }
-*/
  
 // on "dealloc" you need to release all your retained objects
 - (void) dealloc

@@ -22,6 +22,28 @@
 			<key>spriteTrimmed</key>
 			<true/>
 			<key>textureRect</key>
+			<string>{{84, 0}, {82, 228}}</string>
+			<key>textureRotated</key>
+			<false/>
+		</dict>
+		
+		<key>business_facing_right.png</key>
+		<dict>
+			<key>aliases</key>
+			<array>
+			
+			</array>
+			<key>spriteColorRect</key>
+			<string>{{0, 0}, {82, 228}}</string>
+			<key>spriteOffset</key>
+			<string>{0, -0}</string>
+			<key>spriteSize</key>
+			<string>{82, 228}</string>
+			<key>spriteSourceSize</key>
+			<string>{82, 228}</string>
+			<key>spriteTrimmed</key>
+			<true/>
+			<key>textureRect</key>
 			<string>{{0, 0}, {82, 228}}</string>
 			<key>textureRotated</key>
 			<false/>
@@ -57,7 +79,7 @@
 		<key>format</key>
 		<integer>3</integer>
 		<key>size</key>
-		<string>{128, 512}</string>
+		<string>{256, 256}</string>
 		<key>name</key>
 		<string>Untitled</string>
 		<key>premultipliedAlpha</key>
