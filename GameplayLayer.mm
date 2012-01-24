@@ -312,16 +312,6 @@ enum {
 	// Instruct the world to perform a single step of simulation. It is
 	// generally best to keep the time step and iterations fixed.
 	_world->Step(dt, velocityIterations, positionIterations);
-
-	for (b2Body* body = _world->GetBodyList(); body; body = body->GetNext()){
-		if (body->GetUserData() != NULL) {
-			CCSprite *sprite = (CCSprite *)body->GetUserData();
-            if(sprite.tag == 2){
-                b2Vec2 force = b2Vec2(0.7f,0);
-		        //body->ApplyLinearImpulse(force, body->GetWorldCenter());
-		    }
-	    }
-    }
 	
 	//Iterate over the bodies in the physics world
 	for (b2Body* b = _world->GetBodyList(); b; b = b->GetNext())
@@ -330,7 +320,6 @@ enum {
 			//Synchronize the AtlasSprites position and rotation with the corresponding body
 			CCSprite *myActor = (CCSprite*)b->GetUserData();
             if(myActor.position.x > winSize.width || myActor.position.x < 0){
-                [self removeChild:myActor cleanup:YES];
                 _world->DestroyBody(b);
                 [myActor removeFromParentAndCleanup:YES];
             }
@@ -428,27 +417,32 @@ enum {
         _world->DestroyJoint(_mouseJoint);
         _mouseJoint = NULL;
     }
-
+    
     UITouch *myTouch = [touches anyObject];
     CGPoint location = [myTouch locationInView:[myTouch view]];
     location = [[CCDirector sharedDirector] convertToGL:location];
     b2Vec2 locationWorld = b2Vec2(location.x/PTM_RATIO, location.y/PTM_RATIO);
     
+    _touchedDog = NO;
+    
     for (b2Body* body = _world->GetBodyList(); body; body = body->GetNext()){
         if (body->GetUserData() != NULL) {
+			b2Fixture *fixture = body->GetFixtureList();
 			CCSprite *sprite = (CCSprite *)body->GetUserData();
-            //things that need to happen to many sprites go here
+            if(sprite.tag == 1){
+                if (fixture->TestPoint(locationWorld)) {
+                     body->SetLinearVelocity(b2Vec2(0, 0));
+                    _touchedDog = YES;
+                }
+                else {
+                    _touchedDog = NO;
+                }
+            }
 		}
     }
-    
-    
-    if (_weinerFixture && _weinerFixture->TestPoint(locationWorld)) {
-
-    }
-    else {
+    if(!_touchedDog){
         [self putDog:location];
     }
-    //weinerBody->SetLinearVelocity(b2Vec2(0, 0));
 }
  
 // on "dealloc" you need to release all your retained objects

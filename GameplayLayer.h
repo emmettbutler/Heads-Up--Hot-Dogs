@@ -35,6 +35,7 @@
     CCAnimation *hitAnim;
     CCSpriteBatchNode *spriteSheet;
     BOOL _moving;
+    BOOL _touchedDog;
 
 	NSMutableArray *_touchLocations;
     NSString *currentAnimation;
