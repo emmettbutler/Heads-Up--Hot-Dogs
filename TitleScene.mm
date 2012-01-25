@@ -34,13 +34,13 @@
         sprite.anchorPoint = CGPointZero;
         [self addChild:sprite z:-1];
 
-        CCLabelTTF *label = [CCLabelTTF labelWithString:@"Sandbox" fontName:@"Marker Felt" fontSize:32.0];
+        CCLabelTTF *label = [CCLabelTTF labelWithString:@"Heads Up! Hot Dogs" fontName:@"Marker Felt" fontSize:32.0];
         CCMenuItem *button = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(switchScene)];
         CCMenu *menu = [CCMenu menuWithItems:button, nil];
         [menu setPosition:ccp(size.width / 2, size.height / 2)];
         [self addChild:menu];
         
-        CCLabelTTF *byline = [CCLabelTTF labelWithString:@"by Emmett" fontName:@"Marker Felt" fontSize:22.0];
+        CCLabelTTF *byline = [CCLabelTTF labelWithString:@"Emmett and Diego" fontName:@"Marker Felt" fontSize:22.0];
         [byline setPosition:ccp((size.width/2), (size.height/2)-50)];
         [self addChild:byline];
     }

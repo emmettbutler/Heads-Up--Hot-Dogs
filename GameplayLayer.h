@@ -37,6 +37,9 @@
     CCFiniteTimeAction *_hitAction;
     CCAnimation *hitAnim;
     CCSpriteBatchNode *spriteSheet;
+    NSMutableArray *yPositions;
+    NSMutableArray *xPositions;
+    NSMutableArray *characterTags;
     BOOL _moving;
     BOOL _touchedDog;
 

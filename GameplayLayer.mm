@@ -16,7 +16,6 @@
 //Box2D is optimized for objects of 1x1 metre therefore it makes sense
 //to define the ratio so that your most common object type is 1x1 metre.
 #define PTM_RATIO 32
-#define VELOCITY_MULT 35
 
 // enums that will be used as tags
 enum {
@@ -24,7 +23,6 @@ enum {
 	kTagBatchNode = 1,
 	kTagAnimation1 = 1,
 };
-
 
 // HelloWorldLayer implementation
 @implementation GameplayLayer
@@ -68,7 +66,7 @@ enum {
     
     b2FixtureDef weinerShapeDef;
     weinerShapeDef.shape = &weinerShape;
-    weinerShapeDef.density = 1.0f;
+    weinerShapeDef.density = 0.2f;
     weinerShapeDef.friction = 1.0f;
     weinerShapeDef.userData = (void *)1;
     weinerShapeDef.restitution = 0.5f;
@@ -87,23 +85,28 @@ enum {
 }
 
 -(void)walkIn:(id)sender data:(void *)params {
-    int xVel, velocityMul;
-    float hitboxHeight, hitboxWidth, hitboxCenterX, hitboxCenterY;
+    int xVel, velocityMul, zIndex;
+    float hitboxHeight, hitboxWidth, hitboxCenterX, hitboxCenterY, density, restitution, friction;
 
     CGSize winSize = [CCDirector sharedDirector].winSize;
     
     NSMutableArray *incomingArray = (NSMutableArray *) params;
     NSNumber *xPos = (NSNumber *)[incomingArray objectAtIndex:0];
     NSNumber *yPos = (NSNumber *)[incomingArray objectAtIndex:1];
-    //NSNumber *character = (NSNumber *)[incomingArray objectAtIndex:2];
+    NSNumber *character = (NSNumber *)[incomingArray objectAtIndex:2];
     
-    /*switch(character.intValue){
+    switch(character.intValue){
         case 1:
             self.person = [CCSprite spriteWithSpriteFrameName:@"business82x228.png"];
-            hitboxWidth = 31.0;
-            hitboxHeight = 40.0;
+            _person.tag = 3;
+            hitboxWidth = 25.0;
+            hitboxHeight = 1;
             hitboxCenterX = 0;
-            hitboxCenterY = 2.1;
+            hitboxCenterY = 3.3;
+            velocityMul = 1;
+            density = 10.0f;
+            restitution = 0.2f;
+            friction = 1.0f;
             break;
         case 2:
             break;
@@ -111,42 +114,48 @@ enum {
             break;
         case 4:
             break;
-    }*/
-
-    self.person = [CCSprite spriteWithSpriteFrameName:@"business82x228.png"];
-    hitboxWidth = 31.0;
-    hitboxHeight = 40.0;
-    hitboxCenterX = 0;
-    hitboxCenterY = 2.1;
-    velocityMul = 1;
-    _person.tag = 3;
+    }
 
     if( xPos.intValue == winSize.width ){
-        xVel = -10*velocityMul;
+        xVel = -1*velocityMul;
     }
     else {
         _person.flipX = YES; //facing the other way
-        xVel = 10*velocityMul;
+        xVel = 1*velocityMul;
+    }
+    
+    //FIX ME BECAUSE I SUCK DICKS
+    if(yPos.intValue > 140){
+        zIndex = 1;
+    }
+    else if(yPos.intValue > 130){
+        zIndex = 2;
+    }
+    else if(yPos.intValue > 120){
+        zIndex = 3;
+    }
+    else if(yPos.intValue > 110){
+        zIndex = 4;
     }
 
     _person.position = ccp(xPos.intValue, yPos.intValue);
-    
-    [spriteSheet addChild:_person];
+    CCLOG(@"Add sprite %d (%0.2f)",yPos.intValue,yPos.floatValue/PTM_RATIO);
+    [spriteSheet addChild:_person z:zIndex];
 
     b2BodyDef personBodyDef;
     personBodyDef.type = b2_dynamicBody;
-    personBodyDef.position.Set(xPos.intValue/PTM_RATIO, yPos.intValue/PTM_RATIO);
+    personBodyDef.position.Set(xPos.floatValue/PTM_RATIO, yPos.floatValue/PTM_RATIO);
     personBodyDef.userData = _person;
     _personBody = _world->CreateBody(&personBodyDef);
 
     b2PolygonShape personShape;
-    personShape.SetAsBox(hitboxWidth/PTM_RATIO, hitboxWidth/PTM_RATIO, b2Vec2(hitboxCenterX, hitboxCenterY), 0);
+    personShape.SetAsBox(hitboxWidth/PTM_RATIO, hitboxHeight/PTM_RATIO, b2Vec2(hitboxCenterX, hitboxCenterY), 0);
 
     b2FixtureDef personShapeDef;
     personShapeDef.shape = &personShape;
-    personShapeDef.density = 10.0f;
-    personShapeDef.friction = 1.0f;
-    personShapeDef.restitution = 0.2f;
+    personShapeDef.density = density;
+    personShapeDef.friction = friction;
+    personShapeDef.restitution = restitution;
     personShapeDef.userData = (void *)3;
     personShapeDef.filter.categoryBits = BOX;
     personShapeDef.filter.maskBits = WEINER;
@@ -175,32 +184,38 @@ enum {
     [[CCDirector sharedDirector] replaceScene:transition];
 }
 
--(void)callback:(id)sender data:(void *)params {
-    CGSize winSize = [CCDirector sharedDirector].winSize;
-    
+-(void)callback:(id)sender data:(void *)params {    
     NSMutableArray *incomingArray = (NSMutableArray *) params;
     NSNumber *xPos = (NSNumber *)[incomingArray objectAtIndex:0];
     NSNumber *yPos = (NSNumber *)[incomingArray objectAtIndex:1];
+    NSNumber *characterTag = (NSNumber *)[incomingArray objectAtIndex:2];
     
-    NSMutableArray *positions = [[NSMutableArray alloc] initWithCapacity:3];;
-    for(int i = 114; i <= 159; i += 15){
-        [positions addObject:[NSNumber numberWithInt:i]];
+    NSNumber* yPosition = [yPositions objectAtIndex:arc4random() % [yPositions count]];
+    yPos = [NSNumber numberWithInt:yPosition.intValue];
+    
+    NSNumber *xPosition = [xPositions objectAtIndex:arc4random() % [xPositions count]];
+    xPos = [NSNumber numberWithInt:xPosition.intValue];
+    
+    characterTag = [characterTags objectAtIndex:arc4random() % [characterTags count]];
+    
+    for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
+        if (body->GetUserData() != NULL) {
+			CCSprite *sprite = (CCSprite *)body->GetUserData();
+            if(sprite.tag >= 3 && sprite.tag <= 10){
+                CCLOG(@"Position: %0.2f x %0.2f", body->GetPosition().x, body->GetPosition().y);
+                if(yPos.floatValue/PTM_RATIO - body->GetPosition().y < .5){
+                    
+                }
+            }
+        }
     }
-    NSNumber* position = [positions objectAtIndex:arc4random() % [positions count]];
-    CCLOG(@"Add sprite %d",position.intValue);
-    yPos = [NSNumber numberWithInt:position.intValue];
     
-    positions = [[NSMutableArray alloc] initWithCapacity:2];;
-    [positions addObject:[NSNumber numberWithInt:winSize.width]];
-    [positions addObject:[NSNumber numberWithInt:0]];
-    position = [positions objectAtIndex:arc4random() % [positions count]];
-    xPos = [NSNumber numberWithInt:position.intValue];
-        
-    NSMutableArray *parameters = [[NSMutableArray alloc] initWithCapacity:2];
+    [self walkIn:self data:params];
+
+    NSMutableArray *parameters = [[NSMutableArray alloc] initWithCapacity:3];
     [parameters addObject:xPos];
     [parameters addObject:yPos];
-        
-    [self walkIn:self data:params];
+    [parameters addObject:characterTag];
         
     double time = 2.0f;
     id delay = [CCDelayTime actionWithDuration:time];
@@ -250,6 +265,19 @@ enum {
         self.isAccelerometerEnabled = YES;
         self.isTouchEnabled = YES;
         
+        //initialize global arrays for possible x,y positions and charTags
+        yPositions = [[NSMutableArray alloc] initWithCapacity:4];;
+        for(int i = 115; i <= 147; i += 8){
+            [yPositions addObject:[NSNumber numberWithInt:i]];
+        }
+        xPositions = [[NSMutableArray alloc] initWithCapacity:2];
+        [xPositions addObject:[NSNumber numberWithInt:winSize.width]];
+        [xPositions addObject:[NSNumber numberWithInt:0]];
+        characterTags = [[NSMutableArray alloc] initWithCapacity:1];
+        for(int i = 1; i < 2; i++){
+            [characterTags addObject:[NSNumber numberWithInt:i]];
+        }
+        
         // Create a world
         b2Vec2 gravity = b2Vec2(0.0f, -30.0f);
         
@@ -296,10 +324,12 @@ enum {
 		_world->SetContactListener(contactListener);
         
         NSMutableArray *params = [[NSMutableArray alloc] initWithCapacity:2];
-        NSNumber *yPos = [NSNumber numberWithInt:winSize.height-20];
+        NSNumber *yPos = [yPositions objectAtIndex:arc4random() % [yPositions count]];
         NSNumber *xPos = [NSNumber numberWithInt:winSize.width]; 
+        NSNumber *character = [NSNumber numberWithInt:1]; 
         [params addObject:xPos];
         [params addObject:yPos];
+        [params addObject:character];
         [self callback:self data:params];
 		
 		[self schedule: @selector(tick:)];
