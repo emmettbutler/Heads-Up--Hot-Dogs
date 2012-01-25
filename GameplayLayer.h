@@ -6,6 +6,9 @@
 //  Copyright NYU 2012. All rights reserved.
 //
 
+//character sprite tags will be in the range 3-10
+//3: businessman
+//4:
 
 // When you import this file, you import all the cocos2d classes
 #import "cocos2d.h"

@@ -87,27 +87,50 @@ enum {
 }
 
 -(void)walkIn:(id)sender data:(void *)params {
+    int xVel, velocityMul;
+    float hitboxHeight, hitboxWidth, hitboxCenterX, hitboxCenterY;
+
     CGSize winSize = [CCDirector sharedDirector].winSize;
     
     NSMutableArray *incomingArray = (NSMutableArray *) params;
     NSNumber *xPos = (NSNumber *)[incomingArray objectAtIndex:0];
     NSNumber *yPos = (NSNumber *)[incomingArray objectAtIndex:1];
+    //NSNumber *character = (NSNumber *)[incomingArray objectAtIndex:2];
     
+    /*switch(character.intValue){
+        case 1:
+            self.person = [CCSprite spriteWithSpriteFrameName:@"business82x228.png"];
+            hitboxWidth = 31.0;
+            hitboxHeight = 40.0;
+            hitboxCenterX = 0;
+            hitboxCenterY = 2.1;
+            break;
+        case 2:
+            break;
+        case 3:
+            break;
+        case 4:
+            break;
+    }*/
+
     self.person = [CCSprite spriteWithSpriteFrameName:@"business82x228.png"];
-    
-    int xVel;
-    
-    if( xPos.intValue == winSize.width ){
-        xVel = -100;
-    }
-    else {
-        self.person = [CCSprite spriteWithSpriteFrameName:@"business_facing_right.png"];
-        xVel = 100;
-    }
-    
-    _person.position = ccp(xPos.intValue, yPos.intValue);
+    hitboxWidth = 31.0;
+    hitboxHeight = 40.0;
+    hitboxCenterX = 0;
+    hitboxCenterY = 2.1;
+    velocityMul = 1;
     _person.tag = 3;
 
+    if( xPos.intValue == winSize.width ){
+        xVel = -10*velocityMul;
+    }
+    else {
+        _person.flipX = YES; //facing the other way
+        xVel = 10*velocityMul;
+    }
+
+    _person.position = ccp(xPos.intValue, yPos.intValue);
+    
     [spriteSheet addChild:_person];
 
     b2BodyDef personBodyDef;
@@ -117,7 +140,7 @@ enum {
     _personBody = _world->CreateBody(&personBodyDef);
 
     b2PolygonShape personShape;
-    personShape.SetAsBox(31.0/PTM_RATIO, 40.0/PTM_RATIO, b2Vec2(0, 2.1), 0);
+    personShape.SetAsBox(hitboxWidth/PTM_RATIO, hitboxWidth/PTM_RATIO, b2Vec2(hitboxCenterX, hitboxCenterY), 0);
 
     b2FixtureDef personShapeDef;
     personShapeDef.shape = &personShape;
@@ -134,8 +157,8 @@ enum {
     jointDef.collideConnected = true;
     jointDef.Initialize(_personBody, _groundBody, _personBody->GetWorldCenter(), worldAxis);
     _world->CreateJoint(&jointDef);
-
-    b2Vec2 force = b2Vec2(xVel, 0);
+    
+    b2Vec2 force = b2Vec2(xVel,0);
     _personBody->ApplyLinearImpulse(force, personBodyDef.position);
 }
 
@@ -179,7 +202,7 @@ enum {
         
     [self walkIn:self data:params];
         
-    double time = 5.0f;
+    double time = 2.0f;
     id delay = [CCDelayTime actionWithDuration:time];
     id callBackAction = [CCCallFuncND actionWithTarget: self selector: @selector(callback:data:) data:parameters];
     id sequence = [CCSequence actions: delay, callBackAction, nil];
@@ -328,6 +351,16 @@ enum {
                 [myActor removeFromParentAndCleanup:YES];
             }
             else {
+                if(myActor.tag >= 3 && myActor.tag <= 10){
+                    if(b->GetLinearVelocity().x < 1 && myActor.flipX == true){
+                        b2Vec2 force = b2Vec2(1,0);
+                        b->ApplyLinearImpulse(force, b->GetPosition());
+                    }
+                    else if(b->GetLinearVelocity().x > -1 && myActor.flipX == false){
+                        b2Vec2 force = b2Vec2(-1,0);
+                        b->ApplyLinearImpulse(force, b->GetPosition());
+                    }
+                }
     			myActor.position = CGPointMake( b->GetPosition().x * PTM_RATIO, b->GetPosition().y * PTM_RATIO);
     			myActor.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
             }
