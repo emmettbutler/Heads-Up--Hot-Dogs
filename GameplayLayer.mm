@@ -124,7 +124,6 @@ enum {
         xVel = 1*velocityMul;
     }
     
-    //FIX ME BECAUSE I SUCK DICKS
     if(yPos.intValue > 140){
         zIndex = 1;
     }
@@ -435,6 +434,8 @@ enum {
     location = [[CCDirector sharedDirector] convertToGL:location];
     b2Vec2 locationWorld = b2Vec2(location.x/PTM_RATIO, location.y/PTM_RATIO);
     
+    _touchedDog = NO;
+    
     for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
         if (body->GetUserData() != NULL) {
             b2Fixture *fixture = body->GetFixtureList();
@@ -451,10 +452,19 @@ enum {
                     
                     _mouseJoint = (b2MouseJoint *)_world->CreateJoint(&md);
                     body->SetAwake(true);
+                    
+                    _touchedDog = YES;
                     break;
+                }
+                else {
+                    _touchedDog = NO;
                 }
             }
 		}
+    }
+    CCLOG(@"Touched Dog: %d", _touchedDog);
+    if(!_touchedDog){
+        [self putDog:location];
     }
 }
 
@@ -491,7 +501,7 @@ enum {
     location = [[CCDirector sharedDirector] convertToGL:location];
     b2Vec2 locationWorld = b2Vec2(location.x/PTM_RATIO, location.y/PTM_RATIO);
     
-    _touchedDog = NO;
+    
     
     for (b2Body* body = _world->GetBodyList(); body; body = body->GetNext()){
         if (body->GetUserData() != NULL) {
@@ -500,19 +510,14 @@ enum {
                 if(sprite.tag == 1){
                     if (fixture->TestPoint(locationWorld)) {
                          body->SetLinearVelocity(b2Vec2(0, 0));
-                        _touchedDog = YES;
+                        
                     }
-                    else {
-                        _touchedDog = NO;
-                    }
+                    
                 }
             }
 		}
     }
-    CCLOG(@"Touched Dog: %d", _touchedDog);
-    if(!_touchedDog){
-        [self putDog:location];
-    }
+    
 }
  
 // on "dealloc" you need to release all your retained objects
