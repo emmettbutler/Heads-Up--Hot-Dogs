@@ -30,12 +30,12 @@ void MyContactListener::PreSolve(b2Contact* contact, const b2Manifold* oldManifo
 }
 
 void MyContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse* impulse){
-	bool isABall = contact->GetFixtureA()->GetUserData() == (void *)1;
-	bool isBBall = contact->GetFixtureB()->GetUserData() == (void *)1;
-	bool isABox = contact->GetFixtureA()->GetUserData() == (void *)2;
-	bool isBBox = contact->GetFixtureB()->GetUserData() == (void *)2;
+	bool isADog = contact->GetFixtureA()->GetUserData() == (void *)1;
+	bool isBDog = contact->GetFixtureB()->GetUserData() == (void *)1;
+	bool isAPerson = contact->GetFixtureA()->GetUserData() >= (void *)3;
+	bool isBPerson = contact->GetFixtureB()->GetUserData() >= (void *)3;
 
-	if((isABall && isBBox) || (isBBall && isABox)){
+	if((isADog && isBPerson) || (isBDog && isAPerson)){
 		contacts.insert(contact->GetFixtureA()->GetBody());
 		contacts.insert(contact->GetFixtureB()->GetBody());
 	}

@@ -85,7 +85,7 @@ enum {
 }
 
 -(void)walkIn:(id)sender data:(void *)params {
-    int xVel, velocityMul, zIndex;
+    int xVel, velocityMul, zIndex, fixtureUserData;
     float hitboxHeight, hitboxWidth, hitboxCenterX, hitboxCenterY, density, restitution, friction;
 
     CGSize winSize = [CCDirector sharedDirector].winSize;
@@ -107,6 +107,7 @@ enum {
             density = 10.0f;
             restitution = 0.2f;
             friction = 1.0f;
+            fixtureUserData = 3;
             break;
         case 2:
             break;
@@ -155,7 +156,7 @@ enum {
     personShapeDef.density = density;
     personShapeDef.friction = friction;
     personShapeDef.restitution = restitution;
-    personShapeDef.userData = (void *)3;
+    personShapeDef.userData = (void *)fixtureUserData;
     personShapeDef.filter.categoryBits = BOX;
     personShapeDef.filter.maskBits = WEINER;
     _personFixture = _personBody->CreateFixture(&personShapeDef);
@@ -172,7 +173,7 @@ enum {
 
 //this seems to only work on one sprite at a time
 -(void)runBoxLoop:(id)sender{
-    CCSprite *sprite = (CCSprite *)sender;
+    //CCSprite *sprite = (CCSprite *)sender;
     //self.flyAction = [CCRepeatForever actionWithAction:
     //                  [CCAnimate actionWithAnimation:flyAnim restoreOriginalFrame:NO]];
     //[sprite runAction: _flyAction];
@@ -369,6 +370,8 @@ enum {
 	// generally best to keep the time step and iterations fixed.
 	_world->Step(dt, velocityIterations, positionIterations);
 	
+     b2Filter filter;
+    
 	//Iterate over the bodies in the physics world
 	for (b2Body* b = _world->GetBodyList(); b; b = b->GetNext())
 	{
@@ -381,6 +384,11 @@ enum {
             }
             else {
                 if(myActor.tag >= 3 && myActor.tag <= 10){
+                    for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()){
+                        filter = f->GetFilterData();
+                        filter.maskBits = WEINER;
+                        f->SetFilterData(filter);
+                    }
                     if(b->GetLinearVelocity().x < 1 && myActor.flipX == true){
                         b2Vec2 force = b2Vec2(1,0);
                         b->ApplyLinearImpulse(force, b->GetPosition());
@@ -402,25 +410,33 @@ enum {
 	{
 		b2Body *body = *pos;
 
-		CCNode *contactNode = (CCNode*)body->GetUserData();
-        CCSprite *sprite = (CCSprite *)body->GetUserData();
-		CGPoint position = contactNode.position;
+		//CCNode *contactNode = (CCNode*)body->GetUserData();
+        //CCSprite *sprite = (CCSprite *)body->GetUserData();
+		//CGPoint position = contactNode.position;
         
+        for (b2Body *b = _world->GetBodyList(); b; b = b->GetNext()){
+            if (b->GetUserData() != NULL) {
+                CCSprite *sprite = (CCSprite *)b->GetUserData();
+                for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()){
+                    if(sprite.tag >= 3 && sprite.tag <= 10){
+                        if(b != body){
+                            filter = f->GetFilterData();
+                            filter.maskBits = 0000;
+                            f->SetFilterData(filter);
+                        }
+                        else{
+                            CCLOG(@"ELSE CASE");
+                        }
+                    }
+                }
+            }
+        }
+
         /*if(sprite.tag == 2){
             [sprite stopAllActions];
             [sprite runAction:[CCSequence actions:_hitAction,
                                [CCCallFuncN actionWithTarget:self selector:@selector(runBoxLoop:)],nil]];
         }*/
-
-		CCParticleSun* explosion = [[CCParticleSun alloc] initWithTotalParticles:200];
-		explosion.autoRemoveOnFinish = YES;
-		explosion.startSize = 1.0f;
-		explosion.speed = 70.0f;
-		explosion.anchorPoint = ccp(0.5f,0.5f);
-		explosion.position = position;
-		explosion.duration = 0.2f;
-		[self addChild:explosion z:11];
-		[explosion release];
 	}
 	contactListener->contacts.clear();
 }
@@ -510,14 +526,11 @@ enum {
                 if(sprite.tag == 1){
                     if (fixture->TestPoint(locationWorld)) {
                          body->SetLinearVelocity(b2Vec2(0, 0));
-                        
                     }
-                    
                 }
             }
 		}
     }
-    
 }
  
 // on "dealloc" you need to release all your retained objects
