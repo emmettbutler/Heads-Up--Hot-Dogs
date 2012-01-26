@@ -49,39 +49,39 @@ enum {
 
 -(void)putDog:(CGPoint)location {
     // Create sprite and add it to the layer
-    weiner = [CCSprite spriteWithSpriteFrameName:@"dog54x12.png"];
-    weiner.position = ccp(location.x, location.y);
-    weiner.tag = 1;
-    [self addChild:weiner z:9];
+    wiener = [CCSprite spriteWithSpriteFrameName:@"dog54x12.png"];
+    wiener.position = ccp(location.x, location.y);
+    wiener.tag = 1;
+    [self addChild:wiener z:9];
     
-    // Create weiner body and shape
-    b2BodyDef weinerBodyDef;
-    weinerBodyDef.type = b2_dynamicBody;
-    weinerBodyDef.position.Set(location.x/PTM_RATIO, location.y/PTM_RATIO);
-    weinerBodyDef.userData = weiner;
-    weinerBody = _world->CreateBody(&weinerBodyDef);
+    // Create wiener body and shape
+    b2BodyDef wienerBodyDef;
+    wienerBodyDef.type = b2_dynamicBody;
+    wienerBodyDef.position.Set(location.x/PTM_RATIO, location.y/PTM_RATIO);
+    wienerBodyDef.userData = wiener;
+    wienerBody = _world->CreateBody(&wienerBodyDef);
     
-    b2PolygonShape weinerShape;
-    weinerShape.SetAsBox(weiner.contentSize.width/PTM_RATIO/2, weiner.contentSize.height/PTM_RATIO/2);
+    b2PolygonShape wienerShape;
+    wienerShape.SetAsBox(wiener.contentSize.width/PTM_RATIO/2, wiener.contentSize.height/PTM_RATIO/2);
     
-    b2FixtureDef weinerShapeDef;
-    weinerShapeDef.shape = &weinerShape;
-    weinerShapeDef.density = 0.2f;
-    weinerShapeDef.friction = 1.0f;
-    weinerShapeDef.userData = (void *)1;
-    weinerShapeDef.restitution = 0.5f;
-    weinerShapeDef.filter.categoryBits = WEINER;
-    weinerShapeDef.filter.maskBits = BOX | BOUNDARY | WEINER;
-    _weinerFixture = weinerBody->CreateFixture(&weinerShapeDef);
+    b2FixtureDef wienerShapeDef;
+    wienerShapeDef.shape = &wienerShape;
+    wienerShapeDef.density = 0.2f;
+    wienerShapeDef.friction = 1.0f;
+    wienerShapeDef.userData = (void *)1;
+    wienerShapeDef.restitution = 0.5f;
+    wienerShapeDef.filter.categoryBits = WIENER;
+    wienerShapeDef.filter.maskBits = PERSON | FLOOR | WIENER;
+    _wienerFixture = wienerBody->CreateFixture(&wienerShapeDef);
 
-    b2PolygonShape weinerGrabShape;
-    weinerShape.SetAsBox((weiner.contentSize.width+30)/PTM_RATIO/2, (weiner.contentSize.height+30)/PTM_RATIO/2);
+    b2PolygonShape wienerGrabShape;
+    wienerShape.SetAsBox((wiener.contentSize.width+30)/PTM_RATIO/2, (wiener.contentSize.height+30)/PTM_RATIO/2);
 
-    b2FixtureDef weinerGrabShapeDef;
-    weinerGrabShapeDef.shape = &weinerShape;
-    weinerGrabShapeDef.filter.categoryBits = WEINER;
-    weinerGrabShapeDef.filter.maskBits = 0x0000;
-    _weinerFixture = weinerBody->CreateFixture(&weinerGrabShapeDef);
+    b2FixtureDef wienerGrabShapeDef;
+    wienerGrabShapeDef.shape = &wienerShape;
+    wienerGrabShapeDef.filter.categoryBits = WIENER;
+    wienerGrabShapeDef.filter.maskBits = 0x0000;
+    _wienerFixture = wienerBody->CreateFixture(&wienerGrabShapeDef);
 }
 
 -(void)walkIn:(id)sender data:(void *)params {
@@ -99,7 +99,7 @@ enum {
         case 1:
             self.person = [CCSprite spriteWithSpriteFrameName:@"business82x228.png"];
             _person.tag = 3;
-            hitboxWidth = 25.0;
+            hitboxWidth = 22.0;
             hitboxHeight = 1;
             hitboxCenterX = 0;
             hitboxCenterY = 3.3;
@@ -157,8 +157,8 @@ enum {
     personShapeDef.friction = friction;
     personShapeDef.restitution = restitution;
     personShapeDef.userData = (void *)fixtureUserData;
-    personShapeDef.filter.categoryBits = BOX;
-    personShapeDef.filter.maskBits = WEINER;
+    personShapeDef.filter.categoryBits = PERSON;
+    personShapeDef.filter.maskBits = WIENER;
     _personFixture = _personBody->CreateFixture(&personShapeDef);
     
     b2PrismaticJointDef jointDef;
@@ -291,17 +291,23 @@ enum {
         b2PolygonShape groundBox;
         b2FixtureDef groundBoxDef;
         groundBoxDef.shape = &groundBox;
-        
-        groundBox.SetAsEdge(b2Vec2(0,0), b2Vec2(winSize.width/PTM_RATIO, 0));
+        groundBoxDef.filter.categoryBits = FLOOR;
+        groundBox.SetAsEdge(b2Vec2(0,.5), b2Vec2(winSize.width/PTM_RATIO, 1));
         _bottomFixture = _groundBody->CreateFixture(&groundBoxDef);
-        groundBox.SetAsEdge(b2Vec2(0,0), b2Vec2(0, winSize.height/PTM_RATIO));
-        _groundBody->CreateFixture(&groundBoxDef);
-        groundBox.SetAsEdge(b2Vec2(0, winSize.height/PTM_RATIO), b2Vec2(winSize.width/PTM_RATIO, 
-                                                                        winSize.height/PTM_RATIO));
-        _groundBody->CreateFixture(&groundBoxDef);
-        groundBox.SetAsEdge(b2Vec2(winSize.width/PTM_RATIO, winSize.height/PTM_RATIO), 
-                            b2Vec2(winSize.width/PTM_RATIO, 0));
-        _groundBody->CreateFixture(&groundBoxDef);
+        
+        b2BodyDef wallsBodyDef;
+        wallsBodyDef.position.Set(0,0);
+        _wallsBody = _world->CreateBody(&wallsBodyDef);
+        b2PolygonShape wallsBox;
+        b2FixtureDef wallsBoxDef;
+        wallsBoxDef.shape = &wallsBox;
+        wallsBoxDef.filter.categoryBits = WALLS;
+        wallsBox.SetAsEdge(b2Vec2(0,0), b2Vec2(0, winSize.height/PTM_RATIO));
+        _wallsFixture = _wallsBody->CreateFixture(&wallsBoxDef);
+        wallsBox.SetAsEdge(b2Vec2(0, winSize.height/PTM_RATIO), b2Vec2(winSize.width/PTM_RATIO, winSize.height/PTM_RATIO));
+        _wallsBody->CreateFixture(&wallsBoxDef);
+        wallsBox.SetAsEdge(b2Vec2(winSize.width/PTM_RATIO, winSize.height/PTM_RATIO), b2Vec2(winSize.width/PTM_RATIO, 0));
+        _wallsBody->CreateFixture(&wallsBoxDef);
 
         [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile: @"sprites_default.plist"];
         spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_default.png"];
@@ -385,9 +391,7 @@ enum {
             else {
                 if(myActor.tag >= 3 && myActor.tag <= 10){
                     for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()){
-                        filter = f->GetFilterData();
-                        filter.maskBits = WEINER;
-                        f->SetFilterData(filter);
+                        
                     }
                     if(b->GetLinearVelocity().x < 1 && myActor.flipX == true){
                         b2Vec2 force = b2Vec2(1,0);
@@ -409,28 +413,9 @@ enum {
 		pos != contactListener->contacts.end(); ++pos)
 	{
 		b2Body *body = *pos;
-
-		//CCNode *contactNode = (CCNode*)body->GetUserData();
-        //CCSprite *sprite = (CCSprite *)body->GetUserData();
-		//CGPoint position = contactNode.position;
+        b2Filter filter;
         
-        for (b2Body *b = _world->GetBodyList(); b; b = b->GetNext()){
-            if (b->GetUserData() != NULL) {
-                CCSprite *sprite = (CCSprite *)b->GetUserData();
-                for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()){
-                    if(sprite.tag >= 3 && sprite.tag <= 10){
-                        if(b != body){
-                            filter = f->GetFilterData();
-                            filter.maskBits = 0000;
-                            f->SetFilterData(filter);
-                        }
-                        else{
-                            CCLOG(@"ELSE CASE");
-                        }
-                    }
-                }
-            }
-        }
+        //for each contact
 
         /*if(sprite.tag == 2){
             [sprite stopAllActions];
@@ -480,7 +465,9 @@ enum {
     }
     CCLOG(@"Touched Dog: %d", _touchedDog);
     if(!_touchedDog){
-        [self putDog:location];
+        if(location.y > 200){
+            [self putDog:location];
+        }
     }
 }
 
@@ -517,8 +504,6 @@ enum {
     location = [[CCDirector sharedDirector] convertToGL:location];
     b2Vec2 locationWorld = b2Vec2(location.x/PTM_RATIO, location.y/PTM_RATIO);
     
-    
-    
     for (b2Body* body = _world->GetBodyList(); body; body = body->GetNext()){
         if (body->GetUserData() != NULL) {
             for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
@@ -546,6 +531,7 @@ enum {
     //self.hitAction = nil;
 
     delete _world;
+    delete contactListener;
 	_world = NULL;
     
 	// don't forget to call "super dealloc"

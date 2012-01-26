@@ -20,14 +20,16 @@
 {
 	b2World *_world;
     GLESDebugDraw *m_debugDraw;
-	b2Body *_groundBody;
+	b2Body *_wallsBody;
+    b2Body *_groundBody;
 	b2Fixture *_bottomFixture;
-	b2Fixture *_weinerFixture;
+    b2Fixture *_wallsFixture;
+	b2Fixture *_wienerFixture;
 	b2Fixture *_boxFixture;
 	b2Body *_boxBody;
-    b2Body *weinerBody;
+    b2Body *wienerBody;
     CCSprite *_box;
-    CCSprite *weiner;
+    CCSprite *wiener;
     b2Fixture *_personFixture;
     b2Body *_personBody;
     CCSprite *_person;
@@ -47,9 +49,10 @@
     NSString *currentAnimation;
 
 	enum _entityCategory {
-		BOUNDARY = 0x0001,
-    	BOX =     0x0002,
-    	WEINER =     0x0004,
+		FLOOR = 0x0001,
+        WALLS = 0x0002,
+    	PERSON =     0x0004,
+    	WIENER =     0x0008,
   	};
 
   	MyContactListener *contactListener;
