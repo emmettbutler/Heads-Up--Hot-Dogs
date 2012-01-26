@@ -410,19 +410,12 @@ enum {
 
 -(void) tick: (ccTime) dt
 {
-	//It is recommended that a fixed time step is used with Box2D for stability
-	//of the simulation, however, we are using a variable time step here.
-	//You need to make an informed choice, the following URL is useful
-	//http://gafferongames.com/game-physics/fix-your-timestep/
-	
-	int32 velocityIterations = 8;
+    int32 velocityIterations = 8;
 	int32 positionIterations = 1;
 
-    CGSize winSize = [CCDirector sharedDirector].winSize;
-	
-	// Instruct the world to perform a single step of simulation. It is
-	// generally best to keep the time step and iterations fixed.
 	_world->Step(dt, velocityIterations, positionIterations);
+    
+    CGSize winSize = [CCDirector sharedDirector].winSize;
 	
      b2Filter filter;
     
@@ -459,13 +452,24 @@ enum {
 		}	
 	}
 
-	std::set<b2Body*>::iterator pos;
+	std::vector<MyContact>::iterator pos;
 	for(pos = contactListener->contacts.begin();
 		pos != contactListener->contacts.end(); ++pos)
 	{
-		b2Body *body = *pos;
+		MyContact contact = *pos;
         b2Filter filter;
         
+        CCLOG(@"DOG HIT DOME BRO");
+        b2Body *dogBody = contact.fixtureA->GetBody();
+        b2Body *personBody = contact.fixtureB->GetBody();
+        
+        if(dogBody && personBody){
+            b2PrismaticJointDef jointDef;
+            b2Vec2 worldAxis(1.0f, 0.0f);
+            jointDef.Initialize(dogBody, personBody, dogBody->GetWorldCenter(), worldAxis);
+            _world->CreateJoint(&jointDef);
+        }
+            
         //for each contact
 
         /*if(sprite.tag == 2){

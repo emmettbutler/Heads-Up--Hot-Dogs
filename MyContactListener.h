@@ -7,12 +7,21 @@
 //
 
 #import "Box2D.h"
-#import <set>
+#import <vector>
 #import <algorithm>
+
+struct MyContact {
+    b2Fixture *fixtureA;
+    b2Fixture *fixtureB;
+    bool operator==(const MyContact& other) const
+    {
+        return (fixtureA == other.fixtureA) && (fixtureB == other.fixtureB);
+    }
+};
 
 class MyContactListener : public b2ContactListener {
 	public:
-			std::set<b2Body*>contacts;
+			std::vector<MyContact>contacts;
 
 			MyContactListener();
 			~MyContactListener();
