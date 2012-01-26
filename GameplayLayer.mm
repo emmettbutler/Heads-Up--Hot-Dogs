@@ -16,6 +16,10 @@
 //Box2D is optimized for objects of 1x1 metre therefore it makes sense
 //to define the ratio so that your most common object type is 1x1 metre.
 #define PTM_RATIO 32
+#define FLOOR1_HT 0
+#define FLOOR2_HT .5
+#define FLOOR3_HT .8
+#define FLOOR4_HT 1
 
 // enums that will be used as tags
 enum {
@@ -52,7 +56,8 @@ enum {
     wiener = [CCSprite spriteWithSpriteFrameName:@"dog54x12.png"];
     wiener.position = ccp(location.x, location.y);
     wiener.tag = 1;
-    [self addChild:wiener z:9];
+    int floor = arc4random() % 4;
+    [self addChild:wiener];
     
     // Create wiener body and shape
     b2BodyDef wienerBodyDef;
@@ -71,7 +76,19 @@ enum {
     wienerShapeDef.userData = (void *)1;
     wienerShapeDef.restitution = 0.5f;
     wienerShapeDef.filter.categoryBits = WIENER;
-    wienerShapeDef.filter.maskBits = PERSON | FLOOR | WIENER;
+    //random assignment of floor to collide, ONLY FOR TESTING
+    if(floor == 1){
+        wienerShapeDef.filter.maskBits = PERSON | FLOOR1 | WIENER;
+    }
+    else if(floor == 2){
+        wienerShapeDef.filter.maskBits = PERSON | FLOOR2 | WIENER;
+    }
+    else if(floor == 3){
+        wienerShapeDef.filter.maskBits = PERSON | FLOOR3 | WIENER;
+    }
+    else if(floor == 4){
+        wienerShapeDef.filter.maskBits = PERSON | FLOOR4 | WIENER;
+    }
     _wienerFixture = wienerBody->CreateFixture(&wienerShapeDef);
 
     b2PolygonShape wienerGrabShape;
@@ -125,19 +142,20 @@ enum {
         xVel = 1*velocityMul;
     }
     
-    if(yPos.intValue > 140){
-        zIndex = 1;
+    int floor = arc4random() % 4;
+    if(floor == 1){
+        zIndex = 400;
     }
-    else if(yPos.intValue > 130){
-        zIndex = 2;
+    else if(floor == 2){
+        zIndex = 300;
     }
-    else if(yPos.intValue > 120){
-        zIndex = 3;
+    else if(floor == 3){
+        zIndex = 200;
     }
-    else if(yPos.intValue > 110){
-        zIndex = 4;
+    else{
+        zIndex = 100;
     }
-
+    
     _person.position = ccp(xPos.intValue, yPos.intValue);
     CCLOG(@"Add sprite %d (%0.2f)",yPos.intValue,yPos.floatValue/PTM_RATIO);
     [spriteSheet addChild:_person z:zIndex];
@@ -150,7 +168,6 @@ enum {
 
     b2PolygonShape personShape;
     personShape.SetAsBox(hitboxWidth/PTM_RATIO, hitboxHeight/PTM_RATIO, b2Vec2(hitboxCenterX, hitboxCenterY), 0);
-
     b2FixtureDef personShapeDef;
     personShapeDef.shape = &personShape;
     personShapeDef.density = density;
@@ -161,11 +178,27 @@ enum {
     personShapeDef.filter.maskBits = WIENER;
     _personFixture = _personBody->CreateFixture(&personShapeDef);
     
-    b2PrismaticJointDef jointDef;
-    b2Vec2 worldAxis(1.0f, 0.0f);
-    jointDef.collideConnected = true;
-    jointDef.Initialize(_personBody, _groundBody, _personBody->GetWorldCenter(), worldAxis);
-    _world->CreateJoint(&jointDef);
+    b2PolygonShape personBodyShape;
+    personBodyShape.SetAsBox(_person.contentSize.width/PTM_RATIO/2, _person.contentSize.height/PTM_RATIO/2);
+    b2FixtureDef personBodyShapeDef;
+    personBodyShapeDef.shape = &personBodyShape;
+    personBodyShapeDef.density = 5;
+    personBodyShapeDef.friction = 0;
+    personBodyShapeDef.restitution = 0;
+    personBodyShapeDef.filter.categoryBits = BODYBOX;
+    if(floor == 1){
+        personBodyShapeDef.filter.maskBits = FLOOR1;
+    }
+    else if(floor == 2){
+        personBodyShapeDef.filter.maskBits = FLOOR2;
+    }
+    else if(floor == 3){
+        personBodyShapeDef.filter.maskBits = FLOOR3;
+    }
+    else{
+        personBodyShapeDef.filter.maskBits = FLOOR4;
+    }
+    _personFixture = _personBody->CreateFixture(&personBodyShapeDef);
     
     b2Vec2 force = b2Vec2(xVel,0);
     _personBody->ApplyLinearImpulse(force, personBodyDef.position);
@@ -291,8 +324,23 @@ enum {
         b2PolygonShape groundBox;
         b2FixtureDef groundBoxDef;
         groundBoxDef.shape = &groundBox;
-        groundBoxDef.filter.categoryBits = FLOOR;
-        groundBox.SetAsEdge(b2Vec2(0,.5), b2Vec2(winSize.width/PTM_RATIO, 1));
+        groundBoxDef.filter.categoryBits = FLOOR1;
+        groundBox.SetAsEdge(b2Vec2(0,FLOOR1_HT), b2Vec2(winSize.width/PTM_RATIO, FLOOR1_HT));
+        _bottomFixture = _groundBody->CreateFixture(&groundBoxDef);
+        
+        _groundBody = _world->CreateBody(&groundBodyDef);
+        groundBoxDef.filter.categoryBits = FLOOR2;
+        groundBox.SetAsEdge(b2Vec2(0,FLOOR2_HT), b2Vec2(winSize.width/PTM_RATIO, FLOOR2_HT));
+        _bottomFixture = _groundBody->CreateFixture(&groundBoxDef);
+        
+        _groundBody = _world->CreateBody(&groundBodyDef);
+        groundBoxDef.filter.categoryBits = FLOOR3;
+        groundBox.SetAsEdge(b2Vec2(0,FLOOR3_HT), b2Vec2(winSize.width/PTM_RATIO, FLOOR3_HT));
+        _bottomFixture = _groundBody->CreateFixture(&groundBoxDef);
+        
+        _groundBody = _world->CreateBody(&groundBodyDef);
+        groundBoxDef.filter.categoryBits = FLOOR4;
+        groundBox.SetAsEdge(b2Vec2(0,FLOOR4_HT), b2Vec2(winSize.width/PTM_RATIO, FLOOR4_HT));
         _bottomFixture = _groundBody->CreateFixture(&groundBoxDef);
         
         b2BodyDef wallsBodyDef;
@@ -389,7 +437,10 @@ enum {
                 [myActor removeFromParentAndCleanup:YES];
             }
             else {
-                if(myActor.tag >= 3 && myActor.tag <= 10){
+                if(myActor.tag == 1){
+                    
+                }
+                else if(myActor.tag >= 3 && myActor.tag <= 10){
                     for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()){
                         
                     }

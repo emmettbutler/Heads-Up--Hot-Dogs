@@ -49,10 +49,14 @@
     NSString *currentAnimation;
 
 	enum _entityCategory {
-		FLOOR = 0x0001,
-        WALLS = 0x0002,
-    	PERSON =     0x0004,
-    	WIENER =     0x0008,
+		FLOOR1 = 0x0001,
+        FLOOR2 = 0x0002,
+        FLOOR3 = 0x0004,
+        FLOOR4 = 0x0008,
+        WALLS = 0x0010,
+    	PERSON =     0x0020,
+    	WIENER =     0x0040,
+        BODYBOX=    0x0080,
   	};
 
   	MyContactListener *contactListener;
