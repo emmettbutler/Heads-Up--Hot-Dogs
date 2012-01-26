@@ -120,10 +120,10 @@ enum {
             hitboxHeight = 1;
             hitboxCenterX = 0;
             hitboxCenterY = 3.3;
-            velocityMul = 1;
+            velocityMul = 10;
             density = 10.0f;
             restitution = 0.2f;
-            friction = 1.0f;
+            friction = 0.5f;
             fixtureUserData = 3;
             break;
         case 2:
@@ -280,7 +280,7 @@ enum {
 	// always call "super" init
 	// Apple recommends to re-assign "self" with the "super" return value
 	if( (self=[super init])) {
-		CGSize winSize = [CCDirector sharedDirector].winSize; 
+		CGSize winSize = [CCDirector sharedDirector].winSize;
         
         CCSprite *background = [CCSprite spriteWithFile:@"bg_philly.png"];
         background.anchorPoint = CGPointZero;
@@ -417,7 +417,7 @@ enum {
     
     CGSize winSize = [CCDirector sharedDirector].winSize;
 	
-     b2Filter filter;
+    b2Filter filter;
     
 	//Iterate over the bodies in the physics world
 	for (b2Body* b = _world->GetBodyList(); b; b = b->GetNext())
@@ -451,23 +451,67 @@ enum {
             }
 		}	
 	}
+    
+    int floor = arc4random() % 4;
+    
+    for(b2Joint* j = _world->GetJointList(); j; j = j->GetNext()){
+        if(j->GetType() == e_prismaticJoint){
+            b2PrismaticJoint* p = (b2PrismaticJoint *)j;
+            if((float32)p->GetJointTranslation() > (float32)p->GetUpperLimit() - .05 || 
+               (float32)p->GetJointTranslation() < (float32)p->GetLowerLimit() + .05){
+                _world->DestroyJoint(j);
+                b2Body* b = j->GetBodyA();
+                for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()){
+                    if(f->GetUserData() == (void*)1){
+                        filter = f->GetFilterData();
+                        //TODO - find a way to assign this appropriately (maybe random, maybe not)
+                        //TODO - replace all copypasta of this code with one single one outside of any loop in tick() (MAYBE)
+                        if(floor == 1){
+                            filter.maskBits = PERSON | FLOOR1 | WIENER;
+                        }
+                        else if(floor == 2){
+                            filter.maskBits = PERSON | FLOOR2 | WIENER;
+                        }
+                        else if(floor == 3){
+                            filter.maskBits = PERSON | FLOOR3 | WIENER;
+                        }
+                        else{
+                            filter.maskBits = PERSON | FLOOR4 | WIENER;
+                        }
+                        f->SetFilterData(filter);
+                    }
+                }
+                CCLOG(@"Prism joint destroyed");
+            }
+        }
+    }
 
+    b2Joint* prismJoint = NULL;
+    MyContact contact;
+    
 	std::vector<MyContact>::iterator pos;
 	for(pos = contactListener->contacts.begin();
 		pos != contactListener->contacts.end(); ++pos)
 	{
-		MyContact contact = *pos;
-        b2Filter filter;
+        contact = *pos;
         
-        CCLOG(@"DOG HIT DOME BRO");
+        CCLOG(@"Dog/Person Collision");
         b2Body *dogBody = contact.fixtureA->GetBody();
         b2Body *personBody = contact.fixtureB->GetBody();
         
         if(dogBody && personBody){
+            filter = contact.fixtureA->GetFilterData();
+            filter.maskBits = 0x0000;
+            contact.fixtureA->SetFilterData(filter);
+            
             b2PrismaticJointDef jointDef;
             b2Vec2 worldAxis(1.0f, 0.0f);
+            jointDef.lowerTranslation = -.2f;
+            jointDef.upperTranslation = .2f;
+            jointDef.enableLimit = true;
             jointDef.Initialize(dogBody, personBody, dogBody->GetWorldCenter(), worldAxis);
-            _world->CreateJoint(&jointDef);
+            prismJoint = _world->CreateJoint(&jointDef);
+            CCLOG(@"Prism joint created");
         }
             
         //for each contact
@@ -478,7 +522,8 @@ enum {
                                [CCCallFuncN actionWithTarget:self selector:@selector(runBoxLoop:)],nil]];
         }*/
 	}
-	contactListener->contacts.clear();
+    
+    contactListener->contacts.clear();
 }
 
 - (void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -565,7 +610,7 @@ enum {
     			CCSprite *sprite = (CCSprite *)body->GetUserData();
                 if(sprite.tag == 1){
                     if (fixture->TestPoint(locationWorld)) {
-                         body->SetLinearVelocity(b2Vec2(0, 0));
+                        body->SetLinearVelocity(b2Vec2(0, 0));
                     }
                 }
             }

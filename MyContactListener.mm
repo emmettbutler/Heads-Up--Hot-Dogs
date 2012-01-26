@@ -29,12 +29,13 @@ void MyContactListener::BeginContact(b2Contact* contact){
 	if(isADog && isBPerson){
         myContact.fixtureA = contact->GetFixtureA();
         myContact.fixtureB = contact->GetFixtureB();
+        contacts.push_back(myContact);
     } 
     else if(isBDog && isAPerson){
     	myContact.fixtureA = contact->GetFixtureB();
         myContact.fixtureB = contact->GetFixtureA();
+        contacts.push_back(myContact);
     }
-    contacts.push_back(myContact);
 }
 
 void MyContactListener::EndContact(b2Contact* contact){
