@@ -72,7 +72,7 @@ enum {
     b2FixtureDef wienerShapeDef;
     wienerShapeDef.shape = &wienerShape;
     wienerShapeDef.density = 0.2f;
-    wienerShapeDef.friction = 1.0f;
+    wienerShapeDef.friction = 0.2f;
     wienerShapeDef.userData = (void *)1;
     wienerShapeDef.restitution = 0.5f;
     wienerShapeDef.filter.categoryBits = WIENER;
@@ -120,10 +120,10 @@ enum {
             hitboxHeight = 1;
             hitboxCenterX = 0;
             hitboxCenterY = 3.3;
-            velocityMul = 10;
+            velocityMul = 300;
             density = 10.0f;
-            restitution = 0.2f;
-            friction = 0.5f;
+            restitution = .8f;
+            friction = .5f;
             fixtureUserData = 3;
             break;
         case 2:
@@ -250,7 +250,7 @@ enum {
     [parameters addObject:yPos];
     [parameters addObject:characterTag];
         
-    double time = 2.0f;
+    double time = 1.0f;
     id delay = [CCDelayTime actionWithDuration:time];
     id callBackAction = [CCCallFuncND actionWithTarget: self selector: @selector(callback:data:) data:parameters];
     id sequence = [CCSequence actions: delay, callBackAction, nil];
@@ -437,14 +437,6 @@ enum {
                     for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()){
                         
                     }
-                    if(b->GetLinearVelocity().x < 1 && myActor.flipX == true){
-                        b2Vec2 force = b2Vec2(1,0);
-                        b->ApplyLinearImpulse(force, b->GetPosition());
-                    }
-                    else if(b->GetLinearVelocity().x > -1 && myActor.flipX == false){
-                        b2Vec2 force = b2Vec2(-1,0);
-                        b->ApplyLinearImpulse(force, b->GetPosition());
-                    }
                 }
     			myActor.position = CGPointMake( b->GetPosition().x * PTM_RATIO, b->GetPosition().y * PTM_RATIO);
     			myActor.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
@@ -500,18 +492,21 @@ enum {
         b2Body *personBody = contact.fixtureB->GetBody();
         
         if(dogBody && personBody){
-            filter = contact.fixtureA->GetFilterData();
-            filter.maskBits = 0x0000;
-            contact.fixtureA->SetFilterData(filter);
+            CCLOG(@"Dog Y Vel: %0.2f", dogBody->GetLinearVelocity().x);
+            if(dogBody->GetLinearVelocity().y < 1.2){
+                filter = contact.fixtureA->GetFilterData();
+                filter.maskBits = 0x0000;
+                contact.fixtureA->SetFilterData(filter);
             
-            b2PrismaticJointDef jointDef;
-            b2Vec2 worldAxis(1.0f, 0.0f);
-            jointDef.lowerTranslation = -.2f;
-            jointDef.upperTranslation = .2f;
-            jointDef.enableLimit = true;
-            jointDef.Initialize(dogBody, personBody, dogBody->GetWorldCenter(), worldAxis);
-            prismJoint = _world->CreateJoint(&jointDef);
-            CCLOG(@"Prism joint created");
+                b2PrismaticJointDef jointDef;
+                b2Vec2 worldAxis(1.0f, 0.0f);
+                jointDef.lowerTranslation = -.2f;
+                jointDef.upperTranslation = .2f;
+                jointDef.enableLimit = true;
+                jointDef.Initialize(dogBody, personBody, dogBody->GetWorldCenter(), worldAxis);
+                prismJoint = _world->CreateJoint(&jointDef);
+                CCLOG(@"Prism joint created");
+            }
         }
             
         //for each contact
