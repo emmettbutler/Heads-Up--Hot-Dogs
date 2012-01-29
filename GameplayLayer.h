@@ -39,7 +39,7 @@
     CCFiniteTimeAction *_hitAction;
     CCAnimation *hitAnim;
     CCSpriteBatchNode *spriteSheet;
-    NSMutableArray *yPositions;
+    NSMutableArray *floorBits;
     NSMutableArray *xPositions;
     NSMutableArray *characterTags;
     BOOL _moving;

@@ -107,10 +107,12 @@ enum {
 
     CGSize winSize = [CCDirector sharedDirector].winSize;
     
+    BOOL spawn = YES;
+    NSNumber *floorBit = [floorBits objectAtIndex:arc4random() % [floorBits count]];
+
     NSMutableArray *incomingArray = (NSMutableArray *) params;
     NSNumber *xPos = (NSNumber *)[incomingArray objectAtIndex:0];
-    NSNumber *yPos = (NSNumber *)[incomingArray objectAtIndex:1];
-    NSNumber *character = (NSNumber *)[incomingArray objectAtIndex:2];
+    NSNumber *character = (NSNumber *)[incomingArray objectAtIndex:1];
     
     switch(character.intValue){
         case 1:
@@ -142,66 +144,71 @@ enum {
         xVel = 1*velocityMul;
     }
     
-    int floor = arc4random() % 4;
-    if(floor == 1){
-        zIndex = 400;
-    }
-    else if(floor == 2){
-        zIndex = 300;
-    }
-    else if(floor == 3){
-        zIndex = 200;
-    }
-    else{
-        zIndex = 100;
+    for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
+        if (body->GetUserData() != NULL) {
+			CCSprite *sprite = (CCSprite *)body->GetUserData();
+            if(sprite.tag >= 3 && sprite.tag <= 10){
+                for(b2Fixture* f = body->GetFixtureList(); f; f = f->GetNext()){
+                    if(f->GetFilterData().maskBits == floorBit.intValue){
+                        if(body->GetLinearVelocity().x * xVel < 0){
+                            CCLOG(@"Floors are equal");
+                            spawn = NO;
+                        }
+                    }
+                }
+            }
+        }
     }
     
-    _person.position = ccp(xPos.intValue, yPos.intValue);
-    CCLOG(@"Add sprite %d (%0.2f)",yPos.intValue,yPos.floatValue/PTM_RATIO);
-    [spriteSheet addChild:_person z:zIndex];
+    if(spawn){
+        if(floorBit.intValue == 1){
+            zIndex = 400;
+        }
+        else if(floorBit.intValue == 2){
+            zIndex = 300;
+        }
+        else if(floorBit.intValue == 4){
+            zIndex = 200;
+        }
+        else{
+            zIndex = 100;
+        }
+    
+        _person.position = ccp(xPos.intValue, 123);
+        [spriteSheet addChild:_person z:zIndex];
 
-    b2BodyDef personBodyDef;
-    personBodyDef.type = b2_dynamicBody;
-    personBodyDef.position.Set(xPos.floatValue/PTM_RATIO, yPos.floatValue/PTM_RATIO);
-    personBodyDef.userData = _person;
-    _personBody = _world->CreateBody(&personBodyDef);
+        b2BodyDef personBodyDef;
+        personBodyDef.type = b2_dynamicBody;
+        personBodyDef.position.Set(xPos.floatValue/PTM_RATIO, 123.0f/PTM_RATIO);
+        personBodyDef.userData = _person;
+        _personBody = _world->CreateBody(&personBodyDef);
 
-    b2PolygonShape personShape;
-    personShape.SetAsBox(hitboxWidth/PTM_RATIO, hitboxHeight/PTM_RATIO, b2Vec2(hitboxCenterX, hitboxCenterY), 0);
-    b2FixtureDef personShapeDef;
-    personShapeDef.shape = &personShape;
-    personShapeDef.density = density;
-    personShapeDef.friction = friction;
-    personShapeDef.restitution = restitution;
-    personShapeDef.userData = (void *)fixtureUserData;
-    personShapeDef.filter.categoryBits = PERSON;
-    personShapeDef.filter.maskBits = WIENER;
-    _personFixture = _personBody->CreateFixture(&personShapeDef);
-    
-    b2PolygonShape personBodyShape;
-    personBodyShape.SetAsBox(_person.contentSize.width/PTM_RATIO/2, _person.contentSize.height/PTM_RATIO/2);
-    b2FixtureDef personBodyShapeDef;
-    personBodyShapeDef.shape = &personBodyShape;
-    personBodyShapeDef.density = 5;
-    personBodyShapeDef.friction = 0;
-    personBodyShapeDef.restitution = 0;
-    personBodyShapeDef.filter.categoryBits = BODYBOX;
-    if(floor == 1){
-        personBodyShapeDef.filter.maskBits = FLOOR1;
+        b2PolygonShape personShape;
+        personShape.SetAsBox(hitboxWidth/PTM_RATIO, hitboxHeight/PTM_RATIO, b2Vec2(hitboxCenterX, hitboxCenterY), 0);
+        b2FixtureDef personShapeDef;
+        personShapeDef.shape = &personShape;
+        personShapeDef.density = density;
+        personShapeDef.friction = friction;
+        personShapeDef.restitution = restitution;
+        personShapeDef.userData = (void *)fixtureUserData;
+        personShapeDef.filter.categoryBits = PERSON;
+        personShapeDef.filter.maskBits = WIENER;
+        _personFixture = _personBody->CreateFixture(&personShapeDef);
+        
+        b2PolygonShape personBodyShape;
+        personBodyShape.SetAsBox(_person.contentSize.width/PTM_RATIO/2, _person.contentSize.height/PTM_RATIO/2);
+        b2FixtureDef personBodyShapeDef;
+        personBodyShapeDef.shape = &personBodyShape;
+        personBodyShapeDef.density = 5;
+        personBodyShapeDef.friction = 0;
+        personBodyShapeDef.restitution = 0;
+        personBodyShapeDef.filter.categoryBits = BODYBOX;
+        personBodyShapeDef.filter.maskBits = floorBit.intValue;
+        _personFixture = _personBody->CreateFixture(&personBodyShapeDef);
+        
+        b2Vec2 force = b2Vec2(xVel,0);
+        _personBody->ApplyLinearImpulse(force, personBodyDef.position);
     }
-    else if(floor == 2){
-        personBodyShapeDef.filter.maskBits = FLOOR2;
-    }
-    else if(floor == 3){
-        personBodyShapeDef.filter.maskBits = FLOOR3;
-    }
-    else{
-        personBodyShapeDef.filter.maskBits = FLOOR4;
-    }
-    _personFixture = _personBody->CreateFixture(&personBodyShapeDef);
-    
-    b2Vec2 force = b2Vec2(xVel,0);
-    _personBody->ApplyLinearImpulse(force, personBodyDef.position);
 }
 
 //this seems to only work on one sprite at a time
@@ -220,37 +227,20 @@ enum {
 -(void)callback:(id)sender data:(void *)params {    
     NSMutableArray *incomingArray = (NSMutableArray *) params;
     NSNumber *xPos = (NSNumber *)[incomingArray objectAtIndex:0];
-    NSNumber *yPos = (NSNumber *)[incomingArray objectAtIndex:1];
-    NSNumber *characterTag = (NSNumber *)[incomingArray objectAtIndex:2];
-    
-    NSNumber* yPosition = [yPositions objectAtIndex:arc4random() % [yPositions count]];
-    yPos = [NSNumber numberWithInt:yPosition.intValue];
+    NSNumber *characterTag = (NSNumber *)[incomingArray objectAtIndex:1];
     
     NSNumber *xPosition = [xPositions objectAtIndex:arc4random() % [xPositions count]];
     xPos = [NSNumber numberWithInt:xPosition.intValue];
     
     characterTag = [characterTags objectAtIndex:arc4random() % [characterTags count]];
     
-    for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
-        if (body->GetUserData() != NULL) {
-			CCSprite *sprite = (CCSprite *)body->GetUserData();
-            if(sprite.tag >= 3 && sprite.tag <= 10){
-                CCLOG(@"Position: %0.2f x %0.2f", body->GetPosition().x, body->GetPosition().y);
-                if(yPos.floatValue/PTM_RATIO - body->GetPosition().y < .5){
-                    
-                }
-            }
-        }
-    }
-    
     [self walkIn:self data:params];
 
     NSMutableArray *parameters = [[NSMutableArray alloc] initWithCapacity:3];
     [parameters addObject:xPos];
-    [parameters addObject:yPos];
     [parameters addObject:characterTag];
         
-    double time = 1.0f;
+    double time = .7f;
     id delay = [CCDelayTime actionWithDuration:time];
     id callBackAction = [CCCallFuncND actionWithTarget: self selector: @selector(callback:data:) data:parameters];
     id sequence = [CCSequence actions: delay, callBackAction, nil];
@@ -299,9 +289,9 @@ enum {
         self.isTouchEnabled = YES;
         
         //initialize global arrays for possible x,y positions and charTags
-        yPositions = [[NSMutableArray alloc] initWithCapacity:4];;
-        for(int i = 115; i <= 147; i += 8){
-            [yPositions addObject:[NSNumber numberWithInt:i]];
+        floorBits = [[NSMutableArray alloc] initWithCapacity:4];;
+        for(int i = 1; i <= 8; i *= 2){
+            [floorBits addObject:[NSNumber numberWithInt:i]];
         }
         xPositions = [[NSMutableArray alloc] initWithCapacity:2];
         [xPositions addObject:[NSNumber numberWithInt:winSize.width]];
@@ -378,11 +368,9 @@ enum {
 		_world->SetContactListener(contactListener);
         
         NSMutableArray *params = [[NSMutableArray alloc] initWithCapacity:2];
-        NSNumber *yPos = [yPositions objectAtIndex:arc4random() % [yPositions count]];
         NSNumber *xPos = [NSNumber numberWithInt:winSize.width]; 
         NSNumber *character = [NSNumber numberWithInt:1]; 
         [params addObject:xPos];
-        [params addObject:yPos];
         [params addObject:character];
         [self callback:self data:params];
 		
@@ -493,7 +481,7 @@ enum {
         
         if(dogBody && personBody){
             CCLOG(@"Dog Y Vel: %0.2f", dogBody->GetLinearVelocity().x);
-            if(dogBody->GetLinearVelocity().y < 1.2){
+            if(dogBody->GetLinearVelocity().y < 2.0){
                 filter = contact.fixtureA->GetFilterData();
                 filter.maskBits = 0x0000;
                 contact.fixtureA->SetFilterData(filter);
