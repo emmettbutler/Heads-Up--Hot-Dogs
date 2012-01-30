@@ -27,6 +27,9 @@
 	b2Fixture *_wienerFixture;
     b2Body *wienerBody;
     CCSprite *wiener;
+    b2Fixture *_targetFixture;
+    b2Body *targetBody;
+    CCSprite *target;
     b2Fixture *_personFixture;
     b2Body *_personBody;
     CCSprite *_person;
@@ -54,6 +57,7 @@
     	PERSON  = 0x0020,
     	WIENER  = 0x0040,
         BODYBOX = 0x0080,
+        TARGET  = 0x0100,
   	};
 
   	PersonDogContactListener *personDogContactListener;

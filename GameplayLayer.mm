@@ -78,16 +78,16 @@ enum {
     wienerShapeDef.filter.categoryBits = WIENER;
     //random assignment of floor to collide, ONLY FOR TESTING
     if(floor == 1){
-        wienerShapeDef.filter.maskBits = PERSON | FLOOR1 | WIENER;
+        wienerShapeDef.filter.maskBits = PERSON | FLOOR1 | WIENER | TARGET;
     }
     else if(floor == 2){
-        wienerShapeDef.filter.maskBits = PERSON | FLOOR2 | WIENER;
+        wienerShapeDef.filter.maskBits = PERSON | FLOOR2 | WIENER | TARGET;
     }
     else if(floor == 3){
-        wienerShapeDef.filter.maskBits = PERSON | FLOOR3 | WIENER;
+        wienerShapeDef.filter.maskBits = PERSON | FLOOR3 | WIENER | TARGET;
     }
     else if(floor == 4){
-        wienerShapeDef.filter.maskBits = PERSON | FLOOR4 | WIENER;
+        wienerShapeDef.filter.maskBits = PERSON | FLOOR4 | WIENER | TARGET;
     }
     _wienerFixture = wienerBody->CreateFixture(&wienerShapeDef);
 
@@ -99,6 +99,31 @@ enum {
     wienerGrabShapeDef.filter.categoryBits = WIENER;
     wienerGrabShapeDef.filter.maskBits = 0x0000;
     _wienerFixture = wienerBody->CreateFixture(&wienerGrabShapeDef);
+}
+
+-(void)spawnTarget:(id)sender data:(void *)params {
+    target = [CCSprite spriteWithSpriteFrameName:@"dog54x12.png"];
+    target.position = ccp(200, 200);
+    target.tag = 2;
+    [self addChild:target];
+    
+    b2BodyDef targetBodyDef;
+    targetBodyDef.type = b2_staticBody;
+    targetBodyDef.position.Set(150/PTM_RATIO, 270/PTM_RATIO);
+    targetBodyDef.userData = target;
+    targetBody = _world->CreateBody(&targetBodyDef);
+    
+    b2PolygonShape targetShape;
+    targetShape.SetAsBox((target.contentSize.width+30)/PTM_RATIO/2, target.contentSize.height/PTM_RATIO/2);
+    //targetShape.SetAsBox(40/PTM_RATIO/2, 40/PTM_RATIO/2);
+    
+    b2FixtureDef targetShapeDef;
+    targetShapeDef.shape = &targetShape;
+    targetShapeDef.userData = (void *)2;
+    targetShapeDef.isSensor = true;
+    targetShapeDef.filter.categoryBits = TARGET;
+    targetShapeDef.filter.maskBits = WIENER;
+    _targetFixture = targetBody->CreateFixture(&targetShapeDef);
 }
 
 -(void)walkIn:(id)sender data:(void *)params {
@@ -151,7 +176,6 @@ enum {
                 for(b2Fixture* f = body->GetFixtureList(); f; f = f->GetNext()){
                     if(f->GetFilterData().maskBits == floorBit.intValue){
                         if(body->GetLinearVelocity().x * xVel < 0){
-                            CCLOG(@"Floors are equal");
                             spawn = NO;
                         }
                     }
@@ -161,6 +185,7 @@ enum {
     }
     
     if(spawn){
+        CCLOG(@"Spawned person with tag %d", fixtureUserData);
         if(floorBit.intValue == 1){
             zIndex = 400;
         }
@@ -373,6 +398,8 @@ enum {
         [params addObject:xPos];
         [params addObject:character];
         [self callback:self data:params];
+        //this takes params only as a dummy filler for now
+        [self spawnTarget: self data:params];
 		
 		[self schedule: @selector(tick:)];
 	}
@@ -447,16 +474,16 @@ enum {
                         //TODO - find a way to assign this appropriately (maybe random, maybe not)
                         //TODO - replace all copypasta of this code with one single one outside of any loop in tick() (MAYBE)
                         if(floor == 1){
-                            filter.maskBits = PERSON | FLOOR1 | WIENER;
+                            filter.maskBits = PERSON | FLOOR1 | WIENER | TARGET;
                         }
                         else if(floor == 2){
-                            filter.maskBits = PERSON | FLOOR2 | WIENER;
+                            filter.maskBits = PERSON | FLOOR2 | WIENER | TARGET;
                         }
                         else if(floor == 3){
-                            filter.maskBits = PERSON | FLOOR3 | WIENER;
+                            filter.maskBits = PERSON | FLOOR3 | WIENER | TARGET;
                         }
                         else{
-                            filter.maskBits = PERSON | FLOOR4 | WIENER;
+                            filter.maskBits = PERSON | FLOOR4 | WIENER | TARGET;
                         }
                         f->SetFilterData(filter);
                     }
@@ -467,33 +494,43 @@ enum {
     }
 
     b2Joint* prismJoint = NULL;
-    PersonDogContact contact;
+    PersonDogContact pdContact;
     
 	std::vector<PersonDogContact>::iterator pos;
 	for(pos = personDogContactListener->contacts.begin();
 		pos != personDogContactListener->contacts.end(); ++pos)
 	{
-        contact = *pos;
+        b2Body *pBody, *tBody;
+        pdContact = *pos;
         
-        CCLOG(@"Dog/Person Collision");
-        b2Body *dogBody = contact.fixtureA->GetBody();
-        b2Body *personBody = contact.fixtureB->GetBody();
+        b2Body *dogBody = pdContact.fixtureA->GetBody();
         
-        if(dogBody && personBody){
-            CCLOG(@"Dog Y Vel: %0.2f", dogBody->GetLinearVelocity().x);
-            if(dogBody->GetLinearVelocity().y < 2.0){
-                filter = contact.fixtureA->GetFilterData();
-                filter.maskBits = 0x0000;
-                contact.fixtureA->SetFilterData(filter);
+        if(dogBody){
+            if(pdContact.fixtureB->GetUserData() >= (void*)3){
+                pBody = pdContact.fixtureB->GetBody();
+                CCLOG(@"Dog/Person Collision");
+                CCLOG(@"Dog Y Vel: %0.2f", dogBody->GetLinearVelocity().x);
+                if(dogBody->GetLinearVelocity().y < 2.0){
+                    filter = pdContact.fixtureA->GetFilterData();
+                    filter.maskBits = 0x0000;
+                    pdContact.fixtureA->SetFilterData(filter);
             
-                b2PrismaticJointDef jointDef;
-                b2Vec2 worldAxis(1.0f, 0.0f);
-                jointDef.lowerTranslation = -.2f;
-                jointDef.upperTranslation = .2f;
-                jointDef.enableLimit = true;
-                jointDef.Initialize(dogBody, personBody, dogBody->GetWorldCenter(), worldAxis);
-                prismJoint = _world->CreateJoint(&jointDef);
-                CCLOG(@"Prism joint created");
+                    b2PrismaticJointDef jointDef;
+                    b2Vec2 worldAxis(1.0f, 0.0f);
+                    jointDef.lowerTranslation = -.2f;
+                    jointDef.upperTranslation = .2f;
+                    jointDef.enableLimit = true;
+                    jointDef.Initialize(dogBody, pBody, dogBody->GetWorldCenter(), worldAxis);
+                    prismJoint = _world->CreateJoint(&jointDef);
+                    CCLOG(@"Prism joint created");
+                }
+            } 
+            else if (pdContact.fixtureB->GetUserData() == (void*)2){
+                tBody = pdContact.fixtureB->GetBody();
+                CCSprite *tSprite = (CCSprite *)tBody->GetUserData();
+                CCLOG(@"Dog/Target Collision");
+                _world->DestroyBody(tBody);
+                [tSprite removeFromParentAndCleanup:YES];
             }
         }
             
@@ -505,7 +542,6 @@ enum {
                                [CCCallFuncN actionWithTarget:self selector:@selector(runBoxLoop:)],nil]];
         }*/
 	}
-    
     personDogContactListener->contacts.clear();
 }
 
