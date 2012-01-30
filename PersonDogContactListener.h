@@ -1,6 +1,6 @@
 //
-//  MyContactListener.h
-//  Angry Squirrels
+//  PersonDogContactListener.h
+//  Heads Up Hot Dogs
 //
 //  Created by Emmett Butler on 12/26/11.
 //  Copyright 2011 NYU. All rights reserved.
@@ -10,21 +10,21 @@
 #import <vector>
 #import <algorithm>
 
-struct MyContact {
+struct PersonDogContact {
     b2Fixture *fixtureA;
     b2Fixture *fixtureB;
-    bool operator==(const MyContact& other) const
+    bool operator==(const PersonDogContact& other) const
     {
         return (fixtureA == other.fixtureA) && (fixtureB == other.fixtureB);
     }
 };
 
-class MyContactListener : public b2ContactListener {
+class PersonDogContactListener : public b2ContactListener {
 	public:
-			std::vector<MyContact>contacts;
+			std::vector<PersonDogContact>contacts;
 
-			MyContactListener();
-			~MyContactListener();
+			PersonDogContactListener();
+			~PersonDogContactListener();
 
 			virtual void BeginContact(b2Contact* contact);
 			virtual void EndContact(b2Contact* contact);

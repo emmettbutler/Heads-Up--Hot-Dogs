@@ -14,7 +14,7 @@
 #import "cocos2d.h"
 #import "Box2D.h"
 #import "GLES-Render.h"
-#import "MyContactListener.h"
+#import "PersonDogContactListener.h"
 
 @interface GameplayLayer : CCLayer
 {
@@ -25,10 +25,7 @@
 	b2Fixture *_bottomFixture;
     b2Fixture *_wallsFixture;
 	b2Fixture *_wienerFixture;
-	b2Fixture *_boxFixture;
-	b2Body *_boxBody;
     b2Body *wienerBody;
-    CCSprite *_box;
     CCSprite *wiener;
     b2Fixture *_personFixture;
     b2Body *_personBody;
@@ -49,17 +46,17 @@
     NSString *currentAnimation;
 
 	enum _entityCategory {
-		FLOOR1 = 0x0001,
-        FLOOR2 = 0x0002,
-        FLOOR3 = 0x0004,
-        FLOOR4 = 0x0008,
-        WALLS = 0x0010,
-    	PERSON =     0x0020,
-    	WIENER =     0x0040,
-        BODYBOX=    0x0080,
+		FLOOR1  = 0x0001,
+        FLOOR2  = 0x0002,
+        FLOOR3  = 0x0004,
+        FLOOR4  = 0x0008,
+        WALLS   = 0x0010,
+    	PERSON  = 0x0020,
+    	WIENER  = 0x0040,
+        BODYBOX = 0x0080,
   	};
 
-  	MyContactListener *contactListener;
+  	PersonDogContactListener *personDogContactListener;
 }
 
 @property (nonatomic, retain) CCSprite *box;

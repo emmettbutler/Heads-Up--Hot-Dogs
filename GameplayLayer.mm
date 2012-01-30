@@ -125,7 +125,7 @@ enum {
             velocityMul = 300;
             density = 10.0f;
             restitution = .8f;
-            friction = .5f;
+            friction = 1.5f;
             fixtureUserData = 3;
             break;
         case 2:
@@ -364,8 +364,8 @@ enum {
         hitAnim = [CCAnimation animationWithFrames:hitAnimFrames delay:0.1f];
         flyAnim = [CCAnimation animationWithFrames:flyAnimFrames delay:0.9f];*/
 
-        contactListener = new MyContactListener();
-		_world->SetContactListener(contactListener);
+        personDogContactListener = new PersonDogContactListener();
+		_world->SetContactListener(personDogContactListener);
         
         NSMutableArray *params = [[NSMutableArray alloc] initWithCapacity:2];
         NSNumber *xPos = [NSNumber numberWithInt:winSize.width]; 
@@ -467,11 +467,11 @@ enum {
     }
 
     b2Joint* prismJoint = NULL;
-    MyContact contact;
+    PersonDogContact contact;
     
-	std::vector<MyContact>::iterator pos;
-	for(pos = contactListener->contacts.begin();
-		pos != contactListener->contacts.end(); ++pos)
+	std::vector<PersonDogContact>::iterator pos;
+	for(pos = personDogContactListener->contacts.begin();
+		pos != personDogContactListener->contacts.end(); ++pos)
 	{
         contact = *pos;
         
@@ -506,7 +506,7 @@ enum {
         }*/
 	}
     
-    contactListener->contacts.clear();
+    personDogContactListener->contacts.clear();
 }
 
 - (void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -614,7 +614,7 @@ enum {
     //self.hitAction = nil;
 
     delete _world;
-    delete contactListener;
+    delete personDogContactListener;
 	_world = NULL;
     
 	// don't forget to call "super dealloc"
