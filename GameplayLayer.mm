@@ -17,9 +17,9 @@
 //to define the ratio so that your most common object type is 1x1 metre.
 #define PTM_RATIO 32
 #define FLOOR1_HT 0
-#define FLOOR2_HT .5
+#define FLOOR2_HT .4
 #define FLOOR3_HT .8
-#define FLOOR4_HT 1
+#define FLOOR4_HT 1.2
 
 // enums that will be used as tags
 enum {
@@ -533,8 +533,6 @@ enum {
                 [tSprite removeFromParentAndCleanup:YES];
             }
         }
-            
-        //for each contact
 
         /*if(sprite.tag == 2){
             [sprite stopAllActions];
