@@ -39,9 +39,12 @@
     CCFiniteTimeAction *_hitAction;
     CCAnimation *hitAnim;
     CCSpriteBatchNode *spriteSheet;
+    CCLabelTTF *scoreLabel;
     NSMutableArray *floorBits;
     NSMutableArray *xPositions;
     NSMutableArray *characterTags;
+    NSString *scoreText;
+    int _points;
     BOOL _moving;
     BOOL _touchedDog;
 

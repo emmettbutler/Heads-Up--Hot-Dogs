@@ -20,6 +20,7 @@
 #define FLOOR2_HT .4
 #define FLOOR3_HT .8
 #define FLOOR4_HT 1.2
+#define DOG_SPAWN_MINHT 240
 
 // enums that will be used as tags
 enum {
@@ -51,7 +52,11 @@ enum {
 	return scene;
 }
 
--(void)putDog:(CGPoint)location {
+-(void)putDog:(id)sender data:(void*)params {
+    NSMutableArray *incomingArray = (NSMutableArray *) params;
+    NSValue *loc = (NSValue *)[incomingArray objectAtIndex: 0];
+    CGPoint location = [loc CGPointValue];
+    
     // Create sprite and add it to the layer
     wiener = [CCSprite spriteWithSpriteFrameName:@"dog54x12.png"];
     wiener.position = ccp(location.x, location.y);
@@ -141,12 +146,12 @@ enum {
     
     switch(character.intValue){
         case 1:
-            self.person = [CCSprite spriteWithSpriteFrameName:@"business82x228.png"];
+            self.person = [CCSprite spriteWithSpriteFrameName:@"Business_sm.png"];
             _person.tag = 3;
             hitboxWidth = 22.0;
             hitboxHeight = 1;
             hitboxCenterX = 0;
-            hitboxCenterY = 3.3;
+            hitboxCenterY = 2.9;
             velocityMul = 300;
             density = 10.0f;
             restitution = .8f;
@@ -170,7 +175,7 @@ enum {
     }
     
     for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
-        if (body->GetUserData() != NULL) {
+        if (body->GetUserData() != NULL && body->GetUserData() != (void*)100) {
 			CCSprite *sprite = (CCSprite *)body->GetUserData();
             if(sprite.tag >= 3 && sprite.tag <= 10){
                 for(b2Fixture* f = body->GetFixtureList(); f; f = f->GetNext()){
@@ -249,7 +254,28 @@ enum {
     [[CCDirector sharedDirector] replaceScene:transition];
 }
 
--(void)callback:(id)sender data:(void *)params {    
+-(void)wienerCallback:(id)sender data:(void *)params {
+    CGSize winSize = [CCDirector sharedDirector].winSize;
+    NSMutableArray *incomingArray = (NSMutableArray *) params;
+    NSValue *loc = (NSValue *)[incomingArray objectAtIndex:0];
+    
+    [self putDog:self data:params];
+    
+    NSMutableArray *parameters = [[NSMutableArray alloc] initWithCapacity:1];
+    //window width, 200+(winht-200)
+    NSValue *location = [NSValue valueWithCGPoint:CGPointMake(arc4random() % (int)winSize.width, DOG_SPAWN_MINHT+(arc4random() % (int)(winSize.height-DOG_SPAWN_MINHT)))];
+    [parameters addObject:location];
+    
+    CCLOG(@"Wiener Callback");
+    
+    double time = 2.0f;
+    id delay = [CCDelayTime actionWithDuration:time];
+    id callBackAction = [CCCallFuncND actionWithTarget: self selector: @selector(wienerCallback:data:) data:parameters];
+    id sequence = [CCSequence actions: delay, callBackAction, nil];
+    [self runAction:sequence]; 
+}
+
+-(void)spawnCallback:(id)sender data:(void *)params {    
     NSMutableArray *incomingArray = (NSMutableArray *) params;
     NSNumber *xPos = (NSNumber *)[incomingArray objectAtIndex:0];
     NSNumber *characterTag = (NSNumber *)[incomingArray objectAtIndex:1];
@@ -267,7 +293,7 @@ enum {
         
     double time = .7f;
     id delay = [CCDelayTime actionWithDuration:time];
-    id callBackAction = [CCCallFuncND actionWithTarget: self selector: @selector(callback:data:) data:parameters];
+    id callBackAction = [CCCallFuncND actionWithTarget: self selector: @selector(spawnCallback:data:) data:parameters];
     id sequence = [CCSequence actions: delay, callBackAction, nil];
     [self runAction:sequence];    
 }
@@ -300,6 +326,11 @@ enum {
         CCSprite *background = [CCSprite spriteWithFile:@"bg_philly.png"];
         background.anchorPoint = CGPointZero;
         [self addChild:background z:-1];
+        
+        scoreText = [[NSString alloc] initWithFormat:@"%d", _points];
+        scoreLabel = [CCLabelTTF labelWithString:scoreText fontName:@"Marker Felt" fontSize:18];
+        scoreLabel.position = ccp(winSize.width-100, 310);
+        [self addChild: scoreLabel];
         
         CCLabelTTF *label = [CCLabelTTF labelWithString:@"Title screen" fontName:@"Marker Felt" fontSize:18.0];
         CCMenuItem *button = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(switchScene)];
@@ -335,11 +366,13 @@ enum {
         // Create edges around the entire screen
         b2BodyDef groundBodyDef;
         groundBodyDef.position.Set(0,0);
+        groundBodyDef.userData = (void*)100;
         _groundBody = _world->CreateBody(&groundBodyDef);
         b2PolygonShape groundBox;
         b2FixtureDef groundBoxDef;
         groundBoxDef.shape = &groundBox;
         groundBoxDef.filter.categoryBits = FLOOR1;
+        groundBoxDef.userData = (void*)100;
         groundBox.SetAsEdge(b2Vec2(0,FLOOR1_HT), b2Vec2(winSize.width/PTM_RATIO, FLOOR1_HT));
         _bottomFixture = _groundBody->CreateFixture(&groundBoxDef);
         
@@ -376,6 +409,8 @@ enum {
         spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_default.png"];
         [self addChild:spriteSheet];
         
+        _points = 0;
+        
         /*NSMutableArray *flyAnimFrames = [NSMutableArray array];
         for(int i = 1; i <= 3; ++i){
             [flyAnimFrames addObject:
@@ -392,14 +427,20 @@ enum {
         personDogContactListener = new PersonDogContactListener();
 		_world->SetContactListener(personDogContactListener);
         
-        NSMutableArray *params = [[NSMutableArray alloc] initWithCapacity:2];
+        NSMutableArray *personParams = [[NSMutableArray alloc] initWithCapacity:2];
         NSNumber *xPos = [NSNumber numberWithInt:winSize.width]; 
         NSNumber *character = [NSNumber numberWithInt:1]; 
-        [params addObject:xPos];
-        [params addObject:character];
-        [self callback:self data:params];
+        [personParams addObject:xPos];
+        [personParams addObject:character];
+        [self spawnCallback:self data:personParams];
+        
+        NSMutableArray *wienerParams = [[NSMutableArray alloc] initWithCapacity:1];
+        NSValue *location = [NSValue valueWithCGPoint:CGPointMake(200, 200)]; 
+        [wienerParams addObject:location];
+        [self wienerCallback:self data:wienerParams];
+        
         //this takes params only as a dummy filler for now
-        [self spawnTarget: self data:params];
+        [self spawnTarget: self data:personParams];
 		
 		[self schedule: @selector(tick:)];
 	}
@@ -423,6 +464,13 @@ enum {
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
+-(void)destroyWiener:(id)sender data:(void*)params {
+    NSMutableArray *incomingArray = (NSMutableArray *) params;
+    CCSprite *dogSprite = (CCSprite *)[incomingArray objectAtIndex:0];
+    
+    [dogSprite removeFromParentAndCleanup:YES];
+}
+
 -(void) tick: (ccTime) dt
 {
     int32 velocityIterations = 8;
@@ -438,25 +486,30 @@ enum {
 	for (b2Body* b = _world->GetBodyList(); b; b = b->GetNext())
 	{
 		if (b->GetUserData() != NULL) {
-			//Synchronize the AtlasSprites position and rotation with the corresponding body
-			CCSprite *myActor = (CCSprite*)b->GetUserData();
-            if(myActor.position.x > winSize.width || myActor.position.x < 0){
-                _world->DestroyBody(b);
-                [myActor removeFromParentAndCleanup:YES];
-            }
-            else {
-                if(myActor.tag == 1){
+            if(b->GetUserData() != (void*)100){
+                //Synchronize the AtlasSprites position and rotation with the corresponding body
+                CCSprite *myActor = (CCSprite*)b->GetUserData();
+                if(myActor.position.x > winSize.width || myActor.position.x < 0){
+                    _world->DestroyBody(b);
+                    [myActor removeFromParentAndCleanup:YES];
+                }
+                else {
+                    if(myActor.tag == 1){
                     
-                }
-                else if(myActor.tag >= 3 && myActor.tag <= 10){
-                    for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()){
-                        
                     }
+                    else if(myActor.tag >= 3 && myActor.tag <= 10){
+                        for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()){
+                        
+                        }
+                    }
+                    myActor.position = CGPointMake( b->GetPosition().x * PTM_RATIO, b->GetPosition().y * PTM_RATIO);
+                    myActor.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
                 }
-    			myActor.position = CGPointMake( b->GetPosition().x * PTM_RATIO, b->GetPosition().y * PTM_RATIO);
-    			myActor.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
             }
-		}	
+		}
+        else{
+            _world->DestroyBody(b);
+        }
 	}
     
     int floor = arc4random() % 4;
@@ -490,8 +543,13 @@ enum {
                 }
                 CCLOG(@"Prism joint destroyed");
             }
+            else {
+                _points += 100;
+            }
         }
     }
+    
+    //[scoreLabel setString:[NSString stringWithFormat:@"%d", _points]];
 
     b2Joint* prismJoint = NULL;
     PersonDogContact pdContact;
@@ -500,17 +558,20 @@ enum {
 	for(pos = personDogContactListener->contacts.begin();
 		pos != personDogContactListener->contacts.end(); ++pos)
 	{
-        b2Body *pBody, *tBody;
+        b2Body *pBody, *tBody, *gBody;
         pdContact = *pos;
         
         b2Body *dogBody = pdContact.fixtureA->GetBody();
         
         if(dogBody){
-            if(pdContact.fixtureB->GetUserData() >= (void*)3){
+            if(pdContact.fixtureB->GetUserData() >= (void*)3 && pdContact.fixtureB->GetUserData() <= (void*)10){
                 pBody = pdContact.fixtureB->GetBody();
                 CCLOG(@"Dog/Person Collision");
+                _points += 10;
                 CCLOG(@"Dog Y Vel: %0.2f", dogBody->GetLinearVelocity().x);
                 if(dogBody->GetLinearVelocity().y < 2.0){
+                    _points += 50;
+                    
                     filter = pdContact.fixtureA->GetFilterData();
                     filter.maskBits = 0x0000;
                     pdContact.fixtureA->SetFilterData(filter);
@@ -532,8 +593,25 @@ enum {
                 _world->DestroyBody(tBody);
                 [tSprite removeFromParentAndCleanup:YES];
             }
+            else if (pdContact.fixtureB->GetUserData() == (void*)100){
+                CCSprite *dogSprite = (CCSprite *)dogBody->GetUserData();
+                CCLOG(@"Dog/Ground Collision (Dog y Velocity: %0.2f", dogBody->GetLinearVelocity().y);
+                id delay = [CCDelayTime actionWithDuration:5.0f];
+                NSMutableArray *parameters = [[NSMutableArray alloc] initWithCapacity:2];
+                [parameters addObject:dogSprite];
+                //[parameters addObject:dogBody];
+                //TODO - this creates orphaned bodies with no sprite, destroy bodies with no sprite
+                //TODO - allow interrupting this action via pickup
+                id destroyAction = [CCCallFuncND actionWithTarget:self selector: @selector(destroyWiener:data:) data:parameters];
+                id sequence = [CCSequence actions: delay, destroyAction, nil];
+                [self runAction:sequence]; 
+                /*if(dogBody->GetLinearVelocity().y > -.2){
+                    CCLOG(@"Dog removed");
+                    _world->DestroyBody(dogBody);
+                    [dogSprite removeFromParentAndCleanup:YES];
+                }*/
+            }
         }
-
         /*if(sprite.tag == 2){
             [sprite stopAllActions];
             [sprite runAction:[CCSequence actions:_hitAction,
@@ -555,7 +633,7 @@ enum {
     _touchedDog = NO;
     
     for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
-        if (body->GetUserData() != NULL) {
+        if (body->GetUserData() != NULL && body->GetUserData() != (void*)100) {
             b2Fixture *fixture = body->GetFixtureList();
 			CCSprite *sprite = (CCSprite *)body->GetUserData();
             if(sprite.tag == 1){
@@ -581,11 +659,6 @@ enum {
 		}
     }
     CCLOG(@"Touched Dog: %d", _touchedDog);
-    if(!_touchedDog){
-        if(location.y > 200){
-            [self putDog:location];
-        }
-    }
 }
 
 -(void)ccTouchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -622,7 +695,7 @@ enum {
     b2Vec2 locationWorld = b2Vec2(location.x/PTM_RATIO, location.y/PTM_RATIO);
     
     for (b2Body* body = _world->GetBodyList(); body; body = body->GetNext()){
-        if (body->GetUserData() != NULL) {
+        if (body->GetUserData() != NULL  && body->GetUserData() != (void*)100) {
             for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
     			CCSprite *sprite = (CCSprite *)body->GetUserData();
                 if(sprite.tag == 1){
@@ -650,6 +723,8 @@ enum {
     delete _world;
     delete personDogContactListener;
 	_world = NULL;
+    
+    [scoreText release];
     
 	// don't forget to call "super dealloc"
 	[super dealloc];
