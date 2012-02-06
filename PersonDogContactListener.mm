@@ -22,10 +22,10 @@ void PersonDogContactListener::BeginContact(b2Contact* contact){
 	bool isBDog = contact->GetFixtureB()->GetUserData() == (void *)1;
     bool isATarget = contact->GetFixtureA()->GetUserData() == (void *)2;
 	bool isBTarget = contact->GetFixtureB()->GetUserData() == (void *)2;
-	bool isAPerson = contact->GetFixtureA()->GetUserData() >= (void *)3;
-	bool isBPerson = contact->GetFixtureB()->GetUserData() >= (void *)3;
-    bool isAGround = contact->GetFixtureA()->GetUserData() >= (void *)100;
-	bool isBGround = contact->GetFixtureB()->GetUserData() >= (void *)100;
+	bool isAPerson = contact->GetFixtureA()->GetUserData() >= (void *)3 && contact->GetFixtureA()->GetUserData() <= (void *)10;
+	bool isBPerson = contact->GetFixtureB()->GetUserData() >= (void *)3 && contact->GetFixtureB()->GetUserData() <= (void *)10;
+    bool isAGround = contact->GetFixtureA()->GetUserData() == (void *)100;
+	bool isBGround = contact->GetFixtureB()->GetUserData() == (void *)100;
     
     PersonDogContact personDogContact;
     
@@ -51,8 +51,8 @@ void PersonDogContactListener::BeginContact(b2Contact* contact){
         contacts.push_back(personDogContact);
     }
     else if(isADog && isBGround){
-    	personDogContact.fixtureA = contact->GetFixtureB();
-        personDogContact.fixtureB = contact->GetFixtureA();
+    	personDogContact.fixtureA = contact->GetFixtureA();
+        personDogContact.fixtureB = contact->GetFixtureB();
         contacts.push_back(personDogContact);
     }
     else if(isBDog && isAGround){
