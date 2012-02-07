@@ -45,14 +45,12 @@ enum {
     NSValue *loc = (NSValue *)[incomingArray objectAtIndex: 0];
     CGPoint location = [loc CGPointValue];
     
-    // Create sprite and add it to the layer
     self.wiener = [CCSprite spriteWithSpriteFrameName:@"dog54x12.png"];
     _wiener.position = ccp(location.x, location.y);
     _wiener.tag = 1;
     int floor = arc4random() % 4;
     [self addChild:_wiener];
     
-    // Create wiener body and shape
     b2BodyDef wienerBodyDef;
     wienerBodyDef.type = b2_dynamicBody;
     wienerBodyDef.position.Set(location.x/PTM_RATIO, location.y/PTM_RATIO);
@@ -108,7 +106,6 @@ enum {
     
     b2PolygonShape targetShape;
     targetShape.SetAsBox((_target.contentSize.width+30)/PTM_RATIO/2, _target.contentSize.height/PTM_RATIO/2);
-    //targetShape.SetAsBox(40/PTM_RATIO/2, 40/PTM_RATIO/2);
     
     b2FixtureDef targetShapeDef;
     targetShapeDef.shape = &targetShape;
