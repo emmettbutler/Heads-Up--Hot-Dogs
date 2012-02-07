@@ -26,10 +26,10 @@
     b2Fixture *_wallsFixture;
 	b2Fixture *_wienerFixture;
     b2Body *wienerBody;
-    CCSprite *wiener;
+    CCSprite *_wiener;
     b2Fixture *_targetFixture;
     b2Body *targetBody;
-    CCSprite *target;
+    CCSprite *_target;
     b2Fixture *_personFixture;
     b2Body *_personBody;
     CCSprite *_person;
@@ -43,6 +43,8 @@
     NSMutableArray *floorBits;
     NSMutableArray *xPositions;
     NSMutableArray *characterTags;
+    NSMutableArray *wienerParameters;
+    NSMutableArray *personParameters;
     NSString *scoreText;
     int _points;
     BOOL _moving;
@@ -66,8 +68,9 @@
   	PersonDogContactListener *personDogContactListener;
 }
 
-@property (nonatomic, retain) CCSprite *box;
 @property (nonatomic, retain) CCSprite *person;
+@property (nonatomic, retain) CCSprite *wiener;
+@property (nonatomic, retain) CCSprite *target;
 @property (nonatomic, retain) CCAction *flyAction;
 @property (nonatomic, retain) CCAction *hitAction;
 

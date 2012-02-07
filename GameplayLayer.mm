@@ -1,20 +1,15 @@
 //
 //  HelloWorldLayer.mm
-//  sandbox
+//  Heads Up Hot Dogs
 //
-//  Created by Emmett Butler on 1/3/12.
-//  Copyright NYU 2012. All rights reserved.
+//  Created by Emmett Butler and Diego Garcia on 1/3/12.
+//  Copyright Emmett and Diego 2012. All rights reserved.
 //
-
 
 // Import the interfaces
 #import "GameplayLayer.h"
 #import "TitleScene.h"
 
-//Pixel to metres ratio. Box2D uses metres as the unit for measurement.
-//This ratio defines how many pixels correspond to 1 Box2D "metre"
-//Box2D is optimized for objects of 1x1 metre therefore it makes sense
-//to define the ratio so that your most common object type is 1x1 metre.
 #define PTM_RATIO 32
 #define FLOOR1_HT 0
 #define FLOOR2_HT .4
@@ -32,23 +27,16 @@ enum {
 // HelloWorldLayer implementation
 @implementation GameplayLayer
 
-@synthesize box = _box;
 @synthesize person = _person;
+@synthesize wiener = _wiener;
+@synthesize target = _target;
 @synthesize flyAction = _flyAction;
 @synthesize hitAction = _hitAction;
 
-+(CCScene *) scene
-{
-	// 'scene' is an autorelease object.
++(CCScene *) scene {
 	CCScene *scene = [CCScene node];
-	
-	// 'layer' is an autorelease object.
 	GameplayLayer *layer = [GameplayLayer node];
-	
-	// add layer as a child to scene
 	[scene addChild: layer];
-	
-	// return the scene
 	return scene;
 }
 
@@ -58,21 +46,21 @@ enum {
     CGPoint location = [loc CGPointValue];
     
     // Create sprite and add it to the layer
-    wiener = [CCSprite spriteWithSpriteFrameName:@"dog54x12.png"];
-    wiener.position = ccp(location.x, location.y);
-    wiener.tag = 1;
+    self.wiener = [CCSprite spriteWithSpriteFrameName:@"dog54x12.png"];
+    _wiener.position = ccp(location.x, location.y);
+    _wiener.tag = 1;
     int floor = arc4random() % 4;
-    [self addChild:wiener];
+    [self addChild:_wiener];
     
     // Create wiener body and shape
     b2BodyDef wienerBodyDef;
     wienerBodyDef.type = b2_dynamicBody;
     wienerBodyDef.position.Set(location.x/PTM_RATIO, location.y/PTM_RATIO);
-    wienerBodyDef.userData = wiener;
+    wienerBodyDef.userData = _wiener;
     wienerBody = _world->CreateBody(&wienerBodyDef);
     
     b2PolygonShape wienerShape;
-    wienerShape.SetAsBox(wiener.contentSize.width/PTM_RATIO/2, wiener.contentSize.height/PTM_RATIO/2);
+    wienerShape.SetAsBox(_wiener.contentSize.width/PTM_RATIO/2, _wiener.contentSize.height/PTM_RATIO/2);
     
     b2FixtureDef wienerShapeDef;
     wienerShapeDef.shape = &wienerShape;
@@ -97,7 +85,7 @@ enum {
     _wienerFixture = wienerBody->CreateFixture(&wienerShapeDef);
 
     b2PolygonShape wienerGrabShape;
-    wienerShape.SetAsBox((wiener.contentSize.width+30)/PTM_RATIO/2, (wiener.contentSize.height+30)/PTM_RATIO/2);
+    wienerShape.SetAsBox((_wiener.contentSize.width+30)/PTM_RATIO/2, (_wiener.contentSize.height+30)/PTM_RATIO/2);
 
     b2FixtureDef wienerGrabShapeDef;
     wienerGrabShapeDef.shape = &wienerShape;
@@ -107,19 +95,19 @@ enum {
 }
 
 -(void)spawnTarget:(id)sender data:(void *)params {
-    target = [CCSprite spriteWithSpriteFrameName:@"dog54x12.png"];
-    target.position = ccp(200, 200);
-    target.tag = 2;
-    [self addChild:target];
+    self.target = [CCSprite spriteWithSpriteFrameName:@"dog54x12.png"];
+    _target.position = ccp(200, 200);
+    _target.tag = 2;
+    [self addChild:_target];
     
     b2BodyDef targetBodyDef;
     targetBodyDef.type = b2_staticBody;
     targetBodyDef.position.Set(150/PTM_RATIO, 270/PTM_RATIO);
-    targetBodyDef.userData = target;
+    targetBodyDef.userData = _target;
     targetBody = _world->CreateBody(&targetBodyDef);
     
     b2PolygonShape targetShape;
-    targetShape.SetAsBox((target.contentSize.width+30)/PTM_RATIO/2, target.contentSize.height/PTM_RATIO/2);
+    targetShape.SetAsBox((_target.contentSize.width+30)/PTM_RATIO/2, _target.contentSize.height/PTM_RATIO/2);
     //targetShape.SetAsBox(40/PTM_RATIO/2, 40/PTM_RATIO/2);
     
     b2FixtureDef targetShapeDef;
@@ -261,15 +249,15 @@ enum {
     
     [self putDog:self data:params];
     
-    NSMutableArray *parameters = [[NSMutableArray alloc] initWithCapacity:1];
+    wienerParameters = [[NSMutableArray alloc] initWithCapacity:1];
     NSValue *location = [NSValue valueWithCGPoint:CGPointMake(arc4random() % (int)winSize.width, DOG_SPAWN_MINHT+(arc4random() % (int)(winSize.height-DOG_SPAWN_MINHT)))];
-    [parameters addObject:location];
+    [wienerParameters addObject:location];
     
     CCLOG(@"Wiener Callback");
     
     double time = 2.0f;
     id delay = [CCDelayTime actionWithDuration:time];
-    id callBackAction = [CCCallFuncND actionWithTarget: self selector: @selector(wienerCallback:data:) data:parameters];
+    id callBackAction = [CCCallFuncND actionWithTarget: self selector: @selector(wienerCallback:data:) data:wienerParameters];
     id sequence = [CCSequence actions: delay, callBackAction, nil];
     [self runAction:sequence]; 
 }
@@ -286,13 +274,13 @@ enum {
     
     [self walkIn:self data:params];
 
-    NSMutableArray *parameters = [[NSMutableArray alloc] initWithCapacity:3];
-    [parameters addObject:xPos];
-    [parameters addObject:characterTag];
+    personParameters = [[NSMutableArray alloc] initWithCapacity:3];
+    [personParameters addObject:xPos];
+    [personParameters addObject:characterTag];
         
     double time = .7f;
     id delay = [CCDelayTime actionWithDuration:time];
-    id callBackAction = [CCCallFuncND actionWithTarget: self selector: @selector(spawnCallback:data:) data:parameters];
+    id callBackAction = [CCCallFuncND actionWithTarget: self selector: @selector(spawnCallback:data:) data:personParameters];
     id sequence = [CCSequence actions: delay, callBackAction, nil];
     [self runAction:sequence];    
 }
@@ -314,11 +302,7 @@ enum {
     _world->SetDebugDraw(m_debugDraw);
 }
 
-// on "init" you need to initialize your instance
--(id) init
-{
-	// always call "super" init
-	// Apple recommends to re-assign "self" with the "super" return value
+-(id) init {
 	if( (self=[super init])) {
 		CGSize winSize = [CCDirector sharedDirector].winSize;
         
@@ -426,12 +410,12 @@ enum {
         personDogContactListener = new PersonDogContactListener();
 		_world->SetContactListener(personDogContactListener);
         
-        NSMutableArray *personParams = [[NSMutableArray alloc] initWithCapacity:2];
+        personParameters = [[NSMutableArray alloc] initWithCapacity:2];
         NSNumber *xPos = [NSNumber numberWithInt:winSize.width]; 
         NSNumber *character = [NSNumber numberWithInt:1]; 
-        [personParams addObject:xPos];
-        [personParams addObject:character];
-        [self spawnCallback:self data:personParams];
+        [personParameters addObject:xPos];
+        [personParameters addObject:character];
+        [self spawnCallback:self data:personParameters];
         
         NSMutableArray *wienerParams = [[NSMutableArray alloc] initWithCapacity:1];
         NSValue *location = [NSValue valueWithCGPoint:CGPointMake(200, 200)]; 
@@ -439,7 +423,7 @@ enum {
         [self wienerCallback:self data:wienerParams];
         
         //this takes params only as a dummy filler for now
-        [self spawnTarget: self data:personParams];
+        [self spawnTarget: self data:personParameters];
 		
 		[self schedule: @selector(tick:)];
 	}
@@ -581,14 +565,14 @@ enum {
             }
             else if (pdContact.fixtureB->GetUserData() == (void*)100){
                 CCLOG(@"Dog/Ground Collision (Dog y Velocity: %0.2f)", dogBody->GetLinearVelocity().y);
-                NSMutableArray *parameters = [[NSMutableArray alloc] initWithCapacity:1];
-                [parameters addObject:[NSValue valueWithPointer:dogBody]];
+                wienerParameters = [[NSMutableArray alloc] initWithCapacity:1];
+                [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
                 CCSprite *dogSprite = (CCSprite *)dogBody->GetUserData();
                 
                 //TODO - allow interrupting this action via pickup
                 
                 id delay = [CCDelayTime actionWithDuration:2.0f];
-                id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:parameters];
+                id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:wienerParameters];
                 id sequence = [CCSequence actions: delay, destroyAction, nil];
                 [dogSprite runAction:sequence]; 
             }
@@ -723,25 +707,29 @@ enum {
     }
 }
  
-// on "dealloc" you need to release all your retained objects
-- (void) dealloc
-{
-	// in case you have something to dealloc, do it in this method
+- (void) dealloc {
     [[CCSpriteFrameCache sharedSpriteFrameCache] removeUnusedSpriteFrames];
     [[CCTextureCache sharedTextureCache] removeUnusedTextures]; 
     
-	self.box = nil;
     self.person = nil;
+    self.wiener = nil;
+    self.target = nil;
 	//self.flyAction = nil;
     //self.hitAction = nil;
 
-    delete _world;
+    [scoreText release];
+    [floorBits release];
+    [xPositions release];
+    [characterTags release];
+    [wienerParameters release];
+    [personParameters release];
+    
+    
     delete personDogContactListener;
+    
+    delete _world;
 	_world = NULL;
     
-    [scoreText release];
-    
-	// don't forget to call "super dealloc"
 	[super dealloc];
 }
 @end
