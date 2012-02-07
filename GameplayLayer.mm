@@ -286,7 +286,6 @@ enum {
 }
 
 -(void)debugDraw{
-    // Debug Draw functions
     if(!m_debugDraw){
         m_debugDraw = new GLESDebugDraw( PTM_RATIO );
         uint32 flags = 0;
@@ -340,13 +339,11 @@ enum {
             [characterTags addObject:[NSNumber numberWithInt:i]];
         }
         
-        // Create a world
         b2Vec2 gravity = b2Vec2(0.0f, -30.0f);
         
         bool doSleep = true;
         _world = new b2World(gravity, doSleep);
         
-        // Create edges around the entire screen
         b2BodyDef groundBodyDef;
         groundBodyDef.position.Set(0,0);
         groundBodyDef.userData = (void*)100;
@@ -430,18 +427,13 @@ enum {
 	return self;
 }
 
--(void) draw
-{
-	// Default GL states: GL_TEXTURE_2D, GL_VERTEX_ARRAY, GL_COLOR_ARRAY, GL_TEXTURE_COORD_ARRAY
-	// Needed states:  GL_VERTEX_ARRAY, 
-	// Unneeded states: GL_TEXTURE_2D, GL_COLOR_ARRAY, GL_TEXTURE_COORD_ARRAY
+-(void) draw {
 	glDisable(GL_TEXTURE_2D);
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	
 	_world->DrawDebugData();
 	
-	// restore default GL states
 	glEnable(GL_TEXTURE_2D);
 	glEnableClientState(GL_COLOR_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -468,8 +460,7 @@ enum {
     CCLOG(@"done.");
 }
 
--(void) tick: (ccTime) dt
-{
+-(void) tick: (ccTime) dt {
     int32 velocityIterations = 8;
 	int32 positionIterations = 1;
 
@@ -617,7 +608,6 @@ enum {
 }
 
 - (void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-    
     if (_mouseJoint != NULL) return;
     
     UITouch *myTouch = [touches anyObject];
@@ -674,12 +664,10 @@ enum {
 }
 
 -(void)ccTouchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
-    
     if (_mouseJoint) {
         _world->DestroyJoint(_mouseJoint);
         _mouseJoint = NULL;
     }
-    
 }
 
 - (void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
