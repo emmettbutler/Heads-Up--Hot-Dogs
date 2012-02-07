@@ -466,14 +466,15 @@ enum {
 -(void)destroyWiener:(id)sender data:(void*)params {
     NSMutableArray *incomingArray = (NSMutableArray *) params;
     NSValue *dog = (NSValue *)[incomingArray objectAtIndex:0];
-    b2Fixture *dogFixture = (b2Fixture*)[dog pointerValue];
-    b2Body *dogBody = (b2Body *)dogFixture->GetBody();
-    CCSprite *dogSprite = (CCSprite *)dogBody->GetUserData();
+    b2Body *dogBody = (b2Body *)[dog pointerValue];
+    
+    CCSprite *dogSprite = (CCSprite *)sender;
     
     CCLOG(@"Destroying dog...");
     
     if(dogSprite.tag == 1){
         dogBody->SetAwake(false);
+        [dogSprite stopAllActions];
         [dogSprite removeFromParentAndCleanup:YES];
         _world->DestroyBody(dogBody);
         dogBody->SetUserData(NULL);
@@ -581,14 +582,15 @@ enum {
             else if (pdContact.fixtureB->GetUserData() == (void*)100){
                 CCLOG(@"Dog/Ground Collision (Dog y Velocity: %0.2f)", dogBody->GetLinearVelocity().y);
                 NSMutableArray *parameters = [[NSMutableArray alloc] initWithCapacity:1];
-                [parameters addObject:[NSValue valueWithPointer:pdContact.fixtureA]];
+                [parameters addObject:[NSValue valueWithPointer:dogBody]];
+                CCSprite *dogSprite = (CCSprite *)dogBody->GetUserData();
                 
                 //TODO - allow interrupting this action via pickup
                 
                 id delay = [CCDelayTime actionWithDuration:2.0f];
                 id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:parameters];
                 id sequence = [CCSequence actions: delay, destroyAction, nil];
-                [self runAction:sequence]; 
+                [dogSprite runAction:sequence]; 
             }
         }
         /*if(sprite.tag == 2){
@@ -647,6 +649,8 @@ enum {
 			CCSprite *sprite = (CCSprite *)body->GetUserData();
             if(sprite.tag == 1){
                 if (fixture->TestPoint(locationWorld)) {
+                    [sprite stopAllActions];
+                    
                     CCLOG(@"Touching hotdog");
                     b2MouseJointDef md;
                     md.bodyA = _groundBody;
