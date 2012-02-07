@@ -532,7 +532,7 @@ enum {
         }
     }
     
-    //[scoreLabel setString:[NSString stringWithFormat:@"%d", _points]];
+    [scoreLabel setString:[NSString stringWithFormat:@"%d", _points]];
 
     b2Joint* prismJoint = NULL;
     PersonDogContact pdContact;
