@@ -685,6 +685,8 @@ enum {
     CCLOG(@"Mousejoint target @ %0.2f x %0.2f", location.x, location.y);
     
     _mouseJoint->SetTarget(locationWorld);
+    CCSprite *sprite = (CCSprite *)_mouseJoint->GetBodyB()->GetUserData();
+    [sprite stopAllActions];
 }
 
 -(void)ccTouchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
