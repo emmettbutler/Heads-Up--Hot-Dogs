@@ -16,6 +16,7 @@
 #define FLOOR3_HT .8
 #define FLOOR4_HT 1.2
 #define DOG_SPAWN_MINHT 240
+#define SPAWN_LIMIT_DECREMENT_DELAY 30
 
 // enums that will be used as tags
 enum {
@@ -298,8 +299,7 @@ enum {
     
     CCLOG(@"Wiener Callback");
     
-    double time = 2.0f;
-    id delay = [CCDelayTime actionWithDuration:time];
+    id delay = [CCDelayTime actionWithDuration:_personSpawnDelayTime];
     id callBackAction = [CCCallFuncND actionWithTarget: self selector: @selector(wienerCallback:data:) data:wienerParameters];
     id sequence = [CCSequence actions: delay, callBackAction, nil];
     [self runAction:sequence]; 
@@ -321,8 +321,7 @@ enum {
     [personParameters addObject:xPos];
     [personParameters addObject:characterTag];
         
-    double time = .7f;
-    id delay = [CCDelayTime actionWithDuration:time];
+    id delay = [CCDelayTime actionWithDuration:_wienerSpawnDelayTime];
     id callBackAction = [CCCallFuncND actionWithTarget: self selector: @selector(spawnCallback:data:) data:personParameters];
     id sequence = [CCSequence actions: delay, callBackAction, nil];
     [self runAction:sequence];    
@@ -344,10 +343,17 @@ enum {
     _world->SetDebugDraw(m_debugDraw);
 }
 
--(void)decrementSpawnLimiter{
+-(void)timedDecrement{
     if(_spawnLimiter > 0){
         _spawnLimiter--;
     }
+    if(_personSpawnDelayTime > 1){
+        _personSpawnDelayTime -= 1;
+    }
+    if(_wienerSpawnDelayTime > 1){
+        _wienerSpawnDelayTime -= 1;
+    }
+    
 }
 
 -(id) init {
@@ -376,6 +382,8 @@ enum {
         self.isTouchEnabled = YES;
         
         _spawnLimiter = [characterTags count] - ([characterTags count]-1);
+        _personSpawnDelayTime = 5.0f;
+        _wienerSpawnDelayTime = 5.0f;
         
         //initialize global arrays for possible x,y positions and charTags
         floorBits = [[NSMutableArray alloc] initWithCapacity:4];;
@@ -470,8 +478,8 @@ enum {
         [wienerParams addObject:location];
         [self wienerCallback:self data:wienerParams];
         
-        CCDelayTime *delay = [CCDelayTime actionWithDuration:20.0f];
-        CCCallFunc *decrementLimitAction = [CCCallFunc actionWithTarget:self selector:@selector(decrementSpawnLimiter)];
+        CCDelayTime *delay = [CCDelayTime actionWithDuration:SPAWN_LIMIT_DECREMENT_DELAY];
+        CCCallFunc *decrementLimitAction = [CCCallFunc actionWithTarget:self selector:@selector(timedDecrement)];
         CCSequence *sequence = [CCSequence actions: delay, decrementLimitAction, nil];
         CCSequence *s = [CCRepeatForever actionWithAction:sequence];
         [self runAction:s];

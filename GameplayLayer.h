@@ -50,6 +50,8 @@
     NSString *scoreText;
     int _points;
     int _spawnLimiter;
+    float _personSpawnDelayTime;
+    float _wienerSpawnDelayTime;
     BOOL _moving;
     BOOL _touchedDog;
 
