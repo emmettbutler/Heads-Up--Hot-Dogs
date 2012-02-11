@@ -135,11 +135,9 @@ enum {
     NSNumber *v = (NSNumber *)[incomingArray objectAtIndex:1];
     //b2Body *body = (b2Body *)[b pointerValue];
     //CCSprite *sprite = (CCSprite *)sender;
-    
-    //TODO - make this actually pause the character by pushing with an equal/opposite force to its movement
 
     CCCallFuncND *walkAction = [CCCallFuncND actionWithTarget:self selector:@selector(applyForce:data:) data:incomingArray];
-    CCDelayTime *delay = [CCDelayTime actionWithDuration:2.0f];
+    CCDelayTime *delay = [CCDelayTime actionWithDuration:(arc4random() % 2)+2];
     movementParameters = [[NSMutableArray alloc] initWithCapacity:2];
     NSNumber *opposite = [NSNumber numberWithInt:v.intValue*-1];
     [movementParameters addObject:b];
@@ -319,7 +317,7 @@ enum {
     NSNumber *xPosition = [xPositions objectAtIndex:arc4random() % [xPositions count]];
     xPos = [NSNumber numberWithInt:xPosition.intValue];
     
-    characterTag = [characterTags objectAtIndex:arc4random() % [characterTags count]];
+    characterTag = [characterTags objectAtIndex:arc4random() % [characterTags count]-_spawnLimiter];
     
     [self walkIn:self data:params];
 
@@ -374,6 +372,9 @@ enum {
         
         self.isAccelerometerEnabled = YES;
         self.isTouchEnabled = YES;
+        
+        _spawnLimiter = 0;
+        //_spawnLimiter = [characterTags count] - ([characterTags count]-1);
         
         //initialize global arrays for possible x,y positions and charTags
         floorBits = [[NSMutableArray alloc] initWithCapacity:4];;
@@ -557,7 +558,7 @@ enum {
     }
     
     [scoreLabel setString:[NSString stringWithFormat:@"%d", _points]];
-
+    
     b2Joint* prismJoint = NULL;
     PersonDogContact pdContact;
     

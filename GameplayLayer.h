@@ -49,6 +49,7 @@
     NSMutableArray *movementParameters;
     NSString *scoreText;
     int _points;
+    int _spawnLimiter;
     BOOL _moving;
     BOOL _touchedDog;
 
