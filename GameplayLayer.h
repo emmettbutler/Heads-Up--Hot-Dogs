@@ -45,6 +45,8 @@
     NSMutableArray *characterTags;
     NSMutableArray *wienerParameters;
     NSMutableArray *personParameters;
+    NSMutableArray *movementPatterns;
+    NSMutableArray *movementParameters;
     NSString *scoreText;
     int _points;
     BOOL _moving;

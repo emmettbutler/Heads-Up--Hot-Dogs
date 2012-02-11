@@ -116,6 +116,40 @@ enum {
     _targetFixture = targetBody->CreateFixture(&targetShapeDef);
 }
 
+-(void) applyForce:(id)sender data:(void*)params{
+    NSMutableArray *incomingArray = (NSMutableArray *) params;
+    NSValue *b = (NSValue *)[incomingArray objectAtIndex:0];
+    NSNumber *v = (NSNumber *)[incomingArray objectAtIndex:1];
+    b2Body *body = (b2Body *)[b pointerValue];
+    //CCSprite *sprite = (CCSprite *)sender;
+    
+    CCLOG(@"applyForce: called with vel: %d", v.intValue);
+
+    b2Vec2 force = b2Vec2(v.intValue, 0);
+    body->ApplyLinearImpulse(force, body->GetPosition());
+}
+
+-(void) walkInPauseContinue:(id)sender data:(void*)params{
+    NSMutableArray *incomingArray = (NSMutableArray *) params;
+    NSValue *b = (NSValue *)[incomingArray objectAtIndex:0];
+    NSNumber *v = (NSNumber *)[incomingArray objectAtIndex:1];
+    //b2Body *body = (b2Body *)[b pointerValue];
+    //CCSprite *sprite = (CCSprite *)sender;
+    
+    //TODO - make this actually pause the character by pushing with an equal/opposite force to its movement
+
+    CCCallFuncND *walkAction = [CCCallFuncND actionWithTarget:self selector:@selector(applyForce:data:) data:incomingArray];
+    CCDelayTime *delay = [CCDelayTime actionWithDuration:2.0f];
+    movementParameters = [[NSMutableArray alloc] initWithCapacity:2];
+    NSNumber *opposite = [NSNumber numberWithInt:v.intValue*-1];
+    [movementParameters addObject:b];
+    [movementParameters addObject:opposite];
+    CCCallFuncND *pauseAction = [CCCallFuncND actionWithTarget:self selector:@selector(applyForce:data:) data:movementParameters];
+    CCSequence *walkInPauseContinue = [CCSequence actions: walkAction, delay, pauseAction, delay, walkAction, nil];
+    
+    [sender runAction:walkInPauseContinue];
+}
+
 -(void)walkIn:(id)sender data:(void *)params {
     int xVel, velocityMul, zIndex, fixtureUserData;
     float hitboxHeight, hitboxWidth, hitboxCenterX, hitboxCenterY, density, restitution, friction;
@@ -130,7 +164,7 @@ enum {
     NSNumber *character = (NSNumber *)[incomingArray objectAtIndex:1];
     
     switch(character.intValue){
-        case 1:
+        case 3:
             self.person = [CCSprite spriteWithSpriteFrameName:@"Business_sm.png"];
             _person.tag = 3;
             hitboxWidth = 22.0;
@@ -143,11 +177,22 @@ enum {
             friction = 1.5f;
             fixtureUserData = 3;
             break;
-        case 2:
-            break;
-        case 3:
-            break;
         case 4:
+            self.person = [CCSprite spriteWithSpriteFrameName:@"cop_body.png"];
+            _person.tag = 4;
+            hitboxWidth = 22.0;
+            hitboxHeight = 1;
+            hitboxCenterX = 0;
+            hitboxCenterY = 2.6;
+            velocityMul = 300;
+            density = 10.0f;
+            restitution = .8f;
+            friction = 1.5f;
+            fixtureUserData = 4;
+            break;
+        case 5:
+            break;
+        case 6:
             break;
     }
 
@@ -221,8 +266,15 @@ enum {
         personBodyShapeDef.filter.maskBits = floorBit.intValue;
         _personFixture = _personBody->CreateFixture(&personBodyShapeDef);
         
-        b2Vec2 force = b2Vec2(xVel,0);
-        _personBody->ApplyLinearImpulse(force, personBodyDef.position);
+        movementParameters = [[NSMutableArray alloc] initWithCapacity:2];
+        NSNumber *v = [NSNumber numberWithInt:xVel];
+        NSValue *b = [NSValue valueWithPointer:_personBody];
+        [movementParameters addObject:b];
+        [movementParameters addObject:v];
+        [self walkInPauseContinue:_person data:movementParameters]; 
+        
+        //b2Vec2 force = b2Vec2(xVel,0);
+        //_personBody->ApplyLinearImpulse(force, personBodyDef.position);
     }
 }
 
@@ -331,15 +383,15 @@ enum {
         xPositions = [[NSMutableArray alloc] initWithCapacity:2];
         [xPositions addObject:[NSNumber numberWithInt:winSize.width]];
         [xPositions addObject:[NSNumber numberWithInt:0]];
-        characterTags = [[NSMutableArray alloc] initWithCapacity:1];
-        for(int i = 1; i < 2; i++){
+        characterTags = [[NSMutableArray alloc] initWithCapacity:2];
+        for(int i = 3; i <= 4; i++){
             [characterTags addObject:[NSNumber numberWithInt:i]];
         }
+        movementParameters = [[NSMutableArray alloc] initWithCapacity:2];
         
         b2Vec2 gravity = b2Vec2(0.0f, -30.0f);
         
-        bool doSleep = true;
-        _world = new b2World(gravity, doSleep);
+        _world = new b2World(gravity, true);
         
         b2BodyDef groundBodyDef;
         groundBodyDef.position.Set(0,0);
@@ -406,7 +458,7 @@ enum {
         
         personParameters = [[NSMutableArray alloc] initWithCapacity:2];
         NSNumber *xPos = [NSNumber numberWithInt:winSize.width]; 
-        NSNumber *character = [NSNumber numberWithInt:1]; 
+        NSNumber *character = [NSNumber numberWithInt:3]; 
         [personParameters addObject:xPos];
         [personParameters addObject:character];
         [self spawnCallback:self data:personParameters];
@@ -708,6 +760,8 @@ enum {
     [characterTags release];
     [wienerParameters release];
     [personParameters release];
+    [movementPatterns release];
+    [movementParameters release];
     
     
     delete personDogContactListener;
