@@ -172,7 +172,7 @@ enum {
             velocityMul = 300;
             density = 10.0f;
             restitution = .8f;
-            friction = 1.5f;
+            friction = 20.5f;
             fixtureUserData = 3;
             break;
         case 4:
@@ -185,12 +185,8 @@ enum {
             velocityMul = 300;
             density = 10.0f;
             restitution = .8f;
-            friction = 1.5f;
+            friction = 2.5f;
             fixtureUserData = 4;
-            break;
-        case 5:
-            break;
-        case 6:
             break;
     }
 
@@ -317,7 +313,7 @@ enum {
     NSNumber *xPosition = [xPositions objectAtIndex:arc4random() % [xPositions count]];
     xPos = [NSNumber numberWithInt:xPosition.intValue];
     
-    characterTag = [characterTags objectAtIndex:arc4random() % [characterTags count]-_spawnLimiter];
+    characterTag = [characterTags objectAtIndex:arc4random() % ([characterTags count]-_spawnLimiter)];
     
     [self walkIn:self data:params];
 
@@ -348,6 +344,12 @@ enum {
     _world->SetDebugDraw(m_debugDraw);
 }
 
+-(void)decrementSpawnLimiter{
+    if(_spawnLimiter > 0){
+        _spawnLimiter--;
+    }
+}
+
 -(id) init {
 	if( (self=[super init])) {
 		CGSize winSize = [CCDirector sharedDirector].winSize;
@@ -373,8 +375,7 @@ enum {
         self.isAccelerometerEnabled = YES;
         self.isTouchEnabled = YES;
         
-        _spawnLimiter = 0;
-        //_spawnLimiter = [characterTags count] - ([characterTags count]-1);
+        _spawnLimiter = [characterTags count] - ([characterTags count]-1);
         
         //initialize global arrays for possible x,y positions and charTags
         floorBits = [[NSMutableArray alloc] initWithCapacity:4];;
@@ -468,6 +469,12 @@ enum {
         NSValue *location = [NSValue valueWithCGPoint:CGPointMake(200, 200)]; 
         [wienerParams addObject:location];
         [self wienerCallback:self data:wienerParams];
+        
+        CCDelayTime *delay = [CCDelayTime actionWithDuration:20.0f];
+        CCCallFunc *decrementLimitAction = [CCCallFunc actionWithTarget:self selector:@selector(decrementSpawnLimiter)];
+        CCSequence *sequence = [CCSequence actions: delay, decrementLimitAction, nil];
+        CCSequence *s = [CCRepeatForever actionWithAction:sequence];
+        [self runAction:s];
         
         //this takes params only as a dummy filler for now
         [self spawnTarget: self data:personParameters];
@@ -580,7 +587,7 @@ enum {
                 CCLOG(@"Dog/Person Collision");
                 _points += 10;
                 CCLOG(@"Dog Y Vel: %0.2f", dogBody->GetLinearVelocity().x);
-                if(dogBody->GetLinearVelocity().y < 2.0){
+                if(dogBody->GetLinearVelocity().y < 2.5f){
                     _points += 50;
                     
                     filter = pdContact.fixtureA->GetFilterData();
@@ -592,6 +599,7 @@ enum {
                     jointDef.lowerTranslation = -.2f;
                     jointDef.upperTranslation = .2f;
                     jointDef.enableLimit = true;
+                    jointDef.collideConnected = true;
                     jointDef.Initialize(dogBody, pBody, dogBody->GetWorldCenter(), worldAxis);
                     prismJoint = _world->CreateJoint(&jointDef);
                     CCLOG(@"Prism joint created");
