@@ -165,7 +165,7 @@ enum {
     
     switch(character.intValue){
         case 3:
-            self.person = [CCSprite spriteWithSpriteFrameName:@"Business_sm.png"];
+            self.person = [CCSprite spriteWithSpriteFrameName:@"BusinessMan_Walk_1.png"];
             _person.tag = 3;
             hitboxWidth = 22.0;
             hitboxHeight = 1;
@@ -513,7 +513,6 @@ enum {
     if(m_debugDraw){
         glColor4ub(255, 0, 0, 255);
         ccDrawLine(CGPointMake(p1.x*PTM_RATIO, p1.y*PTM_RATIO), CGPointMake(p2.x*PTM_RATIO, p2.y*PTM_RATIO));
-        ccDrawPoint(CGPointMake(intersectionPoint.x, intersectionPoint.y));
 	}
         
 	glEnable(GL_TEXTURE_2D);
@@ -690,7 +689,7 @@ enum {
                             if(output.fraction < closestFraction){
                                 closestFraction = output.fraction;
                                 intersectionNormal = output.normal;
-                                intersectionPoint = p1 + closestFraction * (p2 - p1);
+                                b2Vec2 intersectionPoint = p1 + closestFraction * (p2 - p1);
                                 CCLOG(@"Ray hit dog fixture @ %0.2f, %0.2f", intersectionPoint.x, intersectionPoint.y);
                             }
                         }

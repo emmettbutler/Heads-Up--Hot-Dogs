@@ -20,37 +20,18 @@
 {
 	b2World *_world;
     GLESDebugDraw *m_debugDraw;
-	b2Body *_wallsBody;
-    b2Body *_groundBody;
-	b2Fixture *_bottomFixture;
-    b2Fixture *_wallsFixture;
-	b2Fixture *_wienerFixture;
-    b2Body *wienerBody;
-    CCSprite *_wiener;
-    b2Fixture *_targetFixture;
-    b2Body *targetBody;
-    CCSprite *_target;
-    b2Fixture *_personFixture;
-    b2Body *_personBody;
-    CCSprite *_person;
+	b2Body *_wallsBody, *_groundBody, *wienerBody, *targetBody, *_personBody;
+	b2Fixture *_bottomFixture, *_wallsFixture, *_wienerFixture, *_targetFixture, *_personFixture;
+    CCSprite *_wiener, *_person, *_target;
     b2MouseJoint *_mouseJoint;
     CCAction *_flyAction;
-    CCAnimation *flyAnim;
+    CCAnimation *flyAnim, *hitAnim;
     CCFiniteTimeAction *_hitAction;
-    CCAnimation *hitAnim;
     CCSpriteBatchNode *spriteSheet;
-    CCLabelTTF *scoreLabel;
-    CCLabelTTF *droppedLabel;
-    b2Vec2 p1, p2, intersectionPoint;
-    NSMutableArray *floorBits;
-    NSMutableArray *xPositions;
-    NSMutableArray *characterTags;
-    NSMutableArray *wienerParameters;
-    NSMutableArray *personParameters;
-    NSMutableArray *movementPatterns;
-    NSMutableArray *movementParameters;
-    NSString *scoreText;
-    NSString *droppedText;
+    CCLabelTTF *scoreLabel, *droppedLabel;
+    b2Vec2 p1, p2;
+    NSMutableArray *floorBits, *xPositions, *characterTags, *wienerParameters, *personParameters, *movementPatterns, *movementParameters, *_touchLocations;
+    NSString *scoreText, *droppedText;
     int _points;
     int _droppedCount;
     int _spawnLimiter;
@@ -60,8 +41,6 @@
     float _currentRayAngle;
     BOOL _moving;
     BOOL _touchedDog;
-
-	NSMutableArray *_touchLocations;
     NSString *currentAnimation;
 
 	enum _entityCategory {
