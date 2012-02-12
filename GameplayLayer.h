@@ -40,6 +40,7 @@
     CCAnimation *hitAnim;
     CCSpriteBatchNode *spriteSheet;
     CCLabelTTF *scoreLabel;
+    CCLabelTTF *droppedLabel;
     NSMutableArray *floorBits;
     NSMutableArray *xPositions;
     NSMutableArray *characterTags;
@@ -48,10 +49,13 @@
     NSMutableArray *movementPatterns;
     NSMutableArray *movementParameters;
     NSString *scoreText;
+    NSString *droppedText;
     int _points;
+    int _droppedCount;
     int _spawnLimiter;
     float _personSpawnDelayTime;
     float _wienerSpawnDelayTime;
+    float _wienerKillDelay;
     BOOL _moving;
     BOOL _touchedDog;
 

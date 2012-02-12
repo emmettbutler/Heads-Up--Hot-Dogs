@@ -173,7 +173,7 @@ enum {
             velocityMul = 300;
             density = 10.0f;
             restitution = .8f;
-            friction = 20.5f;
+            friction = .9f;
             fixtureUserData = 3;
             break;
         case 4:
@@ -185,8 +185,8 @@ enum {
             hitboxCenterY = 2.6;
             velocityMul = 300;
             density = 10.0f;
-            restitution = .8f;
-            friction = 2.5f;
+            restitution = 1.5f;
+            friction = 1.0f;
             fixtureUserData = 4;
             break;
     }
@@ -353,7 +353,9 @@ enum {
     if(_wienerSpawnDelayTime > 1){
         _wienerSpawnDelayTime -= 1;
     }
-    
+    if(_wienerKillDelay > 1){
+        _wienerKillDelay -= 1;
+    }
 }
 
 -(id) init {
@@ -368,6 +370,11 @@ enum {
         scoreLabel = [CCLabelTTF labelWithString:scoreText fontName:@"Marker Felt" fontSize:18];
         scoreLabel.position = ccp(winSize.width-100, 310);
         [self addChild: scoreLabel];
+        
+        droppedText = [[NSString alloc] initWithFormat:@"%d", _droppedCount];
+        droppedLabel = [CCLabelTTF labelWithString:scoreText fontName:@"Marker Felt" fontSize:18];
+        droppedLabel.position = ccp(winSize.width-100, 280);
+        [self addChild: droppedLabel];
         
         CCLabelTTF *label = [CCLabelTTF labelWithString:@"Title screen" fontName:@"Marker Felt" fontSize:18.0];
         CCMenuItem *button = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(switchScene)];
@@ -384,6 +391,7 @@ enum {
         _spawnLimiter = [characterTags count] - ([characterTags count]-1);
         _personSpawnDelayTime = 5.0f;
         _wienerSpawnDelayTime = 5.0f;
+        _wienerKillDelay = 5.0f;
         
         //initialize global arrays for possible x,y positions and charTags
         floorBits = [[NSMutableArray alloc] initWithCapacity:4];;
@@ -449,6 +457,7 @@ enum {
         [self addChild:spriteSheet];
         
         _points = 0;
+        _droppedCount = 0;
         
         /*NSMutableArray *flyAnimFrames = [NSMutableArray array];
         for(int i = 1; i <= 3; ++i){
@@ -485,7 +494,7 @@ enum {
         [self runAction:s];
         
         //this takes params only as a dummy filler for now
-        [self spawnTarget: self data:personParameters];
+        //[self spawnTarget: self data:personParameters];
 		
 		[self schedule: @selector(tick:)];
 	}
@@ -520,6 +529,7 @@ enum {
         _world->DestroyBody(dogBody);
         dogBody->SetUserData(NULL);
         dogBody = 0;
+        _droppedCount++;
     }
 
     CCLOG(@"done.");
@@ -540,8 +550,8 @@ enum {
     for(b2Joint* j = _world->GetJointList(); j; j = j->GetNext()){
         if(j->GetType() == e_prismaticJoint){
             b2PrismaticJoint* p = (b2PrismaticJoint *)j;
-            if((float32)p->GetJointTranslation() > (float32)p->GetUpperLimit() - .05 || 
-               (float32)p->GetJointTranslation() < (float32)p->GetLowerLimit() + .05){
+            if((float32)p->GetJointTranslation() > (float32)p->GetUpperLimit() - .01 || 
+               (float32)p->GetJointTranslation() < (float32)p->GetLowerLimit() + .01){
                 _world->DestroyJoint(j);
                 b2Body* b = j->GetBodyA();
                 for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()){
@@ -573,6 +583,7 @@ enum {
     }
     
     [scoreLabel setString:[NSString stringWithFormat:@"%d", _points]];
+    [droppedLabel setString:[NSString stringWithFormat:@"%d", _droppedCount]];
     
     b2Joint* prismJoint = NULL;
     PersonDogContact pdContact;
@@ -595,22 +606,22 @@ enum {
                 CCLOG(@"Dog/Person Collision");
                 _points += 10;
                 CCLOG(@"Dog Y Vel: %0.2f", dogBody->GetLinearVelocity().x);
-                if(dogBody->GetLinearVelocity().y < 2.5f){
+                if(dogBody->GetLinearVelocity().y < .5f){
                     _points += 50;
-                    
-                    filter = pdContact.fixtureA->GetFilterData();
-                    filter.maskBits = 0x0000;
-                    pdContact.fixtureA->SetFilterData(filter);
             
                     b2PrismaticJointDef jointDef;
                     b2Vec2 worldAxis(1.0f, 0.0f);
-                    jointDef.lowerTranslation = -.2f;
-                    jointDef.upperTranslation = .2f;
+                    jointDef.lowerTranslation = -.3f;
+                    jointDef.upperTranslation = .3f;
                     jointDef.enableLimit = true;
                     jointDef.collideConnected = true;
                     jointDef.Initialize(dogBody, pBody, dogBody->GetWorldCenter(), worldAxis);
                     prismJoint = _world->CreateJoint(&jointDef);
-                    CCLOG(@"Prism joint created");
+                    CCLOG(@"Prism joint created (dog maskBits: %d)", filter.maskBits);
+                    
+                    filter = pdContact.fixtureA->GetFilterData();
+                    filter.maskBits = 0x0000;
+                    pdContact.fixtureA->SetFilterData(filter);
                 }
             } 
             else if (pdContact.fixtureB->GetUserData() == (void*)2){
@@ -628,7 +639,7 @@ enum {
                 
                 //TODO - allow interrupting this action via pickup
                 
-                id delay = [CCDelayTime actionWithDuration:2.0f];
+                id delay = [CCDelayTime actionWithDuration:_wienerKillDelay];
                 id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:wienerParameters];
                 id sequence = [CCSequence actions: delay, destroyAction, nil];
                 [dogSprite runAction:sequence]; 
@@ -701,6 +712,7 @@ enum {
                     
                     _mouseJoint = (b2MouseJoint *)_world->CreateJoint(&md);
                     body->SetAwake(true);
+                    body->SetFixedRotation(true);
                     
                     _touchedDog = YES;
                     break;
@@ -722,8 +734,6 @@ enum {
     location = [[CCDirector sharedDirector] convertToGL:location];
     b2Vec2 locationWorld = b2Vec2(location.x/PTM_RATIO, location.y/PTM_RATIO);
     
-    CCLOG(@"Mousejoint target @ %0.2f x %0.2f", location.x, location.y);
-    
     _mouseJoint->SetTarget(locationWorld);
     CCSprite *sprite = (CCSprite *)_mouseJoint->GetBodyB()->GetUserData();
     [sprite stopAllActions];
@@ -733,6 +743,25 @@ enum {
     if (_mouseJoint) {
         _world->DestroyJoint(_mouseJoint);
         _mouseJoint = NULL;
+    }
+    
+    UITouch *myTouch = [touches anyObject];
+    CGPoint location = [myTouch locationInView:[myTouch view]];
+    location = [[CCDirector sharedDirector] convertToGL:location];
+    b2Vec2 locationWorld = b2Vec2(location.x/PTM_RATIO, location.y/PTM_RATIO);
+    
+    for (b2Body* body = _world->GetBodyList(); body; body = body->GetNext()){
+        if (body->GetUserData() != NULL  && body->GetUserData() != (void*)100) {
+            for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
+    			CCSprite *sprite = (CCSprite *)body->GetUserData();
+                if(sprite.tag == 1){
+                    if (fixture->TestPoint(locationWorld)) {
+                        body->SetLinearVelocity(b2Vec2(0, 0));
+                        body->SetFixedRotation(false);
+                    }
+                }
+            }
+		}
     }
 }
 
@@ -754,6 +783,7 @@ enum {
                 if(sprite.tag == 1){
                     if (fixture->TestPoint(locationWorld)) {
                         body->SetLinearVelocity(b2Vec2(0, 0));
+                        body->SetFixedRotation(false);
                     }
                 }
             }
@@ -772,6 +802,7 @@ enum {
     //self.hitAction = nil;
 
     [scoreText release];
+    [droppedText release];
     [floorBits release];
     [xPositions release];
     [characterTags release];
