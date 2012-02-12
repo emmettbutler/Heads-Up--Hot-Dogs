@@ -11,6 +11,7 @@
 #import "TitleScene.h"
 
 #define PTM_RATIO 32
+#define DEGTORAD 0.0174532
 #define FLOOR1_HT 0
 #define FLOOR2_HT .4
 #define FLOOR3_HT .8
@@ -185,7 +186,7 @@ enum {
             hitboxCenterY = 2.6;
             velocityMul = 300;
             density = 10.0f;
-            restitution = 1.5f;
+            restitution = .5f;
             friction = 1.0f;
             fixtureUserData = 4;
             break;
@@ -458,6 +459,7 @@ enum {
         
         _points = 0;
         _droppedCount = 0;
+        _currentRayAngle = 0;
         
         /*NSMutableArray *flyAnimFrames = [NSMutableArray array];
         for(int i = 1; i <= 3; ++i){
@@ -507,7 +509,13 @@ enum {
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	
 	_world->DrawDebugData();
-	
+    
+    if(m_debugDraw){
+        glColor4ub(255, 0, 0, 255);
+        ccDrawLine(CGPointMake(p1.x*PTM_RATIO, p1.y*PTM_RATIO), CGPointMake(p2.x*PTM_RATIO, p2.y*PTM_RATIO));
+        ccDrawPoint(CGPointMake(intersectionPoint.x, intersectionPoint.y));
+	}
+        
 	glEnable(GL_TEXTURE_2D);
 	glEnableClientState(GL_COLOR_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -538,7 +546,7 @@ enum {
 -(void) tick: (ccTime) dt {
     int32 velocityIterations = 8;
 	int32 positionIterations = 1;
-
+    
 	_world->Step(dt, velocityIterations, positionIterations);
     
     CGSize winSize = [CCDirector sharedDirector].winSize;
@@ -653,12 +661,21 @@ enum {
 	}
     personDogContactListener->contacts.clear();
     
-    //Iterate over the bodies in the physics world
-	for (b2Body* b = _world->GetBodyList(); b; b = b->GetNext())
-	{
-		if (b->GetUserData() != NULL) {
+    _currentRayAngle += 360 / 5.0 / 60.0 * DEGTORAD;
+    float rayLength = 1000;
+    p1 = b2Vec2(winSize.width/2/PTM_RATIO, winSize.height/2/PTM_RATIO);
+    //p1 = b2Vec2(0, 20);
+    p2 = p1 + rayLength * b2Vec2(sinf(_currentRayAngle), cosf(_currentRayAngle));
+    b2RayCastInput input;
+    input.p1 = p1;
+    input.p2 = p2;
+    input.maxFraction = 1;
+    float closestFraction = 1; //start with end of line as p2
+    b2Vec2 intersectionNormal(0,0);
+    
+	for(b2Body* b = _world->GetBodyList(); b; b = b->GetNext()){
+		if(b->GetUserData() != NULL) {
             if(b->GetUserData() != (void*)100){
-                //Synchronize the AtlasSprites position and rotation with the corresponding body
                 CCSprite *myActor = (CCSprite*)b->GetUserData();
                 if(myActor.position.x > winSize.width || myActor.position.x < 0){
                     _world->DestroyBody(b);
@@ -666,7 +683,17 @@ enum {
                 }
                 else {
                     if(myActor.tag == 1){
-                        
+                        for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()) {
+                            b2RayCastOutput output;
+                            if(!f->RayCast(&output, input))
+                                continue;
+                            if(output.fraction < closestFraction){
+                                closestFraction = output.fraction;
+                                intersectionNormal = output.normal;
+                                intersectionPoint = p1 + closestFraction * (p2 - p1);
+                                CCLOG(@"Ray hit dog fixture @ %0.2f, %0.2f", intersectionPoint.x, intersectionPoint.y);
+                            }
+                        }
                     }
                     else if(myActor.tag >= 3 && myActor.tag <= 10){
                         for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()){

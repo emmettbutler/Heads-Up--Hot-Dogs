@@ -41,6 +41,7 @@
     CCSpriteBatchNode *spriteSheet;
     CCLabelTTF *scoreLabel;
     CCLabelTTF *droppedLabel;
+    b2Vec2 p1, p2, intersectionPoint;
     NSMutableArray *floorBits;
     NSMutableArray *xPositions;
     NSMutableArray *characterTags;
@@ -56,6 +57,7 @@
     float _personSpawnDelayTime;
     float _wienerSpawnDelayTime;
     float _wienerKillDelay;
+    float _currentRayAngle;
     BOOL _moving;
     BOOL _touchedDog;
 
