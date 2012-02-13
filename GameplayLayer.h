@@ -24,7 +24,8 @@
 	b2Fixture *_bottomFixture, *_wallsFixture, *_wienerFixture, *_targetFixture, *_personFixture;
     CCSprite *_wiener, *_personLower, *_personUpper, *_target;
     b2MouseJoint *_mouseJoint;
-    CCAction *_walkAction, *_idleAction;
+    CCAction *_walkAction;
+    CCFiniteTimeAction *_idleAction;
     CCAnimation *walkAnim, *idleAnim;
     CCFiniteTimeAction *_hitAction;
     CCSpriteBatchNode *spriteSheet;

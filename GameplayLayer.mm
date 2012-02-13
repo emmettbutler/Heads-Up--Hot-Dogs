@@ -34,6 +34,7 @@ enum {
 @synthesize wiener = _wiener;
 @synthesize target = _target;
 @synthesize walkAction = _walkAction;
+@synthesize idleAction = _idleAction;
 
 +(CCScene *) scene {
 	CCScene *scene = [CCScene node];
@@ -141,6 +142,8 @@ enum {
     NSMutableArray *incomingArray = (NSMutableArray *) params;
     NSValue *b = (NSValue *)[incomingArray objectAtIndex:0];
     NSNumber *v = (NSNumber *)[incomingArray objectAtIndex:1];
+    NSValue *idle = (NSValue *)[incomingArray objectAtIndex:2];
+    CCSequence *idleAction = (CCSequence *)[idle pointerValue];
     //b2Body *body = (b2Body *)[b pointerValue];
     //CCSprite *sprite = (CCSprite *)sender;
 
@@ -151,7 +154,7 @@ enum {
     [movementParameters addObject:b];
     [movementParameters addObject:opposite];
     CCCallFuncND *pauseAction = [CCCallFuncND actionWithTarget:self selector:@selector(applyForce:data:) data:movementParameters];
-    CCSequence *walkInPauseContinue = [CCSequence actions: walkAction, delay, pauseAction, delay, walkAction, nil];
+    CCSequence *walkInPauseContinue = [CCSequence actions: walkAction, delay, pauseAction, idleAction, walkAction, nil];
     
     [sender runAction:walkInPauseContinue];
 }
@@ -258,8 +261,10 @@ enum {
         self.walkAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:walkAnim restoreOriginalFrame:NO]];
         [_personLower runAction:_walkAction];
         
-        idleAnim = [CCAnimation animationWithFrames:walkAnimFrames delay:.08f];
-        self.idleAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:idleAnim restoreOriginalFrame:NO]];
+        idleAnim = [CCAnimation animationWithFrames:idleAnimFrames delay:.2f];
+        self.idleAction = [CCAnimate actionWithAnimation:idleAnim];
+        CCRepeat *repeatAction = [CCRepeat actionWithAction:_idleAction times:10];
+        CCSequence *sequence = [CCSequence actions: _idleAction, repeatAction, nil];
         
         _personLower.position = ccp(xPos.intValue, 123);
         _personUpper.position = ccp(xPos.intValue, 123);
@@ -302,11 +307,13 @@ enum {
         personBodyShapeDef.filter.maskBits = floorBit.intValue;
         _personFixture = _personBody->CreateFixture(&personBodyShapeDef);
         
-        movementParameters = [[NSMutableArray alloc] initWithCapacity:2];
+        movementParameters = [[NSMutableArray alloc] initWithCapacity:3];
         NSNumber *v = [NSNumber numberWithInt:xVel];
         NSValue *b = [NSValue valueWithPointer:_personBody];
+        NSValue *idle = [NSValue valueWithPointer:sequence];
         [movementParameters addObject:b];
         [movementParameters addObject:v];
+        [movementParameters addObject:idle];
         [self walkInPauseContinue:_personLower data:movementParameters]; 
     }
 }
