@@ -33,8 +33,7 @@ enum {
 @synthesize personUpper = _personUpper;
 @synthesize wiener = _wiener;
 @synthesize target = _target;
-@synthesize flyAction = _flyAction;
-@synthesize hitAction = _hitAction;
+@synthesize walkAction = _walkAction;
 
 +(CCScene *) scene {
 	CCScene *scene = [CCScene node];
@@ -159,7 +158,7 @@ enum {
 
 -(void)walkIn:(id)sender data:(void *)params {
     int xVel, velocityMul, zIndex, fixtureUserData;
-    float hitboxHeight, hitboxWidth, hitboxCenterX, hitboxCenterY, density, restitution, friction;
+    float hitboxHeight, hitboxWidth, hitboxCenterX, hitboxCenterY, density, restitution, friction, heightOffset;
 
     CGSize winSize = [CCDirector sharedDirector].winSize;
     
@@ -170,6 +169,8 @@ enum {
     NSNumber *xPos = (NSNumber *)[incomingArray objectAtIndex:0];
     NSNumber *character = (NSNumber *)[incomingArray objectAtIndex:1];
     
+    NSMutableArray *walkAnimFrames = [NSMutableArray array];
+    
     switch(character.intValue){
         case 3:
             self.personLower = [CCSprite spriteWithSpriteFrameName:@"BusinessMan_Walk_1.png"];
@@ -179,12 +180,18 @@ enum {
             hitboxWidth = 22.0;
             hitboxHeight = 1;
             hitboxCenterX = 0;
-            hitboxCenterY = 2.9;
+            hitboxCenterY = 3.8;
             velocityMul = 300;
             density = 10.0f;
             restitution = .8f;
-            friction = .9f;
+            friction = 3.9f;
             fixtureUserData = 3;
+            heightOffset = 2.9f;
+            for(int i = 1; i <= 6; i++){
+                [walkAnimFrames addObject:
+                 [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                  [NSString stringWithFormat:@"BusinessMan_Walk_%d.png", i]]];
+            }
             break;
         case 4:
             self.personLower = [CCSprite spriteWithSpriteFrameName:@"cop_body.png"];
@@ -198,6 +205,7 @@ enum {
             restitution = .5f;
             friction = 1.0f;
             fixtureUserData = 4;
+            heightOffset = 1.0f;
             break;
     }
 
@@ -206,6 +214,7 @@ enum {
     }
     else {
         _personLower.flipX = YES;
+        _personUpper.flipX = YES;
         xVel = 1*velocityMul;
     }
     
@@ -238,15 +247,20 @@ enum {
         else{
             zIndex = 100;
         }
-    
+        
+        walkAnim = [CCAnimation animationWithFrames:walkAnimFrames delay:.08f];
+        self.walkAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:walkAnim restoreOriginalFrame:NO]];
+        [_personLower runAction:_walkAction];
+        
         _personLower.position = ccp(xPos.intValue, 123);
-        _personUpper.position = ccp(xPos.intValue, 300);
+        _personUpper.position = ccp(xPos.intValue, 123);
         [spriteSheet addChild:_personLower z:zIndex];
         [spriteSheet addChild:_personUpper z:zIndex];
         
         bodyUserData *ud = new bodyUserData();
         ud->sprite1 = _personLower;
         ud->sprite2 = _personUpper;
+        ud->heightOffset = heightOffset;
         
         b2BodyDef personBodyDef;
         personBodyDef.type = b2_dynamicBody;
@@ -268,10 +282,11 @@ enum {
         _personFixture = _personBody->CreateFixture(&personShapeDef);
         
         b2PolygonShape personBodyShape;
-        personBodyShape.SetAsBox(_personLower.contentSize.width/PTM_RATIO/2, _personLower.contentSize.height/PTM_RATIO/2);
+        personBodyShape.SetAsBox(_personLower.contentSize.width/PTM_RATIO/2,
+                                 (_personLower.contentSize.height)/PTM_RATIO/2);
         b2FixtureDef personBodyShapeDef;
         personBodyShapeDef.shape = &personBodyShape;
-        personBodyShapeDef.density = 5;
+        personBodyShapeDef.density = 11;
         personBodyShapeDef.friction = 0;
         personBodyShapeDef.restitution = 0;
         personBodyShapeDef.filter.categoryBits = BODYBOX;
@@ -284,18 +299,7 @@ enum {
         [movementParameters addObject:b];
         [movementParameters addObject:v];
         [self walkInPauseContinue:_personLower data:movementParameters]; 
-        
-        //b2Vec2 force = b2Vec2(xVel,0);
-        //_personBody->ApplyLinearImpulse(force, personBodyDef.position);
     }
-}
-
-//this seems to only work on one sprite at a time
--(void)runBoxLoop:(id)sender{
-    //CCSprite *sprite = (CCSprite *)sender;
-    //self.flyAction = [CCRepeatForever actionWithAction:
-    //                  [CCAnimate actionWithAnimation:flyAnim restoreOriginalFrame:NO]];
-    //[sprite runAction: _flyAction];
 }
 
 - (void)switchScene{
@@ -330,7 +334,8 @@ enum {
     NSNumber *xPosition = [xPositions objectAtIndex:arc4random() % [xPositions count]];
     xPos = [NSNumber numberWithInt:xPosition.intValue];
     
-    characterTag = [characterTags objectAtIndex:arc4random() % ([characterTags count]-_spawnLimiter)];
+    //characterTag = [characterTags objectAtIndex:arc4random() % ([characterTags count]-_spawnLimiter)];
+    characterTag = [NSNumber numberWithInt:3];
     
     [self walkIn:self data:params];
 
@@ -476,19 +481,6 @@ enum {
         _points = 0;
         _droppedCount = 0;
         _currentRayAngle = 0;
-        
-        /*NSMutableArray *flyAnimFrames = [NSMutableArray array];
-        for(int i = 1; i <= 3; ++i){
-            [flyAnimFrames addObject:
-             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-              [NSString stringWithFormat:@"box_%d.png", i]]];
-        }
-        
-        NSMutableArray *hitAnimFrames = [NSMutableArray array];
-        [hitAnimFrames addObject:
-         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"box_hit.png"]];
-        hitAnim = [CCAnimation animationWithFrames:hitAnimFrames delay:0.1f];
-        flyAnim = [CCAnimation animationWithFrames:flyAnimFrames delay:0.9f];*/
 
         personDogContactListener = new PersonDogContactListener();
 		_world->SetContactListener(personDogContactListener);
@@ -527,7 +519,10 @@ enum {
 	_world->DrawDebugData();
     
     if(m_debugDraw){
-        glColor4ub(255, 0, 0, 255);
+        if(!_rayTouchingDog)
+            glColor4ub(255, 0, 0, 255);
+        else
+            glColor4ub(0, 255, 0, 255);
         ccDrawLine(CGPointMake(p1.x*PTM_RATIO, p1.y*PTM_RATIO), CGPointMake(p2.x*PTM_RATIO, p2.y*PTM_RATIO));
 	}
         
@@ -696,12 +691,15 @@ enum {
                     if(ud->sprite1.tag == 1){
                         for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()) {
                             b2RayCastOutput output;
-                            if(!f->RayCast(&output, input))
+                            if(!f->RayCast(&output, input)){
+                                _rayTouchingDog = false;
                                 continue;
+                            }
                             if(output.fraction < closestFraction){
                                 closestFraction = output.fraction;
                                 intersectionNormal = output.normal;
                                 b2Vec2 intersectionPoint = p1 + closestFraction * (p2 - p1);
+                                _rayTouchingDog = true;
                                 CCLOG(@"Ray hit dog fixture @ %0.2f, %0.2f", intersectionPoint.x, intersectionPoint.y);
                             }
                         }
@@ -742,7 +740,8 @@ enum {
                         ud = NULL;
                     }
                     else{
-                        ud->sprite2.position = CGPointMake( b->GetPosition().x * PTM_RATIO, b->GetPosition().y * PTM_RATIO);
+                        ud->sprite2.position = CGPointMake((b->GetPosition().x)*PTM_RATIO,
+                                                           (b->GetPosition().y+ud->heightOffset)*PTM_RATIO);
                         ud->sprite2.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
                     }
                 }
@@ -870,8 +869,6 @@ enum {
     self.personUpper = nil;
     self.wiener = nil;
     self.target = nil;
-	//self.flyAction = nil;
-    //self.hitAction = nil;
 
     [scoreText release];
     [droppedText release];

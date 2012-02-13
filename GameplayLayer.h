@@ -24,8 +24,8 @@
 	b2Fixture *_bottomFixture, *_wallsFixture, *_wienerFixture, *_targetFixture, *_personFixture;
     CCSprite *_wiener, *_personLower, *_personUpper, *_target;
     b2MouseJoint *_mouseJoint;
-    CCAction *_flyAction;
-    CCAnimation *flyAnim, *hitAnim;
+    CCAction *_walkAction;
+    CCAnimation *walkAnim, *hitAnim;
     CCFiniteTimeAction *_hitAction;
     CCSpriteBatchNode *spriteSheet;
     CCLabelTTF *scoreLabel, *droppedLabel;
@@ -42,11 +42,13 @@
     float _currentRayAngle;
     BOOL _moving;
     BOOL _touchedDog;
+    BOOL _rayTouchingDog;
     NSString *currentAnimation;
 
     struct bodyUserData {
         CCSprite *sprite1;
         CCSprite *sprite2;
+        float heightOffset;
     };
     
 	enum _entityCategory {
@@ -68,8 +70,7 @@
 @property (nonatomic, retain) CCSprite *personUpper;
 @property (nonatomic, retain) CCSprite *wiener;
 @property (nonatomic, retain) CCSprite *target;
-@property (nonatomic, retain) CCAction *flyAction;
-@property (nonatomic, retain) CCAction *hitAction;
+@property (nonatomic, retain) CCAction *walkAction;
 
 // returns a CCScene that contains the HelloWorldLayer as the only child
 +(CCScene *) scene;
