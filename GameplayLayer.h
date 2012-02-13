@@ -22,7 +22,7 @@
     GLESDebugDraw *m_debugDraw;
 	b2Body *_wallsBody, *_groundBody, *wienerBody, *targetBody, *_personBody;
 	b2Fixture *_bottomFixture, *_wallsFixture, *_wienerFixture, *_targetFixture, *_personFixture;
-    CCSprite *_wiener, *_person, *_target;
+    CCSprite *_wiener, *_personLower, *_personUpper, *_target;
     b2MouseJoint *_mouseJoint;
     CCAction *_flyAction;
     CCAnimation *flyAnim, *hitAnim;
@@ -30,7 +30,8 @@
     CCSpriteBatchNode *spriteSheet;
     CCLabelTTF *scoreLabel, *droppedLabel;
     b2Vec2 p1, p2;
-    NSMutableArray *floorBits, *xPositions, *characterTags, *wienerParameters, *personParameters, *movementPatterns, *movementParameters, *_touchLocations;
+    NSMutableArray *floorBits, *xPositions, *characterTags, *wienerParameters;
+    NSMutableArray *personParameters, *movementPatterns, *movementParameters, *_touchLocations;
     NSString *scoreText, *droppedText;
     int _points;
     int _droppedCount;
@@ -43,6 +44,11 @@
     BOOL _touchedDog;
     NSString *currentAnimation;
 
+    struct bodyUserData {
+        CCSprite *sprite1;
+        CCSprite *sprite2;
+    };
+    
 	enum _entityCategory {
 		FLOOR1  = 0x0001,
         FLOOR2  = 0x0002,
@@ -58,7 +64,8 @@
   	PersonDogContactListener *personDogContactListener;
 }
 
-@property (nonatomic, retain) CCSprite *person;
+@property (nonatomic, retain) CCSprite *personLower;
+@property (nonatomic, retain) CCSprite *personUpper;
 @property (nonatomic, retain) CCSprite *wiener;
 @property (nonatomic, retain) CCSprite *target;
 @property (nonatomic, retain) CCAction *flyAction;

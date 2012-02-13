@@ -29,7 +29,8 @@ enum {
 // HelloWorldLayer implementation
 @implementation GameplayLayer
 
-@synthesize person = _person;
+@synthesize personLower = _personLower;
+@synthesize personUpper = _personUpper;
 @synthesize wiener = _wiener;
 @synthesize target = _target;
 @synthesize flyAction = _flyAction;
@@ -53,10 +54,13 @@ enum {
     int floor = arc4random() % 4;
     [self addChild:_wiener];
     
+    bodyUserData *ud = new bodyUserData();
+    ud->sprite1 = _wiener;
+    
     b2BodyDef wienerBodyDef;
     wienerBodyDef.type = b2_dynamicBody;
     wienerBodyDef.position.Set(location.x/PTM_RATIO, location.y/PTM_RATIO);
-    wienerBodyDef.userData = _wiener;
+    wienerBodyDef.userData = ud;
     wienerBody = _world->CreateBody(&wienerBodyDef);
     
     b2PolygonShape wienerShape;
@@ -100,10 +104,13 @@ enum {
     _target.tag = 2;
     [self addChild:_target];
     
+    bodyUserData *ud = new bodyUserData();
+    ud->sprite1 = _target;
+    
     b2BodyDef targetBodyDef;
     targetBodyDef.type = b2_staticBody;
     targetBodyDef.position.Set(150/PTM_RATIO, 270/PTM_RATIO);
-    targetBodyDef.userData = _target;
+    targetBodyDef.userData = ud;
     targetBody = _world->CreateBody(&targetBodyDef);
     
     b2PolygonShape targetShape;
@@ -165,8 +172,10 @@ enum {
     
     switch(character.intValue){
         case 3:
-            self.person = [CCSprite spriteWithSpriteFrameName:@"BusinessMan_Walk_1.png"];
-            _person.tag = 3;
+            self.personLower = [CCSprite spriteWithSpriteFrameName:@"BusinessMan_Walk_1.png"];
+            self.personUpper = [CCSprite spriteWithSpriteFrameName:@"BusinessHead_NoDog.png"];
+            _personLower.tag = 3;
+            _personUpper.tag = 3;
             hitboxWidth = 22.0;
             hitboxHeight = 1;
             hitboxCenterX = 0;
@@ -178,8 +187,8 @@ enum {
             fixtureUserData = 3;
             break;
         case 4:
-            self.person = [CCSprite spriteWithSpriteFrameName:@"cop_body.png"];
-            _person.tag = 4;
+            self.personLower = [CCSprite spriteWithSpriteFrameName:@"cop_body.png"];
+            _personLower.tag = 4;
             hitboxWidth = 22.0;
             hitboxHeight = 1;
             hitboxCenterX = 0;
@@ -196,14 +205,14 @@ enum {
         xVel = -1*velocityMul;
     }
     else {
-        _person.flipX = YES; //facing the other way
+        _personLower.flipX = YES;
         xVel = 1*velocityMul;
     }
     
     for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
         if (body->GetUserData() != NULL && body->GetUserData() != (void*)100) {
-			CCSprite *sprite = (CCSprite *)body->GetUserData();
-            if(sprite.tag >= 3 && sprite.tag <= 10){
+			bodyUserData *ud = (bodyUserData *)body->GetUserData();
+            if(ud->sprite1.tag >= 3 && ud->sprite1.tag <= 10){
                 for(b2Fixture* f = body->GetFixtureList(); f; f = f->GetNext()){
                     if(f->GetFilterData().maskBits == floorBit.intValue){
                         if(body->GetLinearVelocity().x * xVel < 0){
@@ -230,14 +239,21 @@ enum {
             zIndex = 100;
         }
     
-        _person.position = ccp(xPos.intValue, 123);
-        [spriteSheet addChild:_person z:zIndex];
-
+        _personLower.position = ccp(xPos.intValue, 123);
+        _personUpper.position = ccp(xPos.intValue, 300);
+        [spriteSheet addChild:_personLower z:zIndex];
+        [spriteSheet addChild:_personUpper z:zIndex];
+        
+        bodyUserData *ud = new bodyUserData();
+        ud->sprite1 = _personLower;
+        ud->sprite2 = _personUpper;
+        
         b2BodyDef personBodyDef;
         personBodyDef.type = b2_dynamicBody;
         personBodyDef.position.Set(xPos.floatValue/PTM_RATIO, 123.0f/PTM_RATIO);
-        personBodyDef.userData = _person;
+        personBodyDef.userData = ud;
         _personBody = _world->CreateBody(&personBodyDef);
+        ud = NULL;
 
         b2PolygonShape personShape;
         personShape.SetAsBox(hitboxWidth/PTM_RATIO, hitboxHeight/PTM_RATIO, b2Vec2(hitboxCenterX, hitboxCenterY), 0);
@@ -252,7 +268,7 @@ enum {
         _personFixture = _personBody->CreateFixture(&personShapeDef);
         
         b2PolygonShape personBodyShape;
-        personBodyShape.SetAsBox(_person.contentSize.width/PTM_RATIO/2, _person.contentSize.height/PTM_RATIO/2);
+        personBodyShape.SetAsBox(_personLower.contentSize.width/PTM_RATIO/2, _personLower.contentSize.height/PTM_RATIO/2);
         b2FixtureDef personBodyShapeDef;
         personBodyShapeDef.shape = &personBodyShape;
         personBodyShapeDef.density = 5;
@@ -267,7 +283,7 @@ enum {
         NSValue *b = [NSValue valueWithPointer:_personBody];
         [movementParameters addObject:b];
         [movementParameters addObject:v];
-        [self walkInPauseContinue:_person data:movementParameters]; 
+        [self walkInPauseContinue:_personLower data:movementParameters]; 
         
         //b2Vec2 force = b2Vec2(xVel,0);
         //_personBody->ApplyLinearImpulse(force, personBodyDef.position);
@@ -633,23 +649,23 @@ enum {
             } 
             else if (pdContact.fixtureB->GetUserData() == (void*)2){
                 tBody = pdContact.fixtureB->GetBody();
-                CCSprite *tSprite = (CCSprite *)tBody->GetUserData();
+                bodyUserData *ud = (bodyUserData *)tBody->GetUserData();
                 CCLOG(@"Dog/Target Collision");
                 _world->DestroyBody(tBody);
-                [tSprite removeFromParentAndCleanup:YES];
+                [ud->sprite1 removeFromParentAndCleanup:YES];
             }
             else if (pdContact.fixtureB->GetUserData() == (void*)100){
                 CCLOG(@"Dog/Ground Collision (Dog y Velocity: %0.2f)", dogBody->GetLinearVelocity().y);
                 wienerParameters = [[NSMutableArray alloc] initWithCapacity:1];
                 [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
-                CCSprite *dogSprite = (CCSprite *)dogBody->GetUserData();
+                bodyUserData *ud = (bodyUserData *)dogBody->GetUserData();
                 
                 //TODO - allow interrupting this action via pickup
                 
                 id delay = [CCDelayTime actionWithDuration:_wienerKillDelay];
                 id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:wienerParameters];
                 id sequence = [CCSequence actions: delay, destroyAction, nil];
-                [dogSprite runAction:sequence]; 
+                [ud->sprite1 runAction:sequence]; 
             }
         }
         /*if(sprite.tag == 2){
@@ -673,15 +689,11 @@ enum {
     b2Vec2 intersectionNormal(0,0);
     
 	for(b2Body* b = _world->GetBodyList(); b; b = b->GetNext()){
-		if(b->GetUserData() != NULL) {
+		if(b->GetUserData()) {
             if(b->GetUserData() != (void*)100){
-                CCSprite *myActor = (CCSprite*)b->GetUserData();
-                if(myActor.position.x > winSize.width || myActor.position.x < 0){
-                    _world->DestroyBody(b);
-                    [myActor removeFromParentAndCleanup:YES];
-                }
-                else {
-                    if(myActor.tag == 1){
+                bodyUserData *ud = (bodyUserData*)b->GetUserData();
+                if(ud->sprite1){
+                    if(ud->sprite1.tag == 1){
                         for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()) {
                             b2RayCastOutput output;
                             if(!f->RayCast(&output, input))
@@ -694,13 +706,45 @@ enum {
                             }
                         }
                     }
-                    else if(myActor.tag >= 3 && myActor.tag <= 10){
+                    else if(ud->sprite1.tag >= 3 && ud->sprite1.tag <= 10){
                         for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()){
-                            
+                        
                         }
                     }
-                    myActor.position = CGPointMake( b->GetPosition().x * PTM_RATIO, b->GetPosition().y * PTM_RATIO);
-                    myActor.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
+                    ud->sprite1.position = CGPointMake( b->GetPosition().x * PTM_RATIO, b->GetPosition().y * PTM_RATIO);
+                    ud->sprite1.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
+                }
+                if(ud->sprite2 != NULL){
+                    if(ud->sprite2.tag == 1){
+                        for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()) {
+                            b2RayCastOutput output;
+                            if(!f->RayCast(&output, input))
+                                continue;
+                            if(output.fraction < closestFraction){
+                                closestFraction = output.fraction;
+                                intersectionNormal = output.normal;
+                                b2Vec2 intersectionPoint = p1 + closestFraction * (p2 - p1);
+                                CCLOG(@"Ray hit dog fixture @ %0.2f, %0.2f", intersectionPoint.x, intersectionPoint.y);
+                            }
+                        }
+                    }
+                    else if(ud->sprite2.tag >= 3 && ud->sprite2.tag <= 10){
+                        for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()){
+                        
+                        }
+                    }
+                    if(ud->sprite1.position.x > winSize.width || ud->sprite1.position.x < 0){
+                        _world->DestroyBody(b);
+                        [ud->sprite1 removeFromParentAndCleanup:YES];
+                        if(ud->sprite2 != NULL){
+                            [ud->sprite2 removeFromParentAndCleanup:YES];
+                        }
+                        ud = NULL;
+                    }
+                    else{
+                        ud->sprite2.position = CGPointMake( b->GetPosition().x * PTM_RATIO, b->GetPosition().y * PTM_RATIO);
+                        ud->sprite2.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
+                    }
                 }
             }
 		}
@@ -723,10 +767,10 @@ enum {
     for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
         if (body->GetUserData() != NULL && body->GetUserData() != (void*)100) {
             b2Fixture *fixture = body->GetFixtureList();
-			CCSprite *sprite = (CCSprite *)body->GetUserData();
-            if(sprite.tag == 1){
+            bodyUserData *ud = (bodyUserData *)body->GetUserData();
+            if(ud->sprite1.tag == 1){
                 if (fixture->TestPoint(locationWorld)) {
-                    [sprite stopAllActions];
+                    [ud->sprite1 stopAllActions];
                     
                     CCLOG(@"Touching hotdog");
                     b2MouseJointDef md;
@@ -761,7 +805,8 @@ enum {
     b2Vec2 locationWorld = b2Vec2(location.x/PTM_RATIO, location.y/PTM_RATIO);
     
     _mouseJoint->SetTarget(locationWorld);
-    CCSprite *sprite = (CCSprite *)_mouseJoint->GetBodyB()->GetUserData();
+    bodyUserData *ud = (bodyUserData *)_mouseJoint->GetBodyB()->GetUserData();
+    CCSprite *sprite = ud->sprite1;
     [sprite stopAllActions];
 }
 
@@ -779,8 +824,8 @@ enum {
     for (b2Body* body = _world->GetBodyList(); body; body = body->GetNext()){
         if (body->GetUserData() != NULL  && body->GetUserData() != (void*)100) {
             for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
-    			CCSprite *sprite = (CCSprite *)body->GetUserData();
-                if(sprite.tag == 1){
+    			bodyUserData *ud = (bodyUserData *)body->GetUserData();
+                if(ud->sprite1.tag == 1){
                     if (fixture->TestPoint(locationWorld)) {
                         body->SetLinearVelocity(b2Vec2(0, 0));
                         body->SetFixedRotation(false);
@@ -805,8 +850,8 @@ enum {
     for (b2Body* body = _world->GetBodyList(); body; body = body->GetNext()){
         if (body->GetUserData() != NULL  && body->GetUserData() != (void*)100) {
             for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
-    			CCSprite *sprite = (CCSprite *)body->GetUserData();
-                if(sprite.tag == 1){
+    			bodyUserData *ud = (bodyUserData *)body->GetUserData();
+                if(ud->sprite1.tag == 1){
                     if (fixture->TestPoint(locationWorld)) {
                         body->SetLinearVelocity(b2Vec2(0, 0));
                         body->SetFixedRotation(false);
@@ -821,7 +866,8 @@ enum {
     [[CCSpriteFrameCache sharedSpriteFrameCache] removeUnusedSpriteFrames];
     [[CCTextureCache sharedTextureCache] removeUnusedTextures]; 
     
-    self.person = nil;
+    self.personLower = nil;
+    self.personUpper = nil;
     self.wiener = nil;
     self.target = nil;
 	//self.flyAction = nil;
