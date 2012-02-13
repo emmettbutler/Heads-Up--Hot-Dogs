@@ -170,6 +170,7 @@ enum {
     NSNumber *character = (NSNumber *)[incomingArray objectAtIndex:1];
     
     NSMutableArray *walkAnimFrames = [NSMutableArray array];
+    NSMutableArray *idleAnimFrames = [NSMutableArray array];
     
     switch(character.intValue){
         case 3:
@@ -191,6 +192,11 @@ enum {
                 [walkAnimFrames addObject:
                  [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
                   [NSString stringWithFormat:@"BusinessMan_Walk_%d.png", i]]];
+            }
+            for(int i = 1; i <= 2; i++){
+                [idleAnimFrames addObject:
+                 [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                  [NSString stringWithFormat:@"BusinessMan_Idle_%d.png", i]]];
             }
             break;
         case 4:
@@ -251,6 +257,9 @@ enum {
         walkAnim = [CCAnimation animationWithFrames:walkAnimFrames delay:.08f];
         self.walkAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:walkAnim restoreOriginalFrame:NO]];
         [_personLower runAction:_walkAction];
+        
+        idleAnim = [CCAnimation animationWithFrames:walkAnimFrames delay:.08f];
+        self.idleAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:idleAnim restoreOriginalFrame:NO]];
         
         _personLower.position = ccp(xPos.intValue, 123);
         _personUpper.position = ccp(xPos.intValue, 123);

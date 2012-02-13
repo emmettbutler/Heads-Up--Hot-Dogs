@@ -24,8 +24,8 @@
 	b2Fixture *_bottomFixture, *_wallsFixture, *_wienerFixture, *_targetFixture, *_personFixture;
     CCSprite *_wiener, *_personLower, *_personUpper, *_target;
     b2MouseJoint *_mouseJoint;
-    CCAction *_walkAction;
-    CCAnimation *walkAnim, *hitAnim;
+    CCAction *_walkAction, *_idleAction;
+    CCAnimation *walkAnim, *idleAnim;
     CCFiniteTimeAction *_hitAction;
     CCSpriteBatchNode *spriteSheet;
     CCLabelTTF *scoreLabel, *droppedLabel;
@@ -71,6 +71,7 @@
 @property (nonatomic, retain) CCSprite *wiener;
 @property (nonatomic, retain) CCSprite *target;
 @property (nonatomic, retain) CCAction *walkAction;
+@property (nonatomic, retain) CCAction *idleAction;
 
 // returns a CCScene that contains the HelloWorldLayer as the only child
 +(CCScene *) scene;
