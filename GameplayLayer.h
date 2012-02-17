@@ -26,7 +26,7 @@
     b2MouseJoint *_mouseJoint;
     CCAction *_walkAction;
     CCFiniteTimeAction *_idleAction;
-    CCAnimation *walkAnim, *idleAnim;
+    CCAnimation *walkAnim, *idleAnim, *hitAnim;
     CCFiniteTimeAction *_hitAction;
     CCSpriteBatchNode *spriteSheet;
     CCLabelTTF *scoreLabel, *droppedLabel;
@@ -50,6 +50,9 @@
         CCSprite *sprite1;
         CCSprite *sprite2;
         float heightOffset;
+        float lengthOffset;
+        NSString *ogSprite2;
+        NSString *altSprite2;
     };
     
 	enum _entityCategory {
@@ -73,6 +76,7 @@
 @property (nonatomic, retain) CCSprite *target;
 @property (nonatomic, retain) CCAction *walkAction;
 @property (nonatomic, retain) CCAction *idleAction;
+@property (nonatomic, retain) NSString *hitFace;
 
 // returns a CCScene that contains the HelloWorldLayer as the only child
 +(CCScene *) scene;

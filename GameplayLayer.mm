@@ -35,6 +35,7 @@ enum {
 @synthesize target = _target;
 @synthesize walkAction = _walkAction;
 @synthesize idleAction = _idleAction;
+@synthesize hitFace = _hitFace;
 
 +(CCScene *) scene {
 	CCScene *scene = [CCScene node];
@@ -178,7 +179,8 @@ enum {
     switch(character.intValue){
         case 3:
             self.personLower = [CCSprite spriteWithSpriteFrameName:@"BusinessMan_Walk_1.png"];
-            self.personUpper = [CCSprite spriteWithSpriteFrameName:@"BusinessHead_NoDog.png"];
+            self.personUpper = [CCSprite spriteWithSpriteFrameName:@"BusinessHead_NoDog_1.png"];
+            self.hitFace = [NSString stringWithString:@"BusinessHead_Dog_1.png"];
             _personLower.tag = 3;
             _personUpper.tag = 3;
             hitboxWidth = 22.0;
@@ -275,6 +277,8 @@ enum {
         ud->sprite1 = _personLower;
         ud->sprite2 = _personUpper;
         ud->heightOffset = heightOffset;
+        ud->ogSprite2 = [NSString stringWithString:@"BusinessHead_NoDog_1.png"];
+        ud->altSprite2 = _hitFace;
         
         b2BodyDef personBodyDef;
         personBodyDef.type = b2_dynamicBody;
@@ -609,6 +613,11 @@ enum {
                     }
                 }
                 CCLOG(@"Prism joint destroyed");
+                b = j->GetBodyB();
+                bodyUserData *ud = (bodyUserData *)b->GetUserData();
+                CCSprite *sprite2 = (CCSprite *)ud->sprite2;
+                NSString *ogSprite2 = (NSString *)ud->ogSprite2;
+                [sprite2 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:ogSprite2] ];
             }
             else {
                 _points += 100;
@@ -656,6 +665,12 @@ enum {
                     filter = pdContact.fixtureA->GetFilterData();
                     filter.maskBits = 0x0000;
                     pdContact.fixtureA->SetFilterData(filter);
+                    
+                    bodyUserData *ud = (bodyUserData*)pBody->GetUserData();
+                    CCSprite *sprite2 = (CCSprite *)ud->sprite2;
+                    NSString *altSprite2 = (NSString *)ud->altSprite2;
+                    [sprite2 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:altSprite2] ];
+                    
                 }
             } 
             else if (pdContact.fixtureB->GetUserData() == (void*)2){
@@ -679,11 +694,6 @@ enum {
                 [ud->sprite1 runAction:sequence]; 
             }
         }
-        /*if(sprite.tag == 2){
-            [sprite stopAllActions];
-            [sprite runAction:[CCSequence actions:_hitAction,
-                               [CCCallFuncN actionWithTarget:self selector:@selector(runBoxLoop:)],nil]];
-        }*/
 	}
     personDogContactListener->contacts.clear();
     
