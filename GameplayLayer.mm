@@ -90,7 +90,7 @@ enum {
     _wienerFixture = wienerBody->CreateFixture(&wienerShapeDef);
 
     b2PolygonShape wienerGrabShape;
-    wienerShape.SetAsBox((_wiener.contentSize.width+30)/PTM_RATIO/2, (_wiener.contentSize.height+30)/PTM_RATIO/2);
+    wienerShape.SetAsBox((_wiener.contentSize.width+50)/PTM_RATIO/2, (_wiener.contentSize.height+50)/PTM_RATIO/2);
 
     b2FixtureDef wienerGrabShapeDef;
     wienerGrabShapeDef.shape = &wienerShape;
