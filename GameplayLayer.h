@@ -25,7 +25,7 @@
     CCSprite *_wiener, *_personLower, *_personUpper, *_target;
     b2MouseJoint *_mouseJoint;
     CCAction *_walkAction;
-    CCFiniteTimeAction *_idleAction, *_deathAction, *_appearAction;
+    CCFiniteTimeAction *_idleAction, *_appearAction;
     CCAnimation *walkAnim, *idleAnim, *hitAnim, *dogDeathAnim, *dogAppearAnim;
     CCFiniteTimeAction *_hitAction;
     CCSpriteBatchNode *spriteSheet;
@@ -55,7 +55,7 @@
         NSString *ogSprite2;
         NSString *altSprite2;
         NSString *altSprite3; //the 3 here has a different meaning than the 2 above - ie it's the 3rd sprite
-        CCFiniteTimeAction *altAction;
+        CCAction *altAction;
     };
     
 	enum _entityCategory {
@@ -80,7 +80,7 @@
 @property (nonatomic, retain) CCSprite *target;
 @property (nonatomic, retain) CCAction *walkAction;
 @property (nonatomic, retain) CCAction *idleAction;
-@property (nonatomic, retain) CCAction *deathAction;
+@property (nonatomic, retain) CCFiniteTimeAction *deathAction;
 @property (nonatomic, retain) CCAction *appearAction;
 @property (nonatomic, retain) NSString *hitFace;
 

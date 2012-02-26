@@ -670,7 +670,7 @@ enum {
         _world->DestroyBody(dogBody);
         free(ud);
         dogBody->SetUserData(NULL);
-        dogBody = 0;
+        dogBody = nil;
         _droppedCount++;
     }
 
@@ -788,9 +788,7 @@ enum {
                 CCLOG(@"Dog/Ground Collision (Dog y Velocity: %0.2f)", dogBody->GetLinearVelocity().y);
                 
                 bodyUserData *ud = (bodyUserData *)dogBody->GetUserData();
-                CCAction *deathAnimAction = (CCAction *)ud->altAction;
-                
-                //TODO - allow interrupting this action via pickup
+                //CCFiniteTimeAction *deathAnimAction = (CCFiniteTimeAction *)ud->altAction;
                 
                 id delay = [CCDelayTime actionWithDuration:_wienerKillDelay];
                 wienerParameters = [[NSMutableArray alloc] initWithCapacity:2];
@@ -800,7 +798,8 @@ enum {
                 wienerParameters = [[NSMutableArray alloc] initWithCapacity:1];
                 [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
                 id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:wienerParameters];
-                id sequence = [CCSequence actions: delay, sleepAction, deathAnimAction, destroyAction, nil];
+                id sequence = [CCSequence actions: delay, sleepAction, destroyAction, nil];
+                //id sequence = [CCSequence actions: delay, sleepAction, ud->altAction, destroyAction, nil];
                 [ud->sprite1 runAction:sequence]; 
             }
         }
