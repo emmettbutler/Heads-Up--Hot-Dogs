@@ -17,7 +17,7 @@
 #define FLOOR3_HT .8
 #define FLOOR4_HT 1.2
 #define DOG_SPAWN_MINHT 240
-#define SPAWN_LIMIT_DECREMENT_DELAY 30
+#define SPAWN_LIMIT_DECREMENT_DELAY 10
 
 // enums that will be used as tags
 enum {
@@ -31,10 +31,13 @@ enum {
 
 @synthesize personLower = _personLower;
 @synthesize personUpper = _personUpper;
+@synthesize policeArm = _policeArm;
 @synthesize wiener = _wiener;
 @synthesize target = _target;
 @synthesize walkAction = _walkAction;
 @synthesize idleAction = _idleAction;
+@synthesize deathAction = _deathAction;
+@synthesize appearAction = _appearAction;
 @synthesize hitFace = _hitFace;
 
 +(CCScene *) scene {
@@ -42,6 +45,20 @@ enum {
 	GameplayLayer *layer = [GameplayLayer node];
 	[scene addChild: layer];
 	return scene;
+}
+
+-(void)setAwake:(id)sender data:(void*)params {
+    NSMutableArray *incomingArray = (NSMutableArray *) params;
+    NSValue *b = (NSValue *)[incomingArray objectAtIndex:0];
+    NSNumber *awake = (NSNumber *)[incomingArray objectAtIndex:1];
+    b2Body *body = (b2Body *)[b pointerValue];
+    
+    if(awake.intValue == 1){
+        body->SetAwake(true);
+    }
+    else if(awake.intValue == 0){
+        body->SetAwake(false);
+    }
 }
 
 -(void)putDog:(id)sender data:(void*)params {
@@ -55,8 +72,21 @@ enum {
     int floor = arc4random() % 4;
     [self addChild:_wiener];
     
+    NSMutableArray *wienerDeathAnimFrames = [NSMutableArray array];
+    for(int i = 1; i <= 9; i++){
+        [wienerDeathAnimFrames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithFormat:@"Dog_Die_%d.png", i]]];
+    }
+    dogDeathAnim = [CCAnimation animationWithFrames:wienerDeathAnimFrames delay:.08f];
+    self.deathAction = [CCAnimate actionWithAnimation:dogDeathAnim];
+    
     bodyUserData *ud = new bodyUserData();
     ud->sprite1 = _wiener;
+    ud->altAction = _deathAction;
+    ud->ogSprite2 = [NSString stringWithString:@"dog54x12.png"];
+    ud->altSprite2 = [NSString stringWithString:@"Dog_Rise.png"];
+    ud->altSprite3 = [NSString stringWithString:@"Dog_Fall.png"];
     
     b2BodyDef wienerBodyDef;
     wienerBodyDef.type = b2_dynamicBody;
@@ -97,6 +127,25 @@ enum {
     wienerGrabShapeDef.filter.categoryBits = WIENER;
     wienerGrabShapeDef.filter.maskBits = 0x0000;
     _wienerFixture = wienerBody->CreateFixture(&wienerGrabShapeDef);
+    
+    wienerBody->SetAwake(false);
+    
+    NSMutableArray *wienerAppearAnimFrames = [NSMutableArray array];
+    for(int i = 1; i <= 10; i++){
+        [wienerAppearAnimFrames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithFormat:@"Dog_Appear_%d.png", i]]];
+    }
+    dogAppearAnim = [CCAnimation animationWithFrames:wienerAppearAnimFrames delay:.08f];
+    self.appearAction = [CCAnimate actionWithAnimation:dogAppearAnim];
+    wakeParameters = [[NSMutableArray alloc] initWithCapacity:2];
+    NSValue *v = [NSValue valueWithPointer:wienerBody];
+    NSNumber *wake = [NSNumber numberWithInt:1];
+    [wakeParameters addObject:v];
+    [wakeParameters addObject:wake];
+    CCCallFuncND *wakeAction = [CCCallFuncND actionWithTarget:self selector:@selector(setAwake:data:) data:wakeParameters];
+    CCSequence *seq = [CCSequence actions:_appearAction, wakeAction, nil];
+    [_wiener runAction:seq];
 }
 
 -(void)spawnTarget:(id)sender data:(void *)params {
@@ -161,7 +210,7 @@ enum {
 }
 
 -(void)walkIn:(id)sender data:(void *)params {
-    int xVel, velocityMul, zIndex, fixtureUserData;
+    int xVel, velocityMul, zIndex, fixtureUserData, armOffset;
     float hitboxHeight, hitboxWidth, hitboxCenterX, hitboxCenterY, density, restitution, friction, heightOffset;
 
     CGSize winSize = [CCDirector sharedDirector].winSize;
@@ -177,7 +226,7 @@ enum {
     NSMutableArray *idleAnimFrames = [NSMutableArray array];
     
     switch(character.intValue){
-        case 3:
+        case 3: //businessman
             self.personLower = [CCSprite spriteWithSpriteFrameName:@"BusinessMan_Walk_1.png"];
             self.personUpper = [CCSprite spriteWithSpriteFrameName:@"BusinessHead_NoDog_1.png"];
             self.hitFace = [NSString stringWithString:@"BusinessHead_Dog_1.png"];
@@ -204,9 +253,13 @@ enum {
                   [NSString stringWithFormat:@"BusinessMan_Idle_%d.png", i]]];
             }
             break;
-        case 4:
+        case 4: //police
             self.personLower = [CCSprite spriteWithSpriteFrameName:@"cop_body.png"];
+            self.personUpper = [CCSprite spriteWithSpriteFrameName:@"BusinessHead_NoDog_1.png"];
+            self.policeArm = [CCSprite spriteWithSpriteFrameName:@"cop_arm.png"];
+            _policeArm.tag = 11;
             _personLower.tag = 4;
+            _personUpper.tag = 4;
             hitboxWidth = 22.0;
             hitboxHeight = 1;
             hitboxCenterX = 0;
@@ -217,15 +270,30 @@ enum {
             friction = 1.0f;
             fixtureUserData = 4;
             heightOffset = 1.0f;
+            for(int i = 1; i <= 1; i++){
+                [walkAnimFrames addObject:
+                 [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                  [NSString stringWithString:@"cop_body.png"]]];
+            }
+            for(int i = 1; i <= 2; i++){
+                [idleAnimFrames addObject:
+                 [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                  [NSString stringWithFormat:@"BusinessMan_Idle_%d.png", i]]];
+            }
             break;
     }
 
     if( xPos.intValue == winSize.width ){
         xVel = -1*velocityMul;
+        armOffset = -50;
     }
     else {
         _personLower.flipX = YES;
         _personUpper.flipX = YES;
+        if(character.intValue == 4){
+            _policeArm.flipX = YES;
+            armOffset = 50;
+        }
         xVel = 1*velocityMul;
     }
     
@@ -272,11 +340,15 @@ enum {
         _personUpper.position = ccp(xPos.intValue, 123);
         [spriteSheet addChild:_personLower z:zIndex];
         [spriteSheet addChild:_personUpper z:zIndex];
+        if(character.intValue == 4){
+            _policeArm.position = ccp(xPos.intValue, 123);
+            [spriteSheet addChild:_policeArm z:zIndex-1];
+        }
         
         bodyUserData *ud = new bodyUserData();
         ud->sprite1 = _personLower;
         ud->sprite2 = _personUpper;
-        ud->heightOffset = heightOffset;
+        ud->heightOffset2 = heightOffset;
         ud->ogSprite2 = [NSString stringWithString:@"BusinessHead_NoDog_1.png"];
         ud->altSprite2 = _hitFace;
         
@@ -284,8 +356,8 @@ enum {
         personBodyDef.type = b2_dynamicBody;
         personBodyDef.position.Set(xPos.floatValue/PTM_RATIO, 123.0f/PTM_RATIO);
         personBodyDef.userData = ud;
+        personBodyDef.fixedRotation = true;
         _personBody = _world->CreateBody(&personBodyDef);
-        ud = NULL;
 
         b2PolygonShape personShape;
         personShape.SetAsBox(hitboxWidth/PTM_RATIO, hitboxHeight/PTM_RATIO, b2Vec2(hitboxCenterX, hitboxCenterY), 0);
@@ -310,6 +382,36 @@ enum {
         personBodyShapeDef.filter.categoryBits = BODYBOX;
         personBodyShapeDef.filter.maskBits = floorBit.intValue;
         _personFixture = _personBody->CreateFixture(&personBodyShapeDef);
+        
+        if(character.intValue == 4){
+            bodyUserData *ud = new bodyUserData();
+            ud->sprite1 = _policeArm;
+            
+            b2BodyDef armBodyDef;
+            armBodyDef.type = b2_dynamicBody;
+            armBodyDef.position.Set((xPos.floatValue+armOffset)/PTM_RATIO, 123.0f/PTM_RATIO);
+            armBodyDef.userData = ud;
+            _policeArmBody = _world->CreateBody(&armBodyDef);
+            
+            b2PolygonShape armShape;
+            armShape.SetAsBox(_policeArm.contentSize.width/PTM_RATIO/2, _policeArm.contentSize.height/PTM_RATIO/2);
+            b2FixtureDef armShapeDef;
+            armShapeDef.shape = &armShape;
+            armShapeDef.density = 10;
+            armShapeDef.filter.maskBits = 0x0000;
+            _policeArmFixture = _policeArmBody->CreateFixture(&armShapeDef);
+            
+            b2RevoluteJointDef armJointDef;
+            armJointDef.Initialize(_personBody, _policeArmBody, b2Vec2((xPos.floatValue+armOffset)/PTM_RATIO, 123.0f/PTM_RATIO));
+            armJointDef.enableMotor = true;
+            armJointDef.enableLimit = true;
+            armJointDef.motorSpeed = -10;
+            armJointDef.lowerAngle = CC_DEGREES_TO_RADIANS(9);
+            armJointDef.upperAngle = CC_DEGREES_TO_RADIANS(75);
+            armJointDef.maxMotorTorque = 700;
+            
+            policeArmJoint = (b2RevoluteJoint*)_world->CreateJoint(&armJointDef);
+        }
         
         movementParameters = [[NSMutableArray alloc] initWithCapacity:3];
         NSNumber *v = [NSNumber numberWithInt:xVel];
@@ -354,8 +456,8 @@ enum {
     NSNumber *xPosition = [xPositions objectAtIndex:arc4random() % [xPositions count]];
     xPos = [NSNumber numberWithInt:xPosition.intValue];
     
-    //characterTag = [characterTags objectAtIndex:arc4random() % ([characterTags count]-_spawnLimiter)];
-    characterTag = [NSNumber numberWithInt:3];
+    characterTag = [characterTags objectAtIndex:arc4random() % ([characterTags count]-_spawnLimiter)];
+    //characterTag = [NSNumber numberWithInt:3];
     
     [self walkIn:self data:params];
 
@@ -389,7 +491,7 @@ enum {
     if(_spawnLimiter > 0){
         _spawnLimiter--;
     }
-    if(_personSpawnDelayTime > 1){
+    if(_personSpawnDelayTime > 2){
         _personSpawnDelayTime -= 1;
     }
     if(_wienerSpawnDelayTime > 1){
@@ -555,16 +657,18 @@ enum {
     NSMutableArray *incomingArray = (NSMutableArray *) params;
     NSValue *dog = (NSValue *)[incomingArray objectAtIndex:0];
     b2Body *dogBody = (b2Body *)[dog pointerValue];
+    bodyUserData *ud = (bodyUserData *)dogBody->GetUserData();
     
     CCSprite *dogSprite = (CCSprite *)sender;
     
     CCLOG(@"Destroying dog...");
     
-    if(dogSprite.tag == 1){
+    if(dogSprite.tag == 1){        
         dogBody->SetAwake(false);
         [dogSprite stopAllActions];
         [dogSprite removeFromParentAndCleanup:YES];
         _world->DestroyBody(dogBody);
+        free(ud);
         dogBody->SetUserData(NULL);
         dogBody = 0;
         _droppedCount++;
@@ -682,15 +786,21 @@ enum {
             }
             else if (pdContact.fixtureB->GetUserData() == (void*)100){
                 CCLOG(@"Dog/Ground Collision (Dog y Velocity: %0.2f)", dogBody->GetLinearVelocity().y);
-                wienerParameters = [[NSMutableArray alloc] initWithCapacity:1];
-                [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
+                
                 bodyUserData *ud = (bodyUserData *)dogBody->GetUserData();
+                CCAction *deathAnimAction = (CCAction *)ud->altAction;
                 
                 //TODO - allow interrupting this action via pickup
                 
                 id delay = [CCDelayTime actionWithDuration:_wienerKillDelay];
+                wienerParameters = [[NSMutableArray alloc] initWithCapacity:2];
+                [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
+                [wienerParameters addObject:[NSNumber numberWithInt:0]];
+                id sleepAction = [CCCallFuncND actionWithTarget:self selector:@selector(setAwake:data:) data:wienerParameters];
+                wienerParameters = [[NSMutableArray alloc] initWithCapacity:1];
+                [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
                 id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:wienerParameters];
-                id sequence = [CCSequence actions: delay, destroyAction, nil];
+                id sequence = [CCSequence actions: delay, sleepAction, deathAnimAction, destroyAction, nil];
                 [ud->sprite1 runAction:sequence]; 
             }
         }
@@ -713,8 +823,20 @@ enum {
 		if(b->GetUserData()) {
             if(b->GetUserData() != (void*)100){
                 bodyUserData *ud = (bodyUserData*)b->GetUserData();
-                if(ud->sprite1){
+                if(ud->sprite1 != NULL){
                     if(ud->sprite1.tag == 1){
+                        if(b->IsAwake()){
+                            if(b->GetLinearVelocity().y > 1.5){
+                                NSString *altSprite2 = (NSString *)ud->altSprite2;
+                                [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:altSprite2] ];
+                            } else if (b->GetLinearVelocity().y < -1.5){
+                                NSString *altSprite3 = (NSString *)ud->altSprite3;
+                                [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:altSprite3] ];
+                            } else {
+                                NSString *ogSprite2 = (NSString *)ud->ogSprite2;
+                                [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:ogSprite2] ];
+                            }
+                        }
                         for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()) {
                             b2RayCastOutput output;
                             if(!f->RayCast(&output, input)){
@@ -767,7 +889,7 @@ enum {
                     }
                     else{
                         ud->sprite2.position = CGPointMake((b->GetPosition().x)*PTM_RATIO,
-                                                           (b->GetPosition().y+ud->heightOffset)*PTM_RATIO);
+                                                           (b->GetPosition().y+ud->heightOffset2)*PTM_RATIO);
                         ud->sprite2.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
                     }
                 }

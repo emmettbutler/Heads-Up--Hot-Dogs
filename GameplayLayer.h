@@ -20,19 +20,20 @@
 {
 	b2World *_world;
     GLESDebugDraw *m_debugDraw;
-	b2Body *_wallsBody, *_groundBody, *wienerBody, *targetBody, *_personBody;
-	b2Fixture *_bottomFixture, *_wallsFixture, *_wienerFixture, *_targetFixture, *_personFixture;
+	b2Body *_wallsBody, *_groundBody, *wienerBody, *targetBody, *_personBody, *_policeArmBody;
+	b2Fixture *_bottomFixture, *_wallsFixture, *_wienerFixture, *_targetFixture, *_personFixture, *_policeArmFixture;
     CCSprite *_wiener, *_personLower, *_personUpper, *_target;
     b2MouseJoint *_mouseJoint;
     CCAction *_walkAction;
-    CCFiniteTimeAction *_idleAction;
-    CCAnimation *walkAnim, *idleAnim, *hitAnim;
+    CCFiniteTimeAction *_idleAction, *_deathAction, *_appearAction;
+    CCAnimation *walkAnim, *idleAnim, *hitAnim, *dogDeathAnim, *dogAppearAnim;
     CCFiniteTimeAction *_hitAction;
     CCSpriteBatchNode *spriteSheet;
     CCLabelTTF *scoreLabel, *droppedLabel;
     b2Vec2 p1, p2;
+    b2RevoluteJoint *policeArmJoint;
     NSMutableArray *floorBits, *xPositions, *characterTags, *wienerParameters;
-    NSMutableArray *personParameters, *movementPatterns, *movementParameters, *_touchLocations;
+    NSMutableArray *personParameters, *wakeParameters, *movementPatterns, *movementParameters, *_touchLocations;
     NSString *scoreText, *droppedText;
     int _points;
     int _droppedCount;
@@ -49,10 +50,12 @@
     struct bodyUserData {
         CCSprite *sprite1;
         CCSprite *sprite2;
-        float heightOffset;
-        float lengthOffset;
+        float heightOffset2;
+        float lengthOffset2;
         NSString *ogSprite2;
         NSString *altSprite2;
+        NSString *altSprite3; //the 3 here has a different meaning than the 2 above - ie it's the 3rd sprite
+        CCFiniteTimeAction *altAction;
     };
     
 	enum _entityCategory {
@@ -72,10 +75,13 @@
 
 @property (nonatomic, retain) CCSprite *personLower;
 @property (nonatomic, retain) CCSprite *personUpper;
+@property (nonatomic, retain) CCSprite *policeArm;
 @property (nonatomic, retain) CCSprite *wiener;
 @property (nonatomic, retain) CCSprite *target;
 @property (nonatomic, retain) CCAction *walkAction;
 @property (nonatomic, retain) CCAction *idleAction;
+@property (nonatomic, retain) CCAction *deathAction;
+@property (nonatomic, retain) CCAction *appearAction;
 @property (nonatomic, retain) NSString *hitFace;
 
 // returns a CCScene that contains the HelloWorldLayer as the only child
