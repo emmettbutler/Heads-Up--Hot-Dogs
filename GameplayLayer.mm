@@ -296,7 +296,7 @@ enum {
 
     if( xPos.intValue == winSize.width ){
         xVel = -1*velocityMul;
-        armOffset = -45;
+        armOffset = -38;
     }
     else {
         _personLower.flipX = YES;
