@@ -183,9 +183,15 @@ enum {
     //CCSprite *sprite = (CCSprite *)sender;
     
     CCLOG(@"applyForce: called with vel: %d", v.intValue);
-
+    
+    //int vThresh = 1;
+    
     b2Vec2 force = b2Vec2(v.intValue, 0);
     body->ApplyLinearImpulse(force, body->GetPosition());
+    
+    /*if(body->GetLinearVelocity().x < vThresh && body->GetLinearVelocity().x > -1*vThresh){
+        body->SetAwake(false);
+    }*/
 }
 
 -(void) walkInPauseContinue:(id)sender data:(void*)params{
@@ -198,7 +204,7 @@ enum {
     //CCSprite *sprite = (CCSprite *)sender;
 
     CCCallFuncND *walkAction = [CCCallFuncND actionWithTarget:self selector:@selector(applyForce:data:) data:incomingArray];
-    CCDelayTime *delay = [CCDelayTime actionWithDuration:(arc4random() % 2)+2];
+    CCDelayTime *delay = [CCDelayTime actionWithDuration:(((float)(arc4random() % 2000))/1000)];
     movementParameters = [[NSMutableArray alloc] initWithCapacity:2];
     NSNumber *opposite = [NSNumber numberWithInt:v.intValue*-1];
     [movementParameters addObject:b];
@@ -213,6 +219,8 @@ enum {
     int xVel, velocityMul, zIndex, fixtureUserData, armOffset;
     float hitboxHeight, hitboxWidth, hitboxCenterX, hitboxCenterY, density, restitution, friction, heightOffset;
 
+    NSString *ogHeadSprite;
+    
     CGSize winSize = [CCDirector sharedDirector].winSize;
     
     BOOL spawn = YES;
@@ -230,6 +238,7 @@ enum {
             self.personLower = [CCSprite spriteWithSpriteFrameName:@"BusinessMan_Walk_1.png"];
             self.personUpper = [CCSprite spriteWithSpriteFrameName:@"BusinessHead_NoDog_1.png"];
             self.hitFace = [NSString stringWithString:@"BusinessHead_Dog_1.png"];
+            ogHeadSprite = [NSString stringWithString:@"BusinessHead_NoDog_1.png"];
             _personLower.tag = 3;
             _personUpper.tag = 3;
             hitboxWidth = 22.0;
@@ -254,26 +263,28 @@ enum {
             }
             break;
         case 4: //police
-            self.personLower = [CCSprite spriteWithSpriteFrameName:@"cop_body.png"];
-            self.personUpper = [CCSprite spriteWithSpriteFrameName:@"BusinessHead_NoDog_1.png"];
+            self.personLower = [CCSprite spriteWithSpriteFrameName:@"Cop_Run_1.png"];
+            self.personUpper = [CCSprite spriteWithSpriteFrameName:@"Cop_Head_NoDog_1.png"];
+            self.hitFace = [NSString stringWithString:@"Cop_Head_Dog_1.png"];
             self.policeArm = [CCSprite spriteWithSpriteFrameName:@"cop_arm.png"];
+            ogHeadSprite = [NSString stringWithString:@"Cop_Head_NoDog_1.png"];
             _policeArm.tag = 11;
             _personLower.tag = 4;
             _personUpper.tag = 4;
             hitboxWidth = 22.0;
             hitboxHeight = 1;
             hitboxCenterX = 0;
-            hitboxCenterY = 2.6;
+            hitboxCenterY = 3.8;
             velocityMul = 300;
-            density = 10.0f;
+            density = 6.0f;
             restitution = .5f;
             friction = 1.0f;
             fixtureUserData = 4;
-            heightOffset = 1.0f;
-            for(int i = 1; i <= 1; i++){
+            heightOffset = 2.9f;
+            for(int i = 1; i <= 8; i++){
                 [walkAnimFrames addObject:
                  [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                  [NSString stringWithString:@"cop_body.png"]]];
+                  [NSString stringWithFormat:@"Cop_Run_%d.png", i]]];
             }
             for(int i = 1; i <= 2; i++){
                 [idleAnimFrames addObject:
@@ -285,14 +296,14 @@ enum {
 
     if( xPos.intValue == winSize.width ){
         xVel = -1*velocityMul;
-        armOffset = -50;
+        armOffset = -45;
     }
     else {
         _personLower.flipX = YES;
         _personUpper.flipX = YES;
         if(character.intValue == 4){
             _policeArm.flipX = YES;
-            armOffset = 50;
+            armOffset = 51;
         }
         xVel = 1*velocityMul;
     }
@@ -349,7 +360,7 @@ enum {
         ud->sprite1 = _personLower;
         ud->sprite2 = _personUpper;
         ud->heightOffset2 = heightOffset;
-        ud->ogSprite2 = [NSString stringWithString:@"BusinessHead_NoDog_1.png"];
+        ud->ogSprite2 = ogHeadSprite;
         ud->altSprite2 = _hitFace;
         
         b2BodyDef personBodyDef;
@@ -363,7 +374,7 @@ enum {
         personShape.SetAsBox(hitboxWidth/PTM_RATIO, hitboxHeight/PTM_RATIO, b2Vec2(hitboxCenterX, hitboxCenterY), 0);
         b2FixtureDef personShapeDef;
         personShapeDef.shape = &personShape;
-        personShapeDef.density = density;
+        personShapeDef.density = 0;
         personShapeDef.friction = friction;
         personShapeDef.restitution = restitution;
         personShapeDef.userData = (void *)fixtureUserData;
@@ -376,7 +387,7 @@ enum {
                                  (_personLower.contentSize.height)/PTM_RATIO/2);
         b2FixtureDef personBodyShapeDef;
         personBodyShapeDef.shape = &personBodyShape;
-        personBodyShapeDef.density = 11;
+        personBodyShapeDef.density = density;
         personBodyShapeDef.friction = 0;
         personBodyShapeDef.restitution = 0;
         personBodyShapeDef.filter.categoryBits = BODYBOX;
@@ -389,7 +400,7 @@ enum {
             
             b2BodyDef armBodyDef;
             armBodyDef.type = b2_dynamicBody;
-            armBodyDef.position.Set((xPos.floatValue+armOffset)/PTM_RATIO, 123.0f/PTM_RATIO);
+            armBodyDef.position.Set((xPos.floatValue+armOffset)/PTM_RATIO, 160.0f/PTM_RATIO);
             armBodyDef.userData = ud;
             _policeArmBody = _world->CreateBody(&armBodyDef);
             
