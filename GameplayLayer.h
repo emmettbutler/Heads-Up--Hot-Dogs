@@ -32,7 +32,7 @@
     CCLabelTTF *scoreLabel, *droppedLabel;
     b2Vec2 p1, p2;
     b2RevoluteJoint *policeArmJoint;
-    NSMutableArray *floorBits, *xPositions, *characterTags, *wienerParameters;
+    NSMutableArray *floorBits, *xPositions, *characterTags, *wienerParameters, *wienerDeathAnimFrames;
     NSMutableArray *personParameters, *wakeParameters, *movementPatterns, *movementParameters, *_touchLocations;
     NSString *scoreText, *droppedText;
     int _points;

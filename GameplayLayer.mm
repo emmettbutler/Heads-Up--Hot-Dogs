@@ -72,14 +72,14 @@ enum {
     int floor = arc4random() % 4;
     [self addChild:_wiener];
     
-    NSMutableArray *wienerDeathAnimFrames = [NSMutableArray array];
+    wienerDeathAnimFrames = [[NSMutableArray alloc] initWithCapacity:9];
     for(int i = 1; i <= 9; i++){
         [wienerDeathAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
           [NSString stringWithFormat:@"Dog_Die_%d.png", i]]];
     }
-    dogDeathAnim = [CCAnimation animationWithFrames:wienerDeathAnimFrames delay:.08f];
-    self.deathAction = [CCAnimate actionWithAnimation:dogDeathAnim];
+    dogDeathAnim = [CCAnimation animationWithFrames:wienerDeathAnimFrames delay:.1f];
+    self.deathAction = [[CCAnimate alloc] initWithAnimation:dogDeathAnim];
     
     bodyUserData *ud = new bodyUserData();
     ud->sprite1 = _wiener;
@@ -801,6 +801,8 @@ enum {
                 bodyUserData *ud = (bodyUserData *)dogBody->GetUserData();
                 //CCFiniteTimeAction *deathAnimAction = (CCFiniteTimeAction *)ud->altAction;
                 
+                CCAction *wienerDeathAction = (CCAction *)ud->altAction;
+                
                 id delay = [CCDelayTime actionWithDuration:_wienerKillDelay];
                 wienerParameters = [[NSMutableArray alloc] initWithCapacity:2];
                 [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
@@ -809,8 +811,8 @@ enum {
                 wienerParameters = [[NSMutableArray alloc] initWithCapacity:1];
                 [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
                 id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:wienerParameters];
-                id sequence = [CCSequence actions: delay, sleepAction, destroyAction, nil];
-                //id sequence = [CCSequence actions: delay, sleepAction, ud->altAction, destroyAction, nil];
+                //id sequence = [CCSequence actions: delay, sleepAction, destroyAction, nil];
+                id sequence = [CCSequence actions: delay, sleepAction, wienerDeathAction, destroyAction, nil];
                 [ud->sprite1 runAction:sequence]; 
             }
         }
@@ -1037,6 +1039,8 @@ enum {
     [personParameters release];
     [movementPatterns release];
     [movementParameters release];
+    [wienerDeathAnimFrames release];
+    [_deathAction release];
     
     
     delete personDogContactListener;
