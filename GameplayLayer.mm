@@ -813,7 +813,9 @@ enum {
                 id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:wienerParameters];
                 //id sequence = [CCSequence actions: delay, sleepAction, destroyAction, nil];
                 id sequence = [CCSequence actions: delay, sleepAction, wienerDeathAction, destroyAction, nil];
-                [ud->sprite1 runAction:sequence]; 
+                [ud->sprite1 stopAllActions];
+                [ud->sprite1 runAction:sequence];
+                CCLOG(@"Run death action");
             }
         }
 	}
