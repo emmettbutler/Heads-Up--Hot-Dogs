@@ -102,7 +102,7 @@ enum {
     wienerShapeDef.density = 0.2f;
     wienerShapeDef.friction = 0.2f;
     wienerShapeDef.userData = (void *)1;
-    wienerShapeDef.restitution = 0.5f;
+    wienerShapeDef.restitution = 0.3f;
     wienerShapeDef.filter.categoryBits = WIENER;
     //random assignment of floor to collide, ONLY FOR TESTING
     if(floor == 1){
@@ -294,14 +294,24 @@ enum {
             break;
     }
 
-    int lowerArmAngle = 5;
+    int lowerArmAngle = 0;
     int upperArmAngle = 55;
+    int armBodyXOffset = 8;
+    int armBodyYOffset = 40;
+    int armJointXOffset = 15;
+    int armJointYOffset = 40;
     
-    if( xPos.intValue == winSize.width ){
+    if(xPos.intValue > winSize.width - 10){
         xVel = -1*velocityMul;
-        armOffset = 38;
-        lowerArmAngle = 180 - lowerArmAngle;
-        upperArmAngle = 180 - upperArmAngle;
+        if(character.intValue == 4){
+            armOffset = 38;
+            armBodyXOffset = -6;
+            armJointXOffset = -10;
+            lowerArmAngle = 125;
+            upperArmAngle = 175;
+            _policeArm.flipX = YES;
+            _policeArm.flipY = YES;
+        }
     }
     else {
         _personLower.flipX = YES;
@@ -406,8 +416,8 @@ enum {
             b2BodyDef armBodyDef;
             armBodyDef.type = b2_dynamicBody;
             //TODO - set this and joint init properly for either facing direction
-            armBodyDef.position.Set((_personLower.position.x+(_policeArm.contentSize.width/2)+8)/PTM_RATIO, 
-                                    (_personLower.position.y+(40))/PTM_RATIO);
+            armBodyDef.position.Set((_personLower.position.x+(_policeArm.contentSize.width/2)+armBodyXOffset)/PTM_RATIO, 
+                                    (_personLower.position.y+(armBodyYOffset))/PTM_RATIO);
             armBodyDef.userData = ud;
             _policeArmBody = _world->CreateBody(&armBodyDef);
             
@@ -421,8 +431,8 @@ enum {
             
             b2RevoluteJointDef armJointDef;
             armJointDef.Initialize(_personBody, _policeArmBody, 
-                                   b2Vec2((_personLower.position.x+(15))/PTM_RATIO, 
-                                          (_personLower.position.y+(40))/PTM_RATIO));
+                                   b2Vec2((_personLower.position.x+(armJointXOffset))/PTM_RATIO, 
+                                          (_personLower.position.y+(armJointYOffset))/PTM_RATIO));
             armJointDef.enableMotor = true;
             armJointDef.enableLimit = true;
             armJointDef.motorSpeed = 0.0f;
@@ -511,10 +521,10 @@ enum {
     if(_spawnLimiter > 0){
         _spawnLimiter--;
     }
-    if(_personSpawnDelayTime > 2){
+    if(_personSpawnDelayTime > 4){
         _personSpawnDelayTime -= 1;
     }
-    if(_wienerSpawnDelayTime > 2){
+    if(_wienerSpawnDelayTime > 4){
         _wienerSpawnDelayTime -= 1;
     }
     if(_wienerKillDelay > 1){
@@ -555,8 +565,8 @@ enum {
         self.isTouchEnabled = YES;
         
         _spawnLimiter = [characterTags count] - ([characterTags count]-1);
-        _personSpawnDelayTime = 5.0f;
-        _wienerSpawnDelayTime = 5.0f;
+        _personSpawnDelayTime = 8.0f;
+        _wienerSpawnDelayTime = 8.0f;
         _wienerKillDelay = 5.0f;
         
         //initialize global arrays for possible x,y positions and charTags
@@ -700,9 +710,10 @@ enum {
 }
 
 -(void) tick: (ccTime) dt {
-    int32 velocityIterations = 8;
+    int32 velocityIterations = 3;
 	int32 positionIterations = 1;
     time++;
+    armSpeed = 3 * cosf(.1 * time);
     
 	_world->Step(dt, velocityIterations, positionIterations);
     
@@ -752,13 +763,12 @@ enum {
         }
         if(j->GetType() == e_revoluteJoint){
             b2RevoluteJoint *r = (b2RevoluteJoint *)j;
-            r->SetMotorSpeed(3 * cosf(.4 * time));
-            CCLOG(@"Joint speed: %0.2f", r->GetMotorSpeed());
+            r->SetMotorSpeed(armSpeed);
         }
     }
     
-    //[scoreLabel setString:[NSString stringWithFormat:@"%d", _points]];
-    //[droppedLabel setString:[NSString stringWithFormat:@"%d", _droppedCount]];
+    [scoreLabel setString:[NSString stringWithFormat:@"%d", _points]];
+    [droppedLabel setString:[NSString stringWithFormat:@"%d", _droppedCount]];
     
     b2Joint* prismJoint = NULL;
     PersonDogContact pdContact;

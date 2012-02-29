@@ -42,6 +42,7 @@
     float _wienerSpawnDelayTime;
     float _wienerKillDelay;
     float _currentRayAngle;
+    float armSpeed;
     BOOL _moving;
     BOOL _touchedDog;
     BOOL _rayTouchingDog;
