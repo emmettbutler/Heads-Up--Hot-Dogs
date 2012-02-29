@@ -46,6 +46,7 @@
     BOOL _touchedDog;
     BOOL _rayTouchingDog;
     NSString *currentAnimation;
+    int time;
 
     struct bodyUserData {
         CCSprite *sprite1;

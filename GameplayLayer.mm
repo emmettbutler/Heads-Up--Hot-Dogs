@@ -106,16 +106,16 @@ enum {
     wienerShapeDef.filter.categoryBits = WIENER;
     //random assignment of floor to collide, ONLY FOR TESTING
     if(floor == 1){
-        wienerShapeDef.filter.maskBits = PERSON | FLOOR1 | WIENER | TARGET;
+        wienerShapeDef.filter.maskBits = PERSON | FLOOR1 | TARGET;
     }
     else if(floor == 2){
-        wienerShapeDef.filter.maskBits = PERSON | FLOOR2 | WIENER | TARGET;
+        wienerShapeDef.filter.maskBits = PERSON | FLOOR2 | TARGET;
     }
     else if(floor == 3){
-        wienerShapeDef.filter.maskBits = PERSON | FLOOR3 | WIENER | TARGET;
+        wienerShapeDef.filter.maskBits = PERSON | FLOOR3 | TARGET;
     }
     else if(floor == 4){
-        wienerShapeDef.filter.maskBits = PERSON | FLOOR4 | WIENER | TARGET;
+        wienerShapeDef.filter.maskBits = PERSON | FLOOR4 | TARGET;
     }
     _wienerFixture = wienerBody->CreateFixture(&wienerShapeDef);
 
@@ -294,16 +294,21 @@ enum {
             break;
     }
 
+    int lowerArmAngle = 5;
+    int upperArmAngle = 55;
+    
     if( xPos.intValue == winSize.width ){
         xVel = -1*velocityMul;
-        armOffset = -38;
+        armOffset = 38;
+        lowerArmAngle = 180 - lowerArmAngle;
+        upperArmAngle = 180 - upperArmAngle;
     }
     else {
         _personLower.flipX = YES;
         _personUpper.flipX = YES;
         if(character.intValue == 4){
             _policeArm.flipX = YES;
-            armOffset = 51;
+            armOffset = 30;
         }
         xVel = 1*velocityMul;
     }
@@ -400,7 +405,9 @@ enum {
             
             b2BodyDef armBodyDef;
             armBodyDef.type = b2_dynamicBody;
-            armBodyDef.position.Set((xPos.floatValue+armOffset)/PTM_RATIO, 160.0f/PTM_RATIO);
+            //TODO - set this and joint init properly for either facing direction
+            armBodyDef.position.Set((_personLower.position.x+(_policeArm.contentSize.width/2)+8)/PTM_RATIO, 
+                                    (_personLower.position.y+(40))/PTM_RATIO);
             armBodyDef.userData = ud;
             _policeArmBody = _world->CreateBody(&armBodyDef);
             
@@ -408,18 +415,20 @@ enum {
             armShape.SetAsBox(_policeArm.contentSize.width/PTM_RATIO/2, _policeArm.contentSize.height/PTM_RATIO/2);
             b2FixtureDef armShapeDef;
             armShapeDef.shape = &armShape;
-            armShapeDef.density = 10;
+            armShapeDef.density = 0.0001;
             armShapeDef.filter.maskBits = 0x0000;
             _policeArmFixture = _policeArmBody->CreateFixture(&armShapeDef);
             
             b2RevoluteJointDef armJointDef;
-            armJointDef.Initialize(_personBody, _policeArmBody, b2Vec2((xPos.floatValue+armOffset)/PTM_RATIO, 123.0f/PTM_RATIO));
+            armJointDef.Initialize(_personBody, _policeArmBody, 
+                                   b2Vec2((_personLower.position.x+(15))/PTM_RATIO, 
+                                          (_personLower.position.y+(40))/PTM_RATIO));
             armJointDef.enableMotor = true;
             armJointDef.enableLimit = true;
-            armJointDef.motorSpeed = -10;
-            armJointDef.lowerAngle = CC_DEGREES_TO_RADIANS(9);
-            armJointDef.upperAngle = CC_DEGREES_TO_RADIANS(75);
-            armJointDef.maxMotorTorque = 700;
+            armJointDef.motorSpeed = 0.0f;
+            armJointDef.maxMotorTorque = 10000.0f;
+            armJointDef.lowerAngle = CC_DEGREES_TO_RADIANS(lowerArmAngle);
+            armJointDef.upperAngle = CC_DEGREES_TO_RADIANS(upperArmAngle);
             
             policeArmJoint = (b2RevoluteJoint*)_world->CreateJoint(&armJointDef);
         }
@@ -505,7 +514,7 @@ enum {
     if(_personSpawnDelayTime > 2){
         _personSpawnDelayTime -= 1;
     }
-    if(_wienerSpawnDelayTime > 1){
+    if(_wienerSpawnDelayTime > 2){
         _wienerSpawnDelayTime -= 1;
     }
     if(_wienerKillDelay > 1){
@@ -516,6 +525,8 @@ enum {
 -(id) init {
 	if( (self=[super init])) {
 		CGSize winSize = [CCDirector sharedDirector].winSize;
+        
+        time = 0;
         
         CCSprite *background = [CCSprite spriteWithFile:@"bg_philly.png"];
         background.anchorPoint = CGPointZero;
@@ -691,6 +702,7 @@ enum {
 -(void) tick: (ccTime) dt {
     int32 velocityIterations = 8;
 	int32 positionIterations = 1;
+    time++;
     
 	_world->Step(dt, velocityIterations, positionIterations);
     
@@ -738,10 +750,15 @@ enum {
                 _points += 100;
             }
         }
+        if(j->GetType() == e_revoluteJoint){
+            b2RevoluteJoint *r = (b2RevoluteJoint *)j;
+            r->SetMotorSpeed(3 * cosf(.4 * time));
+            CCLOG(@"Joint speed: %0.2f", r->GetMotorSpeed());
+        }
     }
     
-    [scoreLabel setString:[NSString stringWithFormat:@"%d", _points]];
-    [droppedLabel setString:[NSString stringWithFormat:@"%d", _droppedCount]];
+    //[scoreLabel setString:[NSString stringWithFormat:@"%d", _points]];
+    //[droppedLabel setString:[NSString stringWithFormat:@"%d", _droppedCount]];
     
     b2Joint* prismJoint = NULL;
     PersonDogContact pdContact;
