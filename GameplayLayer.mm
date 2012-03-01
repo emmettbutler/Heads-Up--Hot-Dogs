@@ -332,7 +332,7 @@ enum {
                 }
                 for(b2Fixture* f = body->GetFixtureList(); f; f = f->GetNext()){
                     if(f->GetFilterData().maskBits == floorBit.intValue){
-                        if(body->GetLinearVelocity().x * xVel < 0){
+                        if(ud->sprite1.flipX != _personLower.flipX){
                             spawn = NO;
                         }
                     }
@@ -364,6 +364,8 @@ enum {
         self.idleAction = [CCAnimate actionWithAnimation:idleAnim];
         CCRepeat *repeatAction = [CCRepeat actionWithAction:_idleAction times:10];
         CCSequence *sequence = [CCSequence actions: _idleAction, repeatAction, nil];
+        
+        //TODO - set up a range of z indices so multisprites work nicely
         
         _personLower.position = ccp(xPos.intValue, 123);
         _personUpper.position = ccp(xPos.intValue, 123);
@@ -475,7 +477,7 @@ enum {
     
     CCLOG(@"Wiener Callback");
     
-    id delay = [CCDelayTime actionWithDuration:_personSpawnDelayTime];
+    id delay = [CCDelayTime actionWithDuration:_wienerSpawnDelayTime];
     id callBackAction = [CCCallFuncND actionWithTarget: self selector: @selector(wienerCallback:data:) data:wienerParameters];
     id sequence = [CCSequence actions: delay, callBackAction, nil];
     [self runAction:sequence]; 
@@ -498,7 +500,7 @@ enum {
     [personParameters addObject:xPos];
     [personParameters addObject:characterTag];
         
-    id delay = [CCDelayTime actionWithDuration:_wienerSpawnDelayTime];
+    id delay = [CCDelayTime actionWithDuration:_personSpawnDelayTime];
     id callBackAction = [CCCallFuncND actionWithTarget: self selector: @selector(spawnCallback:data:) data:personParameters];
     id sequence = [CCSequence actions: delay, callBackAction, nil];
     [self runAction:sequence];    
@@ -524,10 +526,10 @@ enum {
     if(_spawnLimiter > 0){
         _spawnLimiter--;
     }
-    if(_personSpawnDelayTime > 2){
+    if(_personSpawnDelayTime > 1){
         _personSpawnDelayTime -= 1;
     }
-    if(_wienerSpawnDelayTime > 2){
+    if(_wienerSpawnDelayTime > 4){
         _wienerSpawnDelayTime -= 1;
     }
     if(_wienerKillDelay > 1){
@@ -897,6 +899,7 @@ enum {
     b2Vec2 locationWorld = b2Vec2(location.x/PTM_RATIO, location.y/PTM_RATIO);
     
     _touchedDog = NO;
+    b2Filter filter;
     
     for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
         if (body->GetUserData() != NULL && body->GetUserData() != (void*)100) {
@@ -917,6 +920,13 @@ enum {
                     _mouseJoint = (b2MouseJoint *)_world->CreateJoint(&md);
                     body->SetAwake(true);
                     body->SetFixedRotation(true);
+                    
+                    filter.maskBits = 0x0000;
+                    for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
+                        if(fixture->GetUserData() == (void*)1){
+                            fixture->SetFilterData(filter);
+                        }
+                    }
                     
                     _touchedDog = YES;
                     break;
@@ -976,6 +986,21 @@ enum {
         _mouseJoint = NULL;
     }
     
+    b2Filter filter;
+    int floor = arc4random() % 4;
+    if(floor == 1){
+        filter.maskBits = PERSON | FLOOR1 | TARGET;
+    }
+    else if(floor == 2){
+        filter.maskBits = PERSON | FLOOR2 | TARGET;
+    }
+    else if(floor == 3){
+        filter.maskBits = PERSON | FLOOR3 | TARGET;
+    }
+    else if(floor == 4){
+        filter.maskBits = PERSON | FLOOR4 | TARGET;
+    }
+    
     UITouch *myTouch = [touches anyObject];
     CGPoint location = [myTouch locationInView:[myTouch view]];
     location = [[CCDirector sharedDirector] convertToGL:location];
@@ -986,9 +1011,12 @@ enum {
             for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
     			bodyUserData *ud = (bodyUserData *)body->GetUserData();
                 if(ud->sprite1.tag == 1){
-                    if (fixture->TestPoint(locationWorld)) {
+                    if(fixture->TestPoint(locationWorld)) {
                         body->SetLinearVelocity(b2Vec2(0, 0));
                         body->SetFixedRotation(false);
+                    }
+                    if(fixture->GetUserData() == (void*)1){
+                        fixture->SetFilterData(filter);
                     }
                 }
             }
