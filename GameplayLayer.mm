@@ -17,7 +17,7 @@
 #define FLOOR3_HT .8
 #define FLOOR4_HT 1.2
 #define DOG_SPAWN_MINHT 240
-#define SPAWN_LIMIT_DECREMENT_DELAY 10
+#define SPAWN_LIMIT_DECREMENT_DELAY 1
 
 // enums that will be used as tags
 enum {
@@ -327,6 +327,9 @@ enum {
         if (body->GetUserData() != NULL && body->GetUserData() != (void*)100) {
 			bodyUserData *ud = (bodyUserData *)body->GetUserData();
             if(ud->sprite1.tag >= 3 && ud->sprite1.tag <= 10){
+                if(ud->sprite1.tag == 4 && character.intValue == 4){
+                    spawn = NO;
+                }
                 for(b2Fixture* f = body->GetFixtureList(); f; f = f->GetNext()){
                     if(f->GetFilterData().maskBits == floorBit.intValue){
                         if(body->GetLinearVelocity().x * xVel < 0){
@@ -521,10 +524,10 @@ enum {
     if(_spawnLimiter > 0){
         _spawnLimiter--;
     }
-    if(_personSpawnDelayTime > 1){
+    if(_personSpawnDelayTime > 2){
         _personSpawnDelayTime -= 1;
     }
-    if(_wienerSpawnDelayTime > 1){
+    if(_wienerSpawnDelayTime > 2){
         _wienerSpawnDelayTime -= 1;
     }
     if(_wienerKillDelay > 1){
