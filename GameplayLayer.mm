@@ -100,7 +100,7 @@ enum {
     b2FixtureDef wienerShapeDef;
     wienerShapeDef.shape = &wienerShape;
     wienerShapeDef.density = 0.2f;
-    wienerShapeDef.friction = 0.2f;
+    wienerShapeDef.friction = 1.0f;
     wienerShapeDef.userData = (void *)1;
     wienerShapeDef.restitution = 0.3f;
     wienerShapeDef.filter.categoryBits = WIENER;
@@ -248,7 +248,7 @@ enum {
             velocityMul = 300;
             density = 10.0f;
             restitution = .8f;
-            friction = 3.9f;
+            friction = 0.3f;
             fixtureUserData = 3;
             heightOffset = 2.9f;
             for(int i = 1; i <= 6; i++){
@@ -275,10 +275,10 @@ enum {
             hitboxHeight = 1;
             hitboxCenterX = 0;
             hitboxCenterY = 3.8;
-            velocityMul = 300;
+            velocityMul = 350;
             density = 6.0f;
             restitution = .5f;
-            friction = 1.0f;
+            friction = 4.0f;
             fixtureUserData = 4;
             heightOffset = 2.9f;
             for(int i = 1; i <= 8; i++){
@@ -521,10 +521,10 @@ enum {
     if(_spawnLimiter > 0){
         _spawnLimiter--;
     }
-    if(_personSpawnDelayTime > 4){
+    if(_personSpawnDelayTime > 1){
         _personSpawnDelayTime -= 1;
     }
-    if(_wienerSpawnDelayTime > 4){
+    if(_wienerSpawnDelayTime > 1){
         _wienerSpawnDelayTime -= 1;
     }
     if(_wienerKillDelay > 1){
@@ -725,41 +725,7 @@ enum {
     
     for(b2Joint* j = _world->GetJointList(); j; j = j->GetNext()){
         if(j->GetType() == e_prismaticJoint){
-            b2PrismaticJoint* p = (b2PrismaticJoint *)j;
-            if((float32)p->GetJointTranslation() > (float32)p->GetUpperLimit() - .01 || 
-               (float32)p->GetJointTranslation() < (float32)p->GetLowerLimit() + .01){
-                _world->DestroyJoint(j);
-                b2Body* b = j->GetBodyA();
-                for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()){
-                    if(f->GetUserData() == (void*)1){
-                        filter = f->GetFilterData();
-                        //TODO - find a way to assign this appropriately (maybe random, maybe not)
-                        //TODO - replace all copypasta of this code with one single one outside of any loop in tick() (MAYBE)
-                        if(floor == 1){
-                            filter.maskBits = PERSON | FLOOR1 | WIENER | TARGET;
-                        }
-                        else if(floor == 2){
-                            filter.maskBits = PERSON | FLOOR2 | WIENER | TARGET;
-                        }
-                        else if(floor == 3){
-                            filter.maskBits = PERSON | FLOOR3 | WIENER | TARGET;
-                        }
-                        else{
-                            filter.maskBits = PERSON | FLOOR4 | WIENER | TARGET;
-                        }
-                        f->SetFilterData(filter);
-                    }
-                }
-                CCLOG(@"Prism joint destroyed");
-                b = j->GetBodyB();
-                bodyUserData *ud = (bodyUserData *)b->GetUserData();
-                CCSprite *sprite2 = (CCSprite *)ud->sprite2;
-                NSString *ogSprite2 = (NSString *)ud->ogSprite2;
-                [sprite2 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:ogSprite2] ];
-            }
-            else {
-                _points += 100;
-            }
+
         }
         if(j->GetType() == e_revoluteJoint){
             b2RevoluteJoint *r = (b2RevoluteJoint *)j;
@@ -791,29 +757,6 @@ enum {
                 CCLOG(@"Dog/Person Collision");
                 _points += 10;
                 CCLOG(@"Dog Y Vel: %0.2f", dogBody->GetLinearVelocity().x);
-                if(dogBody->GetLinearVelocity().y < .5f){
-                    _points += 50;
-            
-                    b2PrismaticJointDef jointDef;
-                    b2Vec2 worldAxis(1.0f, 0.0f);
-                    jointDef.lowerTranslation = -.3f;
-                    jointDef.upperTranslation = .3f;
-                    jointDef.enableLimit = true;
-                    jointDef.collideConnected = true;
-                    jointDef.Initialize(dogBody, pBody, dogBody->GetWorldCenter(), worldAxis);
-                    prismJoint = _world->CreateJoint(&jointDef);
-                    CCLOG(@"Prism joint created (dog maskBits: %d)", filter.maskBits);
-                    
-                    filter = pdContact.fixtureA->GetFilterData();
-                    filter.maskBits = 0x0000;
-                    pdContact.fixtureA->SetFilterData(filter);
-                    
-                    bodyUserData *ud = (bodyUserData*)pBody->GetUserData();
-                    CCSprite *sprite2 = (CCSprite *)ud->sprite2;
-                    NSString *altSprite2 = (NSString *)ud->altSprite2;
-                    [sprite2 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:altSprite2] ];
-                    
-                }
             } 
             else if (pdContact.fixtureB->GetUserData() == (void*)2){
                 tBody = pdContact.fixtureB->GetBody();
