@@ -921,12 +921,12 @@ enum {
                     body->SetAwake(true);
                     body->SetFixedRotation(true);
                     
-                    filter.maskBits = 0x0000;
+                    /*filter.maskBits = 0x0000;
                     for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
                         if(fixture->GetUserData() == (void*)1){
                             fixture->SetFilterData(filter);
                         }
-                    }
+                    }*/
                     
                     _touchedDog = YES;
                     break;
@@ -986,7 +986,7 @@ enum {
         _mouseJoint = NULL;
     }
     
-    b2Filter filter;
+    /*b2Filter filter;
     int floor = arc4random() % 4;
     if(floor == 1){
         filter.maskBits = PERSON | FLOOR1 | TARGET;
@@ -999,7 +999,7 @@ enum {
     }
     else if(floor == 4){
         filter.maskBits = PERSON | FLOOR4 | TARGET;
-    }
+    }*/
     
     UITouch *myTouch = [touches anyObject];
     CGPoint location = [myTouch locationInView:[myTouch view]];
@@ -1016,7 +1016,7 @@ enum {
                         body->SetFixedRotation(false);
                     }
                     if(fixture->GetUserData() == (void*)1){
-                        fixture->SetFilterData(filter);
+                        //fixture->SetFilterData(filter);
                     }
                 }
             }
