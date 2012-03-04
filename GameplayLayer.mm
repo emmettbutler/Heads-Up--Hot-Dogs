@@ -938,41 +938,42 @@ enum {
     
     _touchedDog = NO;
     b2Filter filter;
+    int b = 0;
     
     for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
         if (body->GetUserData() != NULL && body->GetUserData() != (void*)100) {
-            b2Fixture *fixture = body->GetFixtureList();
             bodyUserData *ud = (bodyUserData *)body->GetUserData();
             if(ud->sprite1.tag == 1){
-                if (fixture->TestPoint(locationWorld)) {
-                    [ud->sprite1 stopAllActions];
+                for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
+                    fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
+                    if (fixture->TestPoint(locationWorld)) {
+                        [ud->sprite1 stopAllActions];
                     
-                    CCLOG(@"Touching hotdog");
-                    b2MouseJointDef md;
-                    md.bodyA = _groundBody;
-                    md.bodyB = body;
-                    md.target = locationWorld;
-                    md.collideConnected = true;
-                    md.maxForce = 10000.0f * body->GetMass();
+                        CCLOG(@"Touching hotdog");
+                        b2MouseJointDef md;
+                        md.bodyA = _groundBody;
+                        md.bodyB = body;
+                        md.target = locationWorld;
+                        md.collideConnected = true;
+                        md.maxForce = 10000.0f * body->GetMass();
                     
-                    _mouseJoint = (b2MouseJoint *)_world->CreateJoint(&md);
-                    body->SetAwake(true);
-                    body->SetFixedRotation(true);
+                        _mouseJoint = (b2MouseJoint *)_world->CreateJoint(&md);
+                        body->SetAwake(true);
+                        body->SetFixedRotation(true);
                     
-                    filter.maskBits = 0x0000;
-                    for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
-                        fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
+                        
                         CCLOG(@"Fixture user data->tag: %d", fUd->tag);
-                        if(fUd->tag == 1){
-                            fixture->SetFilterData(filter);
-                        }
+
+                        _touchedDog = YES;
+                        b = 1;
+                        break;
                     }
-                    
-                    _touchedDog = YES;
-                    break;
+                    else {
+                        _touchedDog = NO;
+                    }
                 }
-                else {
-                    _touchedDog = NO;
+                if(b == 1){
+                    break;
                 }
             }
 		}
@@ -990,44 +991,23 @@ enum {
     
     //CCLOG(@"Grab @ (%0.2f, %0.2f)", locationWorld.x*PTM_RATIO, locationWorld.y*PTM_RATIO);
     
+    b2Filter filter;
     _mouseJoint->SetTarget(locationWorld);
-    bodyUserData *ud = (bodyUserData *)_mouseJoint->GetBodyB()->GetUserData();
+    b2Body *body = _mouseJoint->GetBodyB();
+    bodyUserData *ud = (bodyUserData *)body->GetUserData();
     CCSprite *sprite = ud->sprite1;
+    
+    for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
+        fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
+        if(fUd->tag == 1){
+            filter.maskBits = 0x0000;
+            fixture->SetFilterData(filter);
+        }
+    }
+    
     [sprite stopAllActions];
 }
 
--(void)ccTouchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
-    if (_mouseJoint) {
-        _world->DestroyJoint(_mouseJoint);
-        _mouseJoint = NULL;
-    }
-    
-    b2Filter filter;
-    
-    UITouch *myTouch = [touches anyObject];
-    CGPoint location = [myTouch locationInView:[myTouch view]];
-    location = [[CCDirector sharedDirector] convertToGL:location];
-    b2Vec2 locationWorld = b2Vec2(location.x/PTM_RATIO, location.y/PTM_RATIO);
-    
-    for (b2Body* body = _world->GetBodyList(); body; body = body->GetNext()){
-        if (body->GetUserData() != NULL  && body->GetUserData() != (void*)100) {
-            for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
-    			bodyUserData *ud = (bodyUserData *)body->GetUserData();
-                if(ud->sprite1.tag == 1){
-                    fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
-                    if (fixture->TestPoint(locationWorld)) {
-                        body->SetLinearVelocity(b2Vec2(0, 0));
-                        body->SetFixedRotation(false);
-                    }
-                    if(fUd->tag == 1){
-                        filter.maskBits = fUd->ogCollideFilters;
-                        fixture->SetFilterData(filter);
-                    }
-                }
-            }
-		}
-    }
-}
 
 - (void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
     if (_mouseJoint) {
@@ -1054,7 +1034,10 @@ enum {
                     }
                     if(fUd->tag == 1){
                         filter.maskBits = fUd->ogCollideFilters;
+                        CCLOG(@"Dog filter mask: %d", fixture->GetFilterData().maskBits);
                         fixture->SetFilterData(filter);
+                        CCLOG(@"Dog filter mask: %d", fixture->GetFilterData().maskBits);
+                        
                     }
                 }
             }
