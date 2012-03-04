@@ -61,6 +61,16 @@ enum {
     }
 }
 
+-(void)setRotation:(id)sender data:(void*)params {
+    NSMutableArray *incomingArray = (NSMutableArray *) params;
+    NSValue *b = (NSValue *)[incomingArray objectAtIndex:0];
+    NSNumber *angle = (NSNumber *)[incomingArray objectAtIndex:1];
+    b2Body *body = (b2Body *)[b pointerValue];
+    
+    b2Vec2 pos = body->GetPosition();
+    body->SetTransform(pos, angle.intValue);
+}
+
 -(void)putDog:(id)sender data:(void*)params {
     NSMutableArray *incomingArray = (NSMutableArray *) params;
     NSValue *loc = (NSValue *)[incomingArray objectAtIndex: 0];
@@ -818,8 +828,11 @@ enum {
                 wienerParameters = [[NSMutableArray alloc] initWithCapacity:1];
                 [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
                 id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:wienerParameters];
-                //id sequence = [CCSequence actions: delay, sleepAction, destroyAction, nil];
-                id sequence = [CCSequence actions: delay, sleepAction, wienerDeathAction, destroyAction, nil];
+                wienerParameters = [[NSMutableArray alloc] initWithCapacity:2];
+                [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
+                [wienerParameters addObject:[NSNumber numberWithInt:0]];
+                id angleAction = [CCCallFuncND actionWithTarget:self selector:@selector(setRotation:data:) data:wienerParameters];
+                id sequence = [CCSequence actions: delay, sleepAction, angleAction, wienerDeathAction, destroyAction, nil];
                 [ud->sprite1 stopAllActions];
                 [ud->sprite1 runAction:sequence];
                 CCLOG(@"Run death action");
@@ -940,7 +953,6 @@ enum {
     b2Vec2 locationWorld = b2Vec2(location.x/PTM_RATIO, location.y/PTM_RATIO);
     
     _touchedDog = NO;
-    b2Filter filter;
     int b = 0;
     
     for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
@@ -963,8 +975,6 @@ enum {
                         _mouseJoint = (b2MouseJoint *)_world->CreateJoint(&md);
                         body->SetAwake(true);
                         body->SetFixedRotation(true);
-                    
-                        
                         CCLOG(@"Fixture user data->tag: %d", fUd->tag);
 
                         _touchedDog = YES;
