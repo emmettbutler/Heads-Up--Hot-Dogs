@@ -202,7 +202,6 @@ enum {
     NSValue *b = (NSValue *)[incomingArray objectAtIndex:0];
     NSNumber *v = (NSNumber *)[incomingArray objectAtIndex:1];
     b2Body *body = (b2Body *)[b pointerValue];
-    //CCSprite *sprite = (CCSprite *)sender;
     
     CCLOG(@"applyForce: called with vel: %d", v.intValue);
     
@@ -234,8 +233,6 @@ enum {
     NSNumber *v = (NSNumber *)[incomingArray objectAtIndex:1];
     NSValue *idle = (NSValue *)[incomingArray objectAtIndex:2];
     CCSequence *idleAction = (CCSequence *)[idle pointerValue];
-    //b2Body *body = (b2Body *)[b pointerValue];
-    //CCSprite *sprite = (CCSprite *)sender;
 
     CCCallFuncND *walkAction = [CCCallFuncND actionWithTarget:self selector:@selector(applyForce:data:) data:incomingArray];
     CCDelayTime *delay = [CCDelayTime actionWithDuration:(((float)(arc4random() % 2000))/1000)];
@@ -458,7 +455,6 @@ enum {
             
             b2BodyDef armBodyDef;
             armBodyDef.type = b2_dynamicBody;
-            //TODO - set this and joint init properly for either facing direction
             armBodyDef.position.Set((_personLower.position.x+(_policeArm.contentSize.width/2)+armBodyXOffset)/PTM_RATIO, 
                                     (_personLower.position.y+(armBodyYOffset))/PTM_RATIO);
             armBodyDef.userData = ud;
@@ -507,16 +503,11 @@ enum {
 
 -(void)wienerCallback:(id)sender data:(void *)params {
     CGSize winSize = [CCDirector sharedDirector].winSize;
-    //NSMutableArray *incomingArray = (NSMutableArray *) params;
-    //NSValue *loc = (NSValue *)[incomingArray objectAtIndex:0];
-    
     [self putDog:self data:params];
     
     wienerParameters = [[NSMutableArray alloc] initWithCapacity:1];
     NSValue *location = [NSValue valueWithCGPoint:CGPointMake(arc4random() % (int)winSize.width, DOG_SPAWN_MINHT+(arc4random() % (int)(winSize.height-DOG_SPAWN_MINHT)))];
     [wienerParameters addObject:location];
-    
-    //CCLOG(@"Wiener Callback");
     
     id delay = [CCDelayTime actionWithDuration:_wienerSpawnDelayTime];
     id callBackAction = [CCCallFuncND actionWithTarget: self selector: @selector(wienerCallback:data:) data:wienerParameters];
@@ -533,7 +524,6 @@ enum {
     xPos = [NSNumber numberWithInt:xPosition.intValue];
     
     characterTag = [characterTags objectAtIndex:arc4random() % ([characterTags count]-_spawnLimiter)];
-    //characterTag = [NSNumber numberWithInt:3];
     
     [self walkIn:self data:params];
 
@@ -814,10 +804,7 @@ enum {
             }
             else if (fBUd->tag == 100){
                 CCLOG(@"Dog/Ground Collision (Dog y Velocity: %0.2f)", dogBody->GetLinearVelocity().y);
-                
                 bodyUserData *ud = (bodyUserData *)dogBody->GetUserData();
-                //CCFiniteTimeAction *deathAnimAction = (CCFiniteTimeAction *)ud->altAction;
-                
                 CCAction *wienerDeathAction = (CCAction *)ud->altAction;
                 
                 id delay = [CCDelayTime actionWithDuration:_wienerKillDelay];
@@ -844,7 +831,6 @@ enum {
     _currentRayAngle += 360 / 5.0 / 60.0 * DEGTORAD;
     float rayLength = 1000;
     p1 = b2Vec2(winSize.width/2/PTM_RATIO, winSize.height/2/PTM_RATIO);
-    //p1 = b2Vec2(0, 20);
     p2 = p1 + rayLength * b2Vec2(sinf(_currentRayAngle), cosf(_currentRayAngle));
     b2RayCastInput input;
     input.p1 = p1;
@@ -884,14 +870,6 @@ enum {
                                 b2Vec2 intersectionPoint = p1 + closestFraction * (p2 - p1);
                                 _rayTouchingDog = true;
                                 //CCLOG(@"Ray hit dog fixture @ %0.2f, %0.2f", intersectionPoint.x, intersectionPoint.y);
-                            }
-                            if(fUd->tag == 1){
-                                if(b->GetPosition().y*PTM_RATIO > 200){
-                                    b2Filter filter;
-                                    filter = f->GetFilterData();
-                                    filter.maskBits = fUd->ogCollideFilters;
-                                    //f->SetFilterData(filter);
-                                }
                             }
                         }
                     }
@@ -939,7 +917,6 @@ enum {
             }
 		}
         else{
-            //_world->DestroyBody(b);
         }
 	}
 }
