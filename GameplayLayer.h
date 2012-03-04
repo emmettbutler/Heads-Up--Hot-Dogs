@@ -60,6 +60,11 @@
         CCAction *altAction;
     };
     
+    struct fixtureUserData {
+        int tag;
+        int ogCollideFilters;
+    };
+    
 	enum _entityCategory {
 		FLOOR1  = 0x0001,
         FLOOR2  = 0x0002,

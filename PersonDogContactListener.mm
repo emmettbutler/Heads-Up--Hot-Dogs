@@ -8,6 +8,7 @@
 
 #include "PersonDogContactListener.h"
 #include "cocos2d.h"
+#include "GameplayLayer.h"
 
 PersonDogContactListener::PersonDogContactListener() : contacts(){
 	
@@ -18,14 +19,16 @@ PersonDogContactListener::~PersonDogContactListener(){
 }
 
 void PersonDogContactListener::BeginContact(b2Contact* contact){
-    bool isADog = contact->GetFixtureA()->GetUserData() == (void *)1;
-	bool isBDog = contact->GetFixtureB()->GetUserData() == (void *)1;
-    bool isATarget = contact->GetFixtureA()->GetUserData() == (void *)2;
-	bool isBTarget = contact->GetFixtureB()->GetUserData() == (void *)2;
-	bool isAPerson = contact->GetFixtureA()->GetUserData() >= (void *)3 && contact->GetFixtureA()->GetUserData() <= (void *)10;
-	bool isBPerson = contact->GetFixtureB()->GetUserData() >= (void *)3 && contact->GetFixtureB()->GetUserData() <= (void *)10;
-    bool isAGround = contact->GetFixtureA()->GetUserData() == (void *)100;
-	bool isBGround = contact->GetFixtureB()->GetUserData() == (void *)100;
+    fixtureUserData *fAUd = (fixtureUserData *)contact->GetFixtureA()->GetUserData();
+    fixtureUserData *fBUd = (fixtureUserData *)contact->GetFixtureB()->GetUserData();
+    bool isADog = fAUd->tag == 1;
+	bool isBDog = fBUd->tag == 1;
+    bool isATarget = fAUd->tag == 2;
+	bool isBTarget = fBUd->tag == 2;
+	bool isAPerson = fAUd->tag >= 3 && fAUd->tag <= 10;
+	bool isBPerson = fBUd->tag >= 3 && fBUd->tag <= 10;
+    bool isAGround = fAUd->tag == 100;
+	bool isBGround = fBUd->tag == 100;
     
     PersonDogContact personDogContact;
     
