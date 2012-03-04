@@ -266,9 +266,9 @@ enum {
             _personLower.tag = 3;
             _personUpper.tag = 3;
             hitboxWidth = 22.0;
-            hitboxHeight = 1;
+            hitboxHeight = .0001;
             hitboxCenterX = 0;
-            hitboxCenterY = 3.8;
+            hitboxCenterY = 4;
             velocityMul = 300;
             density = 10.0f;
             restitution = .8f;
@@ -296,9 +296,9 @@ enum {
             _personLower.tag = 4;
             _personUpper.tag = 4;
             hitboxWidth = 22.0;
-            hitboxHeight = 1;
+            hitboxHeight = .0001;
             hitboxCenterX = 0;
-            hitboxCenterY = 3.8;
+            hitboxCenterY = 4.1;
             velocityMul = 350;
             density = 6.0f;
             restitution = .5f;
