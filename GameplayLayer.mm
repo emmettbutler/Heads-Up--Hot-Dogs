@@ -121,7 +121,7 @@ enum {
     else if(floor == 3){
         f = f | FLOOR3;
     }
-    else if(floor == 4){
+    else {
         f = f | FLOOR4;
     }
     fUd2->ogCollideFilters = f;
@@ -135,6 +135,8 @@ enum {
     wienerShapeDef.restitution = 0.3f;
     wienerShapeDef.filter.categoryBits = WIENER;
     _wienerFixture = wienerBody->CreateFixture(&wienerShapeDef);
+    
+    CCLOG(@"Spawned wiener with maskBits: %d", wienerShapeDef.filter.maskBits);
     
     wienerBody->SetAwake(false);
     
@@ -412,31 +414,31 @@ enum {
         personBodyDef.fixedRotation = true;
         _personBody = _world->CreateBody(&personBodyDef);
 
+        fixtureUserData *fUd1 = new fixtureUserData();
         b2PolygonShape personShape;
         personShape.SetAsBox(hitboxWidth/PTM_RATIO, hitboxHeight/PTM_RATIO, b2Vec2(hitboxCenterX, hitboxCenterY), 0);
         b2FixtureDef personShapeDef;
-        fixtureUserData *fUd = new fixtureUserData();
-        fUd->tag = fTag;
+        fUd1->tag = fTag;
         personShapeDef.shape = &personShape;
         personShapeDef.density = 0;
         personShapeDef.friction = friction;
         personShapeDef.restitution = restitution;
-        personShapeDef.userData = fUd;
+        personShapeDef.userData = fUd1;
         personShapeDef.filter.categoryBits = PERSON;
         personShapeDef.filter.maskBits = WIENER;
         _personFixture = _personBody->CreateFixture(&personShapeDef);
         
+        fixtureUserData *fUd2 = new fixtureUserData();
         b2PolygonShape personBodyShape;
-        personBodyShape.SetAsBox(_personLower.contentSize.width/PTM_RATIO/2,
-                                 (_personLower.contentSize.height)/PTM_RATIO/2);
+        personBodyShape.SetAsBox(_personLower.contentSize.width/PTM_RATIO/2,(_personLower.contentSize.height)/PTM_RATIO/2);
         b2FixtureDef personBodyShapeDef;
-        fUd->tag = 50+fTag;
+        fUd2->tag = 50+fTag;
         personBodyShapeDef.shape = &personBodyShape;
         personBodyShapeDef.density = density;
         personBodyShapeDef.friction = 0;
         personBodyShapeDef.restitution = 0;
         personBodyShapeDef.filter.categoryBits = BODYBOX;
-        personBodyShapeDef.userData = fUd;
+        personBodyShapeDef.userData = fUd2;
         personBodyShapeDef.filter.maskBits = floorBit.intValue;
         _personFixture = _personBody->CreateFixture(&personBodyShapeDef);
         
@@ -504,7 +506,7 @@ enum {
     NSValue *location = [NSValue valueWithCGPoint:CGPointMake(arc4random() % (int)winSize.width, DOG_SPAWN_MINHT+(arc4random() % (int)(winSize.height-DOG_SPAWN_MINHT)))];
     [wienerParameters addObject:location];
     
-    CCLOG(@"Wiener Callback");
+    //CCLOG(@"Wiener Callback");
     
     id delay = [CCDelayTime actionWithDuration:_wienerSpawnDelayTime];
     id callBackAction = [CCCallFuncND actionWithTarget: self selector: @selector(wienerCallback:data:) data:wienerParameters];
@@ -873,8 +875,9 @@ enum {
                             if(fUd->tag == 1){
                                 if(b->GetPosition().y*PTM_RATIO > 200){
                                     b2Filter filter;
+                                    filter = f->GetFilterData();
                                     filter.maskBits = fUd->ogCollideFilters;
-                                    f->SetFilterData(filter);
+                                    //f->SetFilterData(filter);
                                 }
                             }
                         }
@@ -1000,6 +1003,7 @@ enum {
     for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
         fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
         if(fUd->tag == 1){
+            filter = fixture->GetFilterData();
             filter.maskBits = 0x0000;
             fixture->SetFilterData(filter);
         }
@@ -1033,6 +1037,44 @@ enum {
                         body->SetFixedRotation(false);
                     }
                     if(fUd->tag == 1){
+                        filter = fixture->GetFilterData();
+                        filter.maskBits = fUd->ogCollideFilters;
+                        CCLOG(@"Dog filter mask: %d", fixture->GetFilterData().maskBits);
+                        fixture->SetFilterData(filter);
+                        CCLOG(@"Dog filter mask: %d", fixture->GetFilterData().maskBits);
+                        
+                    }
+                }
+            }
+		}
+    }
+}
+
+- (void)ccTouchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
+    if (_mouseJoint) {
+        _world->DestroyJoint(_mouseJoint);
+        _mouseJoint = NULL;
+    }
+    
+    b2Filter filter;
+    
+    UITouch *myTouch = [touches anyObject];
+    CGPoint location = [myTouch locationInView:[myTouch view]];
+    location = [[CCDirector sharedDirector] convertToGL:location];
+    b2Vec2 locationWorld = b2Vec2(location.x/PTM_RATIO, location.y/PTM_RATIO);
+    
+    for (b2Body* body = _world->GetBodyList(); body; body = body->GetNext()){
+        if (body->GetUserData() != NULL  && body->GetUserData() != (void*)100) {
+            for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
+    			bodyUserData *ud = (bodyUserData *)body->GetUserData();
+                if(ud->sprite1.tag == 1){
+                    fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
+                    if (fixture->TestPoint(locationWorld)) {
+                        body->SetLinearVelocity(b2Vec2(0, 0));
+                        body->SetFixedRotation(false);
+                    }
+                    if(fUd->tag == 1){
+                        filter = fixture->GetFilterData();
                         filter.maskBits = fUd->ogCollideFilters;
                         CCLOG(@"Dog filter mask: %d", fixture->GetFilterData().maskBits);
                         fixture->SetFilterData(filter);
