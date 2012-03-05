@@ -788,12 +788,10 @@ enum {
         if(dogBody){
             //fixtureUserData *fAUd = (fixtureUserData *)pdContact.fixtureA->GetUserData();
             fixtureUserData *fBUd = (fixtureUserData *)pdContact.fixtureB->GetUserData();
-            CCLOG(@"Collision fixture B tag: %d", fBUd->tag);
             if(fBUd->tag >= 3 && fBUd->tag <= 10){
                 pBody = pdContact.fixtureB->GetBody();
-                CCLOG(@"Dog/Person Collision");
+                CCLOG(@"Dog/Person Collision - Y Vel: %0.2f", dogBody->GetLinearVelocity().x);
                 _points += 10;
-                CCLOG(@"Dog Y Vel: %0.2f", dogBody->GetLinearVelocity().x);
             } 
             else if (fBUd->tag == 2){
                 tBody = pdContact.fixtureB->GetBody();
@@ -803,26 +801,27 @@ enum {
                 [ud->sprite1 removeFromParentAndCleanup:YES];
             }
             else if (fBUd->tag == 100){
-                CCLOG(@"Dog/Ground Collision (Dog y Velocity: %0.2f)", dogBody->GetLinearVelocity().y);
-                bodyUserData *ud = (bodyUserData *)dogBody->GetUserData();
-                CCAction *wienerDeathAction = (CCAction *)ud->altAction;
+                if(dogBody->GetLinearVelocity().y < .1){
+                    bodyUserData *ud = (bodyUserData *)dogBody->GetUserData();
+                    CCAction *wienerDeathAction = (CCAction *)ud->altAction;
                 
-                id delay = [CCDelayTime actionWithDuration:_wienerKillDelay];
-                wienerParameters = [[NSMutableArray alloc] initWithCapacity:2];
-                [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
-                [wienerParameters addObject:[NSNumber numberWithInt:0]];
-                id sleepAction = [CCCallFuncND actionWithTarget:self selector:@selector(setAwake:data:) data:wienerParameters];
-                wienerParameters = [[NSMutableArray alloc] initWithCapacity:1];
-                [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
-                id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:wienerParameters];
-                wienerParameters = [[NSMutableArray alloc] initWithCapacity:2];
-                [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
-                [wienerParameters addObject:[NSNumber numberWithInt:0]];
-                id angleAction = [CCCallFuncND actionWithTarget:self selector:@selector(setRotation:data:) data:wienerParameters];
-                id sequence = [CCSequence actions: delay, sleepAction, angleAction, wienerDeathAction, destroyAction, nil];
-                [ud->sprite1 stopAllActions];
-                [ud->sprite1 runAction:sequence];
-                CCLOG(@"Run death action");
+                    id delay = [CCDelayTime actionWithDuration:_wienerKillDelay];
+                    wienerParameters = [[NSMutableArray alloc] initWithCapacity:2];
+                    [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
+                    [wienerParameters addObject:[NSNumber numberWithInt:0]];
+                    id sleepAction = [CCCallFuncND actionWithTarget:self selector:@selector(setAwake:data:) data:wienerParameters];
+                    wienerParameters = [[NSMutableArray alloc] initWithCapacity:1];
+                    [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
+                    id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:wienerParameters];
+                    wienerParameters = [[NSMutableArray alloc] initWithCapacity:2];
+                    [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
+                    [wienerParameters addObject:[NSNumber numberWithInt:0]];
+                    id angleAction = [CCCallFuncND actionWithTarget:self selector:@selector(setRotation:data:) data:wienerParameters];
+                    id sequence = [CCSequence actions: delay, sleepAction, angleAction, wienerDeathAction, destroyAction, nil];
+                    [ud->sprite1 stopAllActions];
+                    [ud->sprite1 runAction:sequence];
+                    CCLOG(@"Run death action");
+                }
             }
         }
 	}
@@ -857,8 +856,7 @@ enum {
                                 [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:ogSprite2] ];
                             }
                         }
-                        for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()) {
-                            fixtureUserData *fUd = (fixtureUserData *)f->GetUserData();
+                        for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()){
                             b2RayCastOutput output;
                             if(!f->RayCast(&output, input)){
                                 _rayTouchingDog = false;
