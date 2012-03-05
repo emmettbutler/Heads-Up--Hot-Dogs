@@ -938,7 +938,7 @@ enum {
             if(ud->sprite1.tag == 1){
                 for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
                     fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
-                    if (fixture->TestPoint(locationWorld)) {
+                    if (fixture->TestPoint(locationWorld) && body->IsAwake()) {
                         [ud->sprite1 stopAllActions];
                     
                         CCLOG(@"Touching hotdog");
