@@ -912,7 +912,11 @@ enum {
                     }
                     else if(ud->sprite2.tag >= 3 && ud->sprite2.tag <= 10){
                         for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()){
-                        
+                            fixtureUserData *fUd = (fixtureUserData *)f->GetUserData();
+                            if(fUd->tag >= 3 && fUd->tag <= 10){
+                                //TODO - if there's a way to set local position of a fixture at runtime, do that here
+                                //to make hitboxes bounce with the head animations
+                            }
                         }
                     }
                     if(ud->sprite1.position.x > winSize.width || ud->sprite1.position.x < 0){
