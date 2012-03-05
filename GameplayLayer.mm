@@ -850,6 +850,24 @@ enum {
 		if(b->GetUserData()) {
             if(b->GetUserData() != (void*)100){
                 bodyUserData *ud = (bodyUserData*)b->GetUserData();
+                if(ud->sprite2 != NULL){
+                    if(ud->sprite2.tag == 1){
+                        for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()) {
+                        }
+                    }
+                    else if(ud->sprite2.tag >= 3 && ud->sprite2.tag <= 10){
+                        for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()){
+                            fixtureUserData *fUd = (fixtureUserData *)f->GetUserData();
+                            if(fUd->tag >= 3 && fUd->tag <= 10){
+                                //TODO - if there's a way to set local position of a fixture at runtime, do that here
+                                //to make hitboxes bounce with the head animations
+                            }
+                        }
+                    }
+                    ud->sprite2.position = CGPointMake((b->GetPosition().x)*PTM_RATIO,
+                                                       (b->GetPosition().y+ud->heightOffset2)*PTM_RATIO);
+                    ud->sprite2.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
+                }
                 if(ud->sprite1 != NULL){
                     if(ud->sprite1.tag == 1){
                         if(b->IsAwake()){
@@ -880,33 +898,15 @@ enum {
                     }
                     ud->sprite1.position = CGPointMake( b->GetPosition().x * PTM_RATIO, b->GetPosition().y * PTM_RATIO);
                     ud->sprite1.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
-                }
-                if(ud->sprite2 != NULL){
-                    if(ud->sprite2.tag == 1){
-                        for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()) {
-                        }
-                    }
-                    else if(ud->sprite2.tag >= 3 && ud->sprite2.tag <= 10){
-                        for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()){
-                            fixtureUserData *fUd = (fixtureUserData *)f->GetUserData();
-                            if(fUd->tag >= 3 && fUd->tag <= 10){
-                                //TODO - if there's a way to set local position of a fixture at runtime, do that here
-                                //to make hitboxes bounce with the head animations
-                            }
-                        }
-                    }
-                    if(ud->sprite1.position.x > winSize.width || ud->sprite1.position.x < 0){
+                    if(ud->sprite1.position.x > winSize.width || ud->sprite1.position.x < 0 ||
+                       ud->sprite1.position.y > winSize.height || ud->sprite1.position.y < 0){
                         _world->DestroyBody(b);
+                        CCLOG(@"Body removed");
                         [ud->sprite1 removeFromParentAndCleanup:YES];
                         if(ud->sprite2 != NULL){
                             [ud->sprite2 removeFromParentAndCleanup:YES];
                         }
                         ud = NULL;
-                    }
-                    else{
-                        ud->sprite2.position = CGPointMake((b->GetPosition().x)*PTM_RATIO,
-                                                           (b->GetPosition().y+ud->heightOffset2)*PTM_RATIO);
-                        ud->sprite2.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
                     }
                 }
             }
