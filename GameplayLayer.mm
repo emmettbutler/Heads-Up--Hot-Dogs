@@ -139,7 +139,7 @@ enum {
     fUd2->tag = 1;
     b2FixtureDef wienerShapeDef;
     wienerShapeDef.shape = &wienerShape;
-    wienerShapeDef.density = 0.2f;
+    wienerShapeDef.density = 0.5f;
     wienerShapeDef.friction = 1.0f;
     wienerShapeDef.userData = fUd2;
     wienerShapeDef.filter.maskBits = f;
@@ -468,6 +468,7 @@ enum {
         
         if(character.intValue == 4){
             bodyUserData *ud = new bodyUserData();
+            _policeArm.tag = 12;
             ud->sprite1 = _policeArm;
             
             b2BodyDef armBodyDef;
@@ -841,14 +842,7 @@ enum {
 	}
     personDogContactListener->contacts.clear();
     
-    _currentRayAngle += 360 / 5.0 / 60.0 * DEGTORAD;
-    float rayLength = 1000;
-    p1 = b2Vec2(winSize.width/2/PTM_RATIO, winSize.height/2/PTM_RATIO);
-    p2 = p1 + rayLength * b2Vec2(sinf(_currentRayAngle), cosf(_currentRayAngle));
     b2RayCastInput input;
-    input.p1 = p1;
-    input.p2 = p2;
-    input.maxFraction = 1;
     float closestFraction = 1; //start with end of line as p2
     b2Vec2 intersectionNormal(0,0);
     
@@ -871,24 +865,18 @@ enum {
                             }
                         }
                         for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()){
-                            b2RayCastOutput output;
-                            if(!f->RayCast(&output, input)){
-                                _rayTouchingDog = false;
-                                continue;
-                            }
-                            if(output.fraction < closestFraction){
-                                closestFraction = output.fraction;
-                                intersectionNormal = output.normal;
-                                b2Vec2 intersectionPoint = p1 + closestFraction * (p2 - p1);
-                                _rayTouchingDog = true;
-                                //CCLOG(@"Ray hit dog fixture @ %0.2f, %0.2f", intersectionPoint.x, intersectionPoint.y);
-                            }
                         }
                     }
                     else if(ud->sprite1.tag >= 3 && ud->sprite1.tag <= 10){
-                        for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()){
-                        
-                        }
+                    }
+                    else if(ud->sprite1.tag == 12){
+                        //float rayLength = 1000;
+                        p1 = b->GetPosition();
+                        //p2 = p1 + rayLength * b2Vec2(sinf(b->GetTransform().angle), cosf(_currentRayAngle));
+                        //^^angle of arm
+                        input.p1 = p1;
+                        input.p2 = p2;
+                        input.maxFraction = 1;
                     }
                     ud->sprite1.position = CGPointMake( b->GetPosition().x * PTM_RATIO, b->GetPosition().y * PTM_RATIO);
                     ud->sprite1.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
@@ -896,15 +884,6 @@ enum {
                 if(ud->sprite2 != NULL){
                     if(ud->sprite2.tag == 1){
                         for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()) {
-                            b2RayCastOutput output;
-                            if(!f->RayCast(&output, input))
-                                continue;
-                            if(output.fraction < closestFraction){
-                                closestFraction = output.fraction;
-                                intersectionNormal = output.normal;
-                                b2Vec2 intersectionPoint = p1 + closestFraction * (p2 - p1);
-                                CCLOG(@"Ray hit dog fixture @ %0.2f, %0.2f", intersectionPoint.x, intersectionPoint.y);
-                            }
                         }
                     }
                     else if(ud->sprite2.tag >= 3 && ud->sprite2.tag <= 10){
