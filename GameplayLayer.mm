@@ -35,6 +35,7 @@ enum {
 @synthesize wiener = _wiener;
 @synthesize target = _target;
 @synthesize walkAction = _walkAction;
+@synthesize walkFaceAction = _walkFaceAction;
 @synthesize idleAction = _idleAction;
 @synthesize deathAction = _deathAction;
 @synthesize appearAction = _appearAction;
@@ -263,9 +264,11 @@ enum {
     
     NSMutableArray *walkAnimFrames = [NSMutableArray array];
     NSMutableArray *idleAnimFrames = [NSMutableArray array];
+    NSMutableArray *faceWalkAnimFrames = [NSMutableArray array];
     
     switch(character.intValue){
         case 3: //businessman
+            //TODO - see whether these initial assignments can be avoided to save a bit of memory
             self.personLower = [CCSprite spriteWithSpriteFrameName:@"BusinessMan_Walk_1.png"];
             self.personUpper = [CCSprite spriteWithSpriteFrameName:@"BusinessHead_NoDog_1.png"];
             self.hitFace = [NSString stringWithString:@"BusinessHead_Dog_1.png"];
@@ -291,6 +294,11 @@ enum {
                 [idleAnimFrames addObject:
                  [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
                   [NSString stringWithFormat:@"BusinessMan_Idle_%d.png", i]]];
+            }
+            for(int i = 1; i <= 3; i++){
+                [faceWalkAnimFrames addObject:
+                 [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                  [NSString stringWithFormat:@"BusinessHead_NoDog_%d.png", i]]];
             }
             break;
         case 4: //police
@@ -321,6 +329,11 @@ enum {
                 [idleAnimFrames addObject:
                  [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
                   [NSString stringWithFormat:@"BusinessMan_Idle_%d.png", i]]];
+            }
+            for(int i = 1; i <= 4; i++){
+                [faceWalkAnimFrames addObject:
+                 [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                  [NSString stringWithFormat:@"Cop_Head_NoDog_%d.png", i]]];
             }
             break;
     }
@@ -395,6 +408,10 @@ enum {
         self.idleAction = [CCAnimate actionWithAnimation:idleAnim];
         CCRepeat *repeatAction = [CCRepeat actionWithAction:_idleAction times:10];
         CCSequence *sequence = [CCSequence actions: _idleAction, repeatAction, nil];
+        
+        walkFaceAnim = [CCAnimation animationWithFrames:faceWalkAnimFrames delay:.08f];
+        self.walkFaceAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:walkFaceAnim restoreOriginalFrame:NO]];
+        [_personUpper runAction:_walkFaceAction];
         
         //TODO - set up a range of z indices so multisprites work nicely
         

@@ -24,9 +24,9 @@
 	b2Fixture *_bottomFixture, *_wallsFixture, *_wienerFixture, *_targetFixture, *_personFixture, *_policeArmFixture;
     CCSprite *_wiener, *_personLower, *_personUpper, *_target;
     b2MouseJoint *_mouseJoint;
-    CCAction *_walkAction;
+    CCAction *_walkAction, *_walkFaceAction;
     CCFiniteTimeAction *_idleAction, *_appearAction;
-    CCAnimation *walkAnim, *idleAnim, *hitAnim, *dogDeathAnim, *dogAppearAnim;
+    CCAnimation *walkAnim, *idleAnim, *hitAnim, *dogDeathAnim, *dogAppearAnim, *walkFaceAnim;
     CCFiniteTimeAction *_hitAction;
     CCSpriteBatchNode *spriteSheet;
     CCLabelTTF *scoreLabel, *droppedLabel;
@@ -86,6 +86,7 @@
 @property (nonatomic, retain) CCSprite *wiener;
 @property (nonatomic, retain) CCSprite *target;
 @property (nonatomic, retain) CCAction *walkAction;
+@property (nonatomic, retain) CCAction *walkFaceAction;
 @property (nonatomic, retain) CCAction *idleAction;
 @property (nonatomic, retain) CCFiniteTimeAction *deathAction;
 @property (nonatomic, retain) CCAction *appearAction;
