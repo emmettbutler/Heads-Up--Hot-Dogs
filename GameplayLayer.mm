@@ -827,13 +827,10 @@ enum {
                     [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
                     [wienerParameters addObject:[NSNumber numberWithInt:0]];
                     id sleepAction = [CCCallFuncND actionWithTarget:self selector:@selector(setAwake:data:) data:wienerParameters];
+                    id angleAction = [CCCallFuncND actionWithTarget:self selector:@selector(setRotation:data:) data:wienerParameters];
                     wienerParameters = [[NSMutableArray alloc] initWithCapacity:1];
                     [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
                     id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:wienerParameters];
-                    wienerParameters = [[NSMutableArray alloc] initWithCapacity:2];
-                    [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
-                    [wienerParameters addObject:[NSNumber numberWithInt:0]];
-                    id angleAction = [CCCallFuncND actionWithTarget:self selector:@selector(setRotation:data:) data:wienerParameters];
                     id sequence = [CCSequence actions: delay, sleepAction, angleAction, wienerDeathAction, destroyAction, nil];
                     [ud->sprite1 stopAllActions];
                     [ud->sprite1 runAction:sequence];
