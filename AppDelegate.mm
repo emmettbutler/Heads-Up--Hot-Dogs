@@ -110,6 +110,8 @@
 	// Removes the startup flicker
 	[self removeStartupFlicker];
 	
+    [[director openGLView] setMultipleTouchEnabled:YES];
+    
 	// Run the intro Scene
 	[[CCDirector sharedDirector] runWithScene: [TitleLayer scene]];
 }

@@ -843,27 +843,14 @@ enum {
     personDogContactListener->contacts.clear();
     
     b2RayCastInput input;
-    float closestFraction = 1; //start with end of line as p2
+    //float closestFraction = 1; //start with end of line as p2
     b2Vec2 intersectionNormal(0,0);
     
 	for(b2Body* b = _world->GetBodyList(); b; b = b->GetNext()){
-		if(b->GetUserData()) {
+		if(b->GetUserData()){
             if(b->GetUserData() != (void*)100){
                 bodyUserData *ud = (bodyUserData*)b->GetUserData();
                 if(ud->sprite2 != NULL){
-                    if(ud->sprite2.tag == 1){
-                        for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()) {
-                        }
-                    }
-                    else if(ud->sprite2.tag >= 3 && ud->sprite2.tag <= 10){
-                        for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()){
-                            fixtureUserData *fUd = (fixtureUserData *)f->GetUserData();
-                            if(fUd->tag >= 3 && fUd->tag <= 10){
-                                //TODO - if there's a way to set local position of a fixture at runtime, do that here
-                                //to make hitboxes bounce with the head animations
-                            }
-                        }
-                    }
                     ud->sprite2.position = CGPointMake((b->GetPosition().x)*PTM_RATIO,
                                                        (b->GetPosition().y+ud->heightOffset2)*PTM_RATIO);
                     ud->sprite2.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
@@ -882,10 +869,6 @@ enum {
                                 [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:ogSprite2] ];
                             }
                         }
-                        for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()){
-                        }
-                    }
-                    else if(ud->sprite1.tag >= 3 && ud->sprite1.tag <= 10){
                     }
                     else if(ud->sprite1.tag == 12){
                         //float rayLength = 1000;
@@ -898,8 +881,8 @@ enum {
                     }
                     ud->sprite1.position = CGPointMake( b->GetPosition().x * PTM_RATIO, b->GetPosition().y * PTM_RATIO);
                     ud->sprite1.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
-                    if(ud->sprite1.position.x > winSize.width || ud->sprite1.position.x < 0 ||
-                       ud->sprite1.position.y > winSize.height || ud->sprite1.position.y < 0){
+                    if(ud->sprite1.position.x > winSize.width + 60 || ud->sprite1.position.x < -60 ||
+                       ud->sprite1.position.y > winSize.height || ud->sprite1.position.y < -20){
                         _world->DestroyBody(b);
                         CCLOG(@"Body removed");
                         [ud->sprite1 removeFromParentAndCleanup:YES];
@@ -911,8 +894,6 @@ enum {
                 }
             }
 		}
-        else{
-        }
 	}
 }
 
