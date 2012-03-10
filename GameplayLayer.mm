@@ -843,8 +843,10 @@ enum {
     personDogContactListener->contacts.clear();
     
     b2RayCastInput input;
-    //float closestFraction = 1; //start with end of line as p2
+    float closestFraction = 1; //start with end of line as p2
     b2Vec2 intersectionNormal(0,0);
+    float rayLength = 1000;
+    b2Vec2 intersectionPoint(0,0);
     
 	for(b2Body* b = _world->GetBodyList(); b; b = b->GetNext()){
 		if(b->GetUserData()){
@@ -868,12 +870,23 @@ enum {
                                 NSString *ogSprite2 = (NSString *)ud->ogSprite2;
                                 [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:ogSprite2] ];
                             }
+                            for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()) {
+                                b2RayCastOutput output;
+                                if(!f->RayCast(&output, input))
+                                    continue;
+                                if(output.fraction < closestFraction){
+                                    closestFraction = output.fraction;
+                                    intersectionNormal = output.normal;
+                                    intersectionPoint = p1 + closestFraction * (p2 - p1);
+                                    CCLOG(@"Ray hit dog fixture @ %0.2f, %0.2f", intersectionPoint.x, intersectionPoint.y);
+                                }
+                            }
                         }
                     }
                     else if(ud->sprite1.tag == 12){
-                        //float rayLength = 1000;
+                        
                         p1 = b->GetPosition();
-                        //p2 = p1 + rayLength * b2Vec2(sinf(b->GetTransform().angle), cosf(_currentRayAngle));
+                        p2 = p1 + rayLength * b2Vec2(cosf(b->GetAngle()), sinf(b->GetAngle()));
                         //^^angle of arm
                         input.p1 = p1;
                         input.p2 = p2;
