@@ -25,14 +25,14 @@
     CCSprite *_wiener, *_personLower, *_personUpper, *_target;
     b2MouseJoint *_mouseJoint;
     CCAction *_walkAction, *_walkFaceAction;
-    CCFiniteTimeAction *_idleAction, *_appearAction;
-    CCAnimation *walkAnim, *idleAnim, *hitAnim, *dogDeathAnim, *dogAppearAnim, *walkFaceAnim;
+    CCFiniteTimeAction *_idleAction, *_appearAction, *_idleFaceAction;
+    CCAnimation *walkAnim, *idleAnim, *hitAnim, *dogDeathAnim, *dogAppearAnim, *walkFaceAnim, *faceIdleAnim;
     CCFiniteTimeAction *_hitAction;
     CCSpriteBatchNode *spriteSheet;
     CCLabelTTF *scoreLabel, *droppedLabel;
     b2Vec2 p1, p2;
     b2RevoluteJoint *policeArmJoint;
-    NSMutableArray *floorBits, *xPositions, *characterTags, *wienerParameters, *wienerDeathAnimFrames;
+    NSMutableArray *floorBits, *xPositions, *characterTags, *wienerParameters, *wienerDeathAnimFrames, *faceAnimParams;
     NSMutableArray *personParameters, *wakeParameters, *movementPatterns, *movementParameters, *_touchLocations;
     NSString *scoreText, *droppedText;
     int _points;
@@ -58,6 +58,7 @@
         NSString *altSprite2;
         NSString *altSprite3; //the 3 here has a different meaning than the 2 above - ie it's the 3rd sprite
         CCAction *altAction;
+        CCAnimation *altAnimation;
     };
     
     struct fixtureUserData {
@@ -89,6 +90,7 @@
 @property (nonatomic, retain) CCAction *walkFaceAction;
 @property (nonatomic, retain) CCAction *idleAction;
 @property (nonatomic, retain) CCFiniteTimeAction *deathAction;
+@property (nonatomic, retain) CCFiniteTimeAction *idleFaceAction;
 @property (nonatomic, retain) CCAction *appearAction;
 @property (nonatomic, retain) NSString *hitFace;
 

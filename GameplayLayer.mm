@@ -9,6 +9,7 @@
 // Import the interfaces
 #import "GameplayLayer.h"
 #import "TitleScene.h"
+#import "LoseScene.h"
 
 #define PTM_RATIO 32
 #define DEGTORAD 0.0174532
@@ -18,6 +19,7 @@
 #define FLOOR4_HT 1.2
 #define DOG_SPAWN_MINHT 240
 #define SPAWN_LIMIT_DECREMENT_DELAY 1
+#define DROPPED_MAX 10
 
 // enums that will be used as tags
 enum {
@@ -39,6 +41,7 @@ enum {
 @synthesize idleAction = _idleAction;
 @synthesize deathAction = _deathAction;
 @synthesize appearAction = _appearAction;
+@synthesize idleFaceAction = _idleFaceAction;
 @synthesize hitFace = _hitFace;
 
 +(CCScene *) scene {
@@ -228,12 +231,41 @@ enum {
     }
 }
 
+-(void) spriteRunAction:(id)sender data:(void*)params{
+    NSMutableArray *incomingArray = (NSMutableArray *) params;
+    NSValue *s = (NSValue *)[incomingArray objectAtIndex:0];
+    CCSprite *sprite = (CCSprite *)[s pointerValue];
+    [sprite stopAllActions];
+    if([incomingArray count] > 1){
+        NSValue *a = (NSValue *)[incomingArray objectAtIndex:1];
+        CCAnimation *anim = (CCAnimation *)[a pointerValue];
+        CCAction *wFAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO]];
+        [sprite runAction:wFAction];
+    }
+}
+
 -(void) walkInPauseContinue:(id)sender data:(void*)params{
     NSMutableArray *incomingArray = (NSMutableArray *) params;
     NSValue *b = (NSValue *)[incomingArray objectAtIndex:0];
+    b2Body *body = (b2Body *)[b pointerValue];
+    bodyUserData *ud = (bodyUserData *)body->GetUserData();
+    CCSprite *head = ud->sprite2;
+    NSValue *w = [NSValue valueWithPointer:ud->altAnimation];
+    NSValue *spr = [NSValue valueWithPointer:head];
+    
     NSNumber *v = (NSNumber *)[incomingArray objectAtIndex:1];
+    
     NSValue *idle = (NSValue *)[incomingArray objectAtIndex:2];
     CCSequence *idleAction = (CCSequence *)[idle pointerValue];
+    
+    NSMutableArray *headParams = [[NSMutableArray alloc] initWithCapacity:1];
+    [headParams addObject:spr];
+    CCCallFuncND *headIdle = [CCCallFuncND actionWithTarget:self selector:@selector(spriteRunAction:data:) data:headParams];
+    
+    headParams = [[NSMutableArray alloc] initWithCapacity:2];
+    [headParams addObject:spr];
+    [headParams addObject:w];
+    CCCallFuncND *headWalk = [CCCallFuncND actionWithTarget:self selector:@selector(spriteRunAction:data:) data:headParams];
 
     CCCallFuncND *walkAction = [CCCallFuncND actionWithTarget:self selector:@selector(applyForce:data:) data:incomingArray];
     CCDelayTime *delay = [CCDelayTime actionWithDuration:(((float)(arc4random() % 2000))/1000)];
@@ -242,7 +274,9 @@ enum {
     [movementParameters addObject:b];
     [movementParameters addObject:opposite];
     CCCallFuncND *pauseAction = [CCCallFuncND actionWithTarget:self selector:@selector(applyForce:data:) data:movementParameters];
-    CCSequence *walkInPauseContinue = [CCSequence actions: walkAction, delay, pauseAction, idleAction, walkAction, nil];
+    CCSequence *walkInPauseContinue = [CCSequence actions: walkAction, delay, pauseAction, headIdle, idleAction, headWalk, walkAction, nil];
+    
+    CCLOG(@"Right before runAction");
     
     [sender runAction:walkInPauseContinue];
 }
@@ -265,6 +299,7 @@ enum {
     NSMutableArray *walkAnimFrames = [NSMutableArray array];
     NSMutableArray *idleAnimFrames = [NSMutableArray array];
     NSMutableArray *faceWalkAnimFrames = [NSMutableArray array];
+    NSMutableArray *faceIdleAnimFrames = [NSMutableArray array];
     
     switch(character.intValue){
         case 3: //businessman
@@ -407,9 +442,9 @@ enum {
         idleAnim = [CCAnimation animationWithFrames:idleAnimFrames delay:.2f];
         self.idleAction = [CCAnimate actionWithAnimation:idleAnim];
         CCRepeat *repeatAction = [CCRepeat actionWithAction:_idleAction times:10];
-        CCSequence *sequence = [CCSequence actions: _idleAction, repeatAction, nil];
+        CCSequence *sequence = [CCSequence actions:_idleAction, repeatAction, nil];
         
-        walkFaceAnim = [CCAnimation animationWithFrames:faceWalkAnimFrames delay:.08f];
+        walkFaceAnim = [[CCAnimation animationWithFrames:faceWalkAnimFrames delay:.08f] retain];
         self.walkFaceAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:walkFaceAnim restoreOriginalFrame:NO]];
         [_personUpper runAction:_walkFaceAction];
         
@@ -430,6 +465,8 @@ enum {
         ud->heightOffset2 = heightOffset;
         ud->ogSprite2 = ogHeadSprite;
         ud->altSprite2 = _hitFace;
+        ud->altAction = _walkFaceAction;
+        ud->altAnimation = walkFaceAnim;
         
         b2BodyDef personBodyDef;
         personBodyDef.type = b2_dynamicBody;
@@ -503,7 +540,7 @@ enum {
             policeArmJoint = (b2RevoluteJoint*)_world->CreateJoint(&armJointDef);
         }
         
-        movementParameters = [[NSMutableArray alloc] initWithCapacity:3];
+        movementParameters = [[NSMutableArray alloc] initWithCapacity:4];
         NSNumber *v = [NSNumber numberWithInt:xVel];
         NSValue *b = [NSValue valueWithPointer:_personBody];
         NSValue *idle = [NSValue valueWithPointer:sequence];
@@ -514,9 +551,13 @@ enum {
     }
 }
 
-- (void)switchScene{
+- (void)titleScene{
     CCTransitionRotoZoom *transition = [CCTransitionRotoZoom transitionWithDuration:1.0 scene:[TitleLayer scene]];
     [[CCDirector sharedDirector] replaceScene:transition];
+}
+
+- (void)loseScene{
+    [[CCDirector sharedDirector] replaceScene:[LoseLayer sceneWithData:(void*)1]];
 }
 
 -(void)wienerCallback:(id)sender data:(void *)params {
@@ -607,7 +648,7 @@ enum {
         [self addChild: droppedLabel];
         
         CCLabelTTF *label = [CCLabelTTF labelWithString:@"Title screen" fontName:@"Marker Felt" fontSize:18.0];
-        CCMenuItem *button = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(switchScene)];
+        CCMenuItem *button = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(titleScene)];
         label = [CCLabelTTF labelWithString:@"Debug draw" fontName:@"Marker Felt" fontSize:18.0];
         CCMenuItem *debug = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(debugDraw)];
         CCMenu *menu = [CCMenu menuWithItems:button, debug, nil];
@@ -772,6 +813,10 @@ enum {
     time++;
     armSpeed = 3 * cosf(.1 * time);
     
+    if(_droppedCount == DROPPED_MAX){
+        [self loseScene];
+    }
+    
 	_world->Step(dt, velocityIterations, positionIterations);
     
     CGSize winSize = [CCDirector sharedDirector].winSize;
@@ -879,7 +924,7 @@ enum {
                                     _rayTouchingDog = true;
                                     intersectionNormal = output.normal;
                                     intersectionPoint = p1 + closestFraction * (p2 - p1);
-                                    CCLOG(@"Ray hit dog fixture @ %0.2f, %0.2f", intersectionPoint.x, intersectionPoint.y);
+                                    //CCLOG(@"Ray hit dog fixture @ %0.2f, %0.2f", intersectionPoint.x, intersectionPoint.y);
                                 }
                             }
                         }
@@ -1068,6 +1113,8 @@ enum {
     
     self.personLower = nil;
     self.personUpper = nil;
+    self.idleFaceAction = nil;
+    self.walkFaceAction = nil;
     self.wiener = nil;
     self.target = nil;
 
