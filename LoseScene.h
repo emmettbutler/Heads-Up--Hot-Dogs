@@ -10,7 +10,8 @@
 
 @interface LoseLayer : CCLayer
 {
-    int score;
+    int _score;
+    CCLabelTTF *scoreLine;
 }
 
 +(CCScene *) sceneWithData:(void*)data;

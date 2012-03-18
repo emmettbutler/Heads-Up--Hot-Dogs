@@ -19,7 +19,7 @@
 #define FLOOR4_HT 1.2
 #define DOG_SPAWN_MINHT 240
 #define SPAWN_LIMIT_DECREMENT_DELAY 1
-#define DROPPED_MAX 10
+#define DROPPED_MAX 1
 
 // enums that will be used as tags
 enum {
@@ -557,7 +557,7 @@ enum {
 }
 
 - (void)loseScene{
-    [[CCDirector sharedDirector] replaceScene:[LoseLayer sceneWithData:(void*)1]];
+    [[CCDirector sharedDirector] replaceScene:[LoseLayer sceneWithData:(void*)_points]];
 }
 
 -(void)wienerCallback:(id)sender data:(void *)params {

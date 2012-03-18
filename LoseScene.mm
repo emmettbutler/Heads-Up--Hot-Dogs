@@ -14,9 +14,11 @@
 +(CCScene *) sceneWithData:(void*)data
 {
 	CCScene *scene = [CCScene node];
-	LoseLayer *layer = [LoseLayer node];
-    layer->score = (int)data;
-    CCLOG(@"%d", layer->score);
+    CCLOG(@"in scenewithData");
+	LoseLayer *layer;
+    layer = [LoseLayer node];
+    layer->_score = (int)data;
+    CCLOG(@"In sceneWithData: %d", layer->_score);
 	[scene addChild:layer];
 	return scene;
 }
@@ -35,14 +37,18 @@
         [menu setPosition:ccp(size.width / 2, size.height / 2)];
         [self addChild:menu];
         
-        CCLOG(@"%d", self->score);
         
-        NSString *scoreString = [NSString stringWithFormat:@"%d", self->score];
-        CCLabelTTF *byline = [CCLabelTTF labelWithString:scoreString fontName:@"Marker Felt" fontSize:22.0];
-        [byline setPosition:ccp((size.width/2), (size.height/2)-50)];
-        [self addChild:byline];
+        scoreLine = [CCLabelTTF labelWithString:@"0" fontName:@"Marker Felt" fontSize:22.0];
+        [scoreLine setPosition:ccp((size.width/2), (size.height/2)-50)];
+        [self addChild:scoreLine];
+        
+        [self schedule: @selector(tick:)];
     }
     return self;
+}
+
+-(void) tick: (ccTime) dt {
+    [scoreLine setString:[NSString stringWithFormat:@"%d", _score]];
 }
 
 - (void)switchScene{
