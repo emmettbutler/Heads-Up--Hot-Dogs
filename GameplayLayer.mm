@@ -18,7 +18,7 @@
 #define FLOOR3_HT .8
 #define FLOOR4_HT 1.2
 #define DOG_SPAWN_MINHT 240
-#define SPAWN_LIMIT_DECREMENT_DELAY 1
+#define SPAWN_LIMIT_DECREMENT_DELAY 10
 #define DROPPED_MAX 4
 
 // enums that will be used as tags
@@ -242,7 +242,8 @@ enum {
     //for the collision fixture userdata struct, randomly assign floor
     fixtureUserData *fUd2 = new fixtureUserData();
     floor = arc4random() % 4;
-    f = PERSON | TARGET;
+    //TODO - replace "person" here with the equivalent of "ALL PEOPLE"
+    f = 0xfffff000;
     if(floor == 1){
         f = f | FLOOR1;
     }
@@ -347,6 +348,11 @@ enum {
     CGSize winSize = [CCDirector sharedDirector].winSize;
     
     spawn = YES;
+    if(_curPersonMaskBits >= 0x8000){
+        _curPersonMaskBits = 0x1000;
+    } else {
+        _curPersonMaskBits *= 2;
+    }
     NSNumber *floorBit = [floorBits objectAtIndex:arc4random() % [floorBits count]];
     NSNumber *character = (NSNumber *)[(NSMutableArray *) params objectAtIndex:1];
     
@@ -390,8 +396,8 @@ enum {
                 hitboxCenterY = 4;
                 velocityMul = 300;
                 density = 10.0f;
-                restitution = .8f;
-                friction = 0.3f;
+                restitution = .8f; //bounce
+                friction = 0.3f; 
                 fTag = 3;
                 heightOffset = 2.9f;
                 for(int i = 1; i <= 6; i++){
@@ -536,6 +542,7 @@ enum {
         personBodyDef.fixedRotation = true;
         _personBody = _world->CreateBody(&personBodyDef);
 
+        //fixture for head hitbox
         b2PolygonShape personShape;
         personShape.SetAsBox(hitboxWidth/PTM_RATIO, hitboxHeight/PTM_RATIO, b2Vec2(hitboxCenterX, hitboxCenterY), 0);
         b2FixtureDef personShapeDef;
@@ -544,10 +551,12 @@ enum {
         personShapeDef.friction = friction;
         personShapeDef.restitution = restitution;
         personShapeDef.userData = fUd1;
-        personShapeDef.filter.categoryBits = PERSON;
+        personShapeDef.filter.categoryBits = _curPersonMaskBits;
+        CCLOG(@"personMaskBits: %d", _curPersonMaskBits);
         personShapeDef.filter.maskBits = WIENER;
         _personFixture = _personBody->CreateFixture(&personShapeDef);
         
+        //fixture for body
         b2PolygonShape personBodyShape;
         personBodyShape.SetAsBox(_personLower.contentSize.width/PTM_RATIO/2,(_personLower.contentSize.height)/PTM_RATIO/2);
         b2FixtureDef personBodyShapeDef;
@@ -585,6 +594,7 @@ enum {
             armShapeDef.filter.maskBits = 0x0000;
             _policeArmFixture = _policeArmBody->CreateFixture(&armShapeDef);
             
+            //"shoulder"
             b2RevoluteJointDef armJointDef;
             armJointDef.Initialize(_personBody, _policeArmBody, 
                                    b2Vec2((_personLower.position.x+(armJointXOffset))/PTM_RATIO, 
@@ -655,10 +665,11 @@ enum {
         self.isAccelerometerEnabled = YES;
         self.isTouchEnabled = YES;
         time = 0;
+        _curPersonMaskBits = 0x1000;
         _spawnLimiter = [characterTags count] - ([characterTags count]-1);
         _personSpawnDelayTime = 8.0f;
         _wienerSpawnDelayTime = 8.0f;
-        _wienerKillDelay = 5.0f;
+        _wienerKillDelay = 8.0f;
         _points = 0;
         _droppedCount = 0;
         _currentRayAngle = 0;
@@ -818,7 +829,7 @@ enum {
 	for(pos = personDogContactListener->contacts.begin();
 		pos != personDogContactListener->contacts.end(); ++pos)
 	{
-        b2Body *pBody, *tBody;
+        b2Body *pBody;
         b2Body *dogBody;
         pdContact = *pos;
         
@@ -831,15 +842,23 @@ enum {
             if(fBUd->tag >= 3 && fBUd->tag <= 10){
                 pBody = pdContact.fixtureB->GetBody();
                 CCLOG(@"Dog/Person Collision - Y Vel: %0.2f", dogBody->GetLinearVelocity().x);
+                b2Filter dogFilter, personFilter;
+                for(b2Fixture* fixture = pBody->GetFixtureList(); fixture; fixture = fixture->GetNext()){
+                    fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
+                    if(fUd->tag >= 3 && fUd->tag <= 10){
+                        personFilter = fixture->GetFilterData();
+                    }
+                }
+                for(b2Fixture* fixture = dogBody->GetFixtureList(); fixture; fixture = fixture->GetNext()){
+                    fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
+                    if(fUd->tag == 1){
+                        dogFilter = fixture->GetFilterData();
+                        dogFilter.maskBits = personFilter.categoryBits;
+                        fixture->SetFilterData(dogFilter);
+                    }
+                }
                 _points += 10;
             } 
-            else if (fBUd->tag == 2){
-                tBody = pdContact.fixtureB->GetBody();
-                bodyUserData *ud = (bodyUserData *)tBody->GetUserData();
-                CCLOG(@"Dog/Target Collision");
-                _world->DestroyBody(tBody);
-                [ud->sprite1 removeFromParentAndCleanup:YES];
-            }
             else if (fBUd->tag == 100){
                 if(dogBody->GetLinearVelocity().y < .1){
                     bodyUserData *ud = (bodyUserData *)dogBody->GetUserData();
@@ -893,6 +912,17 @@ enum {
                             } else {
                                 NSString *ogSprite2 = (NSString *)ud->ogSprite2;
                                 [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:ogSprite2] ];
+                            }
+                            //CCLOG(@"hotdog contacts: %d", (int)b->GetContactList());
+                            if(b->GetContactList() == 0){
+                                for(b2Fixture* fixture = b->GetFixtureList(); fixture; fixture = fixture->GetNext()){
+                                    fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
+                                    if(fUd->tag == 1){
+                                        b2Filter dogFilter = fixture->GetFilterData();
+                                        dogFilter.maskBits = fUd->ogCollideFilters;
+                                        fixture->SetFilterData(dogFilter);
+                                    }
+                                }
                             }
                             for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()) {
                                 b2RayCastOutput output;
@@ -953,7 +983,7 @@ enum {
             if(ud->sprite1.tag == 1){
                 for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
                     fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
-                    if (fixture->TestPoint(locationWorld) && body->IsAwake()) {
+                    if (fixture->TestPoint(locationWorld)) {
                         [ud->sprite1 stopAllActions];
                     
                         CCLOG(@"Touching hotdog");

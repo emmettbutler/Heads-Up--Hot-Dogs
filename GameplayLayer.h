@@ -34,7 +34,7 @@
     NSMutableArray *floorBits, *xPositions, *characterTags, *wienerParameters, *headParams;
     NSMutableArray *personParameters, *wakeParameters, *movementPatterns, *movementParameters, *_touchLocations;
     NSString *scoreText, *droppedText;
-    int _points, _droppedCount, _spawnLimiter, time;
+    int _points, _droppedCount, _spawnLimiter, time, _curPersonMaskBits;
     float _personSpawnDelayTime, _wienerSpawnDelayTime, _wienerKillDelay, _currentRayAngle, armSpeed;
     BOOL _moving, _touchedDog, _rayTouchingDog;
     NSString *currentAnimation;
@@ -62,7 +62,7 @@
         FLOOR3  = 0x0004,
         FLOOR4  = 0x0008,
         WALLS   = 0x0010,
-    	PERSON  = 0x0020,
+    	//PERSON  = 0x0020,
     	WIENER  = 0x0040,
         BODYBOX = 0x0080,
         TARGET  = 0x0100,
