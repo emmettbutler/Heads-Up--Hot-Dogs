@@ -25,29 +25,19 @@
     CCSprite *_wiener, *_personLower, *_personUpper, *_target;
     b2MouseJoint *_mouseJoint;
     CCAction *_walkAction, *_walkFaceAction;
-    CCFiniteTimeAction *_idleAction, *_appearAction, *_idleFaceAction;
-    CCAnimation *walkAnim, *idleAnim, *hitAnim, *dogDeathAnim, *dogAppearAnim, *walkFaceAnim, *faceIdleAnim;
-    CCFiniteTimeAction *_hitAction;
+    CCFiniteTimeAction *_idleAction, *_appearAction, *_hitAction;
+    CCAnimation *walkAnim, *idleAnim, *hitAnim, *dogDeathAnim, *dogAppearAnim, *walkFaceAnim;
     CCSpriteBatchNode *spriteSheet;
     CCLabelTTF *scoreLabel, *droppedLabel;
     b2Vec2 p1, p2;
     b2RevoluteJoint *policeArmJoint;
-    NSMutableArray *floorBits, *xPositions, *characterTags, *wienerParameters, *wienerDeathAnimFrames, *faceAnimParams;
+    NSMutableArray *floorBits, *xPositions, *characterTags, *wienerParameters, *headParams;
     NSMutableArray *personParameters, *wakeParameters, *movementPatterns, *movementParameters, *_touchLocations;
     NSString *scoreText, *droppedText;
-    int _points;
-    int _droppedCount;
-    int _spawnLimiter;
-    float _personSpawnDelayTime;
-    float _wienerSpawnDelayTime;
-    float _wienerKillDelay;
-    float _currentRayAngle;
-    float armSpeed;
-    BOOL _moving;
-    BOOL _touchedDog;
-    BOOL _rayTouchingDog;
+    int _points, _droppedCount, _spawnLimiter, time;
+    float _personSpawnDelayTime, _wienerSpawnDelayTime, _wienerKillDelay, _currentRayAngle, armSpeed;
+    BOOL _moving, _touchedDog, _rayTouchingDog;
     NSString *currentAnimation;
-    int time;
 
     struct bodyUserData {
         CCSprite *sprite1;
