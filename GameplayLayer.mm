@@ -687,17 +687,22 @@ enum {
         background.anchorPoint = CGPointZero;
         [self addChild:background z:-1];
         
+        //HUD objects
+        //TODO - these don't show up, why?
+        CCSprite *droppedLeftEnd = [CCSprite spriteWithSpriteFrameName:@"WienerCount_LeftEnd.png"];;
+        droppedLeftEnd.anchorPoint = CGPointMake(200, 200);
+        [self addChild:droppedLeftEnd z:100];
+        CCSprite *droppedRightEnd = [CCSprite spriteWithSpriteFrameName:@"WienerCount_RightEnd.png"];;
+        droppedRightEnd.anchorPoint = CGPointMake(240, 200);
+        [self addChild:droppedRightEnd z:100];
+        
+        
         //labels for score and dropped count
         //TODO - these will definitely change eventually
         scoreText = [[NSString alloc] initWithFormat:@"%d", _points];
         scoreLabel = [CCLabelTTF labelWithString:scoreText fontName:@"Marker Felt" fontSize:18];
         scoreLabel.position = ccp(winSize.width-100, 310);
         [self addChild: scoreLabel];
-        
-        droppedText = [[NSString alloc] initWithFormat:@"%d", _droppedCount];
-        droppedLabel = [CCLabelTTF labelWithString:scoreText fontName:@"Marker Felt" fontSize:18];
-        droppedLabel.position = ccp(winSize.width-100, 280);
-        [self addChild: droppedLabel];
         
         //debug labels
         CCLabelTTF *label = [CCLabelTTF labelWithString:@"Title screen" fontName:@"Marker Felt" fontSize:18.0];
@@ -857,6 +862,24 @@ enum {
                         fixture->SetFilterData(dogFilter);
                     }
                 }
+                bodyUserData *ud = (bodyUserData *)dogBody->GetUserData();
+                CCNode *contactNode = (CCNode *)ud->sprite1;
+                CGPoint position = contactNode.position;
+                CCParticleSystem* explosion = [CCParticleFire node];
+                ccColor4F startColor = {1, 1, 1, 1};
+                ccColor4F endColor = {1, 1, 1, 0};
+                explosion.startColor = startColor;
+                explosion.endColor = endColor;
+                explosion.texture = [[CCTextureCache sharedTextureCache] addImage:@"Heart_Particle_1.png"];
+                explosion.blendFunc = (ccBlendFunc) {GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA};
+                explosion.autoRemoveOnFinish = YES;
+                explosion.startSize = 1.0f;
+                explosion.speed = 90.0f;
+                explosion.anchorPoint = ccp(0.5f,0.5f);
+                explosion.position = position;
+                explosion.duration = 0.1f;
+                [self addChild:explosion z:11];
+                //[explosion release];
                 _points += 10;
             } 
             else if (fBUd->tag == 100){
