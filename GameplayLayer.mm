@@ -19,7 +19,7 @@
 #define FLOOR4_HT 1.2
 #define DOG_SPAWN_MINHT 240
 #define SPAWN_LIMIT_DECREMENT_DELAY 1
-#define DROPPED_MAX 4
+#define DROPPED_MAX 5
 
 // enums that will be used as tags
 enum {
