@@ -47,6 +47,7 @@
         NSString *ogSprite2;
         NSString *altSprite2;
         NSString *altSprite3; //the 3 here has a different meaning than the 2 above - ie it's the 3rd sprite
+        CCSprite *overlaySprite;
         CCAction *altAction;
         CCAnimation *altAnimation;
     };

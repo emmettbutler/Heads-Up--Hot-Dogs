@@ -141,6 +141,14 @@ enum {
     }
 }
 
+-(void) shootDog:(id)sender data:(void *)params {
+    b2Body *copBody = (b2Body *)[(NSValue *)[(NSMutableArray *)params objectAtIndex:0] pointerValue];
+    b2Body *dogBody = (b2Body *)[(NSValue *)[(NSMutableArray *)params objectAtIndex:1] pointerValue];
+    
+    bodyUserData *dUd = (bodyUserData *)dogBody->GetUserData();
+    dUd->overlaySprite.visible = true;
+}
+
 -(void) spriteRunAction:(id)sender data:(void*)params{
     //takes a sprite and an optional action
     //if passed an action, run it. otherwise, stop all actions
@@ -186,6 +194,7 @@ enum {
         dogBody->SetAwake(false);
         [dogSprite stopAllActions];
         [dogSprite removeFromParentAndCleanup:YES];
+        [ud->overlaySprite removeFromParentAndCleanup:YES];
         _world->DestroyBody(dogBody);
         free(ud);
         dogBody->SetUserData(NULL);
@@ -209,6 +218,12 @@ enum {
     _wiener.position = ccp(location.x, location.y);
     _wiener.tag = 1;
     [self addChild:_wiener];
+    
+    CCSprite *target = [CCSprite spriteWithSpriteFrameName:@"cop_target.png"];
+    target.position = ccp(location.x, location.y);
+    target.tag = 20;
+    target.visible = false;
+    [self addChild:target];
     
     //create death animation
     NSMutableArray *wienerDeathAnimFrames = [[NSMutableArray alloc] initWithCapacity:9];
@@ -239,6 +254,7 @@ enum {
     ud->ogSprite2 = [NSString stringWithString:@"dog54x12.png"];
     ud->altSprite2 = [NSString stringWithString:@"Dog_Rise.png"];
     ud->altSprite3 = [NSString stringWithString:@"Dog_Fall.png"];
+    ud->overlaySprite = target;
     
     fixtureUserData *fUd1 = new fixtureUserData();
     fUd1->ogCollideFilters = 0;
@@ -341,6 +357,12 @@ enum {
     //push forward, wait, stop, stop head animation, start idle body anim, when idle anim ends start head anim, start walk anim, push forward
     CCSequence *walkInPauseContinue = [CCSequence actions: walkAction, delay, pauseAction, headIdle, idleAction, headWalk, walkAction, nil];
     [sender runAction:walkInPauseContinue];
+}
+
+-(void)walkAcross:(id)sender data:(void *)params{
+    CCCallFuncND *walkAction = [CCCallFuncND actionWithTarget:self selector:@selector(applyForce:data:) data:(NSMutableArray *) params];
+    CCSequence *walkAcross = [CCSequence actions: walkAction, nil];
+    [sender runAction:walkAcross];
 }
 
 -(void)walkIn:(id)sender data:(void *)params {
@@ -622,7 +644,11 @@ enum {
         [movementParameters addObject:b];
         [movementParameters addObject:v];
         [movementParameters addObject:idle];
-        [self walkInPauseContinue:_personLower data:movementParameters];
+        if(character.intValue != 4){
+            [self walkInPauseContinue:_personLower data:movementParameters];
+        } else {
+            [self walkAcross:_personLower data:movementParameters];
+        }
         CCLOG(@"Spawned person with tag %d", fTag);
     } //the end of the if(spawn) conditional
 }
@@ -927,75 +953,117 @@ enum {
     
     //any non-collision actions that apply to multiple onscreen entities happen here
 	for(b2Body* b = _world->GetBodyList(); b; b = b->GetNext()){
-		if(b->GetUserData()){
-            if(b->GetUserData() != (void*)100){
-                bodyUserData *ud = (bodyUserData*)b->GetUserData();
-                if(ud->sprite2 != NULL){
-                    ud->sprite2.position = CGPointMake((b->GetPosition().x)*PTM_RATIO,
-                                                       (b->GetPosition().y+ud->heightOffset2)*PTM_RATIO);
-                    ud->sprite2.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
-                }
-                if(ud->sprite1 != NULL){
-                    if(ud->sprite1.tag == 1){
-                        //things for hot dogs
-                        if(b->IsAwake()){
-                            if(b->GetLinearVelocity().y > 1.5){
-                                NSString *altSprite2 = (NSString *)ud->altSprite2;
-                                [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:altSprite2] ];
-                            } else if (b->GetLinearVelocity().y < -1.5){
-                                NSString *altSprite3 = (NSString *)ud->altSprite3;
-                                [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:altSprite3] ];
-                            } else {
-                                NSString *ogSprite2 = (NSString *)ud->ogSprite2;
-                                [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:ogSprite2] ];
-                            }
-                            //CCLOG(@"hotdog contacts: %d", (int)b->GetContactList());
-                            if(b->GetContactList() == 0){
-                                for(b2Fixture* fixture = b->GetFixtureList(); fixture; fixture = fixture->GetNext()){
-                                    fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
-                                    if(fUd->tag == 1){
-                                        b2Filter dogFilter = fixture->GetFilterData();
-                                        dogFilter.maskBits = fUd->ogCollideFilters;
-                                        fixture->SetFilterData(dogFilter);
-                                    }
+		if(b->GetUserData() && b->GetUserData() != (void*)100){
+            bodyUserData *ud = (bodyUserData*)b->GetUserData();
+            if(ud->overlaySprite != NULL){
+                ud->overlaySprite.position = CGPointMake((b->GetPosition().x)*PTM_RATIO,
+                                                   (b->GetPosition().y)*PTM_RATIO);
+            }
+            if(ud->sprite2 != NULL){
+                ud->sprite2.position = CGPointMake((b->GetPosition().x)*PTM_RATIO,
+                                                   (b->GetPosition().y+ud->heightOffset2)*PTM_RATIO);
+                ud->sprite2.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
+            }
+            if(ud->sprite1 != NULL){
+                if(ud->sprite1.tag == 1){
+                    //things for hot dogs
+                    if(b->IsAwake()){
+                        if(b->GetLinearVelocity().y > 1.5){
+                            NSString *altSprite2 = (NSString *)ud->altSprite2;
+                            [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:altSprite2] ];
+                        } else if (b->GetLinearVelocity().y < -1.5){
+                            NSString *altSprite3 = (NSString *)ud->altSprite3;
+                            [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:altSprite3] ];
+                        } else {
+                            NSString *ogSprite2 = (NSString *)ud->ogSprite2;
+                            [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:ogSprite2] ];
+                        }
+                        //CCLOG(@"hotdog contacts: %d", (int)b->GetContactList());
+                        if(b->GetContactList() == 0){
+                            for(b2Fixture* fixture = b->GetFixtureList(); fixture; fixture = fixture->GetNext()){
+                                fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
+                                if(fUd->tag == 1){
+                                    b2Filter dogFilter = fixture->GetFilterData();
+                                    dogFilter.maskBits = fUd->ogCollideFilters;
+                                    fixture->SetFilterData(dogFilter);
                                 }
                             }
-                            for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()) {
-                                b2RayCastOutput output;
-                                if(!f->RayCast(&output, input))
+                        }
+                        for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()) {
+                            fixtureUserData *fUd = (fixtureUserData *)f->GetUserData();
+                            b2RayCastOutput output;
+                            if(fUd->tag == 1){
+                                if(!f->RayCast(&output, input)){
                                     _rayTouchingDog = false;
+                                    continue;
+                                }
                                 if(output.fraction < closestFraction){
+                                    CCLOG(@"Ray touched dog fixture with fraction %d", (int)output.fraction*1);
+                                    
+                                    b2Body *copBody;
+                                    bodyUserData *copUd;
+                                    
                                     closestFraction = output.fraction;
                                     _rayTouchingDog = true;
                                     intersectionNormal = output.normal;
                                     intersectionPoint = p1 + closestFraction * (p2 - p1);
+                                    
+                                    for(b2Body* b = _world->GetBodyList(); b; b = b->GetNext()){
+                                        if(b->GetUserData() && b->GetUserData() != (void*)100){
+                                            copUd = (bodyUserData*)b->GetUserData();
+                                            if(copUd->sprite1 != NULL && copUd->sprite1.tag == 4){
+                                                copBody = b;
+                                            }
+                                        }
+                                    }
+                                    
+                                    NSMutableArray *moveParameters = [[NSMutableArray alloc] initWithCapacity:2];
+                                    NSNumber *vel = [NSNumber numberWithInt:200];
+                                    if(copUd->sprite1.flipX == true){
+                                        vel = [NSNumber numberWithInt:-200];
+                                    }
+                                    NSValue *cBody = [NSValue valueWithPointer:copBody];
+                                    [moveParameters addObject:cBody];
+                                    [moveParameters addObject:vel];
+                                    CCCallFuncND *moveAction = [CCCallFuncND actionWithTarget:self selector:@selector(applyForce:data:) data:moveParameters];
+                                    CCDelayTime *delay = [CCDelayTime actionWithDuration:1];
+                                    
+                                    NSMutableArray *shootParameters = [[NSMutableArray alloc] initWithCapacity:2];
+                                    NSValue *dBody = [NSValue valueWithPointer:b];
+                                    [shootParameters addObject:cBody];
+                                    [shootParameters addObject:dBody];
+                                    CCCallFuncND *shootAction = [CCCallFuncND actionWithTarget:self selector:@selector(shootDog:data:) data:shootParameters];
+                                    
+                                    CCSequence *seq = [CCSequence actions:shootAction, delay, moveAction, nil];
+                                    //copBody->SetLinearVelocity(b2Vec2(0.01, 0));
+                                    [copUd->sprite1 runAction:seq];
                                 }
                             }
                         }
                     }
-                    else if(ud->sprite1.tag == 12){
-                        //things for cop's arm
-                        p1 = b->GetPosition();
-                        p2 = p1 + rayLength * b2Vec2(cosf(b->GetAngle()), sinf(b->GetAngle()));
-                        input.p1 = p1;
-                        input.p2 = p2;
-                        input.maxFraction = 1;
+                }
+                else if(ud->sprite1.tag == 12){
+                    //things for cop's arm and raycasting
+                    p1 = b->GetPosition();
+                    p2 = p1 + rayLength * b2Vec2(cosf(b->GetAngle()), sinf(b->GetAngle()));
+                    input.p1 = p1;
+                    input.p2 = p2;
+                    input.maxFraction = 1;
+                }
+                //boilerplate - update sprite positions to match their physics bodies
+                ud->sprite1.position = CGPointMake( b->GetPosition().x * PTM_RATIO, b->GetPosition().y * PTM_RATIO);
+                ud->sprite1.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
+                //destroy any sprite/body pair that's offscreen
+                //TODO - this causes a crash when dogs are dragged offscreen
+                if(ud->sprite1.position.x > winSize.width + 60 || ud->sprite1.position.x < -60 ||
+                   ud->sprite1.position.y > winSize.height || ud->sprite1.position.y < -20){
+                    _world->DestroyBody(b);
+                    CCLOG(@"Body removed");
+                    [ud->sprite1 removeFromParentAndCleanup:YES];
+                    if(ud->sprite2 != NULL){
+                        [ud->sprite2 removeFromParentAndCleanup:YES];
                     }
-                    //boilerplate - update sprite positions to match their physics bodies
-                    ud->sprite1.position = CGPointMake( b->GetPosition().x * PTM_RATIO, b->GetPosition().y * PTM_RATIO);
-                    ud->sprite1.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
-                    //destroy any sprite/body pair that's offscreen
-                    //TODO - this causes a crash when dogs are dragged offscreen
-                    if(ud->sprite1.position.x > winSize.width + 60 || ud->sprite1.position.x < -60 ||
-                       ud->sprite1.position.y > winSize.height || ud->sprite1.position.y < -20){
-                        _world->DestroyBody(b);
-                        CCLOG(@"Body removed");
-                        [ud->sprite1 removeFromParentAndCleanup:YES];
-                        if(ud->sprite2 != NULL){
-                            [ud->sprite2 removeFromParentAndCleanup:YES];
-                        }
-                        ud = NULL;
-                    }
+                    ud = NULL;
                 }
             }
 		}
