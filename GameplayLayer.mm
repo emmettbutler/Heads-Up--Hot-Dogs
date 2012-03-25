@@ -706,12 +706,15 @@ enum {
             [self addChild:dogIcon z:90];
         }
             
+        //CCSprite *scoreBG = [CCSprite spriteWithSpriteFrameName:@".png"];;
+        //scoreBG.position = ccp(winSize.width-22, 305);
+        //[self addChild:scoreBG z:100];
         
         //labels for score
         scoreText = [[NSString alloc] initWithFormat:@"%d", _points];
         scoreLabel = [CCLabelTTF labelWithString:scoreText fontName:@"LostPet.TTF" fontSize:18];
         scoreLabel.color = ccc3(245, 222, 179);
-        scoreLabel.position = ccp(winSize.width-100, 290);
+        scoreLabel.position = ccp(winSize.width-42, 280);
         [self addChild: scoreLabel];
         
         //debug labels
