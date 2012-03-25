@@ -174,6 +174,7 @@ enum {
 }
 
 -(void)destroyWiener:(id)sender data:(void*)params {
+    CGSize winSize = [CCDirector sharedDirector].winSize;
     b2Body *dogBody = (b2Body *)[(NSValue *)[(NSMutableArray *) params objectAtIndex:0] pointerValue];
     bodyUserData *ud = (bodyUserData *)dogBody->GetUserData();
     
@@ -189,7 +190,11 @@ enum {
         free(ud);
         dogBody->SetUserData(NULL);
         dogBody = nil;
+        CCSprite *dogDroppedIcon = [CCSprite spriteWithSpriteFrameName:@"WienerCount_X.png"];
+        dogDroppedIcon.position = ccp(winSize.width-_droppedSpacing, 305);
+        [self addChild:dogDroppedIcon z:95];
         _droppedCount++;
+        _droppedSpacing += 14;
     }
     
     CCLOG(@"done.");
@@ -671,6 +676,7 @@ enum {
         _wienerSpawnDelayTime = 8.0f;
         _wienerKillDelay = 8.0f;
         _points = 0;
+        _droppedSpacing = 33;
         _droppedCount = 0;
         _currentRayAngle = 0;
         b2Vec2 gravity = b2Vec2(0.0f, -30.0f);
@@ -688,26 +694,30 @@ enum {
         [self addChild:background z:-1];
         
         //HUD objects
-        //TODO - these don't show up, why?
         CCSprite *droppedLeftEnd = [CCSprite spriteWithSpriteFrameName:@"WienerCount_LeftEnd.png"];;
-        droppedLeftEnd.anchorPoint = CGPointMake(200, 200);
+        droppedLeftEnd.position = ccp(winSize.width-100, 305);
         [self addChild:droppedLeftEnd z:100];
         CCSprite *droppedRightEnd = [CCSprite spriteWithSpriteFrameName:@"WienerCount_RightEnd.png"];;
-        droppedRightEnd.anchorPoint = CGPointMake(240, 200);
+        droppedRightEnd.position = ccp(winSize.width-22, 305);
         [self addChild:droppedRightEnd z:100];
+        for(int i = 33; i < 103; i += 14){
+            CCSprite *dogIcon = [CCSprite spriteWithSpriteFrameName:@"WienerCount_Wiener.png"];
+            dogIcon.position = ccp(winSize.width-i, 305);
+            [self addChild:dogIcon z:90];
+        }
+            
         
-        
-        //labels for score and dropped count
-        //TODO - these will definitely change eventually
+        //labels for score
         scoreText = [[NSString alloc] initWithFormat:@"%d", _points];
-        scoreLabel = [CCLabelTTF labelWithString:scoreText fontName:@"Marker Felt" fontSize:18];
-        scoreLabel.position = ccp(winSize.width-100, 310);
+        scoreLabel = [CCLabelTTF labelWithString:scoreText fontName:@"LostPet.TTF" fontSize:18];
+        scoreLabel.color = ccc3(245, 222, 179);
+        scoreLabel.position = ccp(winSize.width-100, 290);
         [self addChild: scoreLabel];
         
         //debug labels
-        CCLabelTTF *label = [CCLabelTTF labelWithString:@"Title screen" fontName:@"Marker Felt" fontSize:18.0];
+        CCLabelTTF *label = [CCLabelTTF labelWithString:@"Title screen" fontName:@"LostPet.TTF" fontSize:18.0];
         CCMenuItem *button = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(titleScene)];
-        label = [CCLabelTTF labelWithString:@"Debug draw" fontName:@"Marker Felt" fontSize:18.0];
+        label = [CCLabelTTF labelWithString:@"Debug draw" fontName:@"LostPet.TTF" fontSize:18.0];
         CCMenuItem *debug = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(debugDraw)];
         CCMenu *menu = [CCMenu menuWithItems:button, debug, nil];
         [menu setPosition:ccp(40, winSize.height-30)];

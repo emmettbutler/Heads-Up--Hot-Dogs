@@ -34,7 +34,7 @@
     NSMutableArray *floorBits, *xPositions, *characterTags, *wienerParameters, *headParams;
     NSMutableArray *personParameters, *wakeParameters, *movementPatterns, *movementParameters, *_touchLocations;
     NSString *scoreText, *droppedText;
-    int _points, _droppedCount, _spawnLimiter, time, _curPersonMaskBits;
+    int _points, _droppedCount, _spawnLimiter, time, _curPersonMaskBits, _droppedSpacing;
     float _personSpawnDelayTime, _wienerSpawnDelayTime, _wienerKillDelay, _currentRayAngle, armSpeed;
     BOOL _moving, _touchedDog, _rayTouchingDog;
     NSString *currentAnimation;
