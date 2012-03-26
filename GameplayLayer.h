@@ -22,7 +22,7 @@
     GLESDebugDraw *m_debugDraw;
 	b2Body *_wallsBody, *_groundBody, *wienerBody, *targetBody, *_personBody, *_policeArmBody;
 	b2Fixture *_bottomFixture, *_wallsFixture, *_wienerFixture, *_targetFixture, *_personFixture, *_policeArmFixture;
-    CCSprite *_wiener, *_personLower, *_personUpper, *_target;
+    CCSprite *_wiener, *_personLower, *_personUpper, *_target, *_pauseButton;
     b2MouseJoint *_mouseJoint;
     CCAction *_walkAction, *_walkFaceAction;
     CCFiniteTimeAction *_idleAction, *_appearAction, *_hitAction, *_shotAction;
@@ -31,13 +31,16 @@
     CCLabelTTF *scoreLabel, *droppedLabel;
     b2Vec2 p1, p2;
     b2RevoluteJoint *policeArmJoint;
+    CCLayerColor *_pauseLayer;
+    CCMenu *_pauseMenu;
     NSMutableArray *floorBits, *xPositions, *characterTags, *wienerParameters, *headParams;
     NSMutableArray *personParameters, *wakeParameters, *movementPatterns, *movementParameters, *_touchLocations;
     NSString *scoreText, *droppedText;
     int _points, _droppedCount, _spawnLimiter, time, _curPersonMaskBits, _droppedSpacing;
     float _personSpawnDelayTime, _wienerSpawnDelayTime, _wienerKillDelay, _currentRayAngle, armSpeed;
-    BOOL _moving, _touchedDog, _rayTouchingDog;
+    BOOL _moving, _touchedDog, _rayTouchingDog, _pause;
     NSString *currentAnimation;
+    CGRect _pauseButtonRect;
 
     struct bodyUserData {
         CCSprite *sprite1;

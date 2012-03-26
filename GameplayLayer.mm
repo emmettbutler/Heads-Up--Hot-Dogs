@@ -61,6 +61,33 @@ enum {
     [[CCDirector sharedDirector] replaceScene:[LoseLayer sceneWithData:(void*)_points]];
 }
 
+-(void)resumeGame{
+    [self removeChild:_pauseMenu cleanup:YES];
+    [self removeChild:_pauseLayer cleanup:YES];
+    [[CCDirector sharedDirector] resume];
+    _pause = false;
+}
+
+-(void) pauseButton{
+    if(!_pause){
+        _pause = true;
+        [[CCDirector sharedDirector] pause];
+        CGSize winSize = [[CCDirector sharedDirector] winSize];
+        _pauseLayer = [CCLayerColor layerWithColor:ccc4(0, 0, 255, 125) width:250 height:145];
+        _pauseLayer.position = ccp((winSize.width/2)-(_pauseLayer.contentSize.width/2), (winSize.height/2)-(_pauseLayer.contentSize.height/2));
+        [self addChild:_pauseLayer z:95];
+        
+        CCLabelTTF *label = [CCLabelTTF labelWithString:@"Resume Game" fontName:@"LostPet.TTF" fontSize:28.0];
+        CCMenuItem *resume = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(resumeGame)];
+        label = [CCLabelTTF labelWithString:@"Title Screen" fontName:@"LostPet.TTF" fontSize:28.0];
+        CCMenuItem *title = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(titleScene)];
+        _pauseMenu = [CCMenu menuWithItems:resume, title, nil];
+        [_pauseMenu setPosition:ccp(winSize.width/2, winSize.height/2)];
+        [_pauseMenu alignItemsVertically];
+        [self addChild:_pauseMenu z:96];
+    }
+}
+
 -(void)debugDraw{
     if(!m_debugDraw){
         m_debugDraw = new GLESDebugDraw( PTM_RATIO );
@@ -741,6 +768,7 @@ enum {
         self.isAccelerometerEnabled = YES;
         self.isTouchEnabled = YES;
         time = 0;
+        _pause = false;
         _curPersonMaskBits = 0x1000;
         _spawnLimiter = [characterTags count] - ([characterTags count]-1);
         _personSpawnDelayTime = 8.0f;
@@ -769,7 +797,7 @@ enum {
         droppedLeftEnd.position = ccp(winSize.width-100, 305);
         [self addChild:droppedLeftEnd z:100];
         CCSprite *droppedRightEnd = [CCSprite spriteWithSpriteFrameName:@"WienerCount_RightEnd.png"];;
-        droppedRightEnd.position = ccp(winSize.width-22, 305);
+        droppedRightEnd.position = ccp(winSize.width-23, 305);
         [self addChild:droppedRightEnd z:100];
         for(int i = 33; i < 103; i += 14){
             CCSprite *dogIcon = [CCSprite spriteWithSpriteFrameName:@"WienerCount_Wiener.png"];
@@ -788,13 +816,16 @@ enum {
         scoreLabel.position = ccp(winSize.width-42, 280);
         [self addChild: scoreLabel];
         
+        _pauseButton = [CCSprite spriteWithSpriteFrameName:@"Pause_Button.png"];;
+        _pauseButton.position = ccp(20, 305);
+        [self addChild:_pauseButton z:100];
+        _pauseButtonRect = CGRectMake((_pauseButton.position.x-(_pauseButton.contentSize.width)/2), (_pauseButton.position.y-(_pauseButton.contentSize.height)/2), (_pauseButton.contentSize.width), (_pauseButton.contentSize.height));
+        
         //debug labels
-        CCLabelTTF *label = [CCLabelTTF labelWithString:@"Title screen" fontName:@"LostPet.TTF" fontSize:18.0];
-        CCMenuItem *button = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(titleScene)];
-        label = [CCLabelTTF labelWithString:@"Debug draw" fontName:@"LostPet.TTF" fontSize:18.0];
+        CCLabelTTF *label = [CCLabelTTF labelWithString:@"Debug draw" fontName:@"LostPet.TTF" fontSize:18.0];
         CCMenuItem *debug = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(debugDraw)];
-        CCMenu *menu = [CCMenu menuWithItems:button, debug, nil];
-        [menu setPosition:ccp(40, winSize.height-30)];
+        CCMenu *menu = [CCMenu menuWithItems:debug, nil];
+        [menu setPosition:ccp(40, winSize.height-50)];
         [menu alignItemsVertically];
         [self addChild:menu];
         
@@ -886,6 +917,22 @@ enum {
 -(void) tick: (ccTime) dt {
     int32 velocityIterations = 3;
 	int32 positionIterations = 1;
+    
+    CGSize winSize = [CCDirector sharedDirector].winSize;
+    
+    if(_pause){
+        CCLabelTTF *label = [CCLabelTTF labelWithString:@"Pause" fontName:@"LostPet.TTF" fontSize:18.0];
+        CCMenuItem *button = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(pause)];
+        label = [CCLabelTTF labelWithString:@"Menu" fontName:@"LostPet.TTF" fontSize:18.0];
+        CCMenuItem *debug = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(debugDraw)];
+        CCMenu *menu = [CCMenu menuWithItems:button, debug, nil];
+        [menu setPosition:ccp(40, winSize.height-30)];
+        [menu alignItemsVertically];
+        [self addChild:menu];
+        return;
+    }
+    
+    
     time++;
     armSpeed = 3 * cosf(.1 * time);
     
@@ -895,8 +942,6 @@ enum {
     }
     
 	_world->Step(dt, velocityIterations, positionIterations);
-    
-    CGSize winSize = [CCDirector sharedDirector].winSize;
     
     //cop arm rotation
     for(b2Joint* j = _world->GetJointList(); j; j = j->GetNext()){
@@ -1129,6 +1174,11 @@ enum {
     UITouch *myTouch = [touches anyObject];
     CGPoint location = [myTouch locationInView:[myTouch view]];
     location = [[CCDirector sharedDirector] convertToGL:location];
+    
+    if(CGRectContainsPoint(_pauseButtonRect, location)){
+        [self pauseButton];
+    }
+    
     b2Vec2 locationWorld = b2Vec2(location.x/PTM_RATIO, location.y/PTM_RATIO);
     
     _touchedDog = NO;
