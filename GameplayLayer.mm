@@ -42,6 +42,7 @@ enum {
 @synthesize deathAction = _deathAction;
 @synthesize appearAction = _appearAction;
 @synthesize idleFaceAction = _idleFaceAction;
+@synthesize shotAction = _shotAction;
 @synthesize hitFace = _hitFace;
 
 +(CCScene *) scene {
@@ -141,14 +142,6 @@ enum {
     }
 }
 
--(void) shootDog:(id)sender data:(void *)params {
-    b2Body *copBody = (b2Body *)[(NSValue *)[(NSMutableArray *)params objectAtIndex:0] pointerValue];
-    b2Body *dogBody = (b2Body *)[(NSValue *)[(NSMutableArray *)params objectAtIndex:1] pointerValue];
-    
-    bodyUserData *dUd = (bodyUserData *)dogBody->GetUserData();
-    dUd->overlaySprite.visible = true;
-}
-
 -(void) spriteRunAction:(id)sender data:(void*)params{
     //takes a sprite and an optional action
     //if passed an action, run it. otherwise, stop all actions
@@ -188,17 +181,19 @@ enum {
     
     CCSprite *dogSprite = (CCSprite *)sender;
     
-    CCLOG(@"Destroying dog...");
+    CCLOG(@"Destroying dog (tag %d)...", dogSprite.tag);
     
-    if(dogSprite.tag == 1){        
+    if(dogSprite.tag == 1){
         dogBody->SetAwake(false);
         [dogSprite stopAllActions];
         [dogSprite removeFromParentAndCleanup:YES];
         [ud->overlaySprite removeFromParentAndCleanup:YES];
         _world->DestroyBody(dogBody);
+        
         free(ud);
         dogBody->SetUserData(NULL);
         dogBody = nil;
+        
         CCSprite *dogDroppedIcon = [CCSprite spriteWithSpriteFrameName:@"WienerCount_X.png"];
         dogDroppedIcon.position = ccp(winSize.width-_droppedSpacing, 305);
         [self addChild:dogDroppedIcon z:95];
@@ -207,6 +202,44 @@ enum {
     }
     
     CCLOG(@"done.");
+}
+
+-(void)destroyWienerAfterShot:(id)sender data:(void*)params{
+    CGSize winSize = [CCDirector sharedDirector].winSize;
+    /*b2Body *dogBody = (b2Body *)[(NSValue *)[(NSMutableArray *) params objectAtIndex:0] pointerValue];
+    bodyUserData *ud = (bodyUserData *)dogBody->GetUserData();
+    CCSprite *dogSprite = (CCSprite *)ud->sprite1;
+    CCSprite *dogSpriteAlt = (CCSprite *)ud->overlaySprite;
+    
+    dogBody->SetAwake(false);
+    [dogSprite stopAllActions];
+    [dogSprite removeFromParentAndCleanup:YES];
+    [dogSpriteAlt removeFromParentAndCleanup:YES];
+    _world->DestroyBody(dogBody);
+    
+    free(ud);
+    dogBody->SetUserData(NULL);
+    dogBody = nil;
+    
+    CCSprite *dogDroppedIcon = [CCSprite spriteWithSpriteFrameName:@"WienerCount_X.png"];
+    dogDroppedIcon.position = ccp(winSize.width-_droppedSpacing, 305);
+    [self addChild:dogDroppedIcon z:95];
+    _droppedCount++;
+    _droppedSpacing += 14;*/
+}
+
+-(void) shootDog:(id)sender data:(void *)params {
+    b2Body *copBody = (b2Body *)[(NSValue *)[(NSMutableArray *)params objectAtIndex:0] pointerValue];
+    b2Body *dogBody = (b2Body *)[(NSValue *)[(NSMutableArray *)params objectAtIndex:1] pointerValue];
+    
+    bodyUserData *dUd = (bodyUserData *)dogBody->GetUserData();
+    CCSprite *dogSprite = (CCSprite *)dUd->sprite1;
+    dUd->overlaySprite.visible = true;
+    
+    CCFiniteTimeAction *wienerExplodeAction = (CCFiniteTimeAction *)dUd->altAction2;
+    [dogSprite stopAllActions];
+    dogBody->SetAwake(false);
+    [dogSprite runAction:wienerExplodeAction];
 }
 
 -(void)putDog:(id)sender data:(void*)params {
@@ -236,6 +269,17 @@ enum {
     self.deathAction = [[CCAnimate alloc] initWithAnimation:dogDeathAnim];
     [wienerDeathAnimFrames release];
     
+    //create shot animation
+    NSMutableArray *wienerShotAnimFrames = [[NSMutableArray alloc] initWithCapacity:5];
+    for(int i = 1; i <= 5; i++){
+        [wienerShotAnimFrames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithFormat:@"Dog_Shot_%d.png", i]]];
+    }
+    dogShotAnim = [CCAnimation animationWithFrames:wienerShotAnimFrames delay:.1f ];
+    self.shotAction = [[CCAnimate alloc] initWithAnimation:dogShotAnim restoreOriginalFrame:NO];
+    [wienerShotAnimFrames release];
+    
     //create appear animation
     NSMutableArray *wienerAppearAnimFrames = [[NSMutableArray alloc] initWithCapacity:10];
     for(int i = 1; i <= 10; i++){
@@ -251,6 +295,7 @@ enum {
     bodyUserData *ud = new bodyUserData();
     ud->sprite1 = _wiener;
     ud->altAction = _deathAction;
+    ud->altAction2 = _shotAction;
     ud->ogSprite2 = [NSString stringWithString:@"dog54x12.png"];
     ud->altSprite2 = [NSString stringWithString:@"Dog_Rise.png"];
     ud->altSprite3 = [NSString stringWithString:@"Dog_Fall.png"];
@@ -901,6 +946,7 @@ enum {
                         fixture->SetFilterData(dogFilter);
                     }
                 }
+                int particle = (arc4random() % 3) + 1;
                 bodyUserData *ud = (bodyUserData *)dogBody->GetUserData();
                 CCNode *contactNode = (CCNode *)ud->sprite1;
                 CGPoint position = contactNode.position;
@@ -909,7 +955,7 @@ enum {
                 ccColor4F endColor = {1, 1, 1, 0};
                 explosion.startColor = startColor;
                 explosion.endColor = endColor;
-                explosion.texture = [[CCTextureCache sharedTextureCache] addImage:@"Heart_Particle_1.png"];
+                explosion.texture = [[CCTextureCache sharedTextureCache] addImage:[NSString stringWithFormat:@"Heart_Particle_%d.png", particle]];
                 explosion.blendFunc = (ccBlendFunc) {GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA};
                 explosion.autoRemoveOnFinish = YES;
                 explosion.startSize = 1.0f;
@@ -1034,9 +1080,16 @@ enum {
                                     [shootParameters addObject:dBody];
                                     CCCallFuncND *shootAction = [CCCallFuncND actionWithTarget:self selector:@selector(shootDog:data:) data:shootParameters];
                                     
-                                    CCSequence *seq = [CCSequence actions:shootAction, delay, moveAction, nil];
+                                    NSMutableArray *destroyParameters = [[NSMutableArray alloc] initWithCapacity:1];
+                                    [wienerParameters addObject:dBody];
+                                    id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWienerAfterShot:data:) data:destroyParameters];
+                                    
+                                    CCFiniteTimeAction *wienerExplodeAction = (CCFiniteTimeAction *)ud->altAction2;
+                                    
+                                    CCSequence *seq = [CCSequence actions:wienerExplodeAction, nil];
+                                    //CCSequence *seq = [CCSequence actions:wienerExplodeAction, destroyAction, delay, moveAction, nil];
                                     //copBody->SetLinearVelocity(b2Vec2(0.01, 0));
-                                    [copUd->sprite1 runAction:seq];
+                                    //[self runAction:seq];
                                 }
                             }
                         }
@@ -1245,6 +1298,7 @@ enum {
     [movementParameters release];
     [headParams release];
     [_deathAction release];
+    [_shotAction release];
     
     
     delete personDogContactListener;
