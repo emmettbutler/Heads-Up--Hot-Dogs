@@ -25,8 +25,8 @@
     CCSprite *_wiener, *_personLower, *_personUpper, *_target, *_pauseButton;
     b2MouseJoint *_mouseJoint;
     CCAction *_walkAction, *_walkFaceAction;
-    CCFiniteTimeAction *_idleAction, *_appearAction, *_hitAction, *_shotAction;
-    CCAnimation *walkAnim, *idleAnim, *hitAnim, *dogDeathAnim, *dogAppearAnim, *walkFaceAnim, *dogShotAnim;
+    CCFiniteTimeAction *_idleAction, *_appearAction, *_hitAction, *_shotAction, *_shootAction, *_armShootAction;
+    CCAnimation *walkAnim, *idleAnim, *hitAnim, *dogDeathAnim, *dogAppearAnim, *walkFaceAnim, *dogShotAnim, *shootAnim, *armShootAnim;
     CCSpriteBatchNode *spriteSheet;
     CCLabelTTF *scoreLabel, *droppedLabel;
     b2Vec2 p1, p2;
@@ -38,7 +38,7 @@
     NSString *scoreText, *droppedText;
     int _points, _droppedCount, _spawnLimiter, time, _curPersonMaskBits, _droppedSpacing;
     float _personSpawnDelayTime, _wienerSpawnDelayTime, _wienerKillDelay, _currentRayAngle, armSpeed;
-    BOOL _moving, _touchedDog, _rayTouchingDog, _pause;
+    BOOL _moving, _touchedDog, _rayTouchingDog, _pause, _shootLock;
     NSString *currentAnimation;
     CGRect _pauseButtonRect;
 
@@ -53,6 +53,7 @@
         CCSprite *overlaySprite;
         CCAction *altAction;
         CCAction *altAction2;
+        CCAnimation *defaultAnim;
         CCAnimation *altAnimation;
     };
     
@@ -87,6 +88,8 @@
 @property (nonatomic, retain) CCFiniteTimeAction *deathAction;
 @property (nonatomic, retain) CCFiniteTimeAction *idleFaceAction;
 @property (nonatomic, retain) CCFiniteTimeAction *shotAction;
+@property (nonatomic, retain) CCFiniteTimeAction *shootAction;
+@property (nonatomic, retain) CCFiniteTimeAction *armShootAction;
 @property (nonatomic, retain) CCAction *appearAction;
 @property (nonatomic, retain) NSString *hitFace;
 
