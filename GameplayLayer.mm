@@ -125,11 +125,13 @@ enum {
     b2Body *body = (b2Body *)[(NSValue *)[(NSMutableArray *) params objectAtIndex:0] pointerValue];
     NSNumber *awake = (NSNumber *)[(NSMutableArray *) params objectAtIndex:1];
     
-    if(awake.intValue == 1){
-        body->SetAwake(true);
-    }
-    else if(awake.intValue == 0){
-        body->SetAwake(false);
+    if(body != NULL){
+        if(awake.intValue == 1){
+            body->SetAwake(true);
+        }
+        else if(awake.intValue == 0){
+            body->SetAwake(false);
+        }
     }
 }
 
@@ -150,6 +152,8 @@ enum {
     CCLOG(@"applyForce: called with vel: %d", v.intValue);
     
     vThresh = 1;
+    
+    //TODO - possibly use setActive() here instead of the kinda-hacky friction manipulation
     
     b2Vec2 force = b2Vec2(v.intValue, 0);
     body->ApplyLinearImpulse(force, body->GetPosition());
@@ -666,8 +670,6 @@ enum {
             ud->sprite1 = _policeArm;
             ud->altAction = _armShootAction;
             
-            _policeArm.tag = 12;
-            
             b2BodyDef armBodyDef;
             armBodyDef.type = b2_dynamicBody;
             armBodyDef.position.Set((_personLower.position.x+(_policeArm.contentSize.width/2)+armBodyXOffset)/PTM_RATIO, 
@@ -1088,7 +1090,7 @@ enum {
                                     _shootLock = YES;
                                     
                                     b2Body *copBody, *copArmBody;
-                                    bodyUserData *copUd;
+                                    bodyUserData *copUd, *armUd;
                                     b2Body *dogBody = b;
                                     
                                     closestFraction = output.fraction;
@@ -1098,35 +1100,68 @@ enum {
                                     
                                     for(b2Body* body = _world->GetBodyList(); body; body = body->GetNext()){
                                         if(body->GetUserData() && body->GetUserData() != (void*)100){
-                                            copUd = (bodyUserData*)body->GetUserData();
-                                            if(copUd->sprite1 != NULL && copUd->sprite1.tag == 4){
-                                                copBody = body;
-                                            }
-                                            if(copUd->sprite1 != NULL && copUd->sprite1.tag == 12){
-                                                copArmBody = body;
+                                            if(body->GetPosition().x < winSize.width && body->GetPosition().x > 0 &&
+                                               body->GetPosition().y < winSize.height && body->GetPosition().y > 0){
+                                                copUd = (bodyUserData*)body->GetUserData();
+                                                if(copUd->sprite1 != NULL && copUd->sprite1.tag == 4){
+                                                    copBody = body;
+                                                }
+                                                if(copUd->sprite1 != NULL && copUd->sprite1.tag == 11){
+                                                    copArmBody = body;
+                                                }
                                             }
 
                                         }
                                     }
                                     
+                                    copUd = (bodyUserData *)copBody->GetUserData();
+                                    
+                                    NSMutableArray *walkParameters = [[NSMutableArray alloc] initWithCapacity:2];
+                                    NSValue *cBody = [NSValue valueWithPointer:copBody];
+                                    NSNumber *awakeFlag = [NSNumber numberWithInteger:0];
+                                    [walkParameters addObject:cBody];
+                                    [walkParameters addObject:awakeFlag];
+                                    id stopWalkingAction = [CCCallFuncND actionWithTarget:self selector:@selector(setAwake:data:) data:walkParameters];
+                                    
                                     CCFiniteTimeAction *copShootAction = (CCFiniteTimeAction *)copUd->altAction2;
                                     CCAnimation *copWalkAnim = (CCAnimation *)copUd->defaultAnim;
-                                    NSMutableArray *walkParameters = [[NSMutableArray alloc] initWithCapacity:2];
+                                    walkParameters = [[NSMutableArray alloc] initWithCapacity:2];
                                     NSValue *sprite = [NSValue valueWithPointer:copUd->sprite1];
                                     NSValue *anim = [NSValue valueWithPointer:copWalkAnim];
                                     [walkParameters addObject:sprite];
                                     [walkParameters addObject:anim];
-                                    id walkAction = [CCCallFuncND actionWithTarget:self selector:@selector(spriteRunAction:data:) data:walkParameters];
-                                    id copSeq = [CCSequence actions:copShootAction, walkAction, nil];
+                                    id walkAnimateAction = [CCCallFuncND actionWithTarget:self selector:@selector(spriteRunAction:data:) data:walkParameters];
+                                    
+                                    walkParameters = [[NSMutableArray alloc] initWithCapacity:2];
+                                    NSNumber *vel= [NSNumber numberWithInteger:-350];
+                                    if(copUd->sprite1.flipX == true){
+                                        vel = [NSNumber numberWithInteger:350];
+                                    }
+                                    [walkParameters addObject:cBody];
+                                    [walkParameters addObject:vel];
+                                    id startWalkingAction = [CCCallFuncND actionWithTarget:self selector:@selector(applyForce:data:) data:walkParameters];
+                                    
+                                    walkParameters = [[NSMutableArray alloc] initWithCapacity:2];
+                                    awakeFlag = [NSNumber numberWithInteger:1];
+                                    [walkParameters addObject:cBody];
+                                    [walkParameters addObject:awakeFlag];
+                                    id wakeUpAction = [CCCallFuncND actionWithTarget:self selector:@selector(setAwake:data:) data:walkParameters];
+                                    
+                                    CCDelayTime *delay = [CCDelayTime actionWithDuration:2];
+                                    
+                                    id copSeq = [CCSequence actions:stopWalkingAction, delay, copShootAction, delay, wakeUpAction, startWalkingAction, walkAnimateAction, nil];
                                     [copUd->sprite1 stopAllActions];
                                     [copUd->sprite1 runAction:copSeq];
                                     
-                                    bodyUserData *armUd = (bodyUserData *)copArmBody->GetUserData();
-                                    [armUd->sprite1 runAction:armUd->altAction];
+                                    armUd = (bodyUserData *)copArmBody->GetUserData();
+                                    CCFiniteTimeAction *armShootAnimAction = (CCFiniteTimeAction *)armUd->altAction;
+                                    id armSeq = [CCSequence actions:delay, armShootAnimAction, nil];
+                                    [armUd->sprite1 stopAllActions];
+                                    [armUd->sprite1 runAction:armSeq];
                                     
-                                    ud->overlaySprite.visible = true;
-                                    dogBody->SetAwake(false);
-                                    dogBody->SetActive(false);
+                                    //ud->overlaySprite.visible = true;
+                                    //dogBody->SetAwake(false);
+                                    //dogBody->SetActive(false);
                                     
                                     NSMutableArray *destroyParameters = [[NSMutableArray alloc] initWithCapacity:1];
                                     NSValue *dBody = [NSValue valueWithPointer:dogBody];
@@ -1135,8 +1170,8 @@ enum {
                                     
                                     CCFiniteTimeAction *wienerExplodeAction = (CCFiniteTimeAction *)ud->altAction2;
                                     id dogSeq = [CCSequence actions:wienerExplodeAction, destroyAction, nil];
-                                    [ud->sprite1 stopAllActions];
-                                    [ud->sprite1 runAction:dogSeq];
+                                    //[ud->sprite1 stopAllActions];
+                                    //[ud->sprite1 runAction:dogSeq];
                                     
                                     break;
                                 }
@@ -1144,7 +1179,7 @@ enum {
                         }
                     }
                 }
-                else if(ud->sprite1.tag == 12){
+                else if(ud->sprite1.tag == 11){
                     //things for cop's arm and raycasting
                     p1 = b->GetPosition();
                     p2 = p1 + rayLength * b2Vec2(cosf(b->GetAngle()), sinf(b->GetAngle()));
