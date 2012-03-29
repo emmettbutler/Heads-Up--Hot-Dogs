@@ -660,7 +660,7 @@ enum {
             }
             
             armShootAnim = [[CCAnimation animationWithFrames:armShootAnimFrames delay:.08f] retain];
-            self.armShootAction = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:armShootAnim restoreOriginalFrame:NO] times:1];
+            self.armShootAction = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:armShootAnim restoreOriginalFrame:YES] times:1];
             
             bodyUserData *ud = new bodyUserData();
             ud->sprite1 = _policeArm;
@@ -1087,7 +1087,7 @@ enum {
                                     
                                     _shootLock = YES;
                                     
-                                    b2Body *copBody;
+                                    b2Body *copBody, *copArmBody;
                                     bodyUserData *copUd;
                                     b2Body *dogBody = b;
                                     
@@ -1101,8 +1101,11 @@ enum {
                                             copUd = (bodyUserData*)body->GetUserData();
                                             if(copUd->sprite1 != NULL && copUd->sprite1.tag == 4){
                                                 copBody = body;
-                                                break;
                                             }
+                                            if(copUd->sprite1 != NULL && copUd->sprite1.tag == 12){
+                                                copArmBody = body;
+                                            }
+
                                         }
                                     }
                                     
@@ -1117,6 +1120,9 @@ enum {
                                     id copSeq = [CCSequence actions:copShootAction, walkAction, nil];
                                     [copUd->sprite1 stopAllActions];
                                     [copUd->sprite1 runAction:copSeq];
+                                    
+                                    bodyUserData *armUd = (bodyUserData *)copArmBody->GetUserData();
+                                    [armUd->sprite1 runAction:armUd->altAction];
                                     
                                     ud->overlaySprite.visible = true;
                                     dogBody->SetAwake(false);
