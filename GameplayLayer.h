@@ -37,7 +37,7 @@
     NSMutableArray *personParameters, *wakeParameters, *movementPatterns, *movementParameters, *_touchLocations;
     NSString *scoreText, *droppedText;
     int _points, _droppedCount, _spawnLimiter, time, _curPersonMaskBits, _droppedSpacing;
-    float _personSpawnDelayTime, _wienerSpawnDelayTime, _wienerKillDelay, _currentRayAngle, armSpeed;
+    float _personSpawnDelayTime, _wienerSpawnDelayTime, _wienerKillDelay, _currentRayAngle;
     BOOL _moving, _touchedDog, _rayTouchingDog, _pause, _shootLock;
     NSString *currentAnimation;
     CGRect _pauseButtonRect;
@@ -55,6 +55,10 @@
         CCAction *altAction2;
         CCAnimation *defaultAnim;
         CCAnimation *altAnimation;
+        float armSpeed;
+        BOOL aiming;
+        BOOL aimedAt;
+        double targetAngle;
     };
     
     struct fixtureUserData {

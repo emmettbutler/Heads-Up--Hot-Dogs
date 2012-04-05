@@ -246,6 +246,41 @@ enum {
     CCLOG(@"done.");
 }
 
+-(void)copFlipAim:(id)sender data:(void*)params {
+    b2Body *copBody = (b2Body *)[(NSValue *)[(NSMutableArray *) params objectAtIndex:0] pointerValue];
+    bodyUserData *ud = (bodyUserData *)copBody->GetUserData();
+    
+    if(ud->aiming){
+        ud->aiming = false;
+    } else {
+        ud->aiming = true;
+    }
+}
+
+-(void)copArmAim:(id)sender data:(void*)params {
+    b2Body *copBody = (b2Body *)[(NSValue *)[(NSMutableArray *) params objectAtIndex:0] pointerValue];
+    b2Body *dogBody = (b2Body *)[(NSValue *)[(NSMutableArray *) params objectAtIndex:1] pointerValue];
+    
+    double dx, dy, a;
+    
+    bodyUserData *ud = (bodyUserData *)copBody->GetUserData();
+    if(!ud->aiming)
+        ud->aiming = true;
+    
+    b2JointEdge *j = copBody->GetJointList();
+    if(j->joint->GetType() == e_revoluteJoint){
+        b2RevoluteJoint *r = (b2RevoluteJoint *)j->joint;
+        dx = copBody->GetPosition().x - dogBody->GetPosition().x;
+        dy = copBody->GetPosition().y - dogBody->GetPosition().y;
+        a = acos(dx / sqrt((dx*dx) + (dy*dy)));
+        ud->targetAngle = a;
+        NSLog(@"Shoulder angle: %0.20f", r->GetJointAngle());
+        NSLog(@"Angle between shoulder and dog: %0.2f", a);
+        
+    }
+    //ud->aiming = false;
+}
+
 -(void)putDog:(id)sender data:(void*)params {
     int floor, f;
     CGPoint location = [(NSValue *)[(NSMutableArray *) params objectAtIndex: 0] CGPointValue];
@@ -618,6 +653,7 @@ enum {
         ud->altSprite2 = _hitFace;
         ud->altAction = _walkFaceAction;
         ud->altAnimation = walkFaceAnim;
+        ud->aiming = false;
         if(character.intValue == 4){
             ud->altAction2 = _shootAction;
         }
@@ -938,7 +974,6 @@ enum {
     
     
     time++;
-    armSpeed = 3 * cosf(.1 * time);
     
     //the "LOSE CONDITION"
     if(_droppedCount == DROPPED_MAX){
@@ -946,14 +981,6 @@ enum {
     }
     
 	_world->Step(dt, velocityIterations, positionIterations);
-    
-    //cop arm rotation
-    for(b2Joint* j = _world->GetJointList(); j; j = j->GetNext()){
-        if(j->GetType() == e_revoluteJoint){
-            b2RevoluteJoint *r = (b2RevoluteJoint *)j;
-            r->SetMotorSpeed(armSpeed);
-        }
-    }
     
     //score and dropped count
     //TODO - dropped count may not be digital
@@ -1125,6 +1152,8 @@ enum {
                                     if(copBody && copBody->GetUserData() && copArmBody && copArmBody->GetUserData()){
                                         copUd = (bodyUserData *)copBody->GetUserData();
                                         
+                                        copUd->aiming = true;
+                                        
                                         NSMutableArray *walkParameters = [[NSMutableArray alloc] initWithCapacity:2];
                                         NSValue *cBody = [NSValue valueWithPointer:copBody];
                                         NSNumber *awakeFlag = [NSNumber numberWithInteger:0];
@@ -1132,7 +1161,7 @@ enum {
                                         [walkParameters addObject:awakeFlag];
                                         id stopWalkingAction = [CCCallFuncND actionWithTarget:self selector:@selector(setAwake:data:) data:walkParameters];
                                         
-                                        CCFiniteTimeAction *copShootAction = (CCFiniteTimeAction *)copUd->altAction2;
+                                        CCFiniteTimeAction *copShootAnimAction = (CCFiniteTimeAction *)copUd->altAction2;
                                         CCAnimation *copWalkAnim = (CCAnimation *)copUd->defaultAnim;
                                         walkParameters = [[NSMutableArray alloc] initWithCapacity:2];
                                         NSValue *sprite = [NSValue valueWithPointer:copUd->sprite1];
@@ -1156,11 +1185,23 @@ enum {
                                         [walkParameters addObject:awakeFlag];
                                         id wakeUpAction = [CCCallFuncND actionWithTarget:self selector:@selector(setAwake:data:) data:walkParameters];
                                         
+                                        NSMutableArray *aimParameters = [[NSMutableArray alloc] initWithCapacity:2];
+                                        NSValue *dBody = [NSValue valueWithPointer:dogBody];
+                                        [aimParameters addObject:cBody];
+                                        [aimParameters addObject:dBody];
+                                        id aimAction = [CCCallFuncND actionWithTarget:self selector:@selector(copArmAim:data:) data:aimParameters];
+                                        CCRepeat *repeatAction = [CCRepeat actionWithAction:aimAction times:2000];
+                                        
                                         id unlockAction = [CCCallFuncN actionWithTarget:self selector:@selector(flipShootLock)];
                                         
-                                        CCDelayTime *delay = [CCDelayTime actionWithDuration:2];
+                                        aimParameters = [[NSMutableArray alloc] initWithCapacity:1];
+                                        [aimParameters addObject:cBody];
+                                        id copFlipAimingAction = [CCCallFuncND actionWithTarget:self selector:@selector(copFlipAim:data:) data:aimParameters];
                                         
-                                        id copSeq = [CCSequence actions:stopWalkingAction, delay, copShootAction, delay, wakeUpAction, startWalkingAction, walkAnimateAction, unlockAction, nil];
+                                        CCDelayTime *delay = [CCDelayTime actionWithDuration:2];
+                                        CCDelayTime *preDelay = [CCDelayTime actionWithDuration:.2];
+                                        
+                                        id copSeq = [CCSequence actions:stopWalkingAction, repeatAction, copShootAnimAction, copFlipAimingAction, delay, wakeUpAction, startWalkingAction, walkAnimateAction, unlockAction, nil];
                                         [copUd->sprite1 stopAllActions];
                                         [copUd->sprite1 runAction:copSeq];
                                         
@@ -1175,7 +1216,6 @@ enum {
                                         //dogBody->SetActive(false);
                                         
                                         NSMutableArray *destroyParameters = [[NSMutableArray alloc] initWithCapacity:1];
-                                        NSValue *dBody = [NSValue valueWithPointer:dogBody];
                                         [destroyParameters addObject:dBody];
                                         id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:destroyParameters];
                                         
@@ -1187,6 +1227,32 @@ enum {
                                         break;
                                     }
                                 }
+                            }
+                        }
+                    }
+                }
+                else if(ud->sprite1.tag == 4){
+                    //cop arm rotation
+                    if(!ud->aiming){
+                        b2JointEdge *j = b->GetJointList();
+                        if(j){
+                            if(j->joint->GetType() == e_revoluteJoint){
+                                b2RevoluteJoint *r = (b2RevoluteJoint *)j->joint;
+                                r->SetMotorSpeed(ud->armSpeed);
+                            }
+                        }
+                        ud->armSpeed = 3 * cosf(.1 * time);
+                    } else {
+                        b2JointEdge *j = b->GetJointList();
+                        if(j){
+                            if(j->joint->GetType() == e_revoluteJoint){
+                                b2RevoluteJoint *r = (b2RevoluteJoint *)j->joint;
+                                NSLog(@"Target angle: %0.2f", ud->targetAngle);
+                                if(r->GetJointAngle() < ud->targetAngle)
+                                    r->SetMotorSpeed(1);
+                                else if(r->GetJointAngle() > ud->targetAngle)
+                                    r->SetMotorSpeed(-1);
+                                
                             }
                         }
                     }
