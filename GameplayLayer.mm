@@ -267,17 +267,10 @@ enum {
     if(!ud->aiming)
         ud->aiming = true;
     
-    b2JointEdge *j = copBody->GetJointList();
-    if(j->joint->GetType() == e_revoluteJoint){
-        b2RevoluteJoint *r = (b2RevoluteJoint *)j->joint;
-        dx = copBody->GetPosition().x - dogBody->GetPosition().x;
-        dy = copBody->GetPosition().y - dogBody->GetPosition().y;
-        a = acos(dx / sqrt((dx*dx) + (dy*dy)));
-        ud->targetAngle = a;
-        NSLog(@"Shoulder angle: %0.20f", r->GetJointAngle());
-        NSLog(@"Angle between shoulder and dog: %0.2f", a);
-        
-    }
+    dx = abs(copBody->GetPosition().x - dogBody->GetPosition().x);
+    dy = abs(copBody->GetPosition().y - dogBody->GetPosition().y);
+    a = acos(dx / sqrt((dx*dx) + (dy*dy)));
+    ud->targetAngle = a;
     //ud->aiming = false;
 }
 
@@ -1153,6 +1146,7 @@ enum {
                                         copUd = (bodyUserData *)copBody->GetUserData();
                                         
                                         copUd->aiming = true;
+                                        copUd->targetAngle = -1;
                                         
                                         NSMutableArray *walkParameters = [[NSMutableArray alloc] initWithCapacity:2];
                                         NSValue *cBody = [NSValue valueWithPointer:copBody];
@@ -1189,8 +1183,7 @@ enum {
                                         NSValue *dBody = [NSValue valueWithPointer:dogBody];
                                         [aimParameters addObject:cBody];
                                         [aimParameters addObject:dBody];
-                                        id aimAction = [CCCallFuncND actionWithTarget:self selector:@selector(copArmAim:data:) data:aimParameters];
-                                        CCRepeat *repeatAction = [CCRepeat actionWithAction:aimAction times:2000];
+                                        CCRepeat *repeatAction = [CCRepeat actionWithAction:[CCCallFuncND actionWithTarget:self selector:@selector(copArmAim:data:) data:aimParameters] times:3];
                                         
                                         id unlockAction = [CCCallFuncN actionWithTarget:self selector:@selector(flipShootLock)];
                                         
@@ -1201,7 +1194,7 @@ enum {
                                         CCDelayTime *delay = [CCDelayTime actionWithDuration:2];
                                         CCDelayTime *preDelay = [CCDelayTime actionWithDuration:.2];
                                         
-                                        id copSeq = [CCSequence actions:stopWalkingAction, repeatAction, copShootAnimAction, copFlipAimingAction, delay, wakeUpAction, startWalkingAction, walkAnimateAction, unlockAction, nil];
+                                        id copSeq = [CCSequence actions:stopWalkingAction, repeatAction, delay, copShootAnimAction, copFlipAimingAction, wakeUpAction, startWalkingAction, walkAnimateAction, unlockAction, nil];
                                         [copUd->sprite1 stopAllActions];
                                         [copUd->sprite1 runAction:copSeq];
                                         
@@ -1245,14 +1238,15 @@ enum {
                     } else {
                         b2JointEdge *j = b->GetJointList();
                         if(j){
-                            if(j->joint->GetType() == e_revoluteJoint){
+                            if(j->joint->GetType() == e_revoluteJoint && ud->targetAngle != -1){
                                 b2RevoluteJoint *r = (b2RevoluteJoint *)j->joint;
-                                NSLog(@"Target angle: %0.2f", ud->targetAngle);
-                                if(r->GetJointAngle() < ud->targetAngle)
-                                    r->SetMotorSpeed(1);
-                                else if(r->GetJointAngle() > ud->targetAngle)
-                                    r->SetMotorSpeed(-1);
+                                NSLog(@"Shoulder angle: %0.20f", r->GetJointAngle());
+                                NSLog(@"Angle between shoulder and dog: %0.2f", ud->targetAngle);
                                 
+                                if(r->GetJointAngle() < ud->targetAngle)
+                                    r->SetMotorSpeed(.1);
+                                else if(r->GetJointAngle() > ud->targetAngle)
+                                    r->SetMotorSpeed(-.1);
                             }
                         }
                     }
