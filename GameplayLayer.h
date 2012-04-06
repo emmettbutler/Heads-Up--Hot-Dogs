@@ -18,10 +18,10 @@
 
 @interface GameplayLayer : CCLayer
 {
-	b2World *_world;
+    b2World *_world;
     GLESDebugDraw *m_debugDraw;
-	b2Body *_wallsBody, *_groundBody, *wienerBody, *targetBody, *_personBody, *_policeArmBody;
-	b2Fixture *_bottomFixture, *_wallsFixture, *_wienerFixture, *_targetFixture, *_personFixture, *_policeArmFixture;
+    b2Body *_wallsBody, *_groundBody, *wienerBody, *targetBody, *_personBody, *_policeArmBody;
+    b2Fixture *_bottomFixture, *_wallsFixture, *_wienerFixture, *_targetFixture, *_personFixture, *_policeArmFixture;
     CCSprite *_wiener, *_personLower, *_personUpper, *_target, *_pauseButton;
     b2MouseJoint *_mouseJoint;
     CCAction *_walkAction, *_walkFaceAction;
@@ -60,25 +60,25 @@
         BOOL aimedAt;
         double targetAngle;
     };
-    
+
     struct fixtureUserData {
         int tag;
         int ogCollideFilters;
     };
-    
-	enum _entityCategory {
-		FLOOR1  = 0x0001,
+
+    enum _entityCategory {
+        FLOOR1  = 0x0001,
         FLOOR2  = 0x0002,
         FLOOR3  = 0x0004,
         FLOOR4  = 0x0008,
         WALLS   = 0x0010,
-    	//PERSON  = 0x0020,
-    	WIENER  = 0x0040,
+        //PERSON  = 0x0020,
+        WIENER  = 0x0040,
         BODYBOX = 0x0080,
         TARGET  = 0x0100,
-  	};
+      };
 
-  	PersonDogContactListener *personDogContactListener;
+      PersonDogContactListener *personDogContactListener;
 }
 
 @property (nonatomic, retain) CCSprite *personLower;
