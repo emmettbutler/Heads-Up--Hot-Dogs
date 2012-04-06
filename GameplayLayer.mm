@@ -1023,8 +1023,7 @@ enum {
                     [pUd->sprite2 stopAllActions];
                     [pUd->sprite2 runAction:faceDogWalkAction];
                 } else {
-                    NSString *altSprite2 = (NSString *)pUd->altSprite2;
-                    [pUd->sprite2 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:altSprite2]];
+                    [pUd->sprite2 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:(NSString *)pUd->altSprite2]];
                 }
                 
                 b2Filter dogFilter, personFilter;
@@ -1114,14 +1113,11 @@ enum {
                     if(b->IsAwake()){
                         if(!_mouseJoint){
                             if(b->GetLinearVelocity().y > 1.5){
-                                NSString *altSprite2 = (NSString *)ud->altSprite2;
-                                [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:altSprite2]];
+                                [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:(NSString *)ud->altSprite2]];
                             } else if (b->GetLinearVelocity().y < -1.5){
-                                NSString *altSprite3 = (NSString *)ud->altSprite3;
-                                [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:altSprite3]];
+                                [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:(NSString *)ud->altSprite3]];
                             } else {
-                                NSString *ogSprite2 = (NSString *)ud->ogSprite2;
-                                [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:ogSprite2]];
+                                [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:(NSString *)ud->ogSprite2]];
                             }
                         } else if(_mouseJoint->GetBodyB() == b){
                             [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Dog_Grabbed.png"]]];
