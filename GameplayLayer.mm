@@ -1084,15 +1084,19 @@ enum {
                 if(ud->sprite1.tag == 1){
                     //things for hot dogs
                     if(b->IsAwake()){
-                        if(b->GetLinearVelocity().y > 1.5){
-                            NSString *altSprite2 = (NSString *)ud->altSprite2;
-                            [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:altSprite2] ];
-                        } else if (b->GetLinearVelocity().y < -1.5){
-                            NSString *altSprite3 = (NSString *)ud->altSprite3;
-                            [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:altSprite3] ];
-                        } else {
-                            NSString *ogSprite2 = (NSString *)ud->ogSprite2;
-                            [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:ogSprite2] ];
+                        if(!_mouseJoint){
+                            if(b->GetLinearVelocity().y > 1.5){
+                                NSString *altSprite2 = (NSString *)ud->altSprite2;
+                                [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:altSprite2]];
+                            } else if (b->GetLinearVelocity().y < -1.5){
+                                NSString *altSprite3 = (NSString *)ud->altSprite3;
+                                [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:altSprite3]];
+                            } else {
+                                NSString *ogSprite2 = (NSString *)ud->ogSprite2;
+                                [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:ogSprite2]];
+                            }
+                        } else if(_mouseJoint->GetBodyB() == b){
+                            [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Dog_Grabbed.png"]]];
                         }
                         //CCLOG(@"hotdog contacts: %d", (int)b->GetContactList());
                         if(b->GetContactList() == 0){
