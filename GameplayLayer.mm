@@ -1192,11 +1192,12 @@ enum {
                                         id copFlipAimingAction = [CCCallFuncND actionWithTarget:self selector:@selector(copFlipAim:data:) data:aimParameters];
 
                                         CCDelayTime *delay = [CCDelayTime actionWithDuration:2];
-                                        CCDelayTime *preDelay = [CCDelayTime actionWithDuration:.2];
 
                                         id copSeq = [CCSequence actions:stopWalkingAction, copFlipAimingAction, repeatAction, delay, copShootAnimAction, copFlipAimingAction, wakeUpAction, startWalkingAction, walkAnimateAction, unlockAction, nil];
                                         [copUd->sprite1 stopAllActions];
                                         [copUd->sprite1 runAction:copSeq];
+                                        
+                                        [copUd->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Cop_Idle.png"]]];
 
                                         armUd = (bodyUserData *)copArmBody->GetUserData();
                                         CCFiniteTimeAction *armShootAnimAction = (CCFiniteTimeAction *)armUd->altAction;
