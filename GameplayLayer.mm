@@ -486,6 +486,7 @@ enum {
         NSMutableArray *walkAnimFrames = [NSMutableArray array];
         NSMutableArray *idleAnimFrames = [NSMutableArray array];
         NSMutableArray *faceWalkAnimFrames = [NSMutableArray array];
+        NSMutableArray *faceDogWalkAnimFrames = [NSMutableArray array];
         NSMutableArray *shootAnimFrames;
         NSMutableArray *armShootAnimFrames;
 
@@ -521,6 +522,11 @@ enum {
                     [faceWalkAnimFrames addObject:
                      [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
                       [NSString stringWithFormat:@"BusinessHead_NoDog_%d.png", i]]];
+                }
+                for(int i = 1; i <= 3; i++){
+                    [faceDogWalkAnimFrames addObject:
+                     [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                      [NSString stringWithFormat:@"BusinessHead_Dog_%d.png", i]]];
                 }
                 break;
             case 4: //police
@@ -562,6 +568,11 @@ enum {
                     [faceWalkAnimFrames addObject:
                      [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
                       [NSString stringWithFormat:@"Cop_Head_NoDog_%d.png", i]]];
+                }
+                for(int i = 1; i <= 4; i++){
+                    [faceDogWalkAnimFrames addObject:
+                     [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                      [NSString stringWithFormat:@"Cop_Head_Dog_%d.png", i]]];
                 }
                 for(int i = 1; i <= 2; i++){
                     [shootAnimFrames addObject:
@@ -619,6 +630,8 @@ enum {
         walkFaceAnim = [[CCAnimation animationWithFrames:faceWalkAnimFrames delay:.08f] retain];
         self.walkFaceAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:walkFaceAnim restoreOriginalFrame:NO]];
         [_personUpper runAction:_walkFaceAction];
+        
+        walkDogFaceAnim = [[CCAnimation animationWithFrames:faceDogWalkAnimFrames delay:.08f] retain];
 
         if(character.intValue == 4){
             shootAnim = [[CCAnimation animationWithFrames:shootAnimFrames delay:.08f] retain];
@@ -642,6 +655,7 @@ enum {
         ud->sprite1 = _personLower;
         ud->sprite2 = _personUpper;
         ud->defaultAnim = walkAnim;
+        ud->altWalkAnim = walkDogFaceAnim;
         ud->heightOffset2 = heightOffset;
         ud->ogSprite2 = ogHeadSprite;
         ud->altSprite2 = _hitFace;
@@ -970,7 +984,7 @@ enum {
     time++;
 
     //the "LOSE CONDITION"
-    if(_droppedCount == DROPPED_MAX){
+    if(_droppedCount >= DROPPED_MAX){
         [self loseScene];
     }
 
@@ -1001,6 +1015,18 @@ enum {
             if(fBUd->tag >= 3 && fBUd->tag <= 10){
                 pBody = pdContact.fixtureB->GetBody();
                 CCLOG(@"Dog/Person Collision - Y Vel: %0.2f", dogBody->GetLinearVelocity().x);
+                
+                bodyUserData *pUd = (bodyUserData *)pBody->GetUserData();
+                CCAnimation *faceDogWalkAnim = (CCAnimation *)pUd->altWalkAnim;
+                CCAction *faceDogWalkAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:faceDogWalkAnim restoreOriginalFrame:NO]];
+                if(abs(pBody->GetLinearVelocity().x) > 1){
+                    [pUd->sprite2 stopAllActions];
+                    [pUd->sprite2 runAction:faceDogWalkAction];
+                } else {
+                    NSString *altSprite2 = (NSString *)pUd->altSprite2;
+                    [pUd->sprite2 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:altSprite2]];
+                }
+                
                 b2Filter dogFilter, personFilter;
                 for(b2Fixture* fixture = pBody->GetFixtureList(); fixture; fixture = fixture->GetNext()){
                     fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
@@ -1012,6 +1038,8 @@ enum {
                     fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
                     if(fUd->tag == 1){
                         dogFilter = fixture->GetFilterData();
+                        // only allow the dog to collide with the person it's on
+                        // by setting its mask bits to the person's category bits
                         dogFilter.maskBits = personFilter.categoryBits;
                         fixture->SetFilterData(dogFilter);
                     }

@@ -26,7 +26,7 @@
     b2MouseJoint *_mouseJoint;
     CCAction *_walkAction, *_walkFaceAction;
     CCFiniteTimeAction *_idleAction, *_appearAction, *_hitAction, *_shotAction, *_shootAction, *_armShootAction;
-    CCAnimation *walkAnim, *idleAnim, *hitAnim, *dogDeathAnim, *dogAppearAnim, *walkFaceAnim, *dogShotAnim, *shootAnim, *armShootAnim;
+    CCAnimation *walkAnim, *idleAnim, *hitAnim, *dogDeathAnim, *dogAppearAnim, *walkFaceAnim, *walkDogFaceAnim, *dogShotAnim, *shootAnim, *armShootAnim;
     CCSpriteBatchNode *spriteSheet;
     CCLabelTTF *scoreLabel, *droppedLabel;
     b2Vec2 p1, p2;
@@ -55,6 +55,7 @@
         CCAction *altAction2;
         CCAnimation *defaultAnim;
         CCAnimation *altAnimation;
+        CCAnimation *altWalkAnim;
         float armSpeed;
         BOOL aiming;
         BOOL aimedAt;
