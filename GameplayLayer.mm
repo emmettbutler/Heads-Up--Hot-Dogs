@@ -19,7 +19,8 @@
 #define FLOOR4_HT 1.2
 #define DOG_SPAWN_MINHT 240
 #define SPAWN_LIMIT_DECREMENT_DELAY 1
-#define DROPPED_MAX 5
+#define DROPPED_MAX 50
+#define COP_RANGE 4
 
 // enums that will be used as tags
 enum {
@@ -231,6 +232,7 @@ enum {
         [dogSprite stopAllActions];
         [dogSprite removeFromParentAndCleanup:YES];
         [ud->overlaySprite removeFromParentAndCleanup:YES];
+        
         _world->DestroyBody(dogBody);
 
         free(ud);
@@ -258,22 +260,15 @@ enum {
     }
 }
 
--(void)copArmAim:(id)sender data:(void*)params {
+-(void)dogFlipAimedAt:(id)sender data:(void*)params {
+    b2Body *dogBody = (b2Body *)[(NSValue *)[(NSMutableArray *) params objectAtIndex:0] pointerValue];
+    bodyUserData *ud = (bodyUserData *)dogBody->GetUserData();
     
-    b2Body *copBody = (b2Body *)[(NSValue *)[(NSMutableArray *) params objectAtIndex:0] pointerValue];
-    b2Body *dogBody = (b2Body *)[(NSValue *)[(NSMutableArray *) params objectAtIndex:1] pointerValue];
-
-    double dx, dy, a;
-
-    bodyUserData *ud = (bodyUserData *)copBody->GetUserData();
-    //if(!ud->aiming)
-    //    ud->aiming = true;
-
-    dx = abs(copBody->GetPosition().x - dogBody->GetPosition().x);
-    dy = abs(copBody->GetPosition().y - dogBody->GetPosition().y);
-    a = acos(dx / sqrt((dx*dx) + (dy*dy)));
-    ud->targetAngle = a;
-    //ud->aiming = false;
+    if(ud->aimedAt){
+        ud->aimedAt = false;
+    } else {
+        ud->aimedAt = true;
+    }
 }
 
 -(void)putDog:(id)sender data:(void*)params {
@@ -331,6 +326,7 @@ enum {
     ud->altAction = _deathAction;
     ud->altAction2 = _shotAction;
     ud->overlaySprite = target;
+    ud->aimedAt = false;
 
     fixtureUserData *fUd1 = new fixtureUserData();
     fUd1->ogCollideFilters = 0;
@@ -1098,7 +1094,7 @@ enum {
     b2RayCastInput input;
     float closestFraction = 1; //start with end of line as p2
     b2Vec2 intersectionNormal(0,0);
-    float rayLength = 6;
+    float rayLength = COP_RANGE;
     b2Vec2 intersectionPoint(0,0);
 
     //any non-collision actions that apply to multiple onscreen entities happen here
@@ -1217,7 +1213,6 @@ enum {
                                         NSValue *dBody = [NSValue valueWithPointer:dogBody];
                                         [aimParameters addObject:cBody];
                                         [aimParameters addObject:dBody];
-                                        CCRepeat *repeatAction = [CCRepeat actionWithAction:[CCCallFuncND actionWithTarget:self selector:@selector(copArmAim:data:) data:aimParameters] times:3];
 
                                         id unlockAction = [CCCallFuncN actionWithTarget:self selector:@selector(flipShootLock)];
 
@@ -1225,18 +1220,16 @@ enum {
                                         [aimParameters addObject:cBody];
                                         id copFlipAimingAction = [CCCallFuncND actionWithTarget:self selector:@selector(copFlipAim:data:) data:aimParameters];
 
-                                        CCDelayTime *delay = [CCDelayTime actionWithDuration:2];
+                                        CCDelayTime *delay = [CCDelayTime actionWithDuration:1];
 
-                                        id copSeq = [CCSequence actions:stopWalkingAction, copFlipAimingAction, repeatAction, delay, copShootAnimAction, copFlipAimingAction, wakeUpAction, startWalkingAction, walkAnimateAction, unlockAction, nil];
+                                        id copSeq = [CCSequence actions:stopWalkingAction, copFlipAimingAction, delay, copShootAnimAction, copFlipAimingAction, wakeUpAction, startWalkingAction, walkAnimateAction, unlockAction, nil];
                                         [copUd->sprite1 stopAllActions];
                                         [copUd->sprite1 runAction:copSeq];
                                         
                                         CCFiniteTimeAction *faceShootAction = (CCFiniteTimeAction *)copUd->altAction3;
                                         NSMutableArray *walkFaceParameters = [[NSMutableArray alloc] initWithCapacity:2];
-                                        NSValue *wAction = [NSValue valueWithPointer:(CCAction *)copUd->altAnimation];
-                                        NSValue *spr = [NSValue valueWithPointer:(CCSprite *)copUd->sprite2];
-                                        [walkFaceParameters addObject:spr];
-                                        [walkFaceParameters addObject:wAction];
+                                        [walkFaceParameters addObject:[NSValue valueWithPointer:(CCSprite *)copUd->sprite2]];
+                                        [walkFaceParameters addObject:[NSValue valueWithPointer:(CCAction *)copUd->altAnimation]];
                                         id faceWalkAction = [CCCallFuncND actionWithTarget:self selector:@selector(spriteRunAction:data:) data:walkFaceParameters];
                                         [copUd->sprite2 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Cop_Head_Aiming_1.png"]]];
                                         
@@ -1252,16 +1245,20 @@ enum {
                                         [armUd->sprite1 stopAllActions];
                                         [armUd->sprite1 runAction:armSeq];
 
-                                        ud->overlaySprite.visible = true;
-                                        dogBody->SetAwake(false);
-                                        dogBody->SetActive(false);
+                                        //ud->overlaySprite.visible = true;
+                                        //dogBody->SetAwake(false);
+                                        //dogBody->SetActive(false);
 
                                         NSMutableArray *destroyParameters = [[NSMutableArray alloc] initWithCapacity:1];
                                         [destroyParameters addObject:dBody];
                                         id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:destroyParameters];
+                                        
+                                        NSMutableArray *aimedAtParameters = [[NSMutableArray alloc] initWithCapacity:1];
+                                        [aimedAtParameters addObject:dBody];
+                                        id dogFlipAimedAtAction = [CCCallFuncND actionWithTarget:self selector:@selector(dogFlipAimedAt:data:) data:aimedAtParameters];
 
                                         CCFiniteTimeAction *wienerExplodeAction = (CCFiniteTimeAction *)ud->altAction2;
-                                        id dogSeq = [CCSequence actions:delay, wienerExplodeAction, destroyAction, nil];
+                                        id dogSeq = [CCSequence actions:dogFlipAimedAtAction, delay, wienerExplodeAction, destroyAction, nil];
                                         //[ud->sprite1 stopAllActions];
                                         [ud->sprite1 runAction:dogSeq];
 
@@ -1284,6 +1281,22 @@ enum {
                         }
                         ud->armSpeed = 3 * cosf(.1 * time);
                     } else {
+                        b2Body *aimedDog;
+                        double dy, dx, a;
+                        for(b2Body* aimedBody = _world->GetBodyList(); aimedBody; aimedBody = aimedBody->GetNext()){
+                            if(aimedBody->GetUserData() && aimedBody->GetUserData() != (void*)100){
+                                bodyUserData *aimedUd = (bodyUserData *)aimedBody->GetUserData();
+                                if(aimedUd->sprite1.tag == 1 && aimedUd->aimedAt == true){
+                                    aimedDog = aimedBody;
+                                    dx = abs(b->GetPosition().x - aimedDog->GetPosition().x);
+                                    dy = abs(b->GetPosition().y - aimedDog->GetPosition().y);
+                                    a = acos(dx / sqrt((dx*dx) + (dy*dy)));
+                                    ud->targetAngle = a;
+                                    break;
+                                }
+                            }
+                        }
+                        
                         b2JointEdge *j = b->GetJointList();
                         if(j){
                             if(j->joint->GetType() == e_revoluteJoint && ud->targetAngle != -1){
@@ -1292,9 +1305,9 @@ enum {
                                 NSLog(@"Angle between shoulder and dog: %0.2f", ud->targetAngle);
 
                                 if(r->GetJointAngle() < ud->targetAngle)
-                                    r->SetMotorSpeed(.1);
+                                    r->SetMotorSpeed(.5);
                                 else if(r->GetJointAngle() > ud->targetAngle)
-                                    r->SetMotorSpeed(-.1);
+                                    r->SetMotorSpeed(-.5);
                             }
                         }
                     }
