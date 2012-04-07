@@ -233,6 +233,11 @@ enum {
         [dogSprite removeFromParentAndCleanup:YES];
         [ud->overlaySprite removeFromParentAndCleanup:YES];
         
+        if(_mouseJoint){
+            _world->DestroyJoint(_mouseJoint);
+            _mouseJoint = NULL;
+        }
+        
         _world->DestroyBody(dogBody);
 
         free(ud);
@@ -1272,6 +1277,15 @@ enum {
                 else if(ud->sprite1.tag == 4){
                     //cop arm rotation
                     if(!ud->aiming){
+                        //if not aiming, make sure there are no world dogs with aimedAt on
+                        for(b2Body* aimedBody = _world->GetBodyList(); aimedBody; aimedBody = aimedBody->GetNext()){
+                            if(aimedBody->GetUserData() && aimedBody->GetUserData() != (void*)100){
+                                bodyUserData *aimedUd = (bodyUserData *)aimedBody->GetUserData();
+                                if(aimedUd->sprite1.tag == 1 && aimedUd->aimedAt == true){
+                                    aimedUd->aimedAt = false;
+                                }
+                            }
+                        }
                         b2JointEdge *j = b->GetJointList();
                         if(j){
                             if(j->joint->GetType() == e_revoluteJoint){
@@ -1365,8 +1379,7 @@ enum {
             if(ud->sprite1.tag == 1){
                 for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
                     fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
-                    if (fixture->TestPoint(locationWorld)) {
-                        [ud->sprite1 stopAllActions];
+                    if (fixture->TestPoint(locationWorld)){
 
                         CCLOG(@"Touching hotdog");
                         b2MouseJointDef md;
@@ -1423,12 +1436,14 @@ enum {
         }
     }
 
-    [sprite stopAllActions];
+    if(!ud->aimedAt){
+        [sprite stopAllActions];
+    }
 }
 
 
 - (void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-    if (_mouseJoint) {
+    if (_mouseJoint != NULL) {
         _world->DestroyJoint(_mouseJoint);
         _mouseJoint = NULL;
     }

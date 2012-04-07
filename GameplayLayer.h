@@ -61,6 +61,7 @@
         float armSpeed;
         BOOL aiming;
         BOOL aimedAt;
+        BOOL animLock;
         double targetAngle;
     };
 
