@@ -44,6 +44,7 @@ enum {
 @synthesize idleFaceAction = _idleFaceAction;
 @synthesize shotAction = _shotAction;
 @synthesize shootAction = _shootAction;
+@synthesize shootFaceAction = _shootFaceAction;
 @synthesize armShootAction = _armShootAction;
 @synthesize hitFace = _hitFace;
 
@@ -329,9 +330,6 @@ enum {
     ud->sprite1 = _wiener;
     ud->altAction = _deathAction;
     ud->altAction2 = _shotAction;
-    ud->ogSprite2 = [NSString stringWithString:@"dog54x12.png"];
-    ud->altSprite2 = [NSString stringWithString:@"Dog_Rise.png"];
-    ud->altSprite3 = [NSString stringWithString:@"Dog_Fall.png"];
     ud->overlaySprite = target;
 
     fixtureUserData *fUd1 = new fixtureUserData();
@@ -488,6 +486,7 @@ enum {
         NSMutableArray *faceWalkAnimFrames = [NSMutableArray array];
         NSMutableArray *faceDogWalkAnimFrames = [NSMutableArray array];
         NSMutableArray *shootAnimFrames;
+        NSMutableArray *shootFaceAnimFrames;
         NSMutableArray *armShootAnimFrames;
 
         switch(character.intValue){
@@ -531,6 +530,7 @@ enum {
                 break;
             case 4: //police
                 shootAnimFrames = [NSMutableArray array];
+                shootFaceAnimFrames = [NSMutableArray array];
                 armShootAnimFrames = [NSMutableArray array];
                 self.personLower = [CCSprite spriteWithSpriteFrameName:@"Cop_Run_1.png"];
                 self.personUpper = [CCSprite spriteWithSpriteFrameName:@"Cop_Head_NoDog_1.png"];
@@ -578,6 +578,11 @@ enum {
                     [shootAnimFrames addObject:
                      [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
                       [NSString stringWithFormat:@"Cop_Shoot_%d.png", i]]];
+                }
+                for(int i = 1; i <= 2; i++){
+                    [shootFaceAnimFrames addObject:
+                     [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                      [NSString stringWithFormat:@"Cop_Head_Shoot_%d.png", i]]];
                 }
                 break;
         }
@@ -636,6 +641,9 @@ enum {
         if(character.intValue == 4){
             shootAnim = [[CCAnimation animationWithFrames:shootAnimFrames delay:.08f] retain];
             self.shootAction = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:shootAnim restoreOriginalFrame:NO] times:1];
+            
+            shootFaceAnim = [[CCAnimation animationWithFrames:shootFaceAnimFrames delay:.08f] retain];
+            self.shootFaceAction = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:shootFaceAnim restoreOriginalFrame:YES] times:1];
         }
 
         //TODO - set up a range of z indices so multisprites work nicely
@@ -664,6 +672,7 @@ enum {
         ud->aiming = false;
         if(character.intValue == 4){
             ud->altAction2 = _shootAction;
+            ud->altAction3 = _shootFaceAction;
         }
 
         fixtureUserData *fUd1 = new fixtureUserData();
@@ -1015,7 +1024,6 @@ enum {
             if(fBUd->tag >= 3 && fBUd->tag <= 10){
                 pBody = pdContact.fixtureB->GetBody();
                 CCLOG(@"Dog/Person Collision - Y Vel: %0.2f", dogBody->GetLinearVelocity().x);
-                
                 bodyUserData *pUd = (bodyUserData *)pBody->GetUserData();
                 CCAnimation *faceDogWalkAnim = (CCAnimation *)pUd->altWalkAnim;
                 CCAction *faceDogWalkAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:faceDogWalkAnim restoreOriginalFrame:NO]];
@@ -1025,7 +1033,6 @@ enum {
                 } else {
                     [pUd->sprite2 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:(NSString *)pUd->altSprite2]];
                 }
-                
                 b2Filter dogFilter, personFilter;
                 for(b2Fixture* fixture = pBody->GetFixtureList(); fixture; fixture = fixture->GetNext()){
                     fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
@@ -1113,16 +1120,15 @@ enum {
                     if(b->IsAwake()){
                         if(!_mouseJoint){
                             if(b->GetLinearVelocity().y > 1.5){
-                                [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:(NSString *)ud->altSprite2]];
+                                [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Dog_Rise.png"]]];
                             } else if (b->GetLinearVelocity().y < -1.5){
-                                [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:(NSString *)ud->altSprite3]];
+                                [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Dog_Fall.png"]]];
                             } else {
-                                [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:(NSString *)ud->ogSprite2]];
+                                [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"dog54x12.png"]]];
                             }
                         } else if(_mouseJoint->GetBodyB() == b){
                             [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Dog_Grabbed.png"]]];
                         }
-                        //CCLOG(@"hotdog contacts: %d", (int)b->GetContactList());
                         if(b->GetContactList() == 0){
                             for(b2Fixture* fixture = b->GetFixtureList(); fixture; fixture = fixture->GetNext()){
                                 fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
@@ -1224,6 +1230,19 @@ enum {
                                         id copSeq = [CCSequence actions:stopWalkingAction, copFlipAimingAction, repeatAction, delay, copShootAnimAction, copFlipAimingAction, wakeUpAction, startWalkingAction, walkAnimateAction, unlockAction, nil];
                                         [copUd->sprite1 stopAllActions];
                                         [copUd->sprite1 runAction:copSeq];
+                                        
+                                        CCFiniteTimeAction *faceShootAction = (CCFiniteTimeAction *)copUd->altAction3;
+                                        NSMutableArray *walkFaceParameters = [[NSMutableArray alloc] initWithCapacity:2];
+                                        NSValue *wAction = [NSValue valueWithPointer:(CCAction *)copUd->altAnimation];
+                                        NSValue *spr = [NSValue valueWithPointer:(CCSprite *)copUd->sprite2];
+                                        [walkFaceParameters addObject:spr];
+                                        [walkFaceParameters addObject:wAction];
+                                        id faceWalkAction = [CCCallFuncND actionWithTarget:self selector:@selector(spriteRunAction:data:) data:walkFaceParameters];
+                                        [copUd->sprite2 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Cop_Head_Aiming_1.png"]]];
+                                        
+                                        id copHeadSeq = [CCSequence actions:delay, faceShootAction, faceWalkAction, nil];
+                                        [copUd->sprite2 stopAllActions];
+                                        [copUd->sprite2 runAction:copHeadSeq];
                                         
                                         [copUd->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Cop_Idle.png"]]];
 
