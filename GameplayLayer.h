@@ -77,7 +77,7 @@
         FLOOR4  = 0x0008,
         WALLS   = 0x0010,
         WIENER  = 0x0040,
-        BODYBOX = 0x0080,
+        BODYBOX = 0x0080, // character bodies
         TARGET  = 0x0100,
     };
     
@@ -87,18 +87,18 @@
         S_POLICE    =   4,
         S_TOPPSN    =   10, // top person sprite tag, this must be TOPPSN > POLICE > BUSMAN with only person tags between
         S_COPARM    =   11,
-        S_CRSHRS    =   20,
+        S_CRSHRS    =   20, // crosshairs
     };
     
     enum _fixtureTags {
-        F_DOGGRB    =   0,
-        F_DOGCLD    =   1,
-        F_BUSHED    =   3,
-        F_COPHED    =   4,
+        F_DOGGRB    =   0, // hotdog grab box
+        F_DOGCLD    =   1, // hotdog collisions
+        F_BUSHED    =   3, // businessman's head
+        F_COPHED    =   4, // cop's head
         F_TOPHED    =   10, // top head fixture tag, this must be TOPHED > COPHED > BUSHED with only head tags between
-        F_COPARM    =   11,
-        F_BUSBDY    =   53,
-        F_COPBDY    =   54,
+        F_COPARM    =   11, 
+        F_BUSBDY    =   53, // businessman's body
+        F_COPBDY    =   54, // cop's body
         F_TOPBDY    =   60, // top body fixture tag, this must be TOPBDY > COPBDY > BUSBDY with only body tags between
         F_GROUND    =   100,
     };

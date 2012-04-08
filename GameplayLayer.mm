@@ -1333,6 +1333,7 @@
                 }
                 else if(ud->sprite1.tag == S_COPARM){
                     //things for cop's arm and raycasting
+                    //TODO - make all global components of cop raycasting into instance variables to allow maybe multiple cops onscreen
                     policeRayPoint1 = b->GetPosition();
                     policeRayPoint2 = policeRayPoint1 + rayLength * b2Vec2(cosf(b->GetAngle()), sinf(b->GetAngle()));
                     input.p1 = policeRayPoint1;
