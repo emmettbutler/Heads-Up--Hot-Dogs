@@ -450,6 +450,9 @@ enum {
     CGSize winSize = [CCDirector sharedDirector].winSize;
 
     spawn = YES;
+    // cycle through a set of several possible mask/category bits for dog/person collision
+    // this is so that a dog can be told only to collide with the person who it's touching already,
+    // or to collide with all people. this breaks when there are more than 4 people onscreen
     if(_curPersonMaskBits >= 0x8000){
         _curPersonMaskBits = 0x1000;
     } else {
@@ -546,7 +549,7 @@ enum {
                 hitboxCenterY = 4.1;
                 velocityMul = 350;
                 density = 6.0f;
-                restitution = .5f;
+                restitution = .5f; //bounce
                 friction = 4.0f;
                 fTag = 4;
                 heightOffset = 2.9f;
