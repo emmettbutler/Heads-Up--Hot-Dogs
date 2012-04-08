@@ -30,7 +30,7 @@
     CCAnimation *dogShotAnim, *shootAnim, *armShootAnim, *shootFaceAnim;
     CCSpriteBatchNode *spriteSheet;
     CCLabelTTF *scoreLabel, *droppedLabel;
-    b2Vec2 p1, p2;
+    b2Vec2 policeRayPoint1, policeRayPoint2;
     b2RevoluteJoint *policeArmJoint;
     CCLayerColor *_pauseLayer;
     CCMenu *_pauseMenu;

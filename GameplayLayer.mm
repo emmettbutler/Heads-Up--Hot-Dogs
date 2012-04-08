@@ -210,7 +210,7 @@ enum {
             glColor4ub(255, 0, 0, 255);
         else
             glColor4ub(0, 255, 0, 255);
-        ccDrawLine(CGPointMake(p1.x*PTM_RATIO, p1.y*PTM_RATIO), CGPointMake(p2.x*PTM_RATIO, p2.y*PTM_RATIO));
+        ccDrawLine(CGPointMake(policeRayPoint1.x*PTM_RATIO, policeRayPoint1.y*PTM_RATIO), CGPointMake(policeRayPoint2.x*PTM_RATIO, policeRayPoint2.y*PTM_RATIO));
     }
 
     glEnable(GL_TEXTURE_2D);
@@ -489,6 +489,7 @@ enum {
         NSMutableArray *shootAnimFrames;
         NSMutableArray *shootFaceAnimFrames;
         NSMutableArray *armShootAnimFrames;
+        CCSprite *target;
 
         switch(character.intValue){
             case 3: //businessman
@@ -557,6 +558,7 @@ enum {
                 armBodyYOffset = 40;
                 armJointXOffset = 15;
                 armJointYOffset = 40;
+                target = [CCSprite spriteWithSpriteFrameName:@"cop_target.png"];
                 for(int i = 1; i <= 8; i++){
                     [walkAnimFrames addObject:
                      [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -645,6 +647,9 @@ enum {
             
             shootFaceAnim = [[CCAnimation animationWithFrames:shootFaceAnimFrames delay:.08f] retain];
             self.shootFaceAction = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:shootFaceAnim restoreOriginalFrame:YES] times:1];
+            
+            target.tag = 20;
+            [self addChild:target];
         }
 
         //TODO - set up a range of z indices so multisprites work nicely
@@ -674,6 +679,7 @@ enum {
         if(character.intValue == 4){
             ud->altAction2 = _shootAction;
             ud->altAction3 = _shootFaceAction;
+            ud->overlaySprite = target;
         }
 
         fixtureUserData *fUd1 = new fixtureUserData();
@@ -1055,22 +1061,25 @@ enum {
                 bodyUserData *ud = (bodyUserData *)dogBody->GetUserData();
                 CCNode *contactNode = (CCNode *)ud->sprite1;
                 CGPoint position = contactNode.position;
-                CCParticleSystem* explosion = [CCParticleFire node];
+                CCParticleSystem* heartParticles = [CCParticleFire node];
                 ccColor4F startColor = {1, 1, 1, 1};
                 ccColor4F endColor = {1, 1, 1, 0};
-                explosion.startColor = startColor;
-                explosion.endColor = endColor;
-                explosion.texture = [[CCTextureCache sharedTextureCache] addImage:[NSString stringWithFormat:@"Heart_Particle_%d.png", particle]];
-                explosion.blendFunc = (ccBlendFunc) {GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA};
-                explosion.autoRemoveOnFinish = YES;
-                explosion.startSize = 1.0f;
-                explosion.speed = 90.0f;
-                explosion.anchorPoint = ccp(0.5f,0.5f);
-                explosion.position = position;
-                explosion.duration = 0.1f;
-                [self addChild:explosion z:11];
-                //[explosion release];
-                _points += 10;
+                heartParticles.startColor = startColor;
+                heartParticles.endColor = endColor;
+                heartParticles.texture = [[CCTextureCache sharedTextureCache] addImage:[NSString stringWithFormat:@"Heart_Particle_%d.png", particle]];
+                heartParticles.blendFunc = (ccBlendFunc) {GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA};
+                heartParticles.autoRemoveOnFinish = YES;
+                heartParticles.startSize = 1.0f;
+                heartParticles.speed = 90.0f;
+                heartParticles.anchorPoint = ccp(0.5f,0.5f);
+                heartParticles.position = position;
+                heartParticles.duration = 0.1f;
+                [self addChild:heartParticles z:11];
+                switch(pUd->sprite1.tag){
+                    case 3: _points += 100; break;
+                    case 4: _points += 300; break;
+                    default: _points += 100; break;
+                }
             }
             else if (fBUd->tag == 100){
                 if(dogBody->GetLinearVelocity().y < .1){
@@ -1097,7 +1106,7 @@ enum {
     personDogContactListener->contacts.clear();
 
     b2RayCastInput input;
-    float closestFraction = 1; //start with end of line as p2
+    float closestFraction = 1; //start with end of line as policeRayPoint2
     b2Vec2 intersectionNormal(0,0);
     float rayLength = COP_RANGE;
     b2Vec2 intersectionPoint(0,0);
@@ -1107,8 +1116,13 @@ enum {
         if(b->GetUserData() && b->GetUserData() != (void*)100){
             bodyUserData *ud = (bodyUserData*)b->GetUserData();
             if(ud->overlaySprite != NULL){
-                ud->overlaySprite.position = CGPointMake((b->GetPosition().x)*PTM_RATIO,
-                                                   (b->GetPosition().y)*PTM_RATIO);
+                if(ud->sprite1.tag == 4){
+                    ud->overlaySprite.position = CGPointMake(policeRayPoint2.x*PTM_RATIO, policeRayPoint2.y*PTM_RATIO);
+                }
+                else {
+                    ud->overlaySprite.position = CGPointMake((b->GetPosition().x)*PTM_RATIO,
+                                                            (b->GetPosition().y)*PTM_RATIO);
+                }
             }
             if(ud->sprite2 != NULL){
                 ud->sprite2.position = CGPointMake((b->GetPosition().x)*PTM_RATIO,
@@ -1160,7 +1174,7 @@ enum {
                                     closestFraction = output.fraction;
                                     _rayTouchingDog = true;
                                     intersectionNormal = output.normal;
-                                    intersectionPoint = p1 + closestFraction * (p2 - p1);
+                                    intersectionPoint = policeRayPoint1 + closestFraction * (policeRayPoint2 - policeRayPoint1);
 
                                     for(b2Body* body = _world->GetBodyList(); body; body = body->GetNext()){
                                         if(body->GetUserData() && body->GetUserData() != (void*)100){
@@ -1328,10 +1342,10 @@ enum {
                 }
                 else if(ud->sprite1.tag == 11){
                     //things for cop's arm and raycasting
-                    p1 = b->GetPosition();
-                    p2 = p1 + rayLength * b2Vec2(cosf(b->GetAngle()), sinf(b->GetAngle()));
-                    input.p1 = p1;
-                    input.p2 = p2;
+                    policeRayPoint1 = b->GetPosition();
+                    policeRayPoint2 = policeRayPoint1 + rayLength * b2Vec2(cosf(b->GetAngle()), sinf(b->GetAngle()));
+                    input.p1 = policeRayPoint1;
+                    input.p2 = policeRayPoint2;
                     input.maxFraction = 1;
                 }
                 //boilerplate - update sprite positions to match their physics bodies
@@ -1339,8 +1353,13 @@ enum {
                 ud->sprite1.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
                 //destroy any sprite/body pair that's offscreen
                 //TODO - this causes a crash when dogs are dragged offscreen
+                // TODO - points for dogs that leave the screen on a person's head
                 if(ud->sprite1.position.x > winSize.width + 60 || ud->sprite1.position.x < -60 ||
                    ud->sprite1.position.y > winSize.height || ud->sprite1.position.y < -20){
+                    if(_mouseJoint && _mouseJoint->GetBodyB() == b){
+                        _world->DestroyJoint(_mouseJoint);
+                        _mouseJoint = NULL;
+                    }
                     _world->DestroyBody(b);
                     CCLOG(@"Body removed");
                     [ud->sprite1 removeFromParentAndCleanup:YES];
