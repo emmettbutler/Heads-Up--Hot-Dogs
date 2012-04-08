@@ -1199,18 +1199,15 @@ enum {
 
                                         NSMutableArray *walkParameters = [[NSMutableArray alloc] initWithCapacity:2];
                                         NSValue *cBody = [NSValue valueWithPointer:copBody];
-                                        NSNumber *awakeFlag = [NSNumber numberWithInteger:0];
                                         [walkParameters addObject:cBody];
-                                        [walkParameters addObject:awakeFlag];
+                                        [walkParameters addObject:[NSNumber numberWithInteger:0]];
                                         id stopWalkingAction = [CCCallFuncND actionWithTarget:self selector:@selector(setAwake:data:) data:walkParameters];
 
                                         CCFiniteTimeAction *copShootAnimAction = (CCFiniteTimeAction *)copUd->altAction2;
                                         CCAnimation *copWalkAnim = (CCAnimation *)copUd->defaultAnim;
                                         walkParameters = [[NSMutableArray alloc] initWithCapacity:2];
-                                        NSValue *sprite = [NSValue valueWithPointer:copUd->sprite1];
-                                        NSValue *anim = [NSValue valueWithPointer:copWalkAnim];
-                                        [walkParameters addObject:sprite];
-                                        [walkParameters addObject:anim];
+                                        [walkParameters addObject:[NSValue valueWithPointer:copUd->sprite1]];
+                                        [walkParameters addObject:[NSValue valueWithPointer:copWalkAnim]];
                                         id walkAnimateAction = [CCCallFuncND actionWithTarget:self selector:@selector(spriteRunAction:data:) data:walkParameters];
 
                                         walkParameters = [[NSMutableArray alloc] initWithCapacity:2];
@@ -1223,9 +1220,8 @@ enum {
                                         id startWalkingAction = [CCCallFuncND actionWithTarget:self selector:@selector(applyForce:data:) data:walkParameters];
 
                                         walkParameters = [[NSMutableArray alloc] initWithCapacity:2];
-                                        awakeFlag = [NSNumber numberWithInteger:1];
                                         [walkParameters addObject:cBody];
-                                        [walkParameters addObject:awakeFlag];
+                                        [walkParameters addObject:[NSNumber numberWithInteger:1]];
                                         id wakeUpAction = [CCCallFuncND actionWithTarget:self selector:@selector(setAwake:data:) data:walkParameters];
 
                                         NSMutableArray *aimParameters = [[NSMutableArray alloc] initWithCapacity:2];
@@ -1278,7 +1274,7 @@ enum {
 
                                         CCFiniteTimeAction *wienerExplodeAction = (CCFiniteTimeAction *)ud->altAction2;
                                         id dogSeq = [CCSequence actions:dogFlipAimedAtAction, delay, wienerExplodeAction, destroyAction, nil];
-                                        //[ud->sprite1 stopAllActions];
+                                        [ud->sprite1 stopAllActions];
                                         [ud->sprite1 runAction:dogSeq];
 
                                         break;
@@ -1352,7 +1348,6 @@ enum {
                 ud->sprite1.position = CGPointMake( b->GetPosition().x * PTM_RATIO, b->GetPosition().y * PTM_RATIO);
                 ud->sprite1.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
                 //destroy any sprite/body pair that's offscreen
-                //TODO - this causes a crash when dogs are dragged offscreen
                 // TODO - points for dogs that leave the screen on a person's head
                 if(ud->sprite1.position.x > winSize.width + 60 || ud->sprite1.position.x < -60 ||
                    ud->sprite1.position.y > winSize.height || ud->sprite1.position.y < -20){
