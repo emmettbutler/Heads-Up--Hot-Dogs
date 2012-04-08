@@ -22,13 +22,6 @@
 #define DROPPED_MAX 50
 #define COP_RANGE 4
 
-// enums that will be used as tags
-enum {
-    kTagTileMap = 1,
-    kTagBatchNode = 1,
-    kTagAnimation1 = 1,
-};
-
 // HelloWorldLayer implementation
 @implementation GameplayLayer
 
@@ -172,14 +165,14 @@ enum {
     if(body->GetLinearVelocity().x < vThresh && body->GetLinearVelocity().x > -1*vThresh){
         for(b2Fixture* f = body->GetFixtureList(); f; f = f->GetNext()){
             fixtureUserData *fUd = (fixtureUserData *)f->GetUserData();
-            if(fUd->tag >= 53 && fUd->tag <= 60){
+            if(fUd->tag >= F_BUSBDY && fUd->tag <= F_TOPBDY){
                 f->SetFriction(100);
             }
         }
     } else {
         for(b2Fixture* f = body->GetFixtureList(); f; f = f->GetNext()){
             fixtureUserData *fUd = (fixtureUserData *)f->GetUserData();
-            if(fUd->tag >= 53 && fUd->tag <= 60){
+            if(fUd->tag >= F_BUSBDY && fUd->tag <= F_TOPBDY){
                 f->SetFriction(0);
             }
         }
@@ -227,7 +220,7 @@ enum {
 
     CCLOG(@"Destroying dog (tag %d)...", dogSprite.tag);
 
-    if(dogSprite.tag == 1){
+    if(dogSprite.tag == S_HOTDOG){
         dogBody->SetAwake(false);
         [dogSprite stopAllActions];
         [dogSprite removeFromParentAndCleanup:YES];
@@ -283,12 +276,12 @@ enum {
     //add base sprite to scene
     self.wiener = [CCSprite spriteWithSpriteFrameName:@"dog54x12.png"];
     _wiener.position = ccp(location.x, location.y);
-    _wiener.tag = 1;
+    _wiener.tag = S_HOTDOG;
     [self addChild:_wiener];
 
     CCSprite *target = [CCSprite spriteWithSpriteFrameName:@"cop_target.png"];
     target.position = ccp(location.x, location.y);
-    target.tag = 20;
+    target.tag = S_CRSHRS;
     target.visible = false;
     [self addChild:target];
 
@@ -336,7 +329,7 @@ enum {
 
     fixtureUserData *fUd1 = new fixtureUserData();
     fUd1->ogCollideFilters = 0;
-    fUd1->tag = 0;
+    fUd1->tag = F_DOGGRB;
 
     //for the collision fixture userdata struct, randomly assign floor
     fixtureUserData *fUd2 = new fixtureUserData();
@@ -355,7 +348,7 @@ enum {
         f = f | FLOOR4;
     }
     fUd2->ogCollideFilters = f;
-    fUd2->tag = 1;
+    fUd2->tag = F_DOGCLD;
 
     //create the body
     b2BodyDef wienerBodyDef;
@@ -467,8 +460,8 @@ enum {
     for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
         if (body->GetUserData() != NULL && body->GetUserData() != (void*)100) {
             bodyUserData *ud = (bodyUserData *)body->GetUserData();
-            if(ud->sprite1.tag >= 3 && ud->sprite1.tag <= 10){
-                if(ud->sprite1.tag == 4 && character.intValue == 4){
+            if(ud->sprite1.tag >= S_BUSMAN && ud->sprite1.tag <= S_TOPPSN){
+                if(ud->sprite1.tag == S_POLICE && character.intValue == 4){
                     spawn = NO;
                 }
                 for(b2Fixture* f = body->GetFixtureList(); f; f = f->GetNext()){
@@ -500,8 +493,8 @@ enum {
                 self.personUpper = [CCSprite spriteWithSpriteFrameName:@"BusinessHead_NoDog_1.png"];
                 self.hitFace = [NSString stringWithString:@"BusinessHead_Dog_1.png"];
                 ogHeadSprite = [NSString stringWithString:@"BusinessHead_NoDog_1.png"];
-                _personLower.tag = 3;
-                _personUpper.tag = 3;
+                _personLower.tag = S_BUSMAN;
+                _personUpper.tag = S_BUSMAN;
                 hitboxWidth = 22.0;
                 hitboxHeight = .0001;
                 hitboxCenterX = 0;
@@ -510,7 +503,7 @@ enum {
                 density = 10.0f;
                 restitution = .8f; //bounce
                 friction = 0.3f;
-                fTag = 3;
+                fTag = F_BUSHED;
                 heightOffset = 2.9f;
                 for(int i = 1; i <= 6; i++){
                     [walkAnimFrames addObject:
@@ -542,9 +535,9 @@ enum {
                 self.hitFace = [NSString stringWithString:@"Cop_Head_Dog_1.png"];
                 self.policeArm = [CCSprite spriteWithSpriteFrameName:@"cop_arm.png"];
                 ogHeadSprite = [NSString stringWithString:@"Cop_Head_NoDog_1.png"];
-                _policeArm.tag = 11;
-                _personLower.tag = 4;
-                _personUpper.tag = 4;
+                _policeArm.tag = S_COPARM;
+                _personLower.tag = S_POLICE;
+                _personUpper.tag = S_POLICE;
                 hitboxWidth = 22.0;
                 hitboxHeight = .0001;
                 hitboxCenterX = 0;
@@ -553,7 +546,7 @@ enum {
                 density = 6.0f;
                 restitution = .5f; //bounce
                 friction = 4.0f;
-                fTag = 4;
+                fTag = F_COPHED;
                 heightOffset = 2.9f;
                 lowerArmAngle = 0;
                 upperArmAngle = 55;
@@ -651,7 +644,7 @@ enum {
             shootFaceAnim = [[CCAnimation animationWithFrames:shootFaceAnimFrames delay:.08f] retain];
             self.shootFaceAction = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:shootFaceAnim restoreOriginalFrame:YES] times:1];
             
-            target.tag = 20;
+            target.tag = S_CRSHRS;
             [self addChild:target];
         }
 
@@ -752,7 +745,7 @@ enum {
             b2FixtureDef armShapeDef;
             armShapeDef.shape = &armShape;
             armShapeDef.density = 0.0001;
-            fUd->tag = 11;
+            fUd->tag = F_COPARM;
             armShapeDef.userData = fUd;
             armShapeDef.filter.maskBits = 0x0000;
             _policeArmFixture = _policeArmBody->CreateFixture(&armShapeDef);
@@ -904,13 +897,13 @@ enum {
         [xPositions addObject:[NSNumber numberWithInt:winSize.width]];
         [xPositions addObject:[NSNumber numberWithInt:0]];
         characterTags = [[NSMutableArray alloc] initWithCapacity:2];
-        for(int i = 3; i <= 4; i++){
+        for(int i = S_BUSMAN; i <= S_POLICE; i++){ // to allow for more characters, pick a value > S_POLICE && < S_TOPPSN
             [characterTags addObject:[NSNumber numberWithInt:i]];
         }
         movementParameters = [[NSMutableArray alloc] initWithCapacity:2];
 
         fixtureUserData *fUd = new fixtureUserData();
-        fUd->tag = 100;
+        fUd->tag = F_GROUND;
 
         //set up the floors
         b2BodyDef groundBodyDef;
@@ -1029,7 +1022,7 @@ enum {
 
         if(dogBody){
             fixtureUserData *fBUd = (fixtureUserData *)pdContact.fixtureB->GetUserData();
-            if(fBUd->tag >= 3 && fBUd->tag <= 10){
+            if(fBUd->tag >= F_BUSHED && fBUd->tag <= F_TOPHED){
                 pBody = pdContact.fixtureB->GetBody();
                 CCLOG(@"Dog/Person Collision - Y Vel: %0.2f", dogBody->GetLinearVelocity().x);
                 bodyUserData *pUd = (bodyUserData *)pBody->GetUserData();
@@ -1044,13 +1037,13 @@ enum {
                 b2Filter dogFilter, personFilter;
                 for(b2Fixture* fixture = pBody->GetFixtureList(); fixture; fixture = fixture->GetNext()){
                     fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
-                    if(fUd->tag >= 3 && fUd->tag <= 10){
+                    if(fUd->tag >= F_BUSHED && fUd->tag <= F_TOPHED){
                         personFilter = fixture->GetFilterData();
                     }
                 }
                 for(b2Fixture* fixture = dogBody->GetFixtureList(); fixture; fixture = fixture->GetNext()){
                     fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
-                    if(fUd->tag == 1){
+                    if(fUd->tag == F_DOGCLD){
                         dogFilter = fixture->GetFilterData();
                         // only allow the dog to collide with the person it's on
                         // by setting its mask bits to the person's category bits
@@ -1082,7 +1075,7 @@ enum {
                     default: _points += 100; break;
                 }
             }
-            else if (fBUd->tag == 100){
+            else if (fBUd->tag == F_GROUND){
                 if(dogBody->GetLinearVelocity().y < .1){
                     bodyUserData *ud = (bodyUserData *)dogBody->GetUserData();
                     CCAction *wienerDeathAction = (CCAction *)ud->altAction;
@@ -1117,7 +1110,7 @@ enum {
         if(b->GetUserData() && b->GetUserData() != (void*)100){
             bodyUserData *ud = (bodyUserData*)b->GetUserData();
             if(ud->overlaySprite != NULL){
-                if(ud->sprite1.tag == 4){
+                if(ud->sprite1.tag == S_POLICE){
                     ud->overlaySprite.position = CGPointMake(policeRayPoint2.x*PTM_RATIO, policeRayPoint2.y*PTM_RATIO);
                 }
                 else {
@@ -1131,7 +1124,7 @@ enum {
                 ud->sprite2.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
             }
             if(ud->sprite1 != NULL){
-                if(ud->sprite1.tag == 1){
+                if(ud->sprite1.tag == S_HOTDOG){
                     //things for hot dogs
                     if(b->IsAwake()){
                         if(!_mouseJoint){
@@ -1148,7 +1141,7 @@ enum {
                         if(b->GetContactList() == 0){
                             for(b2Fixture* fixture = b->GetFixtureList(); fixture; fixture = fixture->GetNext()){
                                 fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
-                                if(fUd->tag == 1){
+                                if(fUd->tag == F_DOGCLD){
                                     b2Filter dogFilter = fixture->GetFilterData();
                                     dogFilter.maskBits = fUd->ogCollideFilters;
                                     fixture->SetFilterData(dogFilter);
@@ -1158,7 +1151,7 @@ enum {
                         for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()) {
                             fixtureUserData *fUd = (fixtureUserData *)f->GetUserData();
                             b2RayCastOutput output;
-                            if(fUd->tag == 1){
+                            if(fUd->tag == F_DOGCLD){
                                 if(!f->RayCast(&output, input)){
                                     _rayTouchingDog = false;
                                     continue;
@@ -1182,10 +1175,10 @@ enum {
                                             if(body->GetPosition().x < winSize.width && body->GetPosition().x > 0 &&
                                                body->GetPosition().y < winSize.height && body->GetPosition().y > 0){
                                                 copUd = (bodyUserData*)body->GetUserData();
-                                                if(copUd->sprite1 != NULL && copUd->sprite1.tag == 4){
+                                                if(copUd->sprite1 != NULL && copUd->sprite1.tag == S_POLICE){
                                                     copBody = body;
                                                 }
-                                                if(copUd->sprite1 != NULL && copUd->sprite1.tag == 11){
+                                                if(copUd->sprite1 != NULL && copUd->sprite1.tag == S_COPARM){
                                                     copArmBody = body;
                                                 }
                                             }
@@ -1285,14 +1278,14 @@ enum {
                         }
                     }
                 }
-                else if(ud->sprite1.tag == 4){
+                else if(ud->sprite1.tag == S_POLICE){
                     //cop arm rotation
                     if(!ud->aiming){
                         //if not aiming, make sure there are no world dogs with aimedAt on
                         for(b2Body* aimedBody = _world->GetBodyList(); aimedBody; aimedBody = aimedBody->GetNext()){
                             if(aimedBody->GetUserData() && aimedBody->GetUserData() != (void*)100){
                                 bodyUserData *aimedUd = (bodyUserData *)aimedBody->GetUserData();
-                                if(aimedUd->sprite1.tag == 1 && aimedUd->aimedAt == true){
+                                if(aimedUd->sprite1.tag == S_HOTDOG && aimedUd->aimedAt == true){
                                     aimedUd->aimedAt = false;
                                 }
                             }
@@ -1311,7 +1304,7 @@ enum {
                         for(b2Body* aimedBody = _world->GetBodyList(); aimedBody; aimedBody = aimedBody->GetNext()){
                             if(aimedBody->GetUserData() && aimedBody->GetUserData() != (void*)100){
                                 bodyUserData *aimedUd = (bodyUserData *)aimedBody->GetUserData();
-                                if(aimedUd->sprite1.tag == 1 && aimedUd->aimedAt == true){
+                                if(aimedUd->sprite1.tag == S_HOTDOG && aimedUd->aimedAt == true){
                                     // TODO - this only works for forward-facing cops, do the math and make it work for both
                                     aimedDog = aimedBody;
                                     dx = abs(b->GetPosition().x - aimedDog->GetPosition().x);
@@ -1338,7 +1331,7 @@ enum {
                         }
                     }
                 }
-                else if(ud->sprite1.tag == 11){
+                else if(ud->sprite1.tag == S_COPARM){
                     //things for cop's arm and raycasting
                     policeRayPoint1 = b->GetPosition();
                     policeRayPoint2 = policeRayPoint1 + rayLength * b2Vec2(cosf(b->GetAngle()), sinf(b->GetAngle()));
@@ -1392,7 +1385,7 @@ enum {
     for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
         if (body->GetUserData() != NULL && body->GetUserData() != (void*)100) {
             bodyUserData *ud = (bodyUserData *)body->GetUserData();
-            if(ud->sprite1.tag == 1){
+            if(ud->sprite1.tag == S_HOTDOG){
                 for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
                     fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
                     if (fixture->TestPoint(locationWorld)){
@@ -1445,7 +1438,7 @@ enum {
 
     for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
         fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
-        if(fUd->tag == 1){
+        if(fUd->tag == F_DOGCLD){
             filter = fixture->GetFilterData();
             filter.maskBits = 0x0000;
             fixture->SetFilterData(filter);
@@ -1476,13 +1469,13 @@ enum {
         if (body->GetUserData() != NULL  && body->GetUserData() != (void*)100) {
             for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
                 bodyUserData *ud = (bodyUserData *)body->GetUserData();
-                if(ud->sprite1.tag == 1){
+                if(ud->sprite1.tag == S_HOTDOG){
                     fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
                     if (fixture->TestPoint(locationWorld)) {
                         body->SetLinearVelocity(b2Vec2(0, 0));
                         body->SetFixedRotation(false);
                     }
-                    if(fUd->tag == 1){
+                    if(fUd->tag == F_DOGCLD){
                         filter = fixture->GetFilterData();
                         filter.maskBits = fUd->ogCollideFilters;
                         CCLOG(@"Dog filter mask: %d", fixture->GetFilterData().maskBits);
@@ -1513,13 +1506,13 @@ enum {
         if (body->GetUserData() != NULL  && body->GetUserData() != (void*)100) {
             for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
                 bodyUserData *ud = (bodyUserData *)body->GetUserData();
-                if(ud->sprite1.tag == 1){
+                if(ud->sprite1.tag == S_HOTDOG){
                     fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
                     if (fixture->TestPoint(locationWorld)) {
                         body->SetLinearVelocity(b2Vec2(0, 0));
                         body->SetFixedRotation(false);
                     }
-                    if(fUd->tag == 1){
+                    if(fUd->tag == F_DOGCLD){
                         filter = fixture->GetFilterData();
                         filter.maskBits = fUd->ogCollideFilters;
                         CCLOG(@"Dog filter mask: %d", fixture->GetFilterData().maskBits);
