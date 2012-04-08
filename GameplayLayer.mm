@@ -87,7 +87,7 @@ enum {
         CGSize winSize = [[CCDirector sharedDirector] winSize];
         _pauseLayer = [CCLayerColor layerWithColor:ccc4(0, 0, 255, 125) width:250 height:145];
         _pauseLayer.position = ccp((winSize.width/2)-(_pauseLayer.contentSize.width/2), (winSize.height/2)-(_pauseLayer.contentSize.height/2));
-        [self addChild:_pauseLayer z:95];
+        [self addChild:_pauseLayer z:80];
 
         CCLabelTTF *label = [CCLabelTTF labelWithString:@"Resume Game" fontName:@"LostPet.TTF" fontSize:28.0];
         CCMenuItem *resume = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(resumeGame)];
@@ -96,7 +96,7 @@ enum {
         _pauseMenu = [CCMenu menuWithItems:resume, nil];
         [_pauseMenu setPosition:ccp(winSize.width/2, winSize.height/2)];
         [_pauseMenu alignItemsVertically];
-        [self addChild:_pauseMenu z:96];
+        [self addChild:_pauseMenu z:81];
     }
 }
 
@@ -245,7 +245,7 @@ enum {
 
         CCSprite *dogDroppedIcon = [CCSprite spriteWithSpriteFrameName:@"WienerCount_X.png"];
         dogDroppedIcon.position = ccp(winSize.width-_droppedSpacing, 305);
-        [self addChild:dogDroppedIcon z:95];
+        [self addChild:dogDroppedIcon z:72];
         _droppedCount++;
         _droppedSpacing += 14;
     }
@@ -611,16 +611,16 @@ enum {
             xVel = 1*velocityMul;
         }
         if(floorBit.intValue == 1){
-            zIndex = 400;
+            zIndex = 42;
         }
         else if(floorBit.intValue == 2){
-            zIndex = 300;
+            zIndex = 32;
         }
         else if(floorBit.intValue == 4){
-            zIndex = 200;
+            zIndex = 22;
         }
         else{
-            zIndex = 100;
+            zIndex = 12;
         }
 
         //create animations for walk, idle, and bobbing head
@@ -650,16 +650,14 @@ enum {
             [self addChild:target];
         }
 
-        //TODO - set up a range of z indices so multisprites work nicely
-
         //put the sprites in place
         _personLower.position = ccp(xPos.intValue, 123);
         _personUpper.position = ccp(xPos.intValue, 123);
         [spriteSheet addChild:_personLower z:zIndex];
-        [spriteSheet addChild:_personUpper z:zIndex];
+        [spriteSheet addChild:_personUpper z:zIndex+2];
         if(character.intValue == 4){
             _policeArm.position = ccp(xPos.intValue, 123);
-            [spriteSheet addChild:_policeArm z:zIndex-1];
+            [spriteSheet addChild:_policeArm z:zIndex-2];
         }
 
         //set up userdata structs
@@ -852,19 +850,19 @@ enum {
 
         CCSprite *background = [CCSprite spriteWithFile:@"bg_philly.png"];
         background.anchorPoint = CGPointZero;
-        [self addChild:background z:-1];
+        [self addChild:background z:-10];
 
         //HUD objects
         CCSprite *droppedLeftEnd = [CCSprite spriteWithSpriteFrameName:@"WienerCount_LeftEnd.png"];;
         droppedLeftEnd.position = ccp(winSize.width-100, 305);
-        [self addChild:droppedLeftEnd z:100];
+        [self addChild:droppedLeftEnd z:70];
         CCSprite *droppedRightEnd = [CCSprite spriteWithSpriteFrameName:@"WienerCount_RightEnd.png"];;
         droppedRightEnd.position = ccp(winSize.width-23, 305);
-        [self addChild:droppedRightEnd z:100];
+        [self addChild:droppedRightEnd z:70];
         for(int i = 33; i < 103; i += 14){
             CCSprite *dogIcon = [CCSprite spriteWithSpriteFrameName:@"WienerCount_Wiener.png"];
             dogIcon.position = ccp(winSize.width-i, 305);
-            [self addChild:dogIcon z:90];
+            [self addChild:dogIcon z:70];
         }
 
         //CCSprite *scoreBG = [CCSprite spriteWithSpriteFrameName:@".png"];;
@@ -880,7 +878,7 @@ enum {
 
         _pauseButton = [CCSprite spriteWithSpriteFrameName:@"Pause_Button.png"];;
         _pauseButton.position = ccp(20, 305);
-        [self addChild:_pauseButton z:100];
+        [self addChild:_pauseButton z:70];
         _pauseButtonRect = CGRectMake((_pauseButton.position.x-(_pauseButton.contentSize.width)/2), (_pauseButton.position.y-(_pauseButton.contentSize.height)/2), (_pauseButton.contentSize.width), (_pauseButton.contentSize.height));
 
         //debug labels
@@ -1071,7 +1069,7 @@ enum {
                 heartParticles.anchorPoint = ccp(0.5f,0.5f);
                 heartParticles.position = position;
                 heartParticles.duration = 0.1f;
-                [self addChild:heartParticles z:11];
+                [self addChild:heartParticles z:60];
                 switch(pUd->sprite1.tag){
                     case 3: _points += 100; break;
                     case 4: _points += 300; break;
