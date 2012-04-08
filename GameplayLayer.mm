@@ -72,6 +72,7 @@ enum {
     _pause = false;
 }
 
+// TODO - evaluate the possibility of putting as many of these utility functions as possible into an importable file
 -(void)flipShootLock{
     if(_shootLock){
         _shootLock = NO;
