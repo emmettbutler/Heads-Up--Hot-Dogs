@@ -185,9 +185,8 @@ enum {
     }
 }
 
-//TODO - rename to spriteRunAnim (current name is misleading)
--(void) spriteRunAction:(id)sender data:(void*)params{
-    //takes a sprite and an optional action
+-(void) spriteRunAnim:(id)sender data:(void*)params{
+    //takes a sprite and an optional animation
     //if passed an action, run it. otherwise, stop all actions
     CCSprite *sprite = (CCSprite *)[(NSValue *)[(NSMutableArray *) params objectAtIndex:0] pointerValue];
     [sprite stopAllActions];
@@ -340,8 +339,7 @@ enum {
     //for the collision fixture userdata struct, randomly assign floor
     fixtureUserData *fUd2 = new fixtureUserData();
     floor = arc4random() % 4;
-    //TODO - replace "person" here with the equivalent of "ALL PEOPLE"
-    f = 0xfffff000;
+    f = 0xfffff000; //any person
     if(floor == 1){
         f = f | FLOOR1;
     }
@@ -412,16 +410,16 @@ enum {
     NSNumber *v = (NSNumber *)[(NSMutableArray *) params objectAtIndex:1];
     CCSequence *idleAction = (CCSequence *)[(NSValue *)[(NSMutableArray *) params objectAtIndex:2] pointerValue];
 
-    //action calls spriteRunAction with only a sprite (stops all actions on head sprite)
+    //action calls spriteRunAnim with only a sprite (stops all actions on head sprite)
     headParams = [[NSMutableArray alloc] initWithCapacity:1];
     [headParams addObject:spr];
-    CCCallFuncND *headIdle = [CCCallFuncND actionWithTarget:self selector:@selector(spriteRunAction:data:) data:headParams];
+    CCCallFuncND *headIdle = [CCCallFuncND actionWithTarget:self selector:@selector(spriteRunAnim:data:) data:headParams];
 
-    //action calls spriteRunAction with both sprite and action to run (starts head walking animation)
+    //action calls spriteRunAnim with both sprite and action to run (starts head walking animation)
     headParams = [[NSMutableArray alloc] initWithCapacity:2];
     [headParams addObject:spr];
     [headParams addObject:anim];
-    CCCallFuncND *headWalk = [CCCallFuncND actionWithTarget:self selector:@selector(spriteRunAction:data:) data:headParams];
+    CCCallFuncND *headWalk = [CCCallFuncND actionWithTarget:self selector:@selector(spriteRunAnim:data:) data:headParams];
 
     //set up walking / animation actions
     CCCallFuncND *walkAction = [CCCallFuncND actionWithTarget:self selector:@selector(applyForce:data:) data:(NSMutableArray *) params];
@@ -1007,7 +1005,6 @@ enum {
     _world->Step(dt, velocityIterations, positionIterations);
 
     //score and dropped count
-    //TODO - dropped count may not be digital
     [scoreLabel setString:[NSString stringWithFormat:@"%d", _points]];
     [droppedLabel setString:[NSString stringWithFormat:@"%d", _droppedCount]];
 
@@ -1208,7 +1205,7 @@ enum {
                                         walkParameters = [[NSMutableArray alloc] initWithCapacity:2];
                                         [walkParameters addObject:[NSValue valueWithPointer:copUd->sprite1]];
                                         [walkParameters addObject:[NSValue valueWithPointer:copWalkAnim]];
-                                        id walkAnimateAction = [CCCallFuncND actionWithTarget:self selector:@selector(spriteRunAction:data:) data:walkParameters];
+                                        id walkAnimateAction = [CCCallFuncND actionWithTarget:self selector:@selector(spriteRunAnim:data:) data:walkParameters];
 
                                         walkParameters = [[NSMutableArray alloc] initWithCapacity:2];
                                         NSNumber *vel= [NSNumber numberWithInteger:-350];
@@ -1245,7 +1242,7 @@ enum {
                                         NSMutableArray *walkFaceParameters = [[NSMutableArray alloc] initWithCapacity:2];
                                         [walkFaceParameters addObject:[NSValue valueWithPointer:(CCSprite *)copUd->sprite2]];
                                         [walkFaceParameters addObject:[NSValue valueWithPointer:(CCAction *)copUd->altAnimation]];
-                                        id faceWalkAction = [CCCallFuncND actionWithTarget:self selector:@selector(spriteRunAction:data:) data:walkFaceParameters];
+                                        id faceWalkAction = [CCCallFuncND actionWithTarget:self selector:@selector(spriteRunAnim:data:) data:walkFaceParameters];
                                         [copUd->sprite2 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Cop_Head_Aiming_1.png"]]];
                                         
                                         id copHeadSeq = [CCSequence actions:delay, faceShootAction, faceWalkAction, nil];
@@ -1311,6 +1308,7 @@ enum {
                             if(aimedBody->GetUserData() && aimedBody->GetUserData() != (void*)100){
                                 bodyUserData *aimedUd = (bodyUserData *)aimedBody->GetUserData();
                                 if(aimedUd->sprite1.tag == 1 && aimedUd->aimedAt == true){
+                                    // TODO - this only works for forward-facing cops, do the math and make it work for both
                                     aimedDog = aimedBody;
                                     dx = abs(b->GetPosition().x - aimedDog->GetPosition().x);
                                     dy = abs(b->GetPosition().y - aimedDog->GetPosition().y);
