@@ -329,6 +329,7 @@ enum {
     ud->sprite1 = _wiener;
     ud->altAction = _deathAction;
     ud->altAction2 = _shotAction;
+    //TODO - remove the overlay sprite here since it's now the cop's deal
     ud->overlaySprite = target;
     ud->aimedAt = false;
 
@@ -1450,6 +1451,7 @@ enum {
         }
     }
 
+    //don't stop the explosion action!
     if(!ud->aimedAt){
         [sprite stopAllActions];
     }

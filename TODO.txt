@@ -1,0 +1,7 @@
+Heads Up todo list (CLEAN ME UP PLZ)
+
+//TODO - possibly use setActive() here instead of the kinda-hacky friction manipulation
+//TODO - remove the overlay sprite here since it's now the cop's deal
+// TODO - widen both these and the floors so we can't see people dropping in from the sides
+// TODO - this only works for forward-facing cops, do the math and make it work for both
+// TODO - points for dogs that leave the screen on a person's head
