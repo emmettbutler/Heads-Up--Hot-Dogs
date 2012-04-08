@@ -898,6 +898,7 @@ enum {
             [floorBits addObject:[NSNumber numberWithInt:i]];
         }
         xPositions = [[NSMutableArray alloc] initWithCapacity:2];
+        // TODO - widen both these and the floors so we can't see people dropping in from the sides
         [xPositions addObject:[NSNumber numberWithInt:winSize.width]];
         [xPositions addObject:[NSNumber numberWithInt:0]];
         characterTags = [[NSMutableArray alloc] initWithCapacity:2];
