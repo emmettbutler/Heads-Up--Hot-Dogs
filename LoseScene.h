@@ -12,6 +12,7 @@
 {
     int _score;
     CCLabelTTF *scoreLine;
+    CCSpriteBatchNode *spriteSheet;
 }
 
 +(CCScene *) sceneWithData:(void*)data;

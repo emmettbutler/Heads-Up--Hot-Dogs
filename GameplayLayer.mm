@@ -19,7 +19,7 @@
 #define FLOOR4_HT 1.2
 #define DOG_SPAWN_MINHT 240
 #define SPAWN_LIMIT_DECREMENT_DELAY 1
-#define DROPPED_MAX 50
+#define DROPPED_MAX 5
 #define COP_RANGE 4
 
 // HelloWorldLayer implementation
@@ -846,7 +846,9 @@
         personDogContactListener = new PersonDogContactListener();
         _world->SetContactListener(personDogContactListener);
 
-        CCSprite *background = [CCSprite spriteWithFile:@"bg_philly.png"];
+        
+        
+        CCSprite *background = [CCSprite spriteWithSpriteFrameName:@"bg_philly.png"];
         background.anchorPoint = CGPointZero;
         [self addChild:background z:-10];
 

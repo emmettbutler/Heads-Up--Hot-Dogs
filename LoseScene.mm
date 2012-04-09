@@ -27,7 +27,11 @@
     if ((self = [super init])){
         CGSize size = [[CCDirector sharedDirector] winSize];
         
-        CCSprite *sprite = [CCSprite spriteWithFile:@"bg_philly.png"];
+        [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile: @"sprites_default.plist"];
+        spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_default.png"];
+        [self addChild:spriteSheet];
+        
+        CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"bg_philly.png"];
         sprite.anchorPoint = CGPointZero;
         [self addChild:sprite z:-1];
         

@@ -10,7 +10,7 @@
 
 @interface TitleLayer : CCLayer 
 {
-    
+    CCSpriteBatchNode *spriteSheet;
 }
 
 +(CCScene *) scene;
