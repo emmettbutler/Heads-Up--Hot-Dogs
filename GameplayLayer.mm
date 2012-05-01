@@ -18,7 +18,7 @@
 #define FLOOR3_HT .8
 #define FLOOR4_HT 1.2
 #define DOG_SPAWN_MINHT 240
-#define SPAWN_LIMIT_DECREMENT_DELAY 1
+#define SPAWN_LIMIT_DECREMENT_DELAY 30
 #define DROPPED_MAX 5
 #define COP_RANGE 4
 
@@ -117,7 +117,7 @@
     if(_personSpawnDelayTime > 1){
         _personSpawnDelayTime -= 1;
     }
-    if(_wienerSpawnDelayTime > 4){
+    if(_wienerSpawnDelayTime > 1){
         _wienerSpawnDelayTime -= 1;
     }
     if(_wienerKillDelay > 1){
@@ -875,12 +875,20 @@
         scoreLabel.color = ccc3(245, 222, 179);
         scoreLabel.position = ccp(winSize.width-42, 280);
         [self addChild: scoreLabel];
+        
+        NSUserDefaults *standardUserDefaults = [NSUserDefaults standardUserDefaults];
+        NSInteger highScore = [standardUserDefaults integerForKey:@"highScore"];
+        
+        CCLabelTTF *highScoreLabel = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"HI: %d", highScore] fontName:@"LostPet.TTF" fontSize:18.0];
+        highScoreLabel.color = ccc3(245, 222, 179);
+        highScoreLabel.position = ccp(winSize.width/2, 305);
+        [self addChild: highScoreLabel];
 
         _pauseButton = [CCSprite spriteWithSpriteFrameName:@"Pause_Button.png"];;
         _pauseButton.position = ccp(20, 305);
         [self addChild:_pauseButton z:70];
         _pauseButtonRect = CGRectMake((_pauseButton.position.x-(_pauseButton.contentSize.width)/2), (_pauseButton.position.y-(_pauseButton.contentSize.height)/2), (_pauseButton.contentSize.width), (_pauseButton.contentSize.height));
-
+        
         //debug labels
         CCLabelTTF *label = [CCLabelTTF labelWithString:@"Debug draw" fontName:@"LostPet.TTF" fontSize:18.0];
         CCMenuItem *debug = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(debugDraw)];
@@ -1308,6 +1316,7 @@
                                 bodyUserData *aimedUd = (bodyUserData *)aimedBody->GetUserData();
                                 if(aimedUd->sprite1.tag == S_HOTDOG && aimedUd->aimedAt == true){
                                     // TODO - this only works for forward-facing cops, do the math and make it work for both
+                                    // TODO - have target follow dog if dog is in range
                                     aimedDog = aimedBody;
                                     dx = abs(b->GetPosition().x - aimedDog->GetPosition().x);
                                     dy = abs(b->GetPosition().y - aimedDog->GetPosition().y);

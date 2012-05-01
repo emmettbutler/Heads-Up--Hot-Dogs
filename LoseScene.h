@@ -12,6 +12,7 @@
 {
     int _score;
     CCLabelTTF *scoreLine;
+    CCLabelTTF *scoreNotify;
     CCSpriteBatchNode *spriteSheet;
 }
 
