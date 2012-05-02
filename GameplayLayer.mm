@@ -18,8 +18,8 @@
 #define FLOOR3_HT .8
 #define FLOOR4_HT 1.2
 #define DOG_SPAWN_MINHT 240
-#define SPAWN_LIMIT_DECREMENT_DELAY 30
-#define DROPPED_MAX 5
+#define SPAWN_LIMIT_DECREMENT_DELAY 15
+#define DROPPED_MAX 50
 #define COP_RANGE 4
 
 // HelloWorldLayer implementation
@@ -111,17 +111,19 @@
 }
 
 -(void)timedDecrement{
-    if(_spawnLimiter > 0){
-        _spawnLimiter--;
-    }
-    if(_personSpawnDelayTime > 1){
-        _personSpawnDelayTime -= 1;
-    }
-    if(_wienerSpawnDelayTime > 1){
-        _wienerSpawnDelayTime -= 1;
-    }
-    if(_wienerKillDelay > 1){
-        _wienerKillDelay -= 1;
+    if(!_intro){
+        if(_spawnLimiter > 0){
+            _spawnLimiter--;
+        }
+        if(_personSpawnDelayTime > 1){
+            _personSpawnDelayTime -= 1;
+        }
+        if(_wienerSpawnDelayTime > 1){
+            _wienerSpawnDelayTime -= 1;
+        }
+        if(_wienerKillDelay > 1){
+            _wienerKillDelay -= 1;
+        }
     }
 }
 
@@ -237,11 +239,13 @@
         dogBody->SetUserData(NULL);
         dogBody = nil;
 
-        CCSprite *dogDroppedIcon = [CCSprite spriteWithSpriteFrameName:@"WienerCount_X.png"];
-        dogDroppedIcon.position = ccp(winSize.width-_droppedSpacing, 305);
-        [self addChild:dogDroppedIcon z:72];
-        _droppedCount++;
-        _droppedSpacing += 14;
+        if(!_intro){
+            CCSprite *dogDroppedIcon = [CCSprite spriteWithSpriteFrameName:@"WienerCount_X.png"];
+            dogDroppedIcon.position = ccp(winSize.width-_droppedSpacing, 305);
+            [self addChild:dogDroppedIcon z:72];
+            _droppedCount++;
+            _droppedSpacing += 14;
+        }
     }
 
     CCLOG(@"done.");
@@ -820,16 +824,21 @@
 -(id) init {
     if( (self=[super init])) {
         CGSize winSize = [CCDirector sharedDirector].winSize;
+        
+        // uncomment this to test the intro sequence
+        //[standardUserDefaults setInteger:0 forKey:@"introDone"];
 
         //basic game/box2d/cocos2d initialization
         self.isAccelerometerEnabled = YES;
         self.isTouchEnabled = YES;
         time = 0;
         _pause = false;
+        _intro = true;
+        _lastTouchTime = 0;
         _curPersonMaskBits = 0x1000;
         _spawnLimiter = [characterTags count] - ([characterTags count]-1);
-        _personSpawnDelayTime = 8.0f;
-        _wienerSpawnDelayTime = 8.0f;
+        _personSpawnDelayTime = 6.0f;
+        _wienerSpawnDelayTime = 6.0f;
         _wienerKillDelay = 8.0f;
         _points = 0;
         _shootLock = NO;
@@ -845,8 +854,12 @@
         //contact listener init
         personDogContactListener = new PersonDogContactListener();
         _world->SetContactListener(personDogContactListener);
-
         
+        // if the intro has already been completed, don't do it again
+        NSInteger introDone = [standardUserDefaults integerForKey:@"introDone"];
+        if(introDone == 1){
+            _intro = false;
+        }
         
         CCSprite *background = [CCSprite spriteWithSpriteFrameName:@"bg_philly.png"];
         background.anchorPoint = CGPointZero;
@@ -876,7 +889,7 @@
         scoreLabel.position = ccp(winSize.width-42, 280);
         [self addChild: scoreLabel];
         
-        NSUserDefaults *standardUserDefaults = [NSUserDefaults standardUserDefaults];
+        standardUserDefaults = [NSUserDefaults standardUserDefaults];
         NSInteger highScore = [standardUserDefaults integerForKey:@"highScore"];
         
         CCLabelTTF *highScoreLabel = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"HI: %d", highScore] fontName:@"LostPet.TTF" fontSize:18.0];
@@ -1001,7 +1014,6 @@
         return;
     }
 
-
     time++;
 
     //the "LOSE CONDITION"
@@ -1033,6 +1045,14 @@
         if(dogBody){
             fixtureUserData *fBUd = (fixtureUserData *)pdContact.fixtureB->GetUserData();
             if(fBUd->tag >= F_BUSHED && fBUd->tag <= F_TOPHED){
+                if(_intro && time - _lastTouchTime < 400){
+                    _intro = false;
+                    NSInteger introDone = [standardUserDefaults integerForKey:@"introDone"];
+                    if(introDone == 0){
+                        [standardUserDefaults setInteger:1 forKey:@"introDone"];
+                        [standardUserDefaults synchronize];
+                    }
+                }
                 pBody = pdContact.fixtureB->GetBody();
                 CCLOG(@"Dog/Person Collision - Y Vel: %0.2f", dogBody->GetLinearVelocity().x);
                 bodyUserData *pUd = (bodyUserData *)pBody->GetUserData();
@@ -1079,10 +1099,12 @@
                 heartParticles.position = position;
                 heartParticles.duration = 0.1f;
                 [self addChild:heartParticles z:60];
-                switch(pUd->sprite1.tag){
-                    case 3: _points += 100; break;
-                    case 4: _points += 300; break;
-                    default: _points += 100; break;
+                if(!_intro){
+                    switch(pUd->sprite1.tag){
+                        case 3: _points += 100; break;
+                        case 4: _points += 300; break;
+                        default: _points += 100; break;
+                    }
                 }
             }
             else if (fBUd->tag == F_GROUND){
@@ -1401,7 +1423,6 @@
                 for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
                     fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
                     if (fixture->TestPoint(locationWorld)){
-
                         CCLOG(@"Touching hotdog");
                         b2MouseJointDef md;
                         md.bodyA = _groundBody;
@@ -1483,6 +1504,7 @@
                 bodyUserData *ud = (bodyUserData *)body->GetUserData();
                 if(ud->sprite1.tag == S_HOTDOG){
                     fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
+                    _lastTouchTime = time;
                     if (fixture->TestPoint(locationWorld)) {
                         body->SetLinearVelocity(b2Vec2(0, 0));
                         body->SetFixedRotation(false);
@@ -1520,6 +1542,7 @@
                 bodyUserData *ud = (bodyUserData *)body->GetUserData();
                 if(ud->sprite1.tag == S_HOTDOG){
                     fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
+                    _lastTouchTime = time;
                     if (fixture->TestPoint(locationWorld)) {
                         body->SetLinearVelocity(b2Vec2(0, 0));
                         body->SetFixedRotation(false);

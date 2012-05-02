@@ -58,12 +58,12 @@
     NSInteger highScore = [standardUserDefaults integerForKey:@"highScore"];
     if(_score > highScore){
         [standardUserDefaults setInteger:_score forKey:@"highScore"];
-        [standardUserDefaults synchronize];
         
         scoreNotify = [CCLabelTTF labelWithString:@"New high score!" fontName:@"Marker Felt" fontSize:22.0];
         [scoreNotify setPosition:ccp((size.width/2), (size.height/2)-100)];
         [self addChild:scoreNotify];
     }
+    [standardUserDefaults synchronize];
     
     [scoreLine setString:[NSString stringWithFormat:@"%d", _score]];
 }
