@@ -824,9 +824,11 @@
 -(id) init {
     if( (self=[super init])) {
         CGSize winSize = [CCDirector sharedDirector].winSize;
+        standardUserDefaults = [NSUserDefaults standardUserDefaults];
         
         // uncomment this to test the intro sequence
         //[standardUserDefaults setInteger:0 forKey:@"introDone"];
+        //[standardUserDefaults setInteger:0 forKey:@"highScore"];
 
         //basic game/box2d/cocos2d initialization
         self.isAccelerometerEnabled = YES;
@@ -857,9 +859,9 @@
         
         // if the intro has already been completed, don't do it again
         NSInteger introDone = [standardUserDefaults integerForKey:@"introDone"];
-        if(introDone == 1){
+        NSLog(@"IntroDone: %d", introDone);
+        if(introDone == 1)
             _intro = false;
-        }
         
         CCSprite *background = [CCSprite spriteWithSpriteFrameName:@"bg_philly.png"];
         background.anchorPoint = CGPointZero;
@@ -889,7 +891,6 @@
         scoreLabel.position = ccp(winSize.width-42, 280);
         [self addChild: scoreLabel];
         
-        standardUserDefaults = [NSUserDefaults standardUserDefaults];
         NSInteger highScore = [standardUserDefaults integerForKey:@"highScore"];
         
         CCLabelTTF *highScoreLabel = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"HI: %d", highScore] fontName:@"LostPet.TTF" fontSize:18.0];
@@ -1047,11 +1048,8 @@
             if(fBUd->tag >= F_BUSHED && fBUd->tag <= F_TOPHED){
                 if(_intro && time - _lastTouchTime < 400){
                     _intro = false;
-                    NSInteger introDone = [standardUserDefaults integerForKey:@"introDone"];
-                    if(introDone == 0){
-                        [standardUserDefaults setInteger:1 forKey:@"introDone"];
-                        [standardUserDefaults synchronize];
-                    }
+                    [standardUserDefaults setInteger:1 forKey:@"introDone"];
+                    [standardUserDefaults synchronize];
                 }
                 pBody = pdContact.fixtureB->GetBody();
                 CCLOG(@"Dog/Person Collision - Y Vel: %0.2f", dogBody->GetLinearVelocity().x);
