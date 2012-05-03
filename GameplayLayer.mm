@@ -92,7 +92,7 @@
         CCMenuItem *pauseTitle = [CCMenuItemLabel itemWithLabel:label];
         label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"Score: %d", _points] fontName:@"LostPet.TTF" fontSize:18.0];
         CCMenuItem *score = [CCMenuItemLabel itemWithLabel:label];
-        label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"Time: %d frames", time] fontName:@"LostPet.TTF" fontSize:18.0];
+        label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"Time: %d seconds", time/60] fontName:@"LostPet.TTF" fontSize:18.0];
         CCMenuItem *timeItem = [CCMenuItemLabel itemWithLabel:label];
         
         _pauseMenu = [CCMenu menuWithItems:pauseTitle, score, timeItem, nil];
