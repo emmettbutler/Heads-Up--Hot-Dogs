@@ -848,7 +848,7 @@
         standardUserDefaults = [NSUserDefaults standardUserDefaults];
         
         // uncomment this to test the intro sequence / reset high score
-        [standardUserDefaults setInteger:0 forKey:@"introDone"];
+        //[standardUserDefaults setInteger:0 forKey:@"introDone"];
         //[standardUserDefaults setInteger:0 forKey:@"highScore"];
 
         //basic game/box2d/cocos2d initialization
@@ -912,12 +912,13 @@
         scoreLabel.position = ccp(winSize.width-42, 280);
         [self addChild: scoreLabel];
         
-        NSInteger highScore = [standardUserDefaults integerForKey:@"highScore"];
-        
-        CCLabelTTF *highScoreLabel = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"HI: %d", highScore] fontName:@"LostPet.TTF" fontSize:18.0];
-        highScoreLabel.color = ccc3(245, 222, 179);
-        highScoreLabel.position = ccp(winSize.width/2, 305);
-        [self addChild: highScoreLabel];
+        if(!_intro){
+            NSInteger highScore = [standardUserDefaults integerForKey:@"highScore"];
+            CCLabelTTF *highScoreLabel = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"HI: %d", highScore] fontName:@"LostPet.TTF" fontSize:18.0];
+            highScoreLabel.color = ccc3(245, 222, 179);
+            highScoreLabel.position = ccp(winSize.width/2, 305);
+            [self addChild: highScoreLabel];
+        }
 
         _pauseButton = [CCSprite spriteWithSpriteFrameName:@"Pause_Button.png"];;
         _pauseButton.position = ccp(20, 305);
