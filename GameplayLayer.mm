@@ -125,8 +125,10 @@
         flags += b2DebugDraw::e_pairBit;
         flags += b2DebugDraw::e_centerOfMassBit;
         m_debugDraw->SetFlags(flags);
+        [[CCDirector sharedDirector] setDisplayFPS:YES];
     } else {
         m_debugDraw = nil;
+        [[CCDirector sharedDirector] setDisplayFPS:NO];
     }
     _world->SetDebugDraw(m_debugDraw);
 }
@@ -860,6 +862,7 @@
     if( (self=[super init])) {
         CGSize winSize = [CCDirector sharedDirector].winSize;
         standardUserDefaults = [NSUserDefaults standardUserDefaults];
+        [[CCDirector sharedDirector] setDisplayFPS:NO];
         
         // uncomment this to test the intro sequence / reset high score
         [standardUserDefaults setInteger:0 forKey:@"introDone"];
@@ -1061,7 +1064,6 @@
     }
     
     //TODO - remove tutorial windows on touch
-    //TODO - put framerate in debug draw
     //TODO - show/save total time survived in ending screen
     
     if(_dogHasDied && time - _firstDeathTime == 800 && _intro){

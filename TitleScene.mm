@@ -29,6 +29,7 @@
 -(id) init{
     if ((self = [super init])){
         CGSize size = [[CCDirector sharedDirector] winSize];
+        [[CCDirector sharedDirector] setDisplayFPS:NO];
         
         [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile: @"sprites_default.plist"];
         spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_default.png"];
