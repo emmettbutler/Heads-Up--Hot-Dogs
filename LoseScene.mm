@@ -66,6 +66,7 @@
     NSUserDefaults *standardUserDefaults = [NSUserDefaults standardUserDefaults];
     NSInteger highScore = [standardUserDefaults integerForKey:@"highScore"];
     NSInteger bestTime = [standardUserDefaults integerForKey:@"bestTime"];
+    NSInteger overallTime = [standardUserDefaults integerForKey:@"overallTime"];
     if(_score > highScore){
         [standardUserDefaults setInteger:_score forKey:@"highScore"];
         
@@ -80,10 +81,13 @@
         [timeNotify setPosition:ccp((size.width/2), (size.height/2)-140)];
         [self addChild:timeNotify];
     }
+    [standardUserDefaults setInteger:overallTime+_timePlayed forKey:@"overallTime"];
     [standardUserDefaults synchronize];
     
     [scoreLine setString:[NSString stringWithFormat:@"%d", _score]];
-    [timeLine setString:[NSString stringWithFormat:@"%d", _timePlayed]];
+    int seconds = _timePlayed/60;
+    int minutes = seconds/60;
+    [timeLine setString:[NSString stringWithFormat:@"%02d:%02d", minutes, seconds%60]];
 }
 
 - (void)switchScene{

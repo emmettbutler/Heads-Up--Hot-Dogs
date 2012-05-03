@@ -18,7 +18,7 @@
 #define FLOOR3_HT .8
 #define FLOOR4_HT 1.2
 #define DOG_SPAWN_MINHT 240
-#define SPAWN_LIMIT_DECREMENT_DELAY 15
+#define SPAWN_LIMIT_DECREMENT_DELAY 8
 #define DROPPED_MAX 5
 #define COP_RANGE 4
 
@@ -92,7 +92,9 @@
         CCMenuItem *pauseTitle = [CCMenuItemLabel itemWithLabel:label];
         label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"Score: %d", _points] fontName:@"LostPet.TTF" fontSize:18.0];
         CCMenuItem *score = [CCMenuItemLabel itemWithLabel:label];
-        label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"Time: %d seconds", time/60] fontName:@"LostPet.TTF" fontSize:18.0];
+        int seconds = time/60;
+        int minutes = seconds/60;
+        label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"Time: %02d:%02d", minutes, seconds%60] fontName:@"LostPet.TTF" fontSize:18.0];
         CCMenuItem *timeItem = [CCMenuItemLabel itemWithLabel:label];
         
         _pauseMenu = [CCMenu menuWithItems:pauseTitle, score, timeItem, nil];
@@ -156,6 +158,7 @@
             _wienerKillDelay -= 1;
         }
     }
+    
 }
 
 -(void)setAwake:(id)sender data:(void*)params {
@@ -887,9 +890,9 @@
         _lastTouchTime = 0;
         _curPersonMaskBits = 0x1000;
         _spawnLimiter = [characterTags count] - ([characterTags count]-1);
-        _personSpawnDelayTime = 6.0f;
+        _personSpawnDelayTime = 3.0f;
         _wienerSpawnDelayTime = 6.0f;
-        _wienerKillDelay = 8.0f;
+        _wienerKillDelay = 4.0f;
         _points = 0;
         _shootLock = NO;
         _droppedSpacing = 33;
@@ -1073,8 +1076,8 @@
     }
     
     if(_dogHasDied && time - _firstDeathTime == 800 && _intro){
-        winUpDelay = [CCDelayTime actionWithDuration:7];
-        winDownDelay = [CCDelayTime actionWithDuration:1];
+        winUpDelay = [CCDelayTime actionWithDuration:4];
+        winDownDelay = [CCDelayTime actionWithDuration:.5];
         removeWindow = [CCCallFuncN actionWithTarget:self selector:@selector(tutorialBoxRemove)];
         
         NSMutableArray *textBoxParameters = [[NSMutableArray alloc] initWithCapacity:1];
@@ -1181,8 +1184,8 @@
                 if(_intro && !_dogHasHitGround){
                     _dogHasHitGround = true;
                     
-                    winUpDelay = [CCDelayTime actionWithDuration:7];
-                    winDownDelay = [CCDelayTime actionWithDuration:1];
+                    winUpDelay = [CCDelayTime actionWithDuration:4];
+                    winDownDelay = [CCDelayTime actionWithDuration:.5];
                     removeWindow = [CCCallFuncN actionWithTarget:self selector:@selector(tutorialBoxRemove)];
                     
                     NSMutableArray *textBoxParameters = [[NSMutableArray alloc] initWithCapacity:1];
