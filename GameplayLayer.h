@@ -38,12 +38,14 @@
     NSMutableArray *floorBits, *xPositions, *characterTags, *wienerParameters, *headParams;
     NSMutableArray *personParameters, *wakeParameters, *movementPatterns, *movementParameters, *_touchLocations;
     NSString *scoreText, *droppedText;
-    int _points, _droppedCount, _spawnLimiter, time, _curPersonMaskBits, _droppedSpacing, _lastTouchTime;
+    int _points, _droppedCount, _spawnLimiter, time, _curPersonMaskBits, _droppedSpacing, _lastTouchTime, _firstDeathTime;
     float _personSpawnDelayTime, _wienerSpawnDelayTime, _wienerKillDelay, _currentRayAngle;
-    BOOL _moving, _touchedDog, _rayTouchingDog, _pause, _shootLock, _intro;
+    BOOL _moving, _touchedDog, _rayTouchingDog, _pause, _shootLock, _intro, _dogHasHitGround, _dogHasDied;
     NSString *currentAnimation;
     CGRect _pauseButtonRect;
     NSUserDefaults *standardUserDefaults;
+    CCDelayTime *winUpDelay, *winDownDelay;
+    CCCallFuncN *removeWindow;
 
     struct bodyUserData {
         CCSprite *sprite1;

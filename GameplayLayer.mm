@@ -266,6 +266,20 @@
             [self addChild:dogDroppedIcon z:72];
             _droppedCount++;
             _droppedSpacing += 14;
+        } else if(_intro && !_dogHasDied){
+            _dogHasDied = true;
+            _firstDeathTime = time;
+            
+            winUpDelay = [CCDelayTime actionWithDuration:7];
+            winDownDelay = [CCDelayTime actionWithDuration:1];
+            removeWindow = [CCCallFuncN actionWithTarget:self selector:@selector(tutorialBoxRemove)];
+            
+            NSMutableArray *textBoxParameters = [[NSMutableArray alloc] initWithCapacity:1];
+            [textBoxParameters addObject:[NSValue valueWithPointer:[NSString stringWithString:@"Oh man, it died!"]]];
+            id tutorialWindow1 = [CCCallFuncND actionWithTarget:self selector:@selector(introTutorialTextBox:data:) data:textBoxParameters];
+            
+            id windowSeq = [CCSequence actions:tutorialWindow1, winUpDelay, removeWindow, nil];
+            [self runAction:windowSeq];
         }
     }
 
@@ -848,8 +862,9 @@
         standardUserDefaults = [NSUserDefaults standardUserDefaults];
         
         // uncomment this to test the intro sequence / reset high score
-        //[standardUserDefaults setInteger:0 forKey:@"introDone"];
+        [standardUserDefaults setInteger:0 forKey:@"introDone"];
         //[standardUserDefaults setInteger:0 forKey:@"highScore"];
+        [standardUserDefaults synchronize];
 
         //basic game/box2d/cocos2d initialization
         self.isAccelerometerEnabled = YES;
@@ -857,6 +872,7 @@
         time = 0;
         _pause = false;
         _intro = true;
+        _dogHasHitGround = false;
         _lastTouchTime = 0;
         _curPersonMaskBits = 0x1000;
         _spawnLimiter = [characterTags count] - ([characterTags count]-1);
@@ -1044,33 +1060,29 @@
         [self loseScene];
     }
     
-    if(time == 100 && _intro){
-        id winUpDelay = [CCDelayTime actionWithDuration:7];
-        id winDownDelay = [CCDelayTime actionWithDuration:1];
-        id removeWindow = [CCCallFuncN actionWithTarget:self selector:@selector(tutorialBoxRemove)];
+    //TODO - remove tutorial windows on touch
+    //TODO - put framerate in debug draw
+    //TODO - show/save total time survived in ending screen
+    
+    if(_dogHasDied && time - _firstDeathTime == 800 && _intro){
+        winUpDelay = [CCDelayTime actionWithDuration:7];
+        winDownDelay = [CCDelayTime actionWithDuration:1];
+        removeWindow = [CCCallFuncN actionWithTarget:self selector:@selector(tutorialBoxRemove)];
+        
         NSMutableArray *textBoxParameters = [[NSMutableArray alloc] initWithCapacity:1];
-        [textBoxParameters addObject:[NSValue valueWithPointer:[NSString stringWithString:@"Whoa, what was that? A hot dog?"]]];
+        [textBoxParameters addObject:[NSValue valueWithPointer:[NSString stringWithString:@"There's another! Quick, save it!"]]];
         id tutorialWindow1 = [CCCallFuncND actionWithTarget:self selector:@selector(introTutorialTextBox:data:) data:textBoxParameters];
         
         textBoxParameters = [[NSMutableArray alloc] initWithCapacity:1];
-        [textBoxParameters addObject:[NSValue valueWithPointer:[NSString stringWithString:@"Oh man, it died!"]]];
+        [textBoxParameters addObject:[NSValue valueWithPointer:[NSString stringWithString:@"Put it somewhere safe..."]]];
         id tutorialWindow2 = [CCCallFuncND actionWithTarget:self selector:@selector(introTutorialTextBox:data:) data:textBoxParameters];
         
         textBoxParameters = [[NSMutableArray alloc] initWithCapacity:1];
-        [textBoxParameters addObject:[NSValue valueWithPointer:[NSString stringWithString:@"Quick, get it off the ground!"]]];
+        [textBoxParameters addObject:[NSValue valueWithPointer:[NSString stringWithString:@"Touch a dog and drag it to place it somewhere safe"]]];
         id tutorialWindow3 = [CCCallFuncND actionWithTarget:self selector:@selector(introTutorialTextBox:data:) data:textBoxParameters];
         
-        textBoxParameters = [[NSMutableArray alloc] initWithCapacity:1];
-        [textBoxParameters addObject:[NSValue valueWithPointer:[NSString stringWithString:@"Hmm...what should you put it on?"]]];
-        id tutorialWindow4 = [CCCallFuncND actionWithTarget:self selector:@selector(introTutorialTextBox:data:) data:textBoxParameters];
-        
-        textBoxParameters = [[NSMutableArray alloc] initWithCapacity:1];
-        [textBoxParameters addObject:[NSValue valueWithPointer:[NSString stringWithString:@"Save the dogs you gotta do it!"]]];
-        id tutorialWindow5 = [CCCallFuncND actionWithTarget:self selector:@selector(introTutorialTextBox:data:) data:textBoxParameters];
-        
-        id tutorialSeq = [CCSequence actions:tutorialWindow1, winUpDelay, removeWindow, winDownDelay, tutorialWindow2, winUpDelay, removeWindow, 
-                          winDownDelay, tutorialWindow3, winUpDelay, removeWindow, winDownDelay, tutorialWindow4, winUpDelay, removeWindow,
-                          winDownDelay, tutorialWindow5, winUpDelay, removeWindow, nil];
+        id tutorialSeq = [CCSequence actions:tutorialWindow1, winUpDelay, removeWindow, winDownDelay, tutorialWindow2, winUpDelay, removeWindow,
+                          winDownDelay, tutorialWindow3, winUpDelay, removeWindow, nil];
         [self runAction:tutorialSeq];
     }
 
@@ -1158,6 +1170,20 @@
                 }
             }
             else if (fBUd->tag == F_GROUND){
+                if(_intro && !_dogHasHitGround){
+                    _dogHasHitGround = true;
+                    
+                    winUpDelay = [CCDelayTime actionWithDuration:7];
+                    winDownDelay = [CCDelayTime actionWithDuration:1];
+                    removeWindow = [CCCallFuncN actionWithTarget:self selector:@selector(tutorialBoxRemove)];
+                    
+                    NSMutableArray *textBoxParameters = [[NSMutableArray alloc] initWithCapacity:1];
+                    [textBoxParameters addObject:[NSValue valueWithPointer:[NSString stringWithString:@"Whoa, what was that? A hot dog?"]]];
+                    id tutorialWindow1 = [CCCallFuncND actionWithTarget:self selector:@selector(introTutorialTextBox:data:) data:textBoxParameters];
+                
+                    id windowSeq = [CCSequence actions:winDownDelay, tutorialWindow1, winUpDelay, removeWindow, nil];
+                    [self runAction:windowSeq];
+                }
                 if(dogBody->GetLinearVelocity().y < .1){
                     bodyUserData *ud = (bodyUserData *)dogBody->GetUserData();
                     CCAction *wienerDeathAction = (CCAction *)ud->altAction;
