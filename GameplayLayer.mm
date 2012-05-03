@@ -19,7 +19,7 @@
 #define FLOOR4_HT 1.2
 #define DOG_SPAWN_MINHT 240
 #define SPAWN_LIMIT_DECREMENT_DELAY 15
-#define DROPPED_MAX 50
+#define DROPPED_MAX 5
 #define COP_RANGE 4
 
 // HelloWorldLayer implementation
@@ -92,6 +92,27 @@
         [_pauseMenu alignItemsVertically];
         [self addChild:_pauseMenu z:81];
     }
+}
+
+-(void)introTutorialTextBox:(id)sender data:(void*)params {
+    int boxY = 0;
+        
+    CGSize winSize = [[CCDirector sharedDirector] winSize];
+    _introLayer = [CCLayerColor layerWithColor:ccc4(0, 0, 255, 125) width:490 height:60];
+    _introLayer.position = ccp((winSize.width/2)-(_introLayer.contentSize.width/2), boxY);
+    [self addChild:_introLayer z:80];
+        
+    NSString *text = (NSString *)[(NSValue *)[(NSMutableArray *) params objectAtIndex:0] pointerValue];
+    tutorialLabel = [CCLabelTTF labelWithString:text fontName:@"LostPet.TTF" fontSize:16.0];
+    [tutorialLabel setPosition:ccp(winSize.width/2, boxY+(_introLayer.contentSize.height/2))];
+    [self addChild:tutorialLabel z:81];
+}
+
+-(void)tutorialBoxRemove{
+    [self removeChild:_introLayer cleanup:YES];
+    _introLayer = NULL;
+    [self removeChild:tutorialLabel cleanup:YES];
+    tutorialLabel = NULL;
 }
 
 -(void)debugDraw{
@@ -826,8 +847,8 @@
         CGSize winSize = [CCDirector sharedDirector].winSize;
         standardUserDefaults = [NSUserDefaults standardUserDefaults];
         
-        // uncomment this to test the intro sequence
-        //[standardUserDefaults setInteger:0 forKey:@"introDone"];
+        // uncomment this to test the intro sequence / reset high score
+        [standardUserDefaults setInteger:0 forKey:@"introDone"];
         //[standardUserDefaults setInteger:0 forKey:@"highScore"];
 
         //basic game/box2d/cocos2d initialization
@@ -1020,6 +1041,36 @@
     //the "LOSE CONDITION"
     if(_droppedCount >= DROPPED_MAX){
         [self loseScene];
+    }
+    
+    if(time == 100 && _intro){
+        id winUpDelay = [CCDelayTime actionWithDuration:7];
+        id winDownDelay = [CCDelayTime actionWithDuration:1];
+        id removeWindow = [CCCallFuncN actionWithTarget:self selector:@selector(tutorialBoxRemove)];
+        NSMutableArray *textBoxParameters = [[NSMutableArray alloc] initWithCapacity:1];
+        [textBoxParameters addObject:[NSValue valueWithPointer:[NSString stringWithString:@"Whoa, what was that? A hot dog?"]]];
+        id tutorialWindow1 = [CCCallFuncND actionWithTarget:self selector:@selector(introTutorialTextBox:data:) data:textBoxParameters];
+        
+        textBoxParameters = [[NSMutableArray alloc] initWithCapacity:1];
+        [textBoxParameters addObject:[NSValue valueWithPointer:[NSString stringWithString:@"Oh man, it died!"]]];
+        id tutorialWindow2 = [CCCallFuncND actionWithTarget:self selector:@selector(introTutorialTextBox:data:) data:textBoxParameters];
+        
+        textBoxParameters = [[NSMutableArray alloc] initWithCapacity:1];
+        [textBoxParameters addObject:[NSValue valueWithPointer:[NSString stringWithString:@"Quick, get it off the ground!"]]];
+        id tutorialWindow3 = [CCCallFuncND actionWithTarget:self selector:@selector(introTutorialTextBox:data:) data:textBoxParameters];
+        
+        textBoxParameters = [[NSMutableArray alloc] initWithCapacity:1];
+        [textBoxParameters addObject:[NSValue valueWithPointer:[NSString stringWithString:@"Hmm...what should you put it on?"]]];
+        id tutorialWindow4 = [CCCallFuncND actionWithTarget:self selector:@selector(introTutorialTextBox:data:) data:textBoxParameters];
+        
+        textBoxParameters = [[NSMutableArray alloc] initWithCapacity:1];
+        [textBoxParameters addObject:[NSValue valueWithPointer:[NSString stringWithString:@"Save the dogs you gotta do it!"]]];
+        id tutorialWindow5 = [CCCallFuncND actionWithTarget:self selector:@selector(introTutorialTextBox:data:) data:textBoxParameters];
+        
+        id tutorialSeq = [CCSequence actions:tutorialWindow1, winUpDelay, removeWindow, winDownDelay, tutorialWindow2, winUpDelay, removeWindow, 
+                          winDownDelay, tutorialWindow3, winUpDelay, removeWindow, winDownDelay, tutorialWindow4, winUpDelay, removeWindow,
+                          winDownDelay, tutorialWindow5, winUpDelay, removeWindow, nil];
+        [self runAction:tutorialSeq];
     }
 
     _world->Step(dt, velocityIterations, positionIterations);
