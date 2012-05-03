@@ -82,15 +82,20 @@
         _pause = true;
         [[CCDirector sharedDirector] pause];
         CGSize winSize = [[CCDirector sharedDirector] winSize];
-        _pauseLayer = [CCLayerColor layerWithColor:ccc4(0, 0, 255, 125) width:250 height:145];
+        _pauseLayer = [CCLayerColor layerWithColor:ccc4(0, 0, 255, 125) width:390 height:270];
         _pauseLayer.position = ccp((winSize.width/2)-(_pauseLayer.contentSize.width/2), (winSize.height/2)-(_pauseLayer.contentSize.height/2));
         [self addChild:_pauseLayer z:80];
 
-        CCLabelTTF *label = [CCLabelTTF labelWithString:@"Resume Game" fontName:@"LostPet.TTF" fontSize:28.0];
-        CCMenuItem *resume = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(resumeGame)];
-        label = [CCLabelTTF labelWithString:@"Title Screen" fontName:@"LostPet.TTF" fontSize:28.0];
-        //CCMenuItem *title = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(titleScene)];
-        _pauseMenu = [CCMenu menuWithItems:resume, nil];
+        CCLabelTTF *label = [CCLabelTTF labelWithString:@"Resume Game" fontName:@"LostPet.TTF" fontSize:21.0];
+        //CCMenuItem *resume = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(resumeGame)];
+        label = [CCLabelTTF labelWithString:@"Paused" fontName:@"LostPet.TTF" fontSize:28.0];
+        CCMenuItem *pauseTitle = [CCMenuItemLabel itemWithLabel:label];
+        label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"Score: %d", _points] fontName:@"LostPet.TTF" fontSize:18.0];
+        CCMenuItem *score = [CCMenuItemLabel itemWithLabel:label];
+        label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"Time: %d frames", time] fontName:@"LostPet.TTF" fontSize:18.0];
+        CCMenuItem *timeItem = [CCMenuItemLabel itemWithLabel:label];
+        
+        _pauseMenu = [CCMenu menuWithItems:pauseTitle, score, timeItem, nil];
         [_pauseMenu setPosition:ccp(winSize.width/2, winSize.height/2)];
         [_pauseMenu alignItemsVertically];
         [self addChild:_pauseMenu z:81];
@@ -934,13 +939,14 @@
         scoreLabel.position = ccp(winSize.width-42, 280);
         [self addChild: scoreLabel];
         
-        if(!_intro){
+        //TODO - uncomment the conditional, it's commented out for testing only
+        //if(!_intro){
             NSInteger highScore = [standardUserDefaults integerForKey:@"highScore"];
             CCLabelTTF *highScoreLabel = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"HI: %d", highScore] fontName:@"LostPet.TTF" fontSize:18.0];
             highScoreLabel.color = ccc3(245, 222, 179);
             highScoreLabel.position = ccp(winSize.width/2, 305);
             [self addChild: highScoreLabel];
-        }
+        //}
 
         _pauseButton = [CCSprite spriteWithSpriteFrameName:@"Pause_Button.png"];;
         _pauseButton.position = ccp(20, 305);
@@ -1112,7 +1118,7 @@
         if(dogBody){
             fixtureUserData *fBUd = (fixtureUserData *)pdContact.fixtureB->GetUserData();
             if(fBUd->tag >= F_BUSHED && fBUd->tag <= F_TOPHED){
-                if(_intro && time - _lastTouchTime < 400){
+                if(_intro && time - _lastTouchTime < 80){
                     _intro = false;
                     [standardUserDefaults setInteger:1 forKey:@"introDone"];
                     [standardUserDefaults synchronize];
@@ -1486,7 +1492,10 @@
     location = [[CCDirector sharedDirector] convertToGL:location];
 
     if(CGRectContainsPoint(_pauseButtonRect, location)){
-        [self pauseButton];
+        if(!_pause)
+            [self pauseButton];
+        else
+            [self resumeGame];
     }
 
     b2Vec2 locationWorld = b2Vec2(location.x/PTM_RATIO, location.y/PTM_RATIO);
