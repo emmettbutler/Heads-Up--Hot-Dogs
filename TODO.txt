@@ -2,7 +2,6 @@
     //TODO - possibly use setActive() here instead of the kinda-hacky friction manipulation
     //TODO - remove the overlay sprite here since it's now the cop's deal
         // TODO - widen both these and the floors so we can't see people dropping in from the sides
-    //TODO - remove tutorial windows on touch
     //TODO - show/save total time survived in ending screen
                                     // TODO - this only works for forward-facing cops, do the math and make it work for both
                                     // TODO - have target follow dog if dog is in range

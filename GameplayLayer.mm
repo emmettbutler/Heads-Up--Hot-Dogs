@@ -105,14 +105,14 @@
     NSString *text = (NSString *)[(NSValue *)[(NSMutableArray *) params objectAtIndex:0] pointerValue];
     tutorialLabel = [CCLabelTTF labelWithString:text fontName:@"LostPet.TTF" fontSize:16.0];
     [tutorialLabel setPosition:ccp(winSize.width/2, boxY+(_introLayer.contentSize.height/2))];
-    [self addChild:tutorialLabel z:81];
+    [_introLayer addChild:tutorialLabel z:81];
 }
 
 -(void)tutorialBoxRemove{
-    [self removeChild:_introLayer cleanup:YES];
-    _introLayer = NULL;
-    [self removeChild:tutorialLabel cleanup:YES];
-    tutorialLabel = NULL;
+    if(_introLayer != NULL){
+        [self removeChild:_introLayer cleanup:YES];
+        _introLayer = NULL;
+    }
 }
 
 -(void)debugDraw{
@@ -1063,7 +1063,6 @@
         [self loseScene];
     }
     
-    //TODO - remove tutorial windows on touch
     //TODO - show/save total time survived in ending screen
     
     if(_dogHasDied && time - _firstDeathTime == 800 && _intro){
@@ -1599,6 +1598,10 @@
             }
         }
     }
+    
+    if(_introLayer != NULL){
+        [self removeChild:_introLayer cleanup:YES];
+    }
 }
 
 - (void)ccTouchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -1636,6 +1639,10 @@
                 }
             }
         }
+    }
+    
+    if(_introLayer != NULL){
+        [self removeChild:_introLayer cleanup:YES];
     }
 }
 
