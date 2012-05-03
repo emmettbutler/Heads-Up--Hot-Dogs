@@ -55,7 +55,10 @@
 }
 
 - (void)loseScene{
-    [[CCDirector sharedDirector] replaceScene:[LoseLayer sceneWithData:(void*)_points]];
+    NSMutableArray *loseParams = [[NSMutableArray alloc] initWithCapacity:2];
+    [loseParams addObject:[NSNumber numberWithInteger:_points]];
+    [loseParams addObject:[NSNumber numberWithInteger:time]];
+    [[CCDirector sharedDirector] replaceScene:[LoseLayer sceneWithData:loseParams]];
 }
 
 -(void)resumeGame{
@@ -1062,8 +1065,6 @@
     if(_droppedCount >= DROPPED_MAX){
         [self loseScene];
     }
-    
-    //TODO - show/save total time survived in ending screen
     
     if(_dogHasDied && time - _firstDeathTime == 800 && _intro){
         winUpDelay = [CCDelayTime actionWithDuration:7];

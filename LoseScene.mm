@@ -17,8 +17,13 @@
     CCLOG(@"in scenewithData");
 	LoseLayer *layer;
     layer = [LoseLayer node];
-    layer->_score = (int)data;
-    CCLOG(@"In sceneWithData: %d", layer->_score);
+    
+    NSInteger *score = (NSInteger *)[(NSValue *)[(NSMutableArray *) data objectAtIndex:0] pointerValue];
+    NSInteger *timePlayed = (NSInteger *)[(NSValue *)[(NSMutableArray *) data objectAtIndex:1] pointerValue]; 
+    layer->_score = (int)score;
+    layer->_timePlayed = (int)timePlayed;
+    CCLOG(@"In sceneWithData: score = %d, time = %d", layer->_score, layer->_timePlayed);
+    
 	[scene addChild:layer];
 	return scene;
 }
@@ -38,13 +43,17 @@
         CCLabelTTF *label = [CCLabelTTF labelWithString:@"Try Again?" fontName:@"Marker Felt" fontSize:32.0];
         CCMenuItem *button = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(switchScene)];
         CCMenu *menu = [CCMenu menuWithItems:button, nil];
-        [menu setPosition:ccp(size.width / 2, size.height / 2)];
+        [menu setPosition:ccp(size.width / 2, (size.height/2)+50)];
         [self addChild:menu];
         
         
         scoreLine = [CCLabelTTF labelWithString:@"0" fontName:@"Marker Felt" fontSize:22.0];
-        [scoreLine setPosition:ccp((size.width/2), (size.height/2)-50)];
+        [scoreLine setPosition:ccp((size.width/2), (size.height/2))];
         [self addChild:scoreLine];
+        
+        timeLine = [CCLabelTTF labelWithString:@"0" fontName:@"Marker Felt" fontSize:22.0];
+        [timeLine setPosition:ccp((size.width/2), (size.height/2)-50)];
+        [self addChild:timeLine];
         
         [self schedule: @selector(tick:)];
     }
@@ -56,6 +65,7 @@
     
     NSUserDefaults *standardUserDefaults = [NSUserDefaults standardUserDefaults];
     NSInteger highScore = [standardUserDefaults integerForKey:@"highScore"];
+    NSInteger bestTime = [standardUserDefaults integerForKey:@"bestTime"];
     if(_score > highScore){
         [standardUserDefaults setInteger:_score forKey:@"highScore"];
         
@@ -63,9 +73,17 @@
         [scoreNotify setPosition:ccp((size.width/2), (size.height/2)-100)];
         [self addChild:scoreNotify];
     }
+    if(_timePlayed > bestTime){
+        [standardUserDefaults setInteger:_timePlayed forKey:@"bestTime"];
+        
+        timeNotify = [CCLabelTTF labelWithString:@"New best time!" fontName:@"Marker Felt" fontSize:22.0];
+        [timeNotify setPosition:ccp((size.width/2), (size.height/2)-140)];
+        [self addChild:timeNotify];
+    }
     [standardUserDefaults synchronize];
     
     [scoreLine setString:[NSString stringWithFormat:@"%d", _score]];
+    [timeLine setString:[NSString stringWithFormat:@"%d", _timePlayed]];
 }
 
 - (void)switchScene{
