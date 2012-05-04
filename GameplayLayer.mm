@@ -18,7 +18,9 @@
 #define FLOOR3_HT .8
 #define FLOOR4_HT 1.2
 #define DOG_SPAWN_MINHT 240
-#define SPAWN_LIMIT_DECREMENT_DELAY 8
+#define PERSON_SPAWN_START 3
+#define WIENER_SPAWN_START 6
+#define SPAWN_LIMIT_DECREMENT_DELAY 15
 #define DROPPED_MAX 5
 #define COP_RANGE 4
 
@@ -890,8 +892,8 @@
         _lastTouchTime = 0;
         _curPersonMaskBits = 0x1000;
         _spawnLimiter = [characterTags count] - ([characterTags count]-1);
-        _personSpawnDelayTime = 3.0f;
-        _wienerSpawnDelayTime = 6.0f;
+        _personSpawnDelayTime = PERSON_SPAWN_START;
+        _wienerSpawnDelayTime = WIENER_SPAWN_START;
         _wienerKillDelay = 4.0f;
         _points = 0;
         _shootLock = NO;
@@ -1598,6 +1600,8 @@
                     if (fixture->TestPoint(locationWorld)) {
                         body->SetLinearVelocity(b2Vec2(0, 0));
                         body->SetFixedRotation(false);
+                    } else if(_introLayer != NULL){
+                        [self removeChild:_introLayer cleanup:YES];
                     }
                     if(fUd->tag == F_DOGCLD){
                         filter = fixture->GetFilterData();
@@ -1610,10 +1614,6 @@
                 }
             }
         }
-    }
-    
-    if(_introLayer != NULL){
-        [self removeChild:_introLayer cleanup:YES];
     }
 }
 
@@ -1640,6 +1640,8 @@
                     if (fixture->TestPoint(locationWorld)) {
                         body->SetLinearVelocity(b2Vec2(0, 0));
                         body->SetFixedRotation(false);
+                    } else if(_introLayer != NULL){
+                        [self removeChild:_introLayer cleanup:YES];
                     }
                     if(fUd->tag == F_DOGCLD){
                         filter = fixture->GetFilterData();
@@ -1652,10 +1654,6 @@
                 }
             }
         }
-    }
-    
-    if(_introLayer != NULL){
-        [self removeChild:_introLayer cleanup:YES];
     }
 }
 
