@@ -1478,13 +1478,12 @@
                                     bodyUserData *aimedUd = (bodyUserData *)aimedBody->GetUserData();
                                     if(aimedUd->sprite1.tag == S_HOTDOG && aimedUd->aimedAt == true){
                                         // TODO - this only works for forward-facing cops, do the math and make it work for both
-                                        // TODO - have target follow dog if dog is in range
                                         aimedDog = aimedBody;
                                         dx = abs(b->GetPosition().x - aimedDog->GetPosition().x);
                                         dy = abs(b->GetPosition().y - aimedDog->GetPosition().y);
                                         a = acos(dx / sqrt((dx*dx) + (dy*dy)));
                                         ud->targetAngle = a;
-                                        if(sqrt(pow(aimedDog->GetPosition().x - b->GetPosition().x, 2) + pow(aimedDog->GetPosition().y - b->GetPosition().y, 2)) < rayLength*PTM_RATIO || ud->targetAngle > upperArmAngle || ud->targetAngle < lowerArmAngle){
+                                        if(sqrt(pow(aimedDog->GetPosition().x - b->GetPosition().x, 2) + pow(aimedDog->GetPosition().y - b->GetPosition().y, 2)) < rayLength*PTM_RATIO && ud->targetAngle < upperArmAngle && ud->targetAngle > lowerArmAngle){
                                             ud->overlaySprite.position = CGPointMake(aimedDog->GetPosition().x*PTM_RATIO, aimedDog->GetPosition().y*PTM_RATIO);
                                         } else {
                                             [aimedUd->sprite1 stopAllActions];
