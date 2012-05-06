@@ -96,7 +96,7 @@
         CCLabelTTF *label = [CCLabelTTF labelWithString:@"Resume Game" fontName:@"LostPet.TTF" fontSize:21.0];
         //CCMenuItem *resume = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(resumeGame)];
         label = [CCLabelTTF labelWithString:@"Paused" fontName:@"LostPet.TTF" fontSize:28.0];
-        CCMenuItem *pauseTitle = [CCMenuItemLabel itemWithLabel:label];
+        //CCMenuItem *pauseTitle = [CCMenuItemLabel itemWithLabel:label];
         label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"Score: %d", _points] fontName:@"LostPet.TTF" fontSize:18.0];
         CCMenuItem *score = [CCMenuItemLabel itemWithLabel:label];
         int seconds = time/60;
@@ -979,20 +979,20 @@
         }
 
         CCSprite *scoreBG = [CCSprite spriteWithSpriteFrameName:@"Score_BG.png"];;
-        scoreBG.position = ccp(winSize.width-80, 255);
+        scoreBG.position = ccp(winSize.width-240, DOG_COUNTER_HT);
         [self addChild:scoreBG z:70];
 
         //labels for score
         scoreText = [[NSString alloc] initWithFormat:@"%d", _points];
         scoreLabel = [CCLabelTTF labelWithString:scoreText fontName:@"LostPet.TTF" fontSize:22];
         scoreLabel.color = ccc3(255, 62, 166); // 255, 62, 166
-        scoreLabel.position = ccp(winSize.width-42, 255);
+        scoreLabel.position = ccp(winSize.width-220, DOG_COUNTER_HT);
         [self addChild: scoreLabel z:72];
 
         NSInteger highScore = [standardUserDefaults integerForKey:@"highScore"];
         CCLabelTTF *highScoreLabel = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"HI: %d", highScore] fontName:@"LostPet.TTF" fontSize:18.0];
         highScoreLabel.color = ccc3(245, 222, 179);
-        highScoreLabel.position = ccp(winSize.width/2, 305);
+        highScoreLabel.position = ccp((winSize.width/2)-120, 295);
         [self addChild: highScoreLabel];
 
         _pauseButton = [CCSprite spriteWithSpriteFrameName:@"Pause_Button.png"];;
