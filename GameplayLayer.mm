@@ -23,6 +23,7 @@
 #define SPAWN_LIMIT_DECREMENT_DELAY 15
 #define DROPPED_MAX 5
 #define COP_RANGE 4
+#define DOG_COUNTER_HT 295
 
 // HelloWorldLayer implementation
 @implementation GameplayLayer
@@ -52,7 +53,7 @@
 }
 
 - (void)titleScene{
-    CCTransitionRotoZoom *transition = [CCTransitionRotoZoom transitionWithDuration:1.0 scene:[TitleLayer scene]];
+    CCTransitionSlideInL *transition = [CCTransitionSlideInL transitionWithDuration:1.0 scene:[TitleLayer scene]];
     [[CCDirector sharedDirector] replaceScene:transition];
 }
 
@@ -88,7 +89,7 @@
         _pauseLayer.position = ccp((winSize.width/2)-(_pauseLayer.contentSize.width/2), (winSize.height/2)-(_pauseLayer.contentSize.height/2));
         [self addChild:_pauseLayer z:80];
 
-        CCLabelTTF *label = [CCLabelTTF labelWithString:@"Resume Game" fontName:@"LostPet.TTF" fontSize:21.0];
+        /*CCLabelTTF *label = [CCLabelTTF labelWithString:@"Resume Game" fontName:@"LostPet.TTF" fontSize:21.0];
         //CCMenuItem *resume = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(resumeGame)];
         label = [CCLabelTTF labelWithString:@"Paused" fontName:@"LostPet.TTF" fontSize:28.0];
         CCMenuItem *pauseTitle = [CCMenuItemLabel itemWithLabel:label];
@@ -97,12 +98,19 @@
         int seconds = time/60;
         int minutes = seconds/60;
         label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"Time: %02d:%02d", minutes, seconds%60] fontName:@"LostPet.TTF" fontSize:18.0];
-        CCMenuItem *timeItem = [CCMenuItemLabel itemWithLabel:label];
+        CCMenuItem *timeItem = [CCMenuItemLabel itemWithLabel:label];*/
+        
+        CCSprite *otherButton = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
+        otherButton.position = ccp(winSize.width/2-15, winSize.height/2-15);
+        [_pauseLayer addChild:otherButton z:81];
+        CCLabelTTF *label = [CCLabelTTF labelWithString:@"Quit" fontName:@"LostPet.TTF" fontSize:24.0];
+        label.color = ccc3(255, 62, 166);
+        CCMenuItem *title = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(titleScene)];
 
-        _pauseMenu = [CCMenu menuWithItems:pauseTitle, score, timeItem, nil];
+        _pauseMenu = [CCMenu menuWithItems:title, nil];
         [_pauseMenu setPosition:ccp(winSize.width/2, winSize.height/2)];
         [_pauseMenu alignItemsVertically];
-        [self addChild:_pauseMenu z:81];
+        [self addChild:_pauseMenu z:82];
     }
 }
 
@@ -277,10 +285,11 @@
 
         if(!_intro){
             CCSprite *dogDroppedIcon = [CCSprite spriteWithSpriteFrameName:@"WienerCount_X.png"];
-            dogDroppedIcon.position = ccp(winSize.width-_droppedSpacing, 305);
+            dogDroppedIcon.position = ccp(winSize.width-_droppedSpacing, DOG_COUNTER_HT);
             [self addChild:dogDroppedIcon z:72];
+            [self removeChild:(CCSprite*)[(NSValue *)[dogIcons objectAtIndex:_droppedCount] pointerValue] cleanup:YES];
             _droppedCount++;
-            _droppedSpacing += 14;
+            _droppedSpacing += 23;
         } else if(_intro && !_dogHasDied){
             _dogHasDied = true;
             _firstDeathTime = time;
@@ -939,27 +948,29 @@
 
         //HUD objects
         CCSprite *droppedLeftEnd = [CCSprite spriteWithSpriteFrameName:@"WienerCount_LeftEnd.png"];;
-        droppedLeftEnd.position = ccp(winSize.width-100, 305);
+        droppedLeftEnd.position = ccp(winSize.width-142, DOG_COUNTER_HT);
         [self addChild:droppedLeftEnd z:70];
         CCSprite *droppedRightEnd = [CCSprite spriteWithSpriteFrameName:@"WienerCount_RightEnd.png"];;
-        droppedRightEnd.position = ccp(winSize.width-23, 305);
+        droppedRightEnd.position = ccp(winSize.width-16, DOG_COUNTER_HT);
         [self addChild:droppedRightEnd z:70];
-        for(int i = 33; i < 103; i += 14){
+        dogIcons = [[NSMutableArray alloc] initWithCapacity:DROPPED_MAX];
+        for(int i = 33; i < 148; i += 23){
             CCSprite *dogIcon = [CCSprite spriteWithSpriteFrameName:@"WienerCount_Wiener.png"];
-            dogIcon.position = ccp(winSize.width-i, 305);
+            dogIcon.position = ccp(winSize.width-i, DOG_COUNTER_HT);
             [self addChild:dogIcon z:70];
+            [dogIcons addObject:[NSValue valueWithPointer:dogIcon]];
         }
 
-        //CCSprite *scoreBG = [CCSprite spriteWithSpriteFrameName:@".png"];;
-        //scoreBG.position = ccp(winSize.width-22, 305);
-        //[self addChild:scoreBG z:100];
+        CCSprite *scoreBG = [CCSprite spriteWithSpriteFrameName:@"Score_BG.png"];;
+        scoreBG.position = ccp(winSize.width-80, 255);
+        [self addChild:scoreBG z:70];
 
         //labels for score
         scoreText = [[NSString alloc] initWithFormat:@"%d", _points];
-        scoreLabel = [CCLabelTTF labelWithString:scoreText fontName:@"LostPet.TTF" fontSize:18];
-        scoreLabel.color = ccc3(245, 222, 179);
-        scoreLabel.position = ccp(winSize.width-42, 280);
-        [self addChild: scoreLabel];
+        scoreLabel = [CCLabelTTF labelWithString:scoreText fontName:@"LostPet.TTF" fontSize:22];
+        scoreLabel.color = ccc3(255, 62, 166); // 255, 62, 166
+        scoreLabel.position = ccp(winSize.width-42, 255);
+        [self addChild: scoreLabel z:72];
 
         //TODO - uncomment the conditional, it's commented out for testing only
         //if(!_intro){
