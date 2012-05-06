@@ -53,8 +53,10 @@
 }
 
 - (void)titleScene{
-    CCTransitionSlideInL *transition = [CCTransitionSlideInL transitionWithDuration:1.0 scene:[TitleLayer scene]];
-    [[CCDirector sharedDirector] replaceScene:transition];
+    if(_pause){
+        [self resumeGame];
+    }
+    [[CCDirector sharedDirector] replaceScene:[TitleLayer scene]];
 }
 
 - (void)loseScene{
