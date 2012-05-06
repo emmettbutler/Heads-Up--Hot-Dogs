@@ -91,7 +91,7 @@
         _pauseLayer.position = ccp((winSize.width/2)-(_pauseLayer.contentSize.width/2), (winSize.height/2)-(_pauseLayer.contentSize.height/2));
         [self addChild:_pauseLayer z:80];
 
-        /*CCLabelTTF *label = [CCLabelTTF labelWithString:@"Resume Game" fontName:@"LostPet.TTF" fontSize:21.0];
+        CCLabelTTF *label = [CCLabelTTF labelWithString:@"Resume Game" fontName:@"LostPet.TTF" fontSize:21.0];
         //CCMenuItem *resume = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(resumeGame)];
         label = [CCLabelTTF labelWithString:@"Paused" fontName:@"LostPet.TTF" fontSize:28.0];
         CCMenuItem *pauseTitle = [CCMenuItemLabel itemWithLabel:label];
@@ -100,16 +100,16 @@
         int seconds = time/60;
         int minutes = seconds/60;
         label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"Time: %02d:%02d", minutes, seconds%60] fontName:@"LostPet.TTF" fontSize:18.0];
-        CCMenuItem *timeItem = [CCMenuItemLabel itemWithLabel:label];*/
+        CCMenuItem *timeItem = [CCMenuItemLabel itemWithLabel:label];
         
         CCSprite *otherButton = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
-        otherButton.position = ccp(winSize.width/2-15, winSize.height/2-15);
+        otherButton.position = ccp((winSize.width/2)-43, winSize.height/2);
         [_pauseLayer addChild:otherButton z:81];
-        CCLabelTTF *label = [CCLabelTTF labelWithString:@"Quit" fontName:@"LostPet.TTF" fontSize:24.0];
+        label = [CCLabelTTF labelWithString:@"     Quit     " fontName:@"LostPet.TTF" fontSize:24.0];
         label.color = ccc3(255, 62, 166);
         CCMenuItem *title = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(titleScene)];
 
-        _pauseMenu = [CCMenu menuWithItems:title, nil];
+        _pauseMenu = [CCMenu menuWithItems:title, score, timeItem, nil];
         [_pauseMenu setPosition:ccp(winSize.width/2, winSize.height/2)];
         [_pauseMenu alignItemsVertically];
         [self addChild:_pauseMenu z:82];

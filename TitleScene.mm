@@ -40,7 +40,7 @@
         CCSprite *startButton = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
         startButton.position = ccp(110, 27);
         [self addChild:startButton z:10];
-        CCLabelTTF *label = [CCLabelTTF labelWithString:@"Start" fontName:@"LostPet.TTF" fontSize:22.0];
+        CCLabelTTF *label = [CCLabelTTF labelWithString:@"     Start     " fontName:@"LostPet.TTF" fontSize:22.0];
         label.color = ccc3(255, 62, 166);
         CCMenuItem *button = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(switchScene)];
         CCMenu *menu = [CCMenu menuWithItems:button, nil];
@@ -50,7 +50,7 @@
         CCSprite *otherButton = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
         otherButton.position = ccp(370, 27);
         [self addChild:otherButton z:10];
-        CCLabelTTF *otherLabel = [CCLabelTTF labelWithString:@"Balls???" fontName:@"LostPet.TTF" fontSize:22.0];
+        CCLabelTTF *otherLabel = [CCLabelTTF labelWithString:@"     Balls???     " fontName:@"LostPet.TTF" fontSize:22.0];
         otherLabel.color = ccc3(255, 62, 166);
         CCMenuItem *otherTextButton = [CCMenuItemLabel itemWithLabel:otherLabel target:self selector:@selector(switchScene)];
         CCMenu *otherMenu = [CCMenu menuWithItems:otherTextButton, nil];
@@ -91,8 +91,7 @@
 }
 
 - (void)switchScene{
-    CCTransitionSlideInR *transition = [CCTransitionSlideInR transitionWithDuration:1.0 scene:[GameplayLayer scene]];
-    [[CCDirector sharedDirector] replaceScene:transition];
+    [[CCDirector sharedDirector] replaceScene:[GameplayLayer scene]];
 }
 
 -(void) dealloc{
