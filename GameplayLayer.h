@@ -25,9 +25,9 @@
     CCSprite *_wiener, *_personLower, *_personUpper, *_target, *_pauseButton;
     b2MouseJoint *_mouseJoint;
     CCAction *_walkAction, *_walkFaceAction;
-    CCFiniteTimeAction *_idleAction, *_appearAction, *_hitAction, *_shotAction, *_shootAction, *_armShootAction, *_shootFaceAction;
+    CCFiniteTimeAction *_idleAction, *_appearAction, *_hitAction, *_shotAction, *_shootAction, *_armShootAction, *_shootFaceAction, *_plusTenAction, *_plus25Action;
     CCAnimation *walkAnim, *idleAnim, *hitAnim, *dogDeathAnim, *dogAppearAnim, *walkFaceAnim, *walkDogFaceAnim;
-    CCAnimation *dogShotAnim, *shootAnim, *armShootAnim, *shootFaceAnim;
+    CCAnimation *dogShotAnim, *shootAnim, *armShootAnim, *shootFaceAnim, *plusTenAnim, *plus25Anim;
     CCSpriteBatchNode *spriteSheet;
     CCLabelTTF *scoreLabel, *droppedLabel, *tutorialLabel;
     b2Vec2 policeRayPoint1, policeRayPoint2;
@@ -130,6 +130,8 @@
 @property (nonatomic, retain) CCFiniteTimeAction *shootAction;
 @property (nonatomic, retain) CCFiniteTimeAction *shootFaceAction;
 @property (nonatomic, retain) CCFiniteTimeAction *armShootAction;
+@property (nonatomic, retain) CCFiniteTimeAction *plusTenAction;
+@property (nonatomic, retain) CCFiniteTimeAction *plus25Action;
 @property (nonatomic, retain) CCAction *appearAction;
 @property (nonatomic, retain) NSString *hitFace;
 

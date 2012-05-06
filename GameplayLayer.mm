@@ -43,6 +43,8 @@
 @synthesize shootAction = _shootAction;
 @synthesize shootFaceAction = _shootFaceAction;
 @synthesize armShootAction = _armShootAction;
+@synthesize plusTenAction = _plusTenAction;
+@synthesize plus25Action = _plus25Action;
 @synthesize hitFace = _hitFace;
 
 +(CCScene *) scene {
@@ -171,6 +173,27 @@
         }
     }
 
+}
+
+-(void)removeSprite:(id)sender data:(void*)params {
+    CCSprite *sprite = (CCSprite *)[(NSValue *)[(NSMutableArray *) params objectAtIndex:0] pointerValue];
+    [self removeChild:sprite cleanup:YES];
+}
+
+-(void)plusTen:(id)sender data:(void*)params {
+    NSNumber *xPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:0];
+    NSNumber *yPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:1];
+    
+    CCSprite *ten = [CCSprite spriteWithSpriteFrameName:@"plusTen1.png"];
+    ten.position = ccp(xPos.intValue, yPos.intValue);
+    [self addChild:ten];
+    
+    NSMutableArray *removeParams = [[NSMutableArray alloc] initWithCapacity:1];
+    [removeParams addObject:[NSValue valueWithPointer:ten]];
+    CCAction *removeAction = [CCCallFuncND actionWithTarget:self selector:@selector(removeSprite:data:) data:removeParams];
+    
+    id seq = [CCSequence actions:_plusTenAction, removeAction, nil];
+    [ten runAction:seq];
 }
 
 -(void)setAwake:(id)sender data:(void*)params {
@@ -1044,6 +1067,27 @@
         _wallsBody->CreateFixture(&wallsBoxDef);
         wallsBox.SetAsEdge(b2Vec2(winSize.width/PTM_RATIO, winSize.height/PTM_RATIO), b2Vec2(winSize.width/PTM_RATIO, 0));
         _wallsBody->CreateFixture(&wallsBoxDef);
+        
+        // set up point notifiers
+        NSMutableArray *plusTenAnimFrames = [[NSMutableArray alloc] initWithCapacity:11];
+        for(int i = 1; i <= 11; i++){
+            [plusTenAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"plusTen%d.png", i]]];
+        }
+        plusTenAnim = [[CCAnimation animationWithFrames:plusTenAnimFrames delay:.06f] retain];
+        self.plusTenAction = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:plusTenAnim restoreOriginalFrame:NO] times:1];
+        [plusTenAnimFrames release];
+        
+        NSMutableArray *plus25AnimFrames = [[NSMutableArray alloc] initWithCapacity:12];
+        for(int i = 1; i <= 12; i++){
+            [plus25AnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"plusTwentyFive%d.png", i]]];
+        }
+        plus25Anim = [[CCAnimation animationWithFrames:plus25AnimFrames delay:.06f] retain];
+        self.plus25Action = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:plus25Anim restoreOriginalFrame:NO] times:1];
+        [plus25AnimFrames release];
 
         //schedule callbacks for dogs, people, and game value decrements
         personParameters = [[NSMutableArray alloc] initWithCapacity:2];
@@ -1195,10 +1239,14 @@
                 [self addChild:heartParticles z:60];
                 if(!_intro && !ud->hasTouchedHead){
                     switch(pUd->sprite1.tag){
-                        case 3: _points += 100; break; // businessman
-                        case 4: _points += 300; break; // police
-                        default: _points += 100; break; // any others
+                        case 3: _points += 10; break; // businessman
+                        case 4: _points += 30; break; // police
+                        default: _points += 10; break; // any others
                     }
+                    NSMutableArray *plusTenParams = [[NSMutableArray alloc] initWithCapacity:2];
+                    [plusTenParams addObject:[NSNumber numberWithInt:pBody->GetPosition().x*PTM_RATIO]];
+                    [plusTenParams addObject:[NSNumber numberWithInt:(pBody->GetPosition().y+4.7)*PTM_RATIO]];
+                    [self runAction:[CCCallFuncND actionWithTarget:self selector:@selector(plusTen:data:) data:plusTenParams]];
                 }
                 ud->hasTouchedHead = true;
             }
