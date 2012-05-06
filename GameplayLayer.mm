@@ -274,10 +274,10 @@
         [dogSprite removeFromParentAndCleanup:YES];
         [ud->overlaySprite removeFromParentAndCleanup:YES];
 
-        if(_mouseJoint){
-            _world->DestroyJoint(_mouseJoint);
-            _mouseJoint = NULL;
-        }
+        //if(_mouseJoint){
+        //    _world->DestroyJoint(_mouseJoint);
+        //    _mouseJoint = NULL;
+        //}
 
         _world->DestroyBody(dogBody);
 
@@ -343,12 +343,6 @@
     _wiener.position = ccp(location.x, location.y);
     _wiener.tag = S_HOTDOG;
     [self addChild:_wiener];
-
-    CCSprite *target = [CCSprite spriteWithSpriteFrameName:@"cop_target.png"];
-    target.position = ccp(location.x, location.y);
-    target.tag = S_CRSHRS;
-    target.visible = false;
-    [self addChild:target];
 
     //create death animation
     NSMutableArray *wienerDeathAnimFrames = [[NSMutableArray alloc] initWithCapacity:9];
@@ -500,7 +494,7 @@
 }
 
 -(void)walkIn:(id)sender data:(void *)params {
-    int xVel, velocityMul, zIndex, fTag, armOffset, lowerArmAngle, upperArmAngle, armBodyXOffset, armBodyYOffset;
+    int xVel, velocityMul, zIndex, fTag, armOffset, armBodyXOffset, armBodyYOffset;
     int armJointXOffset, armJointYOffset;
     float hitboxHeight, hitboxWidth, hitboxCenterX, hitboxCenterY, density, restitution, friction, heightOffset, sensorHeight;
     NSString *ogHeadSprite;
@@ -1127,7 +1121,6 @@
 
     //score and dropped count
     [scoreLabel setString:[NSString stringWithFormat:@"%d", _points]];
-    [droppedLabel setString:[NSString stringWithFormat:@"%d", _droppedCount]];
 
     PersonDogContact pdContact;
 
@@ -1259,7 +1252,7 @@
         if(b->GetUserData() && b->GetUserData() != (void*)100){
             bodyUserData *ud = (bodyUserData*)b->GetUserData();
             if(ud->overlaySprite != NULL){
-                if(ud->sprite1.tag == S_POLICE){
+                if(ud->sprite1.tag == S_POLICE && !ud->aiming){
                     ud->overlaySprite.position = CGPointMake(policeRayPoint2.x*PTM_RATIO, policeRayPoint2.y*PTM_RATIO);
                 }
                 else {
@@ -1477,6 +1470,7 @@
                             }
                             ud->armSpeed = 3 * cosf(.1 * time);
                         } else {
+                            b2JointEdge *j;
                             b2Body *aimedDog;
                             double dy, dx, a;
                             for(b2Body* aimedBody = _world->GetBodyList(); aimedBody; aimedBody = aimedBody->GetNext()){
@@ -1490,18 +1484,23 @@
                                         dy = abs(b->GetPosition().y - aimedDog->GetPosition().y);
                                         a = acos(dx / sqrt((dx*dx) + (dy*dy)));
                                         ud->targetAngle = a;
+                                        if(sqrt(pow(aimedDog->GetPosition().x - b->GetPosition().x, 2) + pow(aimedDog->GetPosition().y - b->GetPosition().y, 2)) < rayLength*PTM_RATIO || ud->targetAngle > upperArmAngle || ud->targetAngle < lowerArmAngle){
+                                            ud->overlaySprite.position = CGPointMake(aimedDog->GetPosition().x*PTM_RATIO, aimedDog->GetPosition().y*PTM_RATIO);
+                                        } else {
+                                            [aimedUd->sprite1 stopAllActions];
+                                            aimedUd->aimedAt = false;
+                                        }
                                         break;
                                     }
                                 }
                             }
 
-                            b2JointEdge *j = b->GetJointList();
+                            j = b->GetJointList();
                             if(j){
                                 if(j->joint->GetType() == e_revoluteJoint && ud->targetAngle != -1){
                                     b2RevoluteJoint *r = (b2RevoluteJoint *)j->joint;
                                     NSLog(@"Shoulder angle: %0.20f", r->GetJointAngle());
                                     NSLog(@"Angle between shoulder and dog: %0.2f", ud->targetAngle);
-
                                     if(r->GetJointAngle() < ud->targetAngle)
                                         r->SetMotorSpeed(.5);
                                     else if(r->GetJointAngle() > ud->targetAngle)
