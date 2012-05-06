@@ -388,8 +388,6 @@
     ud->sprite1 = _wiener;
     ud->altAction = _deathAction;
     ud->altAction2 = _shotAction;
-    //TODO - remove the overlay sprite here since it's now the cop's deal
-    ud->overlaySprite = target;
     ud->aimedAt = false;
     ud->hasTouchedHead = false;
 
@@ -974,14 +972,11 @@
         scoreLabel.position = ccp(winSize.width-42, 255);
         [self addChild: scoreLabel z:72];
 
-        //TODO - uncomment the conditional, it's commented out for testing only
-        //if(!_intro){
-            NSInteger highScore = [standardUserDefaults integerForKey:@"highScore"];
-            CCLabelTTF *highScoreLabel = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"HI: %d", highScore] fontName:@"LostPet.TTF" fontSize:18.0];
-            highScoreLabel.color = ccc3(245, 222, 179);
-            highScoreLabel.position = ccp(winSize.width/2, 305);
-            [self addChild: highScoreLabel];
-        //}
+        NSInteger highScore = [standardUserDefaults integerForKey:@"highScore"];
+        CCLabelTTF *highScoreLabel = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"HI: %d", highScore] fontName:@"LostPet.TTF" fontSize:18.0];
+        highScoreLabel.color = ccc3(245, 222, 179);
+        highScoreLabel.position = ccp(winSize.width/2, 305);
+        [self addChild: highScoreLabel];
 
         _pauseButton = [CCSprite spriteWithSpriteFrameName:@"Pause_Button.png"];;
         _pauseButton.position = ccp(20, 305);
@@ -1002,9 +997,8 @@
             [floorBits addObject:[NSNumber numberWithInt:i]];
         }
         xPositions = [[NSMutableArray alloc] initWithCapacity:2];
-        // TODO - widen both these and the floors so we can't see people dropping in from the sides
-        [xPositions addObject:[NSNumber numberWithInt:winSize.width]];
-        [xPositions addObject:[NSNumber numberWithInt:0]];
+        [xPositions addObject:[NSNumber numberWithInt:winSize.width+30]];
+        [xPositions addObject:[NSNumber numberWithInt:-30]];
         characterTags = [[NSMutableArray alloc] initWithCapacity:2];
         for(int i = S_BUSMAN; i <= S_POLICE; i++){ // to allow for more characters, pick a value > S_POLICE && < S_TOPPSN
             [characterTags addObject:[NSNumber numberWithInt:i]];
@@ -1024,22 +1018,22 @@
         groundBoxDef.shape = &groundBox;
         groundBoxDef.filter.categoryBits = FLOOR1;
         groundBoxDef.userData = fUd;
-        groundBox.SetAsEdge(b2Vec2(0,FLOOR1_HT), b2Vec2(winSize.width/PTM_RATIO, FLOOR1_HT));
+        groundBox.SetAsEdge(b2Vec2(-30,FLOOR1_HT), b2Vec2((winSize.width+60)/PTM_RATIO, FLOOR1_HT));
         _bottomFixture = _groundBody->CreateFixture(&groundBoxDef);
 
         _groundBody = _world->CreateBody(&groundBodyDef);
         groundBoxDef.filter.categoryBits = FLOOR2;
-        groundBox.SetAsEdge(b2Vec2(0,FLOOR2_HT), b2Vec2(winSize.width/PTM_RATIO, FLOOR2_HT));
+        groundBox.SetAsEdge(b2Vec2(-30,FLOOR2_HT), b2Vec2((winSize.width+60)/PTM_RATIO, FLOOR2_HT));
         _bottomFixture = _groundBody->CreateFixture(&groundBoxDef);
 
         _groundBody = _world->CreateBody(&groundBodyDef);
         groundBoxDef.filter.categoryBits = FLOOR3;
-        groundBox.SetAsEdge(b2Vec2(0,FLOOR3_HT), b2Vec2(winSize.width/PTM_RATIO, FLOOR3_HT));
+        groundBox.SetAsEdge(b2Vec2(-30,FLOOR3_HT), b2Vec2((winSize.width+60)/PTM_RATIO, FLOOR3_HT));
         _bottomFixture = _groundBody->CreateFixture(&groundBoxDef);
 
         _groundBody = _world->CreateBody(&groundBodyDef);
         groundBoxDef.filter.categoryBits = FLOOR4;
-        groundBox.SetAsEdge(b2Vec2(0,FLOOR4_HT), b2Vec2(winSize.width/PTM_RATIO, FLOOR4_HT));
+        groundBox.SetAsEdge(b2Vec2(-30,FLOOR4_HT), b2Vec2((winSize.width+60)/PTM_RATIO, FLOOR4_HT));
         _bottomFixture = _groundBody->CreateFixture(&groundBoxDef);
 
         //set up the walls

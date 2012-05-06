@@ -1,8 +1,5 @@
 // TODO - evaluate the possibility of putting as many of these utility functions as possible into an importable file
     //TODO - possibly use setActive() here instead of the kinda-hacky friction manipulation
-    //TODO - remove the overlay sprite here since it's now the cop's deal
-        //TODO - uncomment the conditional, it's commented out for testing only
-        // TODO - widen both these and the floors so we can't see people dropping in from the sides
                 // TODO - use ud->dogsOnHead to keep angry faces on when walks start
                                         // TODO - this only works for forward-facing cops, do the math and make it work for both
                                         // TODO - have target follow dog if dog is in range
