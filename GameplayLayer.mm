@@ -1149,6 +1149,7 @@
                 CCLOG(@"Dog/Person Collision - Y Vel: %0.2f", dogBody->GetLinearVelocity().x);
                 bodyUserData *pUd = (bodyUserData *)pBody->GetUserData();
                 CCAnimation *faceDogWalkAnim = (CCAnimation *)pUd->altWalkAnim;
+                // TODO - use ud->dogsOnHead to keep angry faces on when walks start
                 CCAction *faceDogWalkAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:faceDogWalkAnim restoreOriginalFrame:NO]];
                 if(abs(pBody->GetLinearVelocity().x) > 1){
                     [pUd->sprite2 stopAllActions];
@@ -1175,7 +1176,6 @@
                 }
                 int particle = (arc4random() % 3) + 1;
                 bodyUserData *ud = (bodyUserData *)dogBody->GetUserData();
-                ud->hasTouchedHead = true;
                 
                 CCNode *contactNode = (CCNode *)ud->sprite1;
                 CGPoint position = contactNode.position;
@@ -1193,13 +1193,14 @@
                 heartParticles.position = position;
                 heartParticles.duration = 0.1f;
                 [self addChild:heartParticles z:60];
-                if(!_intro){
+                if(!_intro && !ud->hasTouchedHead){
                     switch(pUd->sprite1.tag){
-                        case 3: _points += 100; break;
-                        case 4: _points += 300; break;
-                        default: _points += 100; break;
+                        case 3: _points += 100; break; // businessman
+                        case 4: _points += 300; break; // police
+                        default: _points += 100; break; // any others
                     }
                 }
+                ud->hasTouchedHead = true;
             }
             else if (fBUd->tag == F_GROUND){
                 if(_intro && !_dogHasHitGround){
@@ -1235,10 +1236,6 @@
                     [ud->sprite1 runAction:sequence];
                     CCLOG(@"Run death action");
                 }
-            }
-            else if (fBUd->tag >= F_BUSSEN && fBUd->tag <= F_TOPSEN){
-                CCLOG(@"Touching sensor");
-
             }
         }
     }
@@ -1424,11 +1421,11 @@
                     }
                 }
                 else if(ud->sprite1.tag >= S_BUSMAN && ud->sprite1.tag <= S_TOPPSN){
+                    ud->dogsOnHead = 0;
+                    BOOL dogOnHead = false;
                     for(b2Fixture* fixture = b->GetFixtureList(); fixture; fixture = fixture->GetNext()){
                         fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
                         // detect if any people have dogs on or above their heads
-                        BOOL dogOnHead = false;
-                        ud->dogsOnHead = 0;
                         if(fUd->tag >= F_BUSSEN && fUd->tag <= F_TOPSEN){
                             for(b2Body* body = _world->GetBodyList(); body; body = body->GetNext()){
                                 if(body->GetUserData() && body->GetUserData() != (void*)100){
@@ -1448,6 +1445,9 @@
                                 NSLog(@"Dog on head, person has %d dogs on head", ud->dogsOnHead);
                             }
                         }
+                    }
+                    if(!(time % 45)){
+                        _points += ud->dogsOnHead * 25;
                     }
                     if(ud->sprite1.tag == S_POLICE){
                         //cop arm rotation
@@ -1517,9 +1517,12 @@
                 ud->sprite1.position = CGPointMake( b->GetPosition().x * PTM_RATIO, b->GetPosition().y * PTM_RATIO);
                 ud->sprite1.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
                 //destroy any sprite/body pair that's offscreen
-                // TODO - points for dogs that leave the screen on a person's head
                 if(ud->sprite1.position.x > winSize.width + 60 || ud->sprite1.position.x < -60 ||
                    ud->sprite1.position.y > winSize.height || ud->sprite1.position.y < -20){
+                    // points for dogs that leave the screen on a person's head
+                    if(ud->sprite1.tag >= S_BUSMAN && ud->sprite1.tag <= S_TOPPSN){
+                        _points += ud->dogsOnHead * 100;
+                    }
                     if(_mouseJoint && _mouseJoint->GetBodyB() == b){
                         _world->DestroyJoint(_mouseJoint);
                         _mouseJoint = NULL;
