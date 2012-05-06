@@ -98,7 +98,7 @@
         int minutes = seconds/60;
         label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"Time: %02d:%02d", minutes, seconds%60] fontName:@"LostPet.TTF" fontSize:18.0];
         CCMenuItem *timeItem = [CCMenuItemLabel itemWithLabel:label];
-        
+
         _pauseMenu = [CCMenu menuWithItems:pauseTitle, score, timeItem, nil];
         [_pauseMenu setPosition:ccp(winSize.width/2, winSize.height/2)];
         [_pauseMenu alignItemsVertically];
@@ -108,12 +108,12 @@
 
 -(void)introTutorialTextBox:(id)sender data:(void*)params {
     int boxY = 0;
-        
+
     CGSize winSize = [[CCDirector sharedDirector] winSize];
     _introLayer = [CCLayerColor layerWithColor:ccc4(0, 0, 255, 125) width:490 height:60];
     _introLayer.position = ccp((winSize.width/2)-(_introLayer.contentSize.width/2), boxY);
     [self addChild:_introLayer z:80];
-        
+
     NSString *text = (NSString *)[(NSValue *)[(NSMutableArray *) params objectAtIndex:0] pointerValue];
     tutorialLabel = [CCLabelTTF labelWithString:text fontName:@"LostPet.TTF" fontSize:16.0];
     [tutorialLabel setPosition:ccp(winSize.width/2, boxY+(_introLayer.contentSize.height/2))];
@@ -160,7 +160,7 @@
             _wienerKillDelay -= 1;
         }
     }
-    
+
 }
 
 -(void)setAwake:(id)sender data:(void*)params {
@@ -263,12 +263,12 @@
         [dogSprite stopAllActions];
         [dogSprite removeFromParentAndCleanup:YES];
         [ud->overlaySprite removeFromParentAndCleanup:YES];
-        
+
         if(_mouseJoint){
             _world->DestroyJoint(_mouseJoint);
             _mouseJoint = NULL;
         }
-        
+
         _world->DestroyBody(dogBody);
 
         free(ud);
@@ -284,15 +284,15 @@
         } else if(_intro && !_dogHasDied){
             _dogHasDied = true;
             _firstDeathTime = time;
-            
+
             winUpDelay = [CCDelayTime actionWithDuration:7];
             winDownDelay = [CCDelayTime actionWithDuration:1];
             removeWindow = [CCCallFuncN actionWithTarget:self selector:@selector(tutorialBoxRemove)];
-            
+
             NSMutableArray *textBoxParameters = [[NSMutableArray alloc] initWithCapacity:1];
             [textBoxParameters addObject:[NSValue valueWithPointer:[NSString stringWithString:@"Oh man, it died!"]]];
             id tutorialWindow1 = [CCCallFuncND actionWithTarget:self selector:@selector(introTutorialTextBox:data:) data:textBoxParameters];
-            
+
             id windowSeq = [CCSequence actions:tutorialWindow1, winUpDelay, removeWindow, nil];
             [self runAction:windowSeq];
         }
@@ -315,7 +315,7 @@
 -(void)dogFlipAimedAt:(id)sender data:(void*)params {
     b2Body *dogBody = (b2Body *)[(NSValue *)[(NSMutableArray *) params objectAtIndex:0] pointerValue];
     bodyUserData *ud = (bodyUserData *)dogBody->GetUserData();
-    
+
     if(ud->aimedAt){
         ud->aimedAt = false;
     } else {
@@ -380,6 +380,7 @@
     //TODO - remove the overlay sprite here since it's now the cop's deal
     ud->overlaySprite = target;
     ud->aimedAt = false;
+    ud->hasTouchedHead = false;
 
     fixtureUserData *fUd1 = new fixtureUserData();
     fUd1->ogCollideFilters = 0;
@@ -492,7 +493,7 @@
 -(void)walkIn:(id)sender data:(void *)params {
     int xVel, velocityMul, zIndex, fTag, armOffset, lowerArmAngle, upperArmAngle, armBodyXOffset, armBodyYOffset;
     int armJointXOffset, armJointYOffset;
-    float hitboxHeight, hitboxWidth, hitboxCenterX, hitboxCenterY, density, restitution, friction, heightOffset;
+    float hitboxHeight, hitboxWidth, hitboxCenterX, hitboxCenterY, density, restitution, friction, heightOffset, sensorHeight;
     NSString *ogHeadSprite;
     BOOL spawn;
 
@@ -554,6 +555,7 @@
                 hitboxCenterX = 0;
                 hitboxCenterY = 4;
                 velocityMul = 300;
+                sensorHeight = 1.0f;
                 density = 10.0f;
                 restitution = .8f; //bounce
                 friction = 0.3f;
@@ -597,6 +599,7 @@
                 hitboxCenterX = 0;
                 hitboxCenterY = 4.1;
                 velocityMul = 350;
+                sensorHeight = 1.0f;
                 density = 6.0f;
                 restitution = .5f; //bounce
                 friction = 4.0f;
@@ -688,16 +691,16 @@
         walkFaceAnim = [[CCAnimation animationWithFrames:faceWalkAnimFrames delay:.08f] retain];
         self.walkFaceAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:walkFaceAnim restoreOriginalFrame:NO]];
         [_personUpper runAction:_walkFaceAction];
-        
+
         walkDogFaceAnim = [[CCAnimation animationWithFrames:faceDogWalkAnimFrames delay:.08f] retain];
 
         if(character.intValue == 4){
             shootAnim = [[CCAnimation animationWithFrames:shootAnimFrames delay:.08f] retain];
             self.shootAction = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:shootAnim restoreOriginalFrame:NO] times:1];
-            
+
             shootFaceAnim = [[CCAnimation animationWithFrames:shootFaceAnimFrames delay:.08f] retain];
             self.shootFaceAction = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:shootFaceAnim restoreOriginalFrame:YES] times:1];
-            
+
             target.tag = S_CRSHRS;
             [self addChild:target];
         }
@@ -736,6 +739,9 @@
         fixtureUserData *fUd2 = new fixtureUserData();
         fUd2->tag = 50+fTag;
 
+        fixtureUserData *fUd3 = new fixtureUserData();
+        fUd3->tag = 100+fTag;
+
         //create the body/bodies and fixtures for various collisions
         b2BodyDef personBodyDef;
         personBodyDef.type = b2_dynamicBody;
@@ -770,6 +776,17 @@
         personBodyShapeDef.userData = fUd2;
         personBodyShapeDef.filter.maskBits = floorBit.intValue;
         _personFixture = _personBody->CreateFixture(&personBodyShapeDef);
+
+        //sensor above heads for point gathering
+        b2PolygonShape personHeadSensorShape;
+        personHeadSensorShape.SetAsBox(_personUpper.contentSize.width/PTM_RATIO/2,sensorHeight,b2Vec2(hitboxCenterX, hitboxCenterY+(sensorHeight/2)), 0);
+        b2FixtureDef personHeadSensorShapeDef;
+        personHeadSensorShapeDef.shape = &personHeadSensorShape;
+        personHeadSensorShapeDef.userData = fUd3;
+        personHeadSensorShapeDef.isSensor = true;
+        personHeadSensorShapeDef.filter.categoryBits = SENSOR;
+        personHeadSensorShapeDef.filter.maskBits = WIENER;
+        _personFixture = _personBody->CreateFixture(&personHeadSensorShapeDef);
 
         if(character.intValue == 4){
             //create the cop's arm body if we need to
@@ -876,7 +893,7 @@
         CGSize winSize = [CCDirector sharedDirector].winSize;
         standardUserDefaults = [NSUserDefaults standardUserDefaults];
         [[CCDirector sharedDirector] setDisplayFPS:NO];
-        
+
         // uncomment this to test the intro sequence / reset high score
         [standardUserDefaults setInteger:0 forKey:@"introDone"];
         //[standardUserDefaults setInteger:0 forKey:@"highScore"];
@@ -909,13 +926,13 @@
         //contact listener init
         personDogContactListener = new PersonDogContactListener();
         _world->SetContactListener(personDogContactListener);
-        
+
         // if the intro has already been completed, don't do it again
         NSInteger introDone = [standardUserDefaults integerForKey:@"introDone"];
         NSLog(@"IntroDone: %d", introDone);
         if(introDone == 1)
             _intro = false;
-        
+
         CCSprite *background = [CCSprite spriteWithSpriteFrameName:@"bg_philly.png"];
         background.anchorPoint = CGPointZero;
         [self addChild:background z:-10];
@@ -943,7 +960,7 @@
         scoreLabel.color = ccc3(245, 222, 179);
         scoreLabel.position = ccp(winSize.width-42, 280);
         [self addChild: scoreLabel];
-        
+
         //TODO - uncomment the conditional, it's commented out for testing only
         //if(!_intro){
             NSInteger highScore = [standardUserDefaults integerForKey:@"highScore"];
@@ -957,7 +974,7 @@
         _pauseButton.position = ccp(20, 305);
         [self addChild:_pauseButton z:70];
         _pauseButtonRect = CGRectMake((_pauseButton.position.x-(_pauseButton.contentSize.width)/2), (_pauseButton.position.y-(_pauseButton.contentSize.height)/2), (_pauseButton.contentSize.width), (_pauseButton.contentSize.height));
-        
+
         //debug labels
         CCLabelTTF *label = [CCLabelTTF labelWithString:@"Debug draw" fontName:@"LostPet.TTF" fontSize:18.0];
         CCMenuItem *debug = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(debugDraw)];
@@ -1076,24 +1093,24 @@
     if(_droppedCount >= DROPPED_MAX){
         [self loseScene];
     }
-    
+
     if(_dogHasDied && time - _firstDeathTime == 800 && _intro){
         winUpDelay = [CCDelayTime actionWithDuration:4];
         winDownDelay = [CCDelayTime actionWithDuration:.5];
         removeWindow = [CCCallFuncN actionWithTarget:self selector:@selector(tutorialBoxRemove)];
-        
+
         NSMutableArray *textBoxParameters = [[NSMutableArray alloc] initWithCapacity:1];
         [textBoxParameters addObject:[NSValue valueWithPointer:[NSString stringWithString:@"There's another! Quick, save it!"]]];
         id tutorialWindow1 = [CCCallFuncND actionWithTarget:self selector:@selector(introTutorialTextBox:data:) data:textBoxParameters];
-        
+
         textBoxParameters = [[NSMutableArray alloc] initWithCapacity:1];
         [textBoxParameters addObject:[NSValue valueWithPointer:[NSString stringWithString:@"Put it somewhere safe..."]]];
         id tutorialWindow2 = [CCCallFuncND actionWithTarget:self selector:@selector(introTutorialTextBox:data:) data:textBoxParameters];
-        
+
         textBoxParameters = [[NSMutableArray alloc] initWithCapacity:1];
         [textBoxParameters addObject:[NSValue valueWithPointer:[NSString stringWithString:@"Touch a dog and drag it to place it somewhere safe"]]];
         id tutorialWindow3 = [CCCallFuncND actionWithTarget:self selector:@selector(introTutorialTextBox:data:) data:textBoxParameters];
-        
+
         id tutorialSeq = [CCSequence actions:tutorialWindow1, winUpDelay, removeWindow, winDownDelay, tutorialWindow2, winUpDelay, removeWindow,
                           winDownDelay, tutorialWindow3, winUpDelay, removeWindow, nil];
         [self runAction:tutorialSeq];
@@ -1158,6 +1175,8 @@
                 }
                 int particle = (arc4random() % 3) + 1;
                 bodyUserData *ud = (bodyUserData *)dogBody->GetUserData();
+                ud->hasTouchedHead = true;
+                
                 CCNode *contactNode = (CCNode *)ud->sprite1;
                 CGPoint position = contactNode.position;
                 CCParticleSystem* heartParticles = [CCParticleFire node];
@@ -1185,20 +1204,21 @@
             else if (fBUd->tag == F_GROUND){
                 if(_intro && !_dogHasHitGround){
                     _dogHasHitGround = true;
-                    
+
                     winUpDelay = [CCDelayTime actionWithDuration:4];
                     winDownDelay = [CCDelayTime actionWithDuration:.5];
                     removeWindow = [CCCallFuncN actionWithTarget:self selector:@selector(tutorialBoxRemove)];
-                    
+
                     NSMutableArray *textBoxParameters = [[NSMutableArray alloc] initWithCapacity:1];
                     [textBoxParameters addObject:[NSValue valueWithPointer:[NSString stringWithString:@"Whoa, what was that? A hot dog?"]]];
                     id tutorialWindow1 = [CCCallFuncND actionWithTarget:self selector:@selector(introTutorialTextBox:data:) data:textBoxParameters];
-                
+
                     id windowSeq = [CCSequence actions:winDownDelay, tutorialWindow1, winUpDelay, removeWindow, nil];
                     [self runAction:windowSeq];
                 }
                 if(dogBody->GetLinearVelocity().y < .1){
                     bodyUserData *ud = (bodyUserData *)dogBody->GetUserData();
+                    ud->hasTouchedHead = false;
                     CCAction *wienerDeathAction = (CCAction *)ud->altAction;
 
                     id delay = [CCDelayTime actionWithDuration:_wienerKillDelay];
@@ -1215,6 +1235,10 @@
                     [ud->sprite1 runAction:sequence];
                     CCLOG(@"Run death action");
                 }
+            }
+            else if (fBUd->tag >= F_BUSSEN && fBUd->tag <= F_TOPSEN){
+                CCLOG(@"Touching sensor");
+
             }
         }
     }
@@ -1355,18 +1379,18 @@
                                         id copSeq = [CCSequence actions:stopWalkingAction, copFlipAimingAction, delay, copShootAnimAction, copFlipAimingAction, wakeUpAction, startWalkingAction, walkAnimateAction, unlockAction, nil];
                                         [copUd->sprite1 stopAllActions];
                                         [copUd->sprite1 runAction:copSeq];
-                                        
+
                                         CCFiniteTimeAction *faceShootAction = (CCFiniteTimeAction *)copUd->altAction3;
                                         NSMutableArray *walkFaceParameters = [[NSMutableArray alloc] initWithCapacity:2];
                                         [walkFaceParameters addObject:[NSValue valueWithPointer:(CCSprite *)copUd->sprite2]];
                                         [walkFaceParameters addObject:[NSValue valueWithPointer:(CCAction *)copUd->altAnimation]];
                                         id faceWalkAction = [CCCallFuncND actionWithTarget:self selector:@selector(spriteRunAnim:data:) data:walkFaceParameters];
                                         [copUd->sprite2 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Cop_Head_Aiming_1.png"]]];
-                                        
+
                                         id copHeadSeq = [CCSequence actions:delay, faceShootAction, faceWalkAction, nil];
                                         [copUd->sprite2 stopAllActions];
                                         [copUd->sprite2 runAction:copHeadSeq];
-                                        
+
                                         [copUd->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Cop_Idle.png"]]];
 
                                         armUd = (bodyUserData *)copArmBody->GetUserData();
@@ -1382,7 +1406,7 @@
                                         NSMutableArray *destroyParameters = [[NSMutableArray alloc] initWithCapacity:1];
                                         [destroyParameters addObject:dBody];
                                         id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:destroyParameters];
-                                        
+
                                         NSMutableArray *aimedAtParameters = [[NSMutableArray alloc] initWithCapacity:1];
                                         [aimedAtParameters addObject:dBody];
                                         id dogFlipAimedAtAction = [CCCallFuncND actionWithTarget:self selector:@selector(dogFlipAimedAt:data:) data:aimedAtParameters];
@@ -1399,56 +1423,83 @@
                         }
                     }
                 }
-                else if(ud->sprite1.tag == S_POLICE){
-                    //cop arm rotation
-                    if(!ud->aiming){
-                        //if not aiming, make sure there are no world dogs with aimedAt on
-                        for(b2Body* aimedBody = _world->GetBodyList(); aimedBody; aimedBody = aimedBody->GetNext()){
-                            if(aimedBody->GetUserData() && aimedBody->GetUserData() != (void*)100){
-                                bodyUserData *aimedUd = (bodyUserData *)aimedBody->GetUserData();
-                                if(aimedUd->sprite1.tag == S_HOTDOG && aimedUd->aimedAt == true){
-                                    aimedUd->aimedAt = false;
+                else if(ud->sprite1.tag >= S_BUSMAN && ud->sprite1.tag <= S_TOPPSN){
+                    for(b2Fixture* fixture = b->GetFixtureList(); fixture; fixture = fixture->GetNext()){
+                        fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
+                        // detect if any people have dogs on or above their heads
+                        BOOL dogOnHead = false;
+                        ud->dogsOnHead = 0;
+                        if(fUd->tag >= F_BUSSEN && fUd->tag <= F_TOPSEN){
+                            for(b2Body* body = _world->GetBodyList(); body; body = body->GetNext()){
+                                if(body->GetUserData() && body->GetUserData() != (void*)100){
+                                    bodyUserData *dogUd = (bodyUserData*)body->GetUserData();
+                                    if(dogUd->sprite1.tag == S_HOTDOG){
+                                        b2Vec2 dogLocation = b2Vec2(body->GetPosition().x, body->GetPosition().y);
+                                        if(fixture->TestPoint(dogLocation) && dogUd->hasTouchedHead){
+                                            dogOnHead = true;
+                                            ud->dogsOnHead++;
+                                        }
+                                    }
                                 }
                             }
-                        }
-                        b2JointEdge *j = b->GetJointList();
-                        if(j){
-                            if(j->joint->GetType() == e_revoluteJoint){
-                                b2RevoluteJoint *r = (b2RevoluteJoint *)j->joint;
-                                r->SetMotorSpeed(ud->armSpeed);
+                            if(!dogOnHead){
+                                ud->dogsOnHead = 0;
+                            } else {
+                                NSLog(@"Dog on head, person has %d dogs on head", ud->dogsOnHead);
                             }
                         }
-                        ud->armSpeed = 3 * cosf(.1 * time);
-                    } else {
-                        b2Body *aimedDog;
-                        double dy, dx, a;
-                        for(b2Body* aimedBody = _world->GetBodyList(); aimedBody; aimedBody = aimedBody->GetNext()){
-                            if(aimedBody->GetUserData() && aimedBody->GetUserData() != (void*)100){
-                                bodyUserData *aimedUd = (bodyUserData *)aimedBody->GetUserData();
-                                if(aimedUd->sprite1.tag == S_HOTDOG && aimedUd->aimedAt == true){
-                                    // TODO - this only works for forward-facing cops, do the math and make it work for both
-                                    // TODO - have target follow dog if dog is in range
-                                    aimedDog = aimedBody;
-                                    dx = abs(b->GetPosition().x - aimedDog->GetPosition().x);
-                                    dy = abs(b->GetPosition().y - aimedDog->GetPosition().y);
-                                    a = acos(dx / sqrt((dx*dx) + (dy*dy)));
-                                    ud->targetAngle = a;
-                                    break;
+                    }
+                    if(ud->sprite1.tag == S_POLICE){
+                        //cop arm rotation
+                        if(!ud->aiming){
+                            //if not aiming, make sure there are no world dogs with aimedAt on
+                            for(b2Body* aimedBody = _world->GetBodyList(); aimedBody; aimedBody = aimedBody->GetNext()){
+                                if(aimedBody->GetUserData() && aimedBody->GetUserData() != (void*)100){
+                                    bodyUserData *aimedUd = (bodyUserData *)aimedBody->GetUserData();
+                                    if(aimedUd->sprite1.tag == S_HOTDOG && aimedUd->aimedAt == true){
+                                        aimedUd->aimedAt = false;
+                                    }
                                 }
                             }
-                        }
-                        
-                        b2JointEdge *j = b->GetJointList();
-                        if(j){
-                            if(j->joint->GetType() == e_revoluteJoint && ud->targetAngle != -1){
-                                b2RevoluteJoint *r = (b2RevoluteJoint *)j->joint;
-                                NSLog(@"Shoulder angle: %0.20f", r->GetJointAngle());
-                                NSLog(@"Angle between shoulder and dog: %0.2f", ud->targetAngle);
+                            b2JointEdge *j = b->GetJointList();
+                            if(j){
+                                if(j->joint->GetType() == e_revoluteJoint){
+                                    b2RevoluteJoint *r = (b2RevoluteJoint *)j->joint;
+                                    r->SetMotorSpeed(ud->armSpeed);
+                                }
+                            }
+                            ud->armSpeed = 3 * cosf(.1 * time);
+                        } else {
+                            b2Body *aimedDog;
+                            double dy, dx, a;
+                            for(b2Body* aimedBody = _world->GetBodyList(); aimedBody; aimedBody = aimedBody->GetNext()){
+                                if(aimedBody->GetUserData() && aimedBody->GetUserData() != (void*)100){
+                                    bodyUserData *aimedUd = (bodyUserData *)aimedBody->GetUserData();
+                                    if(aimedUd->sprite1.tag == S_HOTDOG && aimedUd->aimedAt == true){
+                                        // TODO - this only works for forward-facing cops, do the math and make it work for both
+                                        // TODO - have target follow dog if dog is in range
+                                        aimedDog = aimedBody;
+                                        dx = abs(b->GetPosition().x - aimedDog->GetPosition().x);
+                                        dy = abs(b->GetPosition().y - aimedDog->GetPosition().y);
+                                        a = acos(dx / sqrt((dx*dx) + (dy*dy)));
+                                        ud->targetAngle = a;
+                                        break;
+                                    }
+                                }
+                            }
 
-                                if(r->GetJointAngle() < ud->targetAngle)
-                                    r->SetMotorSpeed(.5);
-                                else if(r->GetJointAngle() > ud->targetAngle)
-                                    r->SetMotorSpeed(-.5);
+                            b2JointEdge *j = b->GetJointList();
+                            if(j){
+                                if(j->joint->GetType() == e_revoluteJoint && ud->targetAngle != -1){
+                                    b2RevoluteJoint *r = (b2RevoluteJoint *)j->joint;
+                                    NSLog(@"Shoulder angle: %0.20f", r->GetJointAngle());
+                                    NSLog(@"Angle between shoulder and dog: %0.2f", ud->targetAngle);
+
+                                    if(r->GetJointAngle() < ud->targetAngle)
+                                        r->SetMotorSpeed(.5);
+                                    else if(r->GetJointAngle() > ud->targetAngle)
+                                        r->SetMotorSpeed(-.5);
+                                }
                             }
                         }
                     }
@@ -1609,7 +1660,6 @@
                         CCLOG(@"Dog filter mask: %d", fixture->GetFilterData().maskBits);
                         fixture->SetFilterData(filter);
                         CCLOG(@"Dog filter mask: %d", fixture->GetFilterData().maskBits);
-
                     }
                 }
             }

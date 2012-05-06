@@ -67,6 +67,8 @@
         BOOL aimedAt;
         BOOL animLock;
         double targetAngle;
+        int dogsOnHead;
+        BOOL hasTouchedHead;
     };
 
     struct fixtureUserData {
@@ -83,6 +85,7 @@
         WIENER  = 0x0040,
         BODYBOX = 0x0080, // character bodies
         TARGET  = 0x0100,
+        SENSOR  = 0x0200,
     };
     
     enum _spriteTags {
@@ -105,6 +108,9 @@
         F_COPBDY    =   54, // cop's body
         F_TOPBDY    =   60, // top body fixture tag, this must be TOPBDY > COPBDY > BUSBDY with only body tags between
         F_GROUND    =   100,
+        F_BUSSEN    =   103, // sensor above businessman's head
+        F_COPSEN    =   104, // sensor above cop's head
+        F_TOPSEN    =   110, // top head sensor tag, this must be TOPSEN > COPSEN > BUSSEN with only sensor tags between
     };
     
     PersonDogContactListener *personDogContactListener;
