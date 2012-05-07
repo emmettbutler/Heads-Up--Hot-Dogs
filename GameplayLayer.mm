@@ -196,6 +196,22 @@
     [ten runAction:seq];
 }
 
+-(void)plusTwentyFive:(id)sender data:(void*)params {
+    NSNumber *xPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:0];
+    NSNumber *yPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:1];
+    
+    CCSprite *twentyFive = [CCSprite spriteWithSpriteFrameName:@"plusTwentyFive1.png"];
+    twentyFive.position = ccp(xPos.intValue, yPos.intValue);
+    [self addChild:twentyFive];
+    
+    NSMutableArray *removeParams = [[NSMutableArray alloc] initWithCapacity:1];
+    [removeParams addObject:[NSValue valueWithPointer:twentyFive]];
+    CCAction *removeAction = [CCCallFuncND actionWithTarget:self selector:@selector(removeSprite:data:) data:removeParams];
+    
+    id seq = [CCSequence actions:_plus25Action, removeAction, nil];
+    [twentyFive runAction:seq];
+}
+
 -(void)setAwake:(id)sender data:(void*)params {
     b2Body *body = (b2Body *)[(NSValue *)[(NSMutableArray *) params objectAtIndex:0] pointerValue];
     NSNumber *awake = (NSNumber *)[(NSMutableArray *) params objectAtIndex:1];
@@ -1490,12 +1506,16 @@
                             if(!dogOnHead){
                                 ud->dogsOnHead = 0;
                             } else {
-                                NSLog(@"Dog on head, person has %d dogs on head", ud->dogsOnHead);
+                                // NSLog(@"Dog on head, person has %d dogs on head", ud->dogsOnHead);
                             }
                         }
                     }
-                    if(!(time % 45)){
+                    if(!(time % 45) && ud->dogsOnHead){
                         _points += ud->dogsOnHead * 25;
+                        NSMutableArray *plus25Params = [[NSMutableArray alloc] initWithCapacity:2];
+                        [plus25Params addObject:[NSNumber numberWithInt:b->GetPosition().x*PTM_RATIO]];
+                        [plus25Params addObject:[NSNumber numberWithInt:(b->GetPosition().y+5.2)*PTM_RATIO]];
+                        [self runAction:[CCCallFuncND actionWithTarget:self selector:@selector(plusTwentyFive:data:) data:plus25Params]];
                     }
                     if(ud->sprite1.tag == S_POLICE){
                         //cop arm rotation
@@ -1546,8 +1566,8 @@
                             if(j){
                                 if(j->joint->GetType() == e_revoluteJoint && ud->targetAngle != -1){
                                     b2RevoluteJoint *r = (b2RevoluteJoint *)j->joint;
-                                    NSLog(@"Shoulder angle: %0.20f", r->GetJointAngle());
-                                    NSLog(@"Angle between shoulder and dog: %0.2f", ud->targetAngle);
+                                    // NSLog(@"Shoulder angle: %0.20f", r->GetJointAngle());
+                                    // NSLog(@"Angle between shoulder and dog: %0.2f", ud->targetAngle);
                                     if(r->GetJointAngle() < ud->targetAngle)
                                         r->SetMotorSpeed(.5);
                                     else if(r->GetJointAngle() > ud->targetAngle)
