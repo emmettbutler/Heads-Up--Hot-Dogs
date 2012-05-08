@@ -999,10 +999,10 @@
         [self addChild:scoreBG z:70];
 
         //labels for score
-        scoreText = [[NSString alloc] initWithFormat:@"%d", _points];
-        scoreLabel = [CCLabelTTF labelWithString:scoreText fontName:@"LostPet.TTF" fontSize:22];
+        scoreText = [[NSString alloc] initWithFormat:@"%06d", _points];
+        scoreLabel = [CCLabelTTF labelWithString:scoreText fontName:@"LostPet.TTF" fontSize:34];
         scoreLabel.color = ccc3(255, 62, 166); // 255, 62, 166
-        scoreLabel.position = ccp(winSize.width-220, DOG_COUNTER_HT);
+        scoreLabel.position = ccp(winSize.width-238, DOG_COUNTER_HT-3);
         [self addChild: scoreLabel z:72];
 
         NSInteger highScore = [standardUserDefaults integerForKey:@"highScore"];
@@ -1180,7 +1180,7 @@
     _world->Step(dt, velocityIterations, positionIterations);
 
     //score and dropped count
-    [scoreLabel setString:[NSString stringWithFormat:@"%d", _points]];
+    [scoreLabel setString:[NSString stringWithFormat:@"%06d", _points]];
 
     PersonDogContact pdContact;
 
