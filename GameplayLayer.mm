@@ -1348,9 +1348,6 @@
                 if(ud->sprite1.tag == S_HOTDOG){
                     //things for hot dogs
                     if(b->IsAwake()){
-                        if(b->GetPosition().y - .4 < FLOOR4_HT && ud->_dog_isOnHead){
-                            ud->_dog_isOnHead = false;
-                        }
                         if(!_mouseJoint){
                             if(b->GetLinearVelocity().y > 1.5){
                                 [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Dog_Rise.png"]]];
@@ -1361,6 +1358,9 @@
                             }
                         } else if(_mouseJoint->GetBodyB() == b){
                             [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Dog_Grabbed.png"]]];
+                        }
+                        if(b->GetPosition().y - 1 < FLOOR4_HT && ud->_dog_isOnHead){
+                            ud->_dog_isOnHead = false;
                         }
                         if(!ud->_dog_isOnHead){
                             for(b2Fixture* fixture = b->GetFixtureList(); fixture; fixture = fixture->GetNext()){
@@ -1518,6 +1518,7 @@
                                             dogOnHead = true;
                                             ud->dogsOnHead++;
                                         } else {
+                                            //dogUd->_dog_isOnHead = false;
                                         }
                                     }
                                 }
@@ -1610,7 +1611,7 @@
                 ud->sprite1.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
                 //destroy any sprite/body pair that's offscreen
                 if(ud->sprite1.position.x > winSize.width + 160 || ud->sprite1.position.x < -160 ||
-                   ud->sprite1.position.y > winSize.height || ud->sprite1.position.y < -20){
+                   ud->sprite1.position.y > winSize.height + 40 || ud->sprite1.position.y < -40){
                     // points for dogs that leave the screen on a person's head
                     if(ud->sprite1.tag >= S_BUSMAN && ud->sprite1.tag <= S_TOPPSN){
                         _points += ud->dogsOnHead * 100;
@@ -1661,6 +1662,10 @@
                 for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
                     fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
                     if (fixture->TestPoint(locationWorld)){
+                        body->SetAwake(false);
+                        body->SetTransform(body->GetPosition(), CC_DEGREES_TO_RADIANS(0));
+                        body->SetFixedRotation(true);
+                        body->SetAwake(true);
                         CCLOG(@"Touching hotdog");
                         b2MouseJointDef md;
                         md.bodyA = _groundBody;
@@ -1670,8 +1675,6 @@
                         md.maxForce = 10000.0f * body->GetMass();
 
                         _mouseJoint = (b2MouseJoint *)_world->CreateJoint(&md);
-                        body->SetAwake(true);
-                        body->SetFixedRotation(true);
                         CCLOG(@"Fixture user data->tag: %d", fUd->tag);
 
                         _touchedDog = YES;
