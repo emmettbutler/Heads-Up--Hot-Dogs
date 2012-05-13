@@ -1609,7 +1609,6 @@
                 ud->sprite1.position = CGPointMake( b->GetPosition().x * PTM_RATIO, b->GetPosition().y * PTM_RATIO);
                 ud->sprite1.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
                 //destroy any sprite/body pair that's offscreen
-                // TODO - allow wider offscreen range before killing sprites/bodies
                 if(ud->sprite1.position.x > winSize.width + 160 || ud->sprite1.position.x < -160 ||
                    ud->sprite1.position.y > winSize.height || ud->sprite1.position.y < -20){
                     // points for dogs that leave the screen on a person's head
