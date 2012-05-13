@@ -108,6 +108,7 @@
         otherButton.position = ccp((winSize.width/2)-43, winSize.height/2);
         [_pauseLayer addChild:otherButton z:81];
         label = [CCLabelTTF labelWithString:@"     Quit     " fontName:@"LostPet.TTF" fontSize:24.0];
+        [[label texture] setAliasTexParameters];
         label.color = ccc3(255, 62, 166);
         CCMenuItem *title = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(titleScene)];
 
@@ -423,6 +424,7 @@
     ud->altAction2 = _shotAction;
     ud->aimedAt = false;
     ud->hasTouchedHead = false;
+    ud->_dog_isOnHead = false;
 
     fixtureUserData *fUd1 = new fixtureUserData();
     fUd1->ogCollideFilters = 0;
@@ -431,7 +433,7 @@
     //for the collision fixture userdata struct, randomly assign floor
     fixtureUserData *fUd2 = new fixtureUserData();
     floor = arc4random() % 4;
-    f = 0xfffff000; //any person
+    f = 0xfffff000 | WALLS; //any person
     if(floor == 1){
         f = f | FLOOR1;
     }
@@ -535,7 +537,7 @@
 -(void)walkIn:(id)sender data:(void *)params {
     int xVel, velocityMul, zIndex, fTag, armOffset, armBodyXOffset, armBodyYOffset;
     int armJointXOffset, armJointYOffset;
-    float hitboxHeight, hitboxWidth, hitboxCenterX, hitboxCenterY, density, restitution, friction, heightOffset, sensorHeight;
+    float hitboxHeight, hitboxWidth, hitboxCenterX, hitboxCenterY, density, restitution, friction, heightOffset, sensorHeight, sensorWidth;
     NSString *ogHeadSprite;
     BOOL spawn;
 
@@ -597,7 +599,8 @@
                 hitboxCenterX = 0;
                 hitboxCenterY = 4;
                 velocityMul = 300;
-                sensorHeight = 1.0f;
+                sensorHeight = 2.0f;
+                sensorWidth = 2.0f;
                 density = 10.0f;
                 restitution = .8f; //bounce
                 friction = 0.3f;
@@ -641,7 +644,8 @@
                 hitboxCenterX = 0;
                 hitboxCenterY = 4.1;
                 velocityMul = 350;
-                sensorHeight = 1.0f;
+                sensorHeight = 2.0f;
+                sensorWidth = 2.0f;
                 density = 6.0f;
                 restitution = .5f; //bounce
                 friction = 4.0f;
@@ -821,7 +825,7 @@
 
         //sensor above heads for point gathering
         b2PolygonShape personHeadSensorShape;
-        personHeadSensorShape.SetAsBox(_personUpper.contentSize.width/PTM_RATIO/2,sensorHeight,b2Vec2(hitboxCenterX, hitboxCenterY+(sensorHeight/2)), 0);
+        personHeadSensorShape.SetAsBox(sensorWidth,sensorHeight,b2Vec2(hitboxCenterX, hitboxCenterY+(sensorHeight/2)), 0);
         b2FixtureDef personHeadSensorShapeDef;
         personHeadSensorShapeDef.shape = &personHeadSensorShape;
         personHeadSensorShapeDef.userData = fUd3;
@@ -1001,6 +1005,7 @@
         //labels for score
         scoreText = [[NSString alloc] initWithFormat:@"%06d", _points];
         scoreLabel = [CCLabelTTF labelWithString:scoreText fontName:@"LostPet.TTF" fontSize:34];
+        [[scoreLabel texture] setAliasTexParameters];
         scoreLabel.color = ccc3(255, 62, 166); // 255, 62, 166
         scoreLabel.position = ccp(winSize.width-238, DOG_COUNTER_HT-3);
         [self addChild: scoreLabel z:72];
@@ -1008,6 +1013,7 @@
         NSInteger highScore = [standardUserDefaults integerForKey:@"highScore"];
         CCLabelTTF *highScoreLabel = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"HI: %d", highScore] fontName:@"LostPet.TTF" fontSize:18.0];
         highScoreLabel.color = ccc3(245, 222, 179);
+        [[highScoreLabel texture] setAliasTexParameters];
         highScoreLabel.position = ccp((winSize.width/2)-120, 295);
         [self addChild: highScoreLabel];
 
@@ -1069,6 +1075,9 @@
         groundBox.SetAsEdge(b2Vec2(-30,FLOOR4_HT), b2Vec2((winSize.width+60)/PTM_RATIO, FLOOR4_HT));
         _bottomFixture = _groundBody->CreateFixture(&groundBoxDef);
 
+        fixtureUserData *fUd2 = new fixtureUserData();
+        fUd2->tag = F_WALLS;
+        
         //set up the walls
         b2BodyDef wallsBodyDef;
         wallsBodyDef.position.Set(0,0);
@@ -1077,12 +1086,13 @@
         b2FixtureDef wallsBoxDef;
         wallsBoxDef.shape = &wallsBox;
         wallsBoxDef.filter.categoryBits = WALLS;
+        wallsBoxDef.userData = fUd2;
         wallsBox.SetAsEdge(b2Vec2(0,0), b2Vec2(0, winSize.height/PTM_RATIO));
         _wallsFixture = _wallsBody->CreateFixture(&wallsBoxDef);
         wallsBox.SetAsEdge(b2Vec2(0, winSize.height/PTM_RATIO), b2Vec2(winSize.width/PTM_RATIO, winSize.height/PTM_RATIO));
-        _wallsBody->CreateFixture(&wallsBoxDef);
+        _wallsFixture = _wallsBody->CreateFixture(&wallsBoxDef);
         wallsBox.SetAsEdge(b2Vec2(winSize.width/PTM_RATIO, winSize.height/PTM_RATIO), b2Vec2(winSize.width/PTM_RATIO, 0));
-        _wallsBody->CreateFixture(&wallsBoxDef);
+        _wallsFixture = _wallsBody->CreateFixture(&wallsBoxDef);
         
         // set up point notifiers
         NSMutableArray *plusTenAnimFrames = [[NSMutableArray alloc] initWithCapacity:11];
@@ -1198,8 +1208,10 @@
         }
 
         if(dogBody){
+            bodyUserData *ud = (bodyUserData *)dogBody->GetUserData();
             fixtureUserData *fBUd = (fixtureUserData *)pdContact.fixtureB->GetUserData();
             if(fBUd->tag >= F_BUSHED && fBUd->tag <= F_TOPHED){
+                ud->_dog_isOnHead = true;
                 if(_intro && time - _lastTouchTime < 80){
                     _intro = false;
                     [standardUserDefaults setInteger:1 forKey:@"introDone"];
@@ -1235,7 +1247,6 @@
                     }
                 }
                 int particle = (arc4random() % 3) + 1;
-                bodyUserData *ud = (bodyUserData *)dogBody->GetUserData();
                 
                 CCNode *contactNode = (CCNode *)ud->sprite1;
                 CGPoint position = contactNode.position;
@@ -1282,7 +1293,7 @@
                     [self runAction:windowSeq];
                 }
                 if(dogBody->GetLinearVelocity().y < .1){
-                    bodyUserData *ud = (bodyUserData *)dogBody->GetUserData();
+                    ud->_dog_isOnHead = false;
                     ud->hasTouchedHead = false;
                     CCAction *wienerDeathAction = (CCAction *)ud->altAction;
 
@@ -1300,6 +1311,10 @@
                     [ud->sprite1 runAction:sequence];
                     CCLOG(@"Run death action");
                 }
+            }
+            else if (fBUd->tag == F_WALLS){
+                CCLOG(@"Dog/wall collision - _dog_isOnHead: %d", ud->_dog_isOnHead);
+                
             }
         }
     }
@@ -1333,6 +1348,9 @@
                 if(ud->sprite1.tag == S_HOTDOG){
                     //things for hot dogs
                     if(b->IsAwake()){
+                        if(b->GetPosition().y - .4 < FLOOR4_HT && ud->_dog_isOnHead){
+                            ud->_dog_isOnHead = false;
+                        }
                         if(!_mouseJoint){
                             if(b->GetLinearVelocity().y > 1.5){
                                 [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Dog_Rise.png"]]];
@@ -1344,7 +1362,7 @@
                         } else if(_mouseJoint->GetBodyB() == b){
                             [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Dog_Grabbed.png"]]];
                         }
-                        if(b->GetContactList() == 0){
+                        if(!ud->_dog_isOnHead){
                             for(b2Fixture* fixture = b->GetFixtureList(); fixture; fixture = fixture->GetNext()){
                                 fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
                                 if(fUd->tag == F_DOGCLD){
@@ -1499,6 +1517,7 @@
                                         if(fixture->TestPoint(dogLocation) && dogUd->hasTouchedHead){
                                             dogOnHead = true;
                                             ud->dogsOnHead++;
+                                        } else {
                                         }
                                     }
                                 }
@@ -1590,7 +1609,8 @@
                 ud->sprite1.position = CGPointMake( b->GetPosition().x * PTM_RATIO, b->GetPosition().y * PTM_RATIO);
                 ud->sprite1.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
                 //destroy any sprite/body pair that's offscreen
-                if(ud->sprite1.position.x > winSize.width + 60 || ud->sprite1.position.x < -60 ||
+                // TODO - allow wider offscreen range before killing sprites/bodies
+                if(ud->sprite1.position.x > winSize.width + 160 || ud->sprite1.position.x < -160 ||
                    ud->sprite1.position.y > winSize.height || ud->sprite1.position.y < -20){
                     // points for dogs that leave the screen on a person's head
                     if(ud->sprite1.tag >= S_BUSMAN && ud->sprite1.tag <= S_TOPPSN){
