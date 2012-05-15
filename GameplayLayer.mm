@@ -21,7 +21,7 @@
 #define PERSON_SPAWN_START 3
 #define WIENER_SPAWN_START 6
 #define SPAWN_LIMIT_DECREMENT_DELAY 15
-#define DROPPED_MAX 5
+#define DROPPED_MAX 0
 #define COP_RANGE 4
 #define DOG_COUNTER_HT 295
 
@@ -1531,7 +1531,7 @@
                         }
                     }
                     if(!(time % 45) && ud->dogsOnHead){
-                        _points += ud->dogsOnHead * 25;
+                        _points += 1.3 * ud->dogsOnHead * 25;
                         NSMutableArray *plus25Params = [[NSMutableArray alloc] initWithCapacity:2];
                         [plus25Params addObject:[NSNumber numberWithInt:b->GetPosition().x*PTM_RATIO]];
                         [plus25Params addObject:[NSNumber numberWithInt:(b->GetPosition().y+5.2)*PTM_RATIO]];
