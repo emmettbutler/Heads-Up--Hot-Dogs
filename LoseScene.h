@@ -10,7 +10,7 @@
 
 @interface LoseLayer : CCLayer
 {
-    int _score, _timePlayed;
+    int _score, _timePlayed, _peopleGrumped, _dogsSaved;
     CCLabelTTF *scoreLine, *timeLine, *dogsLine, *peopleLine, *highScoreLine;
     CCLabelTTF *scoreNotify, *timeNotify;
     CCSpriteBatchNode *spriteSheet;

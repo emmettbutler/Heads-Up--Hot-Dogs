@@ -65,6 +65,8 @@
     NSMutableArray *loseParams = [[NSMutableArray alloc] initWithCapacity:2];
     [loseParams addObject:[NSNumber numberWithInteger:_points]];
     [loseParams addObject:[NSNumber numberWithInteger:time]];
+    [loseParams addObject:[NSNumber numberWithInteger:_peopleGrumped]];
+    [loseParams addObject:[NSNumber numberWithInteger:_dogsSaved]];
     [[CCDirector sharedDirector] replaceScene:[LoseLayer sceneWithData:loseParams]];
 }
 
@@ -773,6 +775,7 @@
         ud->altAction = _walkFaceAction;
         ud->altAnimation = walkFaceAnim;
         ud->aiming = false;
+        ud->_person_hasTouchedDog = false;
         if(character.intValue == 4){
             ud->altAction2 = _shootAction;
             ud->altAction3 = _shootFaceAction;
@@ -959,6 +962,8 @@
         _wienerSpawnDelayTime = WIENER_SPAWN_START;
         _wienerKillDelay = 4.0f;
         _points = 0;
+        _peopleGrumped = 0;
+        _dogsSaved = 0;
         _shootLock = NO;
         _droppedSpacing = 200;
         _droppedCount = 0;
@@ -1276,6 +1281,10 @@
                     [self runAction:[CCCallFuncND actionWithTarget:self selector:@selector(plusTen:data:) data:plusTenParams]];
                 }
                 ud->hasTouchedHead = true;
+                if(!pUd->_person_hasTouchedDog){
+                    pUd->_person_hasTouchedDog = true;
+                    _peopleGrumped++;
+                }
             }
             else if (fBUd->tag == F_GROUND){
                 if(_intro && !_dogHasHitGround){
@@ -1615,6 +1624,7 @@
                     // points for dogs that leave the screen on a person's head
                     if(ud->sprite1.tag >= S_BUSMAN && ud->sprite1.tag <= S_TOPPSN){
                         _points += ud->dogsOnHead * 100;
+                        _dogsSaved += ud->dogsOnHead;
                     }
                     if(_mouseJoint && _mouseJoint->GetBodyB() == b){
                         _world->DestroyJoint(_mouseJoint);

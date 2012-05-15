@@ -39,6 +39,7 @@
     NSMutableArray *personParameters, *wakeParameters, *movementPatterns, *movementParameters, *_touchLocations, *dogIcons;
     NSString *scoreText, *droppedText;
     int _points, _droppedCount, _spawnLimiter, time, _curPersonMaskBits, _droppedSpacing, _lastTouchTime, _firstDeathTime, lowerArmAngle, upperArmAngle;
+    int _peopleGrumped, _dogsSaved;
     float _personSpawnDelayTime, _wienerSpawnDelayTime, _wienerKillDelay, _currentRayAngle;
     BOOL _moving, _touchedDog, _rayTouchingDog, _pause, _shootLock, _intro, _dogHasHitGround, _dogHasDied;
     NSString *currentAnimation;
@@ -70,6 +71,7 @@
         int dogsOnHead;
         BOOL hasTouchedHead;
         BOOL _dog_isOnHead;
+        BOOL _person_hasTouchedDog;
     };
 
     struct fixtureUserData {

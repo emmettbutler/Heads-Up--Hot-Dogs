@@ -21,9 +21,13 @@
     
     NSInteger *score = (NSInteger *)[(NSValue *)[(NSMutableArray *) data objectAtIndex:0] pointerValue];
     NSInteger *timePlayed = (NSInteger *)[(NSValue *)[(NSMutableArray *) data objectAtIndex:1] pointerValue]; 
+    NSInteger *peopleGrumped = (NSInteger *)[(NSValue *)[(NSMutableArray *) data objectAtIndex:2] pointerValue]; 
+    NSInteger *dogsSaved = (NSInteger *)[(NSValue *)[(NSMutableArray *) data objectAtIndex:3] pointerValue]; 
     layer->_score = (int)score;
     layer->_timePlayed = (int)timePlayed;
-    CCLOG(@"In sceneWithData: score = %d, time = %d", layer->_score, layer->_timePlayed);
+    layer->_peopleGrumped = (int)peopleGrumped;
+    layer->_dogsSaved = (int)dogsSaved;
+    CCLOG(@"In sceneWithData: score = %d, time = %d, peopleGrumped = %d, dogsSaved = %d", layer->_score, layer->_timePlayed, layer->_peopleGrumped, layer->_dogsSaved);
     
 	[scene addChild:layer];
 	return scene;
@@ -129,8 +133,8 @@
     int seconds = _timePlayed/60;
     int minutes = seconds/60;
     [timeLine setString:[NSString stringWithFormat:@"Time lasted: %02d:%02d", minutes, seconds%60]];
-    [dogsLine setString:[NSString stringWithFormat:@"Dogs saved:  %d", 0]];
-    [peopleLine setString:[NSString stringWithFormat:@"People Grumped: %d", 0]];
+    [dogsLine setString:[NSString stringWithFormat:@"Dogs saved: %d", _dogsSaved]];
+    [peopleLine setString:[NSString stringWithFormat:@"People Grumped: %d", _peopleGrumped]];
     [highScoreLine setString:[NSString stringWithFormat:@"HIGH SCORE: %d", highScore]];
     
     [scoreLine setPosition:ccp(62+(scoreLine.contentSize.width/2), 225)];
