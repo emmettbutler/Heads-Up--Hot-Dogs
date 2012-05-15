@@ -91,33 +91,49 @@
         _pause = true;
         [[CCDirector sharedDirector] pause];
         CGSize winSize = [[CCDirector sharedDirector] winSize];
-        _pauseLayer = [CCLayerColor layerWithColor:ccc4(0, 0, 255, 125) width:390 height:270];
+        _pauseLayer = [CCLayerColor layerWithColor:ccc4(0, 0, 255, 155) width:390 height:270];
         _pauseLayer.position = ccp((winSize.width/2)-(_pauseLayer.contentSize.width/2), (winSize.height/2)-(_pauseLayer.contentSize.height/2));
         [self addChild:_pauseLayer z:80];
 
-        CCLabelTTF *label = [CCLabelTTF labelWithString:@"Resume Game" fontName:@"LostPet.TTF" fontSize:21.0];
-        //CCMenuItem *resume = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(resumeGame)];
-        label = [CCLabelTTF labelWithString:@"Paused" fontName:@"LostPet.TTF" fontSize:28.0];
-        //CCMenuItem *pauseTitle = [CCMenuItemLabel itemWithLabel:label];
+        CCLabelTTF *label = [CCLabelTTF labelWithString:@"Paused" fontName:@"LostPet.TTF" fontSize:32.0];
+        CCMenuItem *pauseTitle = [CCMenuItemLabel itemWithLabel:label];
+        pauseTitle.position = ccp((winSize.width/2)-43, 240);
+        [_pauseLayer addChild:pauseTitle z:81];
+        
+        NSInteger overallTime = [standardUserDefaults integerForKey:@"overallTime"];
+        int totalTime = time+overallTime;
+        int totalSeconds = totalTime/60;
+        int totalMinutes = totalSeconds/60;
+        int totalHours = totalMinutes/60;
+        
         label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"Score: %d", _points] fontName:@"LostPet.TTF" fontSize:18.0];
         CCMenuItem *score = [CCMenuItemLabel itemWithLabel:label];
         int seconds = time/60;
         int minutes = seconds/60;
         label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"Time: %02d:%02d", minutes, seconds%60] fontName:@"LostPet.TTF" fontSize:18.0];
         CCMenuItem *timeItem = [CCMenuItemLabel itemWithLabel:label];
+        label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"Total time played: %02d:%02d:%02d", totalHours%60, totalMinutes%60, totalSeconds%60] fontName:@"LostPet.TTF" fontSize:18.0];
+        CCMenuItem *totalTimeItem = [CCMenuItemLabel itemWithLabel:label];
+        label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"People grumped: %d", _peopleGrumped] fontName:@"LostPet.TTF" fontSize:18.0];
+        CCMenuItem *peopleItem = [CCMenuItemLabel itemWithLabel:label];
+        label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"Hot dogs saved: %d", _dogsSaved] fontName:@"LostPet.TTF" fontSize:18.0];
+        CCMenuItem *savedItem = [CCMenuItemLabel itemWithLabel:label];
         
         CCSprite *otherButton = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
-        otherButton.position = ccp((winSize.width/2)-43, winSize.height/2);
+        otherButton.position = ccp((winSize.width/2)-43, 40);
         [_pauseLayer addChild:otherButton z:81];
         label = [CCLabelTTF labelWithString:@"     Quit     " fontName:@"LostPet.TTF" fontSize:24.0];
         [[label texture] setAliasTexParameters];
+        //TODO - put these color defs all in one place for easy editing
         label.color = ccc3(255, 62, 166);
         CCMenuItem *title = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(titleScene)];
+        title.position = ccp((winSize.width/2)-43, 39);
+        [_pauseLayer addChild:title z:82];
 
-        _pauseMenu = [CCMenu menuWithItems:title, score, timeItem, nil];
+        _pauseMenu = [CCMenu menuWithItems: score, timeItem, peopleItem, savedItem, totalTimeItem, nil];
         [_pauseMenu setPosition:ccp(winSize.width/2, winSize.height/2)];
         [_pauseMenu alignItemsVertically];
-        [self addChild:_pauseMenu z:82];
+        [self addChild:_pauseMenu z:81];
     }
 }
 
@@ -945,6 +961,7 @@
 
         // uncomment this to test the intro sequence / reset high score
         [standardUserDefaults setInteger:0 forKey:@"introDone"];
+        //[standardUserDefaults setInteger:0 forKey:@"overallTime"];
         //[standardUserDefaults setInteger:0 forKey:@"highScore"];
         [standardUserDefaults synchronize];
 
@@ -1619,10 +1636,11 @@
                 ud->sprite1.position = CGPointMake( b->GetPosition().x * PTM_RATIO, b->GetPosition().y * PTM_RATIO);
                 ud->sprite1.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
                 //destroy any sprite/body pair that's offscreen
-                if(ud->sprite1.position.x > winSize.width + 160 || ud->sprite1.position.x < -160 ||
+                if(ud->sprite1.position.x > winSize.width + 40 || ud->sprite1.position.x < -40 ||
                    ud->sprite1.position.y > winSize.height + 40 || ud->sprite1.position.y < -40){
                     // points for dogs that leave the screen on a person's head
                     if(ud->sprite1.tag >= S_BUSMAN && ud->sprite1.tag <= S_TOPPSN){
+                        // TODO - add a bonus animation here
                         _points += ud->dogsOnHead * 100;
                         _dogsSaved += ud->dogsOnHead;
                     }

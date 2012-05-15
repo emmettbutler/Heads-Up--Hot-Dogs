@@ -134,7 +134,7 @@
     int minutes = seconds/60;
     [timeLine setString:[NSString stringWithFormat:@"Time lasted: %02d:%02d", minutes, seconds%60]];
     [dogsLine setString:[NSString stringWithFormat:@"Dogs saved: %d", _dogsSaved]];
-    [peopleLine setString:[NSString stringWithFormat:@"People Grumped: %d", _peopleGrumped]];
+    [peopleLine setString:[NSString stringWithFormat:@"People grumped: %d", _peopleGrumped]];
     [highScoreLine setString:[NSString stringWithFormat:@"HIGH SCORE: %d", highScore]];
     
     [scoreLine setPosition:ccp(62+(scoreLine.contentSize.width/2), 225)];
