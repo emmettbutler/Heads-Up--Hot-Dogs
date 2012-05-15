@@ -111,14 +111,14 @@
         [standardUserDefaults setInteger:_score forKey:@"highScore"];
         highScore = _score;
         
-        scoreNotify = [CCLabelTTF labelWithString:@"New high score!" fontName:@"Marker Felt" fontSize:26.0];
+        scoreNotify = [CCLabelTTF labelWithString:@"New high score!" fontName:@"LostPet.TTF" fontSize:26.0];
         [scoreNotify setPosition:ccp((size.width/2), (size.height/2)-100)];
         [self addChild:scoreNotify];
     }
     if(_timePlayed > bestTime){
         [standardUserDefaults setInteger:_timePlayed forKey:@"bestTime"];
         
-        timeNotify = [CCLabelTTF labelWithString:@"New best time!" fontName:@"Marker Felt" fontSize:26.0];
+        timeNotify = [CCLabelTTF labelWithString:@"New best time!" fontName:@"LostPet.TTF" fontSize:26.0];
         [timeNotify setPosition:ccp((size.width/2), (size.height/2)-140)];
         [self addChild:timeNotify];
     }

@@ -960,7 +960,7 @@
         _wienerKillDelay = 4.0f;
         _points = 0;
         _shootLock = NO;
-        _droppedSpacing = 33;
+        _droppedSpacing = 200;
         _droppedCount = 0;
         _currentRayAngle = 0;
         b2Vec2 gravity = b2Vec2(0.0f, -30.0f);
@@ -985,13 +985,13 @@
 
         //HUD objects
         CCSprite *droppedLeftEnd = [CCSprite spriteWithSpriteFrameName:@"WienerCount_LeftEnd.png"];;
-        droppedLeftEnd.position = ccp(winSize.width-142, DOG_COUNTER_HT);
+        droppedLeftEnd.position = ccp(winSize.width-310, DOG_COUNTER_HT);
         [self addChild:droppedLeftEnd z:70];
         CCSprite *droppedRightEnd = [CCSprite spriteWithSpriteFrameName:@"WienerCount_RightEnd.png"];;
-        droppedRightEnd.position = ccp(winSize.width-16, DOG_COUNTER_HT);
+        droppedRightEnd.position = ccp(winSize.width-182, DOG_COUNTER_HT);
         [self addChild:droppedRightEnd z:70];
         dogIcons = [[NSMutableArray alloc] initWithCapacity:DROPPED_MAX];
-        for(int i = 33; i < 148; i += 23){
+        for(int i = 200; i < 200+(23*5); i += 23){
             CCSprite *dogIcon = [CCSprite spriteWithSpriteFrameName:@"WienerCount_Wiener.png"];
             dogIcon.position = ccp(winSize.width-i, DOG_COUNTER_HT);
             [self addChild:dogIcon z:70];
@@ -999,7 +999,7 @@
         }
 
         CCSprite *scoreBG = [CCSprite spriteWithSpriteFrameName:@"Score_BG.png"];;
-        scoreBG.position = ccp(winSize.width-240, DOG_COUNTER_HT);
+        scoreBG.position = ccp(winSize.width-80, DOG_COUNTER_HT);
         [self addChild:scoreBG z:70];
 
         //labels for score
@@ -1007,14 +1007,14 @@
         scoreLabel = [CCLabelTTF labelWithString:scoreText fontName:@"LostPet.TTF" fontSize:34];
         [[scoreLabel texture] setAliasTexParameters];
         scoreLabel.color = ccc3(255, 62, 166); // 255, 62, 166
-        scoreLabel.position = ccp(winSize.width-238, DOG_COUNTER_HT-3);
+        scoreLabel.position = ccp(winSize.width-80, DOG_COUNTER_HT-3);
         [self addChild: scoreLabel z:72];
 
         NSInteger highScore = [standardUserDefaults integerForKey:@"highScore"];
         CCLabelTTF *highScoreLabel = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"HI: %d", highScore] fontName:@"LostPet.TTF" fontSize:18.0];
-        highScoreLabel.color = ccc3(245, 222, 179);
+        highScoreLabel.color = ccc3(255, 62, 166);
         [[highScoreLabel texture] setAliasTexParameters];
-        highScoreLabel.position = ccp((winSize.width/2)-120, 295);
+        highScoreLabel.position = ccp(winSize.width-50, 268);
         [self addChild: highScoreLabel];
 
         _pauseButton = [CCSprite spriteWithSpriteFrameName:@"Pause_Button.png"];;
