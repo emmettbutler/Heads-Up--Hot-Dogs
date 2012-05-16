@@ -127,8 +127,9 @@
         //TODO - put these color defs all in one place for easy editing
         label.color = ccc3(255, 62, 166);
         CCMenuItem *title = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(titleScene)];
-        title.position = ccp((winSize.width/2)-43, 39);
-        [_pauseLayer addChild:title z:82];
+        CCMenu *quitButton = [CCMenu menuWithItems:title, nil];
+        quitButton.position = ccp((winSize.width/2)-43, 39);
+        [_pauseLayer addChild:quitButton z:82];
 
         _pauseMenu = [CCMenu menuWithItems: score, timeItem, peopleItem, savedItem, totalTimeItem, nil];
         [_pauseMenu setPosition:ccp(winSize.width/2, winSize.height/2)];
