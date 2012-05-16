@@ -8,6 +8,7 @@
 
 #import "TitleScene.h"
 #import "GameplayLayer.h"
+#import "OptionsLayer.h"
 
 @implementation TitleLayer
 
@@ -15,16 +16,9 @@
 
 +(CCScene *) scene
 {
-	// 'scene' is an autorelease object.
 	CCScene *scene = [CCScene node];
-	
-	// 'layer' is an autorelease object.
 	TitleLayer *layer = [TitleLayer node];
-	
-	// add layer as a child to scene
 	[scene addChild: layer];
-	
-	// return the scene
 	return scene;
 }
 
@@ -43,7 +37,7 @@
         CCLabelTTF *label = [CCLabelTTF labelWithString:@"     Start     " fontName:@"LostPet.TTF" fontSize:22.0];
         [[label texture] setAliasTexParameters];
         label.color = ccc3(255, 62, 166);
-        CCMenuItem *button = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(switchScene)];
+        CCMenuItem *button = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(switchSceneStart)];
         CCMenu *menu = [CCMenu menuWithItems:button, nil];
         [menu setPosition:ccp(110, 26)];
         [self addChild:menu z:11];
@@ -51,10 +45,10 @@
         CCSprite *otherButton = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
         otherButton.position = ccp(370, 27);
         [self addChild:otherButton z:10];
-        CCLabelTTF *otherLabel = [CCLabelTTF labelWithString:@"     Also Start     " fontName:@"LostPet.TTF" fontSize:22.0];
+        CCLabelTTF *otherLabel = [CCLabelTTF labelWithString:@"      Options      " fontName:@"LostPet.TTF" fontSize:22.0];
         [[otherLabel texture] setAliasTexParameters];
         otherLabel.color = ccc3(255, 62, 166);
-        CCMenuItem *otherTextButton = [CCMenuItemLabel itemWithLabel:otherLabel target:self selector:@selector(switchScene)];
+        CCMenuItem *otherTextButton = [CCMenuItemLabel itemWithLabel:otherLabel target:self selector:@selector(switchSceneOptions)];
         CCMenu *otherMenu = [CCMenu menuWithItems:otherTextButton, nil];
         [otherMenu setPosition:ccp(370, 26)];
         [self addChild:otherMenu z:11];
@@ -92,8 +86,12 @@
     location = [[CCDirector sharedDirector] convertToGL:location];
 }
 
-- (void)switchScene{
+- (void)switchSceneStart{
     [[CCDirector sharedDirector] replaceScene:[GameplayLayer scene]];
+}
+
+- (void)switchSceneOptions{
+    [[CCDirector sharedDirector] replaceScene:[OptionsLayer scene]];
 }
 
 -(void) dealloc{
