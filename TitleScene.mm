@@ -24,6 +24,9 @@
 
 -(id) init{
     if ((self = [super init])){
+#ifdef DEBUG
+        NSLog(@"DEBUG MODE ON");
+#endif
         CGSize size = [[CCDirector sharedDirector] winSize];
         [[CCDirector sharedDirector] setDisplayFPS:NO];
         

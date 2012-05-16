@@ -1049,6 +1049,7 @@
         [self addChild:_pauseButton z:70];
         _pauseButtonRect = CGRectMake((_pauseButton.position.x-(_pauseButton.contentSize.width)/2), (_pauseButton.position.y-(_pauseButton.contentSize.height)/2), (_pauseButton.contentSize.width+10), (_pauseButton.contentSize.height+10));
 
+#ifdef DEBUG
         //debug labels
         CCLabelTTF *label = [CCLabelTTF labelWithString:@"Debug draw" fontName:@"LostPet.TTF" fontSize:18.0];
         CCMenuItem *debug = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(debugDraw)];
@@ -1056,6 +1057,7 @@
         [menu setPosition:ccp(40, winSize.height-50)];
         [menu alignItemsVertically];
         [self addChild:menu];
+#endif
 
         //initialize global arrays for possible x,y positions and charTags
         floorBits = [[NSMutableArray alloc] initWithCapacity:4];;
