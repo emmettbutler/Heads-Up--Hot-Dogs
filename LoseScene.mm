@@ -153,6 +153,8 @@
 }
 
 -(void) dealloc{
+    //[[CCSpriteFrameCache sharedSpriteFrameCache] removeUnusedSpriteFrames];
+    //[[CCTextureCache sharedTextureCache] removeUnusedTextures];
     [super dealloc];
 }
 

@@ -18,9 +18,9 @@
 #define FLOOR3_HT .8
 #define FLOOR4_HT 1.2
 #define DOG_SPAWN_MINHT 240
-#define PERSON_SPAWN_START 3
-#define WIENER_SPAWN_START 6
-#define SPAWN_LIMIT_DECREMENT_DELAY 15
+#define PERSON_SPAWN_START 5
+#define WIENER_SPAWN_START 8
+#define SPAWN_LIMIT_DECREMENT_DELAY 30
 #define DROPPED_MAX 5
 #define COP_RANGE 4
 #define DOG_COUNTER_HT 295
@@ -465,6 +465,9 @@
     else {
         f = f | FLOOR4;
     }
+    // at this point, the dog's collide filter allows it to touch any person, all walls, and
+    // one randomly chosen floor. this should remain constant until the dog is either
+    // grabbed or touches a person's head.
     fUd2->ogCollideFilters = f;
     fUd2->tag = F_DOGCLD;
 
@@ -1235,6 +1238,7 @@
             bodyUserData *ud = (bodyUserData *)dogBody->GetUserData();
             fixtureUserData *fBUd = (fixtureUserData *)pdContact.fixtureB->GetUserData();
             if(fBUd->tag >= F_BUSHED && fBUd->tag <= F_TOPHED){
+                // a dog is definitely on a head when it collides with that head
                 ud->_dog_isOnHead = true;
                 if(_intro && time - _lastTouchTime < 80){
                     _intro = false;
@@ -1321,6 +1325,7 @@
                     [self runAction:windowSeq];
                 }
                 if(dogBody->GetLinearVelocity().y < .1){
+                    // dog is definitely not on a head if it's touching the floor
                     ud->_dog_isOnHead = false;
                     ud->hasTouchedHead = false;
                     CCAction *wienerDeathAction = (CCAction *)ud->altAction;
@@ -1387,6 +1392,9 @@
                         } else if(_mouseJoint->GetBodyB() == b){
                             [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Dog_Grabbed.png"]]];
                         }
+                        // a hacky way to ensure that dogs are registered as not on a head
+                        // this works because it measures when a dog is below the level of the lowest head
+                        // and then flips the _dog_isOnHead bit
                         if(b->GetPosition().y - 1 < FLOOR4_HT && ud->_dog_isOnHead){
                             ud->_dog_isOnHead = false;
                         }
@@ -1394,6 +1402,8 @@
                             for(b2Fixture* fixture = b->GetFixtureList(); fixture; fixture = fixture->GetNext()){
                                 fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
                                 if(fUd->tag == F_DOGCLD){
+                                    // this is the case in which a dog is not on a person's head. 
+                                    // we set the filters to their original value (all people, floor, and walls)
                                     b2Filter dogFilter = fixture->GetFilterData();
                                     dogFilter.maskBits = fUd->ogCollideFilters;
                                     fixture->SetFilterData(dogFilter);
@@ -1545,6 +1555,8 @@
                                         if(fixture->TestPoint(dogLocation) && dogUd->hasTouchedHead){
                                             dogOnHead = true;
                                             ud->dogsOnHead++;
+                                            // if the dog is within the head sensor, then it is on a head
+                                            dogUd->_dog_isOnHead = true;
                                         } else {
                                             //dogUd->_dog_isOnHead = false;
                                         }
@@ -1644,7 +1656,9 @@
                     if(ud->sprite1.tag >= S_BUSMAN && ud->sprite1.tag <= S_TOPPSN){
                         // TODO - add a bonus animation here
                         _points += ud->dogsOnHead * 100;
-                        _dogsSaved += ud->dogsOnHead;
+                    }
+                    if(ud->sprite1.tag == S_HOTDOG){
+                        _dogsSaved++;
                     }
                     if(_mouseJoint && _mouseJoint->GetBodyB() == b){
                         _world->DestroyJoint(_mouseJoint);
@@ -1743,6 +1757,9 @@
     for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
         fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
         if(fUd->tag == F_DOGCLD){
+            // here, we set the dog's collision filter to disallow any and all collisions.
+            // the original filter data has been saved in the fixture's ogCollideFilter field
+            // so that on touch end, we can restore its original collision state
             filter = fixture->GetFilterData();
             filter.maskBits = 0x0000;
             fixture->SetFilterData(filter);
@@ -1783,11 +1800,11 @@
                         [self removeChild:_introLayer cleanup:YES];
                     }
                     if(fUd->tag == F_DOGCLD){
+                        // here, we restore the fixture's original collision filter from that saved in 
+                        // its ogCollideFilter field
                         filter = fixture->GetFilterData();
                         filter.maskBits = fUd->ogCollideFilters;
-                        CCLOG(@"Dog filter mask: %d", fixture->GetFilterData().maskBits);
                         fixture->SetFilterData(filter);
-                        CCLOG(@"Dog filter mask: %d", fixture->GetFilterData().maskBits);
                     }
                 }
             }
@@ -1822,11 +1839,11 @@
                         [self removeChild:_introLayer cleanup:YES];
                     }
                     if(fUd->tag == F_DOGCLD){
+                        // here, we restore the fixture's original collision filter from that saved in 
+                        // its ogCollideFilter field
                         filter = fixture->GetFilterData();
                         filter.maskBits = fUd->ogCollideFilters;
-                        CCLOG(@"Dog filter mask: %d", fixture->GetFilterData().maskBits);
                         fixture->SetFilterData(filter);
-                        CCLOG(@"Dog filter mask: %d", fixture->GetFilterData().maskBits);
 
                     }
                 }
