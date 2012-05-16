@@ -1047,7 +1047,7 @@
         _pauseButton = [CCSprite spriteWithSpriteFrameName:@"Pause_Button.png"];;
         _pauseButton.position = ccp(20, 305);
         [self addChild:_pauseButton z:70];
-        _pauseButtonRect = CGRectMake((_pauseButton.position.x-(_pauseButton.contentSize.width)/2), (_pauseButton.position.y-(_pauseButton.contentSize.height)/2), (_pauseButton.contentSize.width), (_pauseButton.contentSize.height));
+        _pauseButtonRect = CGRectMake((_pauseButton.position.x-(_pauseButton.contentSize.width)/2), (_pauseButton.position.y-(_pauseButton.contentSize.height)/2), (_pauseButton.contentSize.width+10), (_pauseButton.contentSize.height+10));
 
         //debug labels
         CCLabelTTF *label = [CCLabelTTF labelWithString:@"Debug draw" fontName:@"LostPet.TTF" fontSize:18.0];
@@ -1516,10 +1516,6 @@
                                         [armUd->sprite1 stopAllActions];
                                         [armUd->sprite1 runAction:armSeq];
 
-                                        //ud->overlaySprite.visible = true;
-                                        //dogBody->SetAwake(false);
-                                        //dogBody->SetActive(false);
-
                                         NSMutableArray *destroyParameters = [[NSMutableArray alloc] initWithCapacity:1];
                                         [destroyParameters addObject:dBody];
                                         id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:destroyParameters];
@@ -1557,8 +1553,6 @@
                                             ud->dogsOnHead++;
                                             // if the dog is within the head sensor, then it is on a head
                                             dogUd->_dog_isOnHead = true;
-                                        } else {
-                                            //dogUd->_dog_isOnHead = false;
                                         }
                                     }
                                 }
@@ -1566,12 +1560,12 @@
                             if(!dogOnHead){
                                 ud->dogsOnHead = 0;
                             } else {
-                                // NSLog(@"Dog on head, person has %d dogs on head", ud->dogsOnHead);
+                                //NSLog(@"Dog on head, person has %d dogs on head", ud->dogsOnHead);
                             }
                         }
                     }
                     if(!(time % 45) && ud->dogsOnHead){
-                        _points += 1.3 * ud->dogsOnHead * 25;
+                        _points += ud->dogsOnHead * 25;
                         NSMutableArray *plus25Params = [[NSMutableArray alloc] initWithCapacity:2];
                         [plus25Params addObject:[NSNumber numberWithInt:b->GetPosition().x*PTM_RATIO]];
                         [plus25Params addObject:[NSNumber numberWithInt:(b->GetPosition().y+5.2)*PTM_RATIO]];
