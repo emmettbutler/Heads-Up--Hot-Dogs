@@ -70,6 +70,7 @@
         BOOL grabbed;
         double targetAngle;
         int dogsOnHead;
+        int collideFilter;
         BOOL hasTouchedHead;
         BOOL _dog_isOnHead;
         BOOL _person_hasTouchedDog;

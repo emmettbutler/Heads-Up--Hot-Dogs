@@ -813,6 +813,7 @@
         ud->ogSprite2 = ogHeadSprite;
         ud->altAction = _walkFaceAction;
         ud->altAnimation = walkFaceAnim;
+        ud->collideFilter = _curPersonMaskBits;
         ud->aiming = false;
         ud->_person_hasTouchedDog = false;
         if(character.intValue == 4){
@@ -1285,6 +1286,7 @@
                         // by setting its mask bits to the person's category bits
                         dogFilter.maskBits = personFilter.categoryBits;
                         fixture->SetFilterData(dogFilter);
+                        ud->collideFilter = dogFilter.maskBits;
                     }
                 }
                 int particle = (arc4random() % 3) + 1;
@@ -1425,6 +1427,7 @@
                                     b2Filter dogFilter = fixture->GetFilterData();
                                     dogFilter.maskBits = fUd->ogCollideFilters;
                                     fixture->SetFilterData(dogFilter);
+                                    ud->collideFilter = dogFilter.maskBits;
                                 }
                             }
                         }
@@ -1566,7 +1569,8 @@
                                     bodyUserData *dogUd = (bodyUserData*)body->GetUserData();
                                     if(dogUd->sprite1.tag == S_HOTDOG){
                                         b2Vec2 dogLocation = b2Vec2(body->GetPosition().x, body->GetPosition().y);
-                                        if(fixture->TestPoint(dogLocation) && dogUd->hasTouchedHead && !dogUd->grabbed){
+                                        if(fixture->TestPoint(dogLocation) && dogUd->hasTouchedHead && !dogUd->grabbed &&
+                                           dogUd->collideFilter == ud->collideFilter){
                                             dogOnHead = true;
                                             ud->dogsOnHead++;
                                             // if the dog is within the head sensor, then it is on a head
@@ -1822,6 +1826,7 @@
                         filter = fixture->GetFilterData();
                         filter.maskBits = fUd->ogCollideFilters;
                         fixture->SetFilterData(filter);
+                        ud->collideFilter = filter.maskBits;
                     }
                 }
             }
@@ -1862,7 +1867,7 @@
                         filter = fixture->GetFilterData();
                         filter.maskBits = fUd->ogCollideFilters;
                         fixture->SetFilterData(filter);
-
+                        ud->collideFilter = filter.maskBits;
                     }
                 }
             }
