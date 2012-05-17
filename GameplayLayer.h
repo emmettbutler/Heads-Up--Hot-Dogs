@@ -22,7 +22,7 @@
     GLESDebugDraw *m_debugDraw;
     b2Body *_wallsBody, *_groundBody, *wienerBody, *targetBody, *_personBody, *_policeArmBody;
     b2Fixture *_bottomFixture, *_wallsFixture, *_wienerFixture, *_targetFixture, *_personFixture, *_policeArmFixture;
-    CCSprite *_wiener, *_personLower, *_personUpper, *_target, *_pauseButton;
+    CCSprite *_wiener, *_personLower, *_personUpper, *_personUpperOverlay, *_target, *_pauseButton;
     b2MouseJoint *_mouseJoint;
     CCAction *_walkAction, *_walkFaceAction;
     CCFiniteTimeAction *_idleAction, *_appearAction, *_hitAction, *_shotAction, *_shootAction, *_armShootAction, *_shootFaceAction, *_plusTenAction, *_plus25Action;
@@ -54,8 +54,8 @@
         float heightOffset2;
         float lengthOffset2;
         NSString *ogSprite2;
-        NSString *altSprite2;
         NSString *altSprite3; //the 3 here has a different meaning than the 2 above - ie it's the 3rd sprite
+        CCSprite *angryFace;
         CCSprite *overlaySprite;
         CCAction *altAction;
         CCAction *altAction2;
@@ -67,6 +67,7 @@
         BOOL aiming;
         BOOL aimedAt;
         BOOL animLock;
+        BOOL grabbed;
         double targetAngle;
         int dogsOnHead;
         BOOL hasTouchedHead;
@@ -122,11 +123,13 @@
 
 @property (nonatomic, retain) CCSprite *personLower;
 @property (nonatomic, retain) CCSprite *personUpper;
+@property (nonatomic, retain) CCSprite *personUpperOverlay;
 @property (nonatomic, retain) CCSprite *policeArm;
 @property (nonatomic, retain) CCSprite *wiener;
 @property (nonatomic, retain) CCSprite *target;
 @property (nonatomic, retain) CCAction *walkAction;
 @property (nonatomic, retain) CCAction *walkFaceAction;
+@property (nonatomic, retain) CCAction *walkDogFaceAction;
 @property (nonatomic, retain) CCAction *idleAction;
 @property (nonatomic, retain) CCFiniteTimeAction *deathAction;
 @property (nonatomic, retain) CCFiniteTimeAction *idleFaceAction;
@@ -137,7 +140,6 @@
 @property (nonatomic, retain) CCFiniteTimeAction *plusTenAction;
 @property (nonatomic, retain) CCFiniteTimeAction *plus25Action;
 @property (nonatomic, retain) CCAction *appearAction;
-@property (nonatomic, retain) NSString *hitFace;
 
 // returns a CCScene that contains the HelloWorldLayer as the only child
 +(CCScene *) scene;
