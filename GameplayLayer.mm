@@ -1270,21 +1270,14 @@
                 pBody = pdContact.fixtureB->GetBody();
                 CCLOG(@"Dog/Person Collision - Y Vel: %0.2f", dogBody->GetLinearVelocity().x);
                 bodyUserData *pUd = (bodyUserData *)pBody->GetUserData();
-                // TODO - use ud->dogsOnHead to keep angry faces on when walks start
-                b2Filter dogFilter, personFilter;
-                for(b2Fixture* fixture = pBody->GetFixtureList(); fixture; fixture = fixture->GetNext()){
-                    fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
-                    if(fUd->tag >= F_BUSHED && fUd->tag <= F_TOPHED){
-                        personFilter = fixture->GetFilterData();
-                    }
-                }
+                b2Filter dogFilter;
                 for(b2Fixture* fixture = dogBody->GetFixtureList(); fixture; fixture = fixture->GetNext()){
                     fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
                     if(fUd->tag == F_DOGCLD){
                         dogFilter = fixture->GetFilterData();
                         // only allow the dog to collide with the person it's on
                         // by setting its mask bits to the person's category bits
-                        dogFilter.maskBits = personFilter.categoryBits;
+                        dogFilter.maskBits = pUd->collideFilter;
                         fixture->SetFilterData(dogFilter);
                         ud->collideFilter = dogFilter.maskBits;
                     }
