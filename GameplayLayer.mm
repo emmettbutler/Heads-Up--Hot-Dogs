@@ -6,7 +6,6 @@
 //  Copyright Emmett and Diego 2012. All rights reserved.
 //
 
-// Import the interfaces
 #import "GameplayLayer.h"
 #import "TitleScene.h"
 #import "LoseScene.h"
@@ -25,7 +24,6 @@
 #define COP_RANGE 4
 #define DOG_COUNTER_HT 295
 
-// HelloWorldLayer implementation
 @implementation GameplayLayer
 
 @synthesize personLower = _personLower;
@@ -275,6 +273,7 @@
             fixtureUserData *fUd = (fixtureUserData *)f->GetUserData();
             if(fUd->tag >= F_BUSBDY && fUd->tag <= F_TOPBDY){
                 f->SetFriction(100);
+                break;
             }
         }
     } else {
@@ -282,6 +281,7 @@
             fixtureUserData *fUd = (fixtureUserData *)f->GetUserData();
             if(fUd->tag >= F_BUSBDY && fUd->tag <= F_TOPBDY){
                 f->SetFriction(0);
+                break;
             }
         }
     }
@@ -334,11 +334,6 @@
         [dogSprite removeFromParentAndCleanup:YES];
         [ud->overlaySprite removeFromParentAndCleanup:YES];
 
-        //if(_mouseJoint){
-        //    _world->DestroyJoint(_mouseJoint);
-        //    _mouseJoint = NULL;
-        //}
-
         _world->DestroyBody(dogBody);
 
         free(ud);
@@ -368,8 +363,6 @@
             [self runAction:windowSeq];
         }
     }
-
-    CCLOG(@"done.");
 }
 
 -(void)copFlipAim:(id)sender data:(void*)params {
@@ -601,6 +594,7 @@
                     if(f->GetFilterData().maskBits == floorBit.intValue){
                         if(ud->sprite1.flipX != _personLower.flipX){
                             spawn = NO;
+                            break;
                         }
                     }
                 }
@@ -1280,6 +1274,7 @@
                         dogFilter.maskBits = pUd->collideFilter;
                         fixture->SetFilterData(dogFilter);
                         ud->collideFilter = dogFilter.maskBits;
+                        break;
                     }
                 }
                 int particle = (arc4random() % 3) + 1;
@@ -1421,6 +1416,7 @@
                                     dogFilter.maskBits = fUd->ogCollideFilters;
                                     fixture->SetFilterData(dogFilter);
                                     ud->collideFilter = dogFilter.maskBits;
+                                    break;
                                 }
                             }
                         }
@@ -1599,6 +1595,7 @@
                                     bodyUserData *aimedUd = (bodyUserData *)aimedBody->GetUserData();
                                     if(aimedUd->sprite1.tag == S_HOTDOG && aimedUd->aimedAt == true){
                                         aimedUd->aimedAt = false;
+                                        break;
                                     }
                                 }
                             }
@@ -1776,6 +1773,7 @@
             filter = fixture->GetFilterData();
             filter.maskBits = 0x0000;
             fixture->SetFilterData(filter);
+            break;
         }
     }
 
