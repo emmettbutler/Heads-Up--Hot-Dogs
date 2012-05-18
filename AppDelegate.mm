@@ -139,6 +139,8 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application {
 	CCDirector *director = [CCDirector sharedDirector];
+    
+    NSLog(@"Application HEADS UP HOT DOGS exiting");
 	
 	[[director openGLView] removeFromSuperview];
 	
