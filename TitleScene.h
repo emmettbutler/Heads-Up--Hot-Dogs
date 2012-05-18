@@ -7,6 +7,8 @@
 //
 
 #import "cocos2d.h"
+#import "OpenFeint/OpenFeint.h"
+#import "OpenFeint/OFControllerLoaderObjC.h"
 
 @interface TitleLayer : CCLayer 
 {

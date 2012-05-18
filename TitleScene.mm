@@ -26,7 +26,33 @@
     if ((self = [super init])){
 #ifdef DEBUG
         NSLog(@"DEBUG MODE ON");
+        
 #endif
+        NSDictionary* settings = [NSDictionary dictionaryWithObjectsAndKeys:
+                                  [NSNumber numberWithInt:UIInterfaceOrientationLandscapeRight], OpenFeintSettingDashboardOrientation,
+                                  @"Heads Up!", OpenFeintSettingShortDisplayName,
+                                  [NSNumber numberWithBool:YES], OpenFeintSettingEnablePushNotifications,
+                                  [NSNumber numberWithBool:NO], OpenFeintSettingDisableUserGeneratedContent,
+                                  [NSNumber numberWithBool:NO], OpenFeintSettingAlwaysAskForApprovalInDebug,
+#ifdef DEBUG
+                                  [NSNumber numberWithInt:OFDevelopmentMode_DEVELOPMENT], OpenFeintSettingDevelopmentMode,
+#else
+                                  [NSNumber numberWithInt:OFDevelopmentMode_RELEASE], OpenFeintSettingDevelopmentMode,
+#endif
+#ifdef DEBUG
+                                  [NSNumber numberWithInt:OFDevelopmentMode_DEVELOPMENT], OpenFeintSettingDevelopmentMode,
+#else
+                                  [NSNumber numberWithInt:OFDevelopmentMode_RELEASE], OpenFeintSettingDevelopmentMode,
+#endif
+                                  nil
+                                  ];
+        
+        [OpenFeint initializeWithProductKey:@"S28bdYB1sfE04quqmWWDg"
+                                  andSecret:@"WWeeuCIQ2DKRfNbXuznbwY4kBQpWu1ZOeb0aLWYTuvE"
+                             andDisplayName:@"Heads Up!"
+                                andSettings:settings
+                               andDelegates:nil];
+        
         // color definitions
         _color_pink = ccc3(255, 62, 166);
         
