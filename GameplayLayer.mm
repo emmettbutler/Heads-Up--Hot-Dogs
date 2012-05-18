@@ -20,7 +20,7 @@
 #define PERSON_SPAWN_START 5 //5
 #define WIENER_SPAWN_START 8 //8
 #define SPAWN_LIMIT_DECREMENT_DELAY 30 //30
-#define DROPPED_MAX 5
+#define DROPPED_MAX 0
 #define COP_RANGE 4
 #define DOG_COUNTER_HT 295
 
@@ -996,7 +996,6 @@
         _overallTime = [standardUserDefaults integerForKey:@"overallTime"];
 
         //basic game/box2d/cocos2d initialization
-        self.isAccelerometerEnabled = YES;
         self.isTouchEnabled = YES;
         time = 0;
         _pause = false;

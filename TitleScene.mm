@@ -46,7 +46,7 @@
 #endif
                                   nil
                                   ];
-        
+
         [OpenFeint initializeWithProductKey:@"S28bdYB1sfE04quqmWWDg"
                                   andSecret:@"WWeeuCIQ2DKRfNbXuznbwY4kBQpWu1ZOeb0aLWYTuvE"
                              andDisplayName:@"Heads Up!"
