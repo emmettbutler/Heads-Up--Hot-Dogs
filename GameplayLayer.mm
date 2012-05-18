@@ -1657,8 +1657,6 @@
                             if(j){
                                 if(j->joint->GetType() == e_revoluteJoint && ud->targetAngle != -1){
                                     b2RevoluteJoint *r = (b2RevoluteJoint *)j->joint;
-                                    // NSLog(@"Shoulder angle: %0.20f", r->GetJointAngle());
-                                    // NSLog(@"Angle between shoulder and dog: %0.2f", ud->targetAngle);
                                     if(r->GetJointAngle() < ud->targetAngle)
                                         r->SetMotorSpeed(.5);
                                     else if(r->GetJointAngle() > ud->targetAngle)
