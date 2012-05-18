@@ -76,7 +76,6 @@
     _pause = false;
 }
 
-// TODO - evaluate the possibility of putting as many of these utility functions as possible into an importable file
 -(void)setShootLock:(id)sender data:(void*)params{
     NSNumber *lockBool = (NSNumber *)[(NSMutableArray *) params objectAtIndex:0];
     _shootLock = lockBool.intValue;
@@ -258,9 +257,7 @@
     CCLOG(@"applyForce: called with vel: %d", v.intValue);
 
     vThresh = 1;
-
-    //TODO - possibly use setActive() here instead of the kinda-hacky friction manipulation
-
+    
     b2Vec2 force = b2Vec2(v.intValue, 0);
     body->ApplyLinearImpulse(force, body->GetPosition());
 
