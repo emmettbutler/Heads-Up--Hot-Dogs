@@ -983,12 +983,8 @@
         standardUserDefaults = [NSUserDefaults standardUserDefaults];
         [[CCDirector sharedDirector] setDisplayFPS:NO];
 
-        // TODO - zero these out on first init
-        // uncomment this to test the intro sequence / reset high score
+        // comment this to stop erasing data on startup
         [standardUserDefaults setInteger:0 forKey:@"introDone"];
-        //[standardUserDefaults setInteger:0 forKey:@"overallTime"];
-        //[standardUserDefaults setInteger:0 forKey:@"highScore"];
-        [standardUserDefaults synchronize];
         
         _overallTime = [standardUserDefaults integerForKey:@"overallTime"];
 
@@ -1030,6 +1026,12 @@
         NSLog(@"IntroDone: %d", introDone);
         if(introDone == 1)
             _intro = false;
+        else {
+            [standardUserDefaults setInteger:0 forKey:@"overallTime"];
+            [standardUserDefaults setInteger:0 forKey:@"highScore"];
+        }
+            
+        [standardUserDefaults synchronize];
 
         CCSprite *background = [CCSprite spriteWithSpriteFrameName:@"bg_philly.png"];
         background.anchorPoint = CGPointZero;
