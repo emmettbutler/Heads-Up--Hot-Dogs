@@ -15,6 +15,7 @@
     CCAction *titleAnimAction;
     CCSprite *background;
     CGRect screen;
+    ccColor3B _color_pink;
 }
 
 +(CCScene *) scene;

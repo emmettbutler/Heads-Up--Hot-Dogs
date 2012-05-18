@@ -15,6 +15,7 @@
     CCLabelTTF *scoreNotify, *timeNotify;
     CCSpriteBatchNode *spriteSheet;
     NSInteger highScore;
+    ccColor3B _color_pink, _color_blue, _color_darkblue;
 }
 
 +(CCScene *) sceneWithData:(void*)data;

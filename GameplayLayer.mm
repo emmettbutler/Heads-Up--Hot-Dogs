@@ -108,7 +108,6 @@
         int minutes = seconds/60;
         label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"Time: %02d:%02d", minutes, seconds%60] fontName:@"LostPet.TTF" fontSize:18.0];
         CCMenuItem *timeItem = [CCMenuItemLabel itemWithLabel:label];
-        // TODO - total time played doesn't display properly (maybe it doesn't store right either?)
         label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"Total time played: %02d:%02d:%02d", totalHours, totalMinutes%60, totalTime%60] fontName:@"LostPet.TTF" fontSize:18.0];
         CCMenuItem *totalTimeItem = [CCMenuItemLabel itemWithLabel:label];
         label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"People grumped: %d", _peopleGrumped] fontName:@"LostPet.TTF" fontSize:18.0];
@@ -121,8 +120,7 @@
         [_pauseLayer addChild:otherButton z:81];
         label = [CCLabelTTF labelWithString:@"     Quit     " fontName:@"LostPet.TTF" fontSize:24.0];
         [[label texture] setAliasTexParameters];
-        //TODO - put these color defs all in one place for easy editing
-        label.color = ccc3(255, 62, 166);
+        label.color = _color_pink;
         CCMenuItem *title = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(titleScene)];
         CCMenu *quitButton = [CCMenu menuWithItems:title, nil];
         quitButton.position = ccp((winSize.width/2)-43, 39);
@@ -1023,6 +1021,9 @@
         //contact listener init
         personDogContactListener = new PersonDogContactListener();
         _world->SetContactListener(personDogContactListener);
+        
+        // color definitions
+        _color_pink = ccc3(255, 62, 166);
 
         // if the intro has already been completed, don't do it again
         NSInteger introDone = [standardUserDefaults integerForKey:@"introDone"];
@@ -1057,13 +1058,13 @@
         scoreText = [[NSString alloc] initWithFormat:@"%06d", _points];
         scoreLabel = [CCLabelTTF labelWithString:scoreText fontName:@"LostPet.TTF" fontSize:34];
         [[scoreLabel texture] setAliasTexParameters];
-        scoreLabel.color = ccc3(255, 62, 166); // 255, 62, 166
+        scoreLabel.color = _color_pink;
         scoreLabel.position = ccp(winSize.width-80, DOG_COUNTER_HT-3);
         [self addChild: scoreLabel z:72];
 
         NSInteger highScore = [standardUserDefaults integerForKey:@"highScore"];
         CCLabelTTF *highScoreLabel = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"HI: %d", highScore] fontName:@"LostPet.TTF" fontSize:18.0];
-        highScoreLabel.color = ccc3(255, 62, 166);
+        highScoreLabel.color = _color_pink;
         [[highScoreLabel texture] setAliasTexParameters];
         highScoreLabel.position = ccp(winSize.width-50, 268);
         [self addChild: highScoreLabel];

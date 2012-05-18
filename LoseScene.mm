@@ -35,6 +35,11 @@
 
 -(id) init{
     if ((self = [super init])){
+        // color definitions
+        _color_pink = ccc3(255, 62, 166);
+        _color_blue = ccc3(6, 110, 163);
+        _color_darkblue = ccc3(14, 168, 248);
+        
         [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile: @"end_sprites_default.plist"];
         spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"end_sprites_default.png"];
         [self addChild:spriteSheet];
@@ -43,35 +48,33 @@
         sprite.anchorPoint = CGPointZero;
         [self addChild:sprite z:-1];
         
-        ccColor3B color = ccc3(6, 110, 163);
-        
         scoreLine = [CCLabelTTF labelWithString:@"Total points: 0" fontName:@"LostPet.TTF" fontSize:26.0];
         [scoreLine setPosition:ccp(-10, -10)];
-        scoreLine.color = color;
+        scoreLine.color = _color_blue;
         [[scoreLine texture] setAliasTexParameters];
         [self addChild:scoreLine];
         
         timeLine = [CCLabelTTF labelWithString:@"Time lasted: 0" fontName:@"LostPet.TTF" fontSize:26.0];
         [timeLine setPosition:ccp(-10, -10)];
-        timeLine.color = color;
+        timeLine.color = _color_blue;
         [[timeLine texture] setAliasTexParameters];
         [self addChild:timeLine];
         
         dogsLine = [CCLabelTTF labelWithString:@"Hot Dogs saved: 0" fontName:@"LostPet.TTF" fontSize:26.0];
         [dogsLine setPosition:ccp(-10, -10)];
-        dogsLine.color = color;
+        dogsLine.color = _color_blue;
         [[dogsLine texture] setAliasTexParameters];
         [self addChild:dogsLine];
         
         peopleLine = [CCLabelTTF labelWithString:@"People Grumped: 0" fontName:@"LostPet.TTF" fontSize:26.0];
         [peopleLine setPosition:ccp(-10, -10)];
-        peopleLine.color = color;
+        peopleLine.color = _color_blue;
         [[peopleLine texture] setAliasTexParameters];
         [self addChild:peopleLine];
         
         highScoreLine = [CCLabelTTF labelWithString:@"HIGH SCORE: 0" fontName:@"LostPet.TTF" fontSize:26.0];
         [highScoreLine setPosition:ccp(-10, -10)];
-        highScoreLine.color = ccc3(14, 168, 248);;
+        highScoreLine.color = _color_darkblue;
         [[highScoreLine texture] setAliasTexParameters];
         [self addChild:highScoreLine];
         
@@ -80,7 +83,7 @@
         [self addChild:restartButton z:10];
         CCLabelTTF *label = [CCLabelTTF labelWithString:@"     Try Again     " fontName:@"LostPet.TTF" fontSize:22.0];
         [[label texture] setAliasTexParameters];
-        label.color = ccc3(255, 62, 166);
+        label.color = _color_pink;
         CCMenuItem *button = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(switchSceneRestart)];
         CCMenu *menu = [CCMenu menuWithItems:button, nil];
         [menu setPosition:ccp(110, 26)];
@@ -91,7 +94,7 @@
         [self addChild:quitButton z:10];
         label = [CCLabelTTF labelWithString:@"     Quit     " fontName:@"LostPet.TTF" fontSize:22.0];
         [[label texture] setAliasTexParameters];
-        label.color = ccc3(255, 62, 166);
+        label.color = _color_pink;
         button = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(switchSceneQuit)];
         menu = [CCMenu menuWithItems:button, nil];
         [menu setPosition:ccp(370, 26)];

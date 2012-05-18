@@ -1,4 +1,5 @@
 // TODO - evaluate the possibility of putting as many of these utility functions as possible into an importable file
+        // TODO - total time played doesn't display properly (maybe it doesn't store right either?)
         //TODO - put these color defs all in one place for easy editing
     //TODO - possibly use setActive() here instead of the kinda-hacky friction manipulation
         // TODO - zero these out on first init

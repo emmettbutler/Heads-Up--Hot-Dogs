@@ -27,6 +27,9 @@
 #ifdef DEBUG
         NSLog(@"DEBUG MODE ON");
 #endif
+        // color definitions
+        _color_pink = ccc3(255, 62, 166);
+        
         CGSize size = [[CCDirector sharedDirector] winSize];
         [[CCDirector sharedDirector] setDisplayFPS:NO];
         
@@ -39,7 +42,7 @@
         [self addChild:startButton z:10];
         CCLabelTTF *label = [CCLabelTTF labelWithString:@"     Start     " fontName:@"LostPet.TTF" fontSize:22.0];
         [[label texture] setAliasTexParameters];
-        label.color = ccc3(255, 62, 166);
+        label.color = _color_pink;
         CCMenuItem *button = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(switchSceneStart)];
         CCMenu *menu = [CCMenu menuWithItems:button, nil];
         [menu setPosition:ccp(110, 26)];
@@ -50,7 +53,7 @@
         [self addChild:otherButton z:10];
         CCLabelTTF *otherLabel = [CCLabelTTF labelWithString:@"      Options      " fontName:@"LostPet.TTF" fontSize:22.0];
         [[otherLabel texture] setAliasTexParameters];
-        otherLabel.color = ccc3(255, 62, 166);
+        otherLabel.color = _color_pink;
         CCMenuItem *otherTextButton = [CCMenuItemLabel itemWithLabel:otherLabel target:self selector:@selector(switchSceneOptions)];
         CCMenu *otherMenu = [CCMenu menuWithItems:otherTextButton, nil];
         [otherMenu setPosition:ccp(370, 26)];

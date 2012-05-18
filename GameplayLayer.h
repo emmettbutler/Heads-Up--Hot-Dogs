@@ -48,6 +48,7 @@
     NSInteger _overallTime;
     CCDelayTime *winUpDelay, *winDownDelay;
     CCCallFuncN *removeWindow;
+    ccColor3B _color_pink;
 
     struct bodyUserData {
         CCSprite *sprite1;
