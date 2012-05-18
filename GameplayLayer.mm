@@ -17,9 +17,9 @@
 #define FLOOR3_HT .8
 #define FLOOR4_HT 1.2
 #define DOG_SPAWN_MINHT 240
-#define PERSON_SPAWN_START 2 //5
-#define WIENER_SPAWN_START 12 //8
-#define SPAWN_LIMIT_DECREMENT_DELAY 3 //30
+#define PERSON_SPAWN_START 5 //5
+#define WIENER_SPAWN_START 8 //8
+#define SPAWN_LIMIT_DECREMENT_DELAY 30 //30
 #define DROPPED_MAX 5
 #define COP_RANGE 4
 #define DOG_COUNTER_HT 295
@@ -1377,8 +1377,9 @@
         if(b->GetUserData() && b->GetUserData() != (void*)100){
             bodyUserData *ud = (bodyUserData*)b->GetUserData();
             if(ud->overlaySprite != NULL){
-                if(ud->sprite1.tag == S_POLICE && !ud->aiming){
-                    ud->overlaySprite.position = CGPointMake(policeRayPoint2.x*PTM_RATIO, policeRayPoint2.y*PTM_RATIO);
+                if(ud->sprite1.tag == S_POLICE){
+                    if(!ud->aiming)
+                        ud->overlaySprite.position = CGPointMake(policeRayPoint2.x*PTM_RATIO, policeRayPoint2.y*PTM_RATIO);
                 }
                 else {
                     ud->overlaySprite.position = CGPointMake((b->GetPosition().x)*PTM_RATIO,
@@ -1440,7 +1441,7 @@
                                 }
                                 if(output.fraction < closestFraction){
                                     CCLOG(@"_shootLock: %d", _shootLock);
-                                    if(!_shootLock){
+                                    if(!_shootLock && !((bodyUserData *)b->GetUserData())->grabbed){
                                         CCLOG(@"Ray touched dog fixture with fraction %d", (int)output.fraction*1);
 
                                         _shootLock = YES;
@@ -1699,6 +1700,9 @@
                     [ud->sprite1 removeFromParentAndCleanup:YES];
                     if(ud->sprite2 != NULL){
                         [ud->sprite2 removeFromParentAndCleanup:YES];
+                    }
+                    if(ud->angryFace != NULL){
+                        [ud->angryFace removeFromParentAndCleanup:YES];
                     }
                     if(ud->overlaySprite != NULL){
                         [ud->overlaySprite removeFromParentAndCleanup:YES];
