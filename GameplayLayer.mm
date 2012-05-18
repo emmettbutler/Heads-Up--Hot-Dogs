@@ -96,10 +96,10 @@
         pauseTitle.position = ccp((winSize.width/2)-43, 240);
         [_pauseLayer addChild:pauseTitle z:81];
 
-        NSInteger overallTime = [standardUserDefaults integerForKey:@"overallTime"];
-        int totalTime = time+overallTime;
-        int totalSeconds = totalTime/60;
-        int totalMinutes = totalSeconds/60;
+        CCLOG(@"Initial overall time: %d seconds", _overallTime);
+        int totalTime = (time/60)+_overallTime;
+        CCLOG(@"Total time: %d seconds", totalTime);
+        int totalMinutes = totalTime/60;
         int totalHours = totalMinutes/60;
 
         label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"Score: %d", _points] fontName:@"LostPet.TTF" fontSize:18.0];
@@ -108,7 +108,8 @@
         int minutes = seconds/60;
         label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"Time: %02d:%02d", minutes, seconds%60] fontName:@"LostPet.TTF" fontSize:18.0];
         CCMenuItem *timeItem = [CCMenuItemLabel itemWithLabel:label];
-        label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"Total time played: %02d:%02d:%02d", totalHours%60, totalMinutes%60, totalSeconds%60] fontName:@"LostPet.TTF" fontSize:18.0];
+        // TODO - total time played doesn't display properly (maybe it doesn't store right either?)
+        label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"Total time played: %02d:%02d:%02d", totalHours, totalMinutes%60, totalTime%60] fontName:@"LostPet.TTF" fontSize:18.0];
         CCMenuItem *totalTimeItem = [CCMenuItemLabel itemWithLabel:label];
         label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"People grumped: %d", _peopleGrumped] fontName:@"LostPet.TTF" fontSize:18.0];
         CCMenuItem *peopleItem = [CCMenuItemLabel itemWithLabel:label];
@@ -990,6 +991,8 @@
         //[standardUserDefaults setInteger:0 forKey:@"overallTime"];
         //[standardUserDefaults setInteger:0 forKey:@"highScore"];
         [standardUserDefaults synchronize];
+        
+        _overallTime = [standardUserDefaults integerForKey:@"overallTime"];
 
         //basic game/box2d/cocos2d initialization
         self.isAccelerometerEnabled = YES;

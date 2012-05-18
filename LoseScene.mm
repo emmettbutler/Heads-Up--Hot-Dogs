@@ -35,8 +35,6 @@
 
 -(id) init{
     if ((self = [super init])){
-        //CGSize size = [[CCDirector sharedDirector] winSize];
-        
         [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile: @"end_sprites_default.plist"];
         spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"end_sprites_default.png"];
         [self addChild:spriteSheet];
@@ -99,6 +97,8 @@
         [menu setPosition:ccp(370, 26)];
         [self addChild:menu z:11];
         
+        _lock = 0;
+        
         [self schedule: @selector(tick:)];
     }
     return self;
@@ -108,28 +108,33 @@
     CGSize size = [[CCDirector sharedDirector] winSize];
     
     NSUserDefaults *standardUserDefaults = [NSUserDefaults standardUserDefaults];
-    NSInteger highScore = [standardUserDefaults integerForKey:@"highScore"];
+    highScore = [standardUserDefaults integerForKey:@"highScore"];
     NSInteger bestTime = [standardUserDefaults integerForKey:@"bestTime"];
     NSInteger overallTime = [standardUserDefaults integerForKey:@"overallTime"];
-    if(_score > highScore){
-        [standardUserDefaults setInteger:_score forKey:@"highScore"];
-        highScore = _score;
+    if(!_lock){
+        _lock = 1;
+        if(_score > highScore){
+            [standardUserDefaults setInteger:_score forKey:@"highScore"];
+            highScore = _score;
         
-        scoreNotify = [CCLabelTTF labelWithString:@"New high score!" fontName:@"LostPet.TTF" fontSize:26.0];
-        [scoreNotify setPosition:ccp((size.width/2), (size.height/2)-100)];
-        [self addChild:scoreNotify];
+            scoreNotify = [CCLabelTTF labelWithString:@"New high score!" fontName:@"LostPet.TTF" fontSize:26.0];
+            [scoreNotify setPosition:ccp((size.width/2), (size.height/2)-100)];
+            [self addChild:scoreNotify];
+        }
+        if(_timePlayed > bestTime){
+            [standardUserDefaults setInteger:_timePlayed forKey:@"bestTime"];
+            
+            timeNotify = [CCLabelTTF labelWithString:@"New best time!" fontName:@"LostPet.TTF" fontSize:26.0];
+            [timeNotify setPosition:ccp((size.width/2), (size.height/2)-140)];
+            [self addChild:timeNotify];
+        }
+        CCLOG(@"OverallTime + _timePlayed/60 --> %d + %d = %d", overallTime, _timePlayed/60, overallTime+(_timePlayed/60));
+        [standardUserDefaults setInteger:overallTime+(_timePlayed/60) forKey:@"overallTime"];
+        [standardUserDefaults synchronize];
     }
-    if(_timePlayed > bestTime){
-        [standardUserDefaults setInteger:_timePlayed forKey:@"bestTime"];
-        
-        timeNotify = [CCLabelTTF labelWithString:@"New best time!" fontName:@"LostPet.TTF" fontSize:26.0];
-        [timeNotify setPosition:ccp((size.width/2), (size.height/2)-140)];
-        [self addChild:timeNotify];
-    }
-    [standardUserDefaults setInteger:overallTime+_timePlayed forKey:@"overallTime"];
-    [standardUserDefaults synchronize];
     
     [scoreLine setString:[NSString stringWithFormat:@"Total points: %06d", _score]];
+    
     int seconds = _timePlayed/60;
     int minutes = seconds/60;
     [timeLine setString:[NSString stringWithFormat:@"Time lasted: %02d:%02d", minutes, seconds%60]];

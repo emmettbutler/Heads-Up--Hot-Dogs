@@ -45,6 +45,7 @@
     NSString *currentAnimation;
     CGRect _pauseButtonRect;
     NSUserDefaults *standardUserDefaults;
+    NSInteger _overallTime;
     CCDelayTime *winUpDelay, *winDownDelay;
     CCCallFuncN *removeWindow;
 
