@@ -129,6 +129,13 @@
             scoreNotify = [CCLabelTTF labelWithString:@"New high score!" fontName:@"LostPet.TTF" fontSize:26.0];
             [scoreNotify setPosition:ccp((size.width/2), (size.height/2)-100)];
             [self addChild:scoreNotify];
+            
+            // this score submission code doesn't work yet
+            NSMutableArray *leaderboards = [[OFLeaderboard leaderboards] mutableCopy];
+            OFHighScore* score = [[[OFHighScore alloc] initForSubmissionWithScore:highScore] autorelease];
+            score.displayText = @"Test display! text";
+            score.customData = @"Test custom data!";
+            [score submitTo:(OFLeaderboard* )[leaderboards objectAtIndex:0]];
         }
         if(_timePlayed > bestTime){
             [standardUserDefaults setInteger:_timePlayed forKey:@"bestTime"];

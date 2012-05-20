@@ -9,6 +9,7 @@
 #import "cocos2d.h"
 #import "OpenFeint/OpenFeint.h"
 #import "OpenFeint/OFControllerLoaderObjC.h"
+#import "OpenFeint/OFLeaderboard.h"
 
 @interface LoseLayer : CCLayer
 {
