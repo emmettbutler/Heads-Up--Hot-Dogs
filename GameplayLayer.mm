@@ -19,7 +19,7 @@
 #define DOG_SPAWN_MINHT 240
 #define PERSON_SPAWN_START 5 //5
 #define WIENER_SPAWN_START 8 //8
-#define SPAWN_LIMIT_DECREMENT_DELAY 30 //30
+#define SPAWN_LIMIT_DECREMENT_DELAY 3 //30
 #define DROPPED_MAX 5
 #define COP_RANGE 4
 #define DOG_COUNTER_HT 295
@@ -1403,12 +1403,14 @@
                     //things for hot dogs
                     if(b->IsAwake()){
                         if(!_mouseJoint){
-                            if(b->GetLinearVelocity().y > 1.5){
-                                [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Dog_Rise.png"]]];
-                            } else if (b->GetLinearVelocity().y < -1.5){
-                                [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Dog_Fall.png"]]];
-                            } else {
-                                [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"dog54x12.png"]]];
+                            if(!ud->aimedAt){
+                                if(b->GetLinearVelocity().y > 1.5){
+                                    [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Dog_Rise.png"]]];
+                                } else if (b->GetLinearVelocity().y < -1.5){
+                                    [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Dog_Fall.png"]]];
+                                } else {
+                                    [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"dog54x12.png"]]];
+                                }
                             }
                         } else if(_mouseJoint->GetBodyB() == b){
                             [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Dog_Grabbed.png"]]];
@@ -1482,7 +1484,7 @@
                                             NSValue *cBody = [NSValue valueWithPointer:copBody];
                                             [walkParameters addObject:cBody];
                                             [walkParameters addObject:[NSNumber numberWithInteger:0]];
-                                            id stopWalkingAction = [CCCallFuncND actionWithTarget:self selector:@selector(setAwake:data:) data:walkParameters];
+                                            [self setAwake:self data:walkParameters];
 
                                             CCFiniteTimeAction *copShootAnimAction = (CCFiniteTimeAction *)copUd->altAction2;
                                             CCAnimation *copWalkAnim = (CCAnimation *)copUd->defaultAnim;
@@ -1519,9 +1521,13 @@
                                             [aimParameters addObject:cBody];
                                             id copFlipAimingAction = [CCCallFuncND actionWithTarget:self selector:@selector(copFlipAim:data:) data:aimParameters];
 
+                                            [self copFlipAim:self data:aimParameters];
+                                            
                                             CCDelayTime *delay = [CCDelayTime actionWithDuration:1];
+                                            
+                                            
 
-                                            id copSeq = [CCSequence actions:stopWalkingAction, copFlipAimingAction, delay, copShootAnimAction, copFlipAimingAction, wakeUpAction, startWalkingAction, walkAnimateAction, unlockAction, nil];
+                                            id copSeq = [CCSequence actions:delay, copShootAnimAction, copFlipAimingAction, wakeUpAction, startWalkingAction, walkAnimateAction, unlockAction, nil];
                                             [copUd->sprite1 stopAllActions];
                                             [copUd->sprite1 runAction:copSeq];
 
@@ -1550,10 +1556,10 @@
 
                                             NSMutableArray *aimedAtParameters = [[NSMutableArray alloc] initWithCapacity:1];
                                             [aimedAtParameters addObject:dBody];
-                                            id dogFlipAimedAtAction = [CCCallFuncND actionWithTarget:self selector:@selector(dogFlipAimedAt:data:) data:aimedAtParameters];
+                                            [self dogFlipAimedAt:self data:aimedAtParameters];
 
                                             CCFiniteTimeAction *wienerExplodeAction = (CCFiniteTimeAction *)ud->altAction2;
-                                            id dogSeq = [CCSequence actions:dogFlipAimedAtAction, delay, wienerExplodeAction, destroyAction, nil];
+                                            id dogSeq = [CCSequence actions:delay, wienerExplodeAction, destroyAction, nil];
                                             [ud->sprite1 stopAllActions];
                                             [ud->sprite1 runAction:dogSeq];
 
@@ -1641,7 +1647,7 @@
                                         dy = abs(b->GetPosition().y - aimedDog->GetPosition().y);
                                         a = acos(dx / sqrt((dx*dx) + (dy*dy)));
                                         ud->targetAngle = a;
-                                        if(sqrt(pow(aimedDog->GetPosition().x - b->GetPosition().x, 2) + pow(aimedDog->GetPosition().y - b->GetPosition().y, 2)) < rayLength*PTM_RATIO && ud->targetAngle < upperArmAngle && ud->targetAngle > lowerArmAngle){
+                                        if(sqrt(pow(dx, 2) + pow(dy, 2)) < rayLength*PTM_RATIO && ud->targetAngle < upperArmAngle && ud->targetAngle > lowerArmAngle){
                                             ud->overlaySprite.position = CGPointMake(aimedDog->GetPosition().x*PTM_RATIO, aimedDog->GetPosition().y*PTM_RATIO);
                                         } else {
                                             [aimedUd->sprite1 stopAllActions];
