@@ -9,6 +9,10 @@
 #import "GameplayLayer.h"
 #import "TitleScene.h"
 #import "OptionsLayer.h"
+#import "TestFlight.h"
+
+#define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
+#define CCLOG(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 
 @implementation OptionsLayer
 
@@ -54,6 +58,8 @@
         menu = [CCMenu menuWithItems:button, nil];
         [menu setPosition:ccp(370, 26)];
         [self addChild:menu z:11];
+        
+        [TestFlight passCheckpoint:@"Options Screen"];
         
         [self schedule: @selector(tick:)];
     }

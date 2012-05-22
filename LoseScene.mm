@@ -9,6 +9,10 @@
 #import "LoseScene.h"
 #import "GameplayLayer.h"
 #import "TitleScene.h"
+#import "TestFlight.h"
+
+#define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
+#define CCLOG(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 
 @implementation LoseLayer
 
@@ -107,6 +111,8 @@
         _OFButtonRect = CGRectMake((_OFButton.position.x-(_OFButton.contentSize.width)/2), (_OFButton.position.y-(_OFButton.contentSize.height)/2), (_OFButton.contentSize.width+10), (_OFButton.contentSize.height+10));
         
         _lock = 0;
+        
+        [TestFlight passCheckpoint:@"Game Over Screen"];
         
         [self schedule: @selector(tick:)];
     }

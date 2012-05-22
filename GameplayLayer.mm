@@ -8,6 +8,7 @@
 
 #import "GameplayLayer.h"
 #import "TitleScene.h"
+#import "TestFlight.h"
 #import "LoseScene.h"
 
 #define PTM_RATIO 32
@@ -19,10 +20,12 @@
 #define DOG_SPAWN_MINHT 240
 #define PERSON_SPAWN_START 5 //5
 #define WIENER_SPAWN_START 8 //8
-#define SPAWN_LIMIT_DECREMENT_DELAY 3 //30
+#define SPAWN_LIMIT_DECREMENT_DELAY 30 //30
 #define DROPPED_MAX 5
 #define COP_RANGE 4
 #define DOG_COUNTER_HT 295
+#define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
+#define CCLOG(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 
 @implementation GameplayLayer
 
@@ -61,6 +64,7 @@
 }
 
 - (void)loseScene{
+    [TestFlight passCheckpoint:@"Game Over"];
     NSMutableArray *loseParams = [[NSMutableArray alloc] initWithCapacity:2];
     [loseParams addObject:[NSNumber numberWithInteger:_points]];
     [loseParams addObject:[NSNumber numberWithInteger:time]];
@@ -74,6 +78,11 @@
     [self removeChild:_pauseLayer cleanup:YES];
     [[CCDirector sharedDirector] resume];
     _pause = false;
+}
+
+-(IBAction)launchFeedback{
+    [TestFlight passCheckpoint:@"Feedback Clicked"];
+    [TestFlight openFeedbackView];
 }
 
 -(void)setShootLock:(id)sender data:(void*)params{
@@ -115,20 +124,31 @@
         CCMenuItem *savedItem = [CCMenuItemLabel itemWithLabel:label];
 
         CCSprite *otherButton = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
-        otherButton.position = ccp((winSize.width/2)-43, 40);
+        otherButton.position = ccp((winSize.width/2)-43, 27);
         [_pauseLayer addChild:otherButton z:81];
         label = [CCLabelTTF labelWithString:@"     Quit     " fontName:@"LostPet.TTF" fontSize:24.0];
         [[label texture] setAliasTexParameters];
         label.color = _color_pink;
         CCMenuItem *title = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(titleScene)];
-        CCMenu *quitButton = [CCMenu menuWithItems:title, nil];
-        quitButton.position = ccp((winSize.width/2)-43, 39);
+        
+        otherButton = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
+        otherButton.position = ccp((winSize.width/2)-43, 70);
+        [_pauseLayer addChild:otherButton z:81];
+        label = [CCLabelTTF labelWithString:@"   Feedback   " fontName:@"LostPet.TTF" fontSize:24.0];
+        [[label texture] setAliasTexParameters];
+        label.color = _color_pink;
+        CCMenuItem *feedback = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(launchFeedback)];
+        CCMenu *quitButton = [CCMenu menuWithItems:title, feedback, nil];
+        [quitButton alignItemsVerticallyWithPadding:20];
+        quitButton.position = ccp((winSize.width/2)-43, 47);
         [_pauseLayer addChild:quitButton z:82];
 
         _pauseMenu = [CCMenu menuWithItems: score, timeItem, peopleItem, savedItem, totalTimeItem, nil];
-        [_pauseMenu setPosition:ccp(winSize.width/2, winSize.height/2)];
+        [_pauseMenu setPosition:ccp(winSize.width/2, winSize.height/2+30)];
         [_pauseMenu alignItemsVertically];
         [self addChild:_pauseMenu z:81];
+        
+        [TestFlight passCheckpoint:@"Pause Menu"];
     }
 }
 
@@ -1166,6 +1186,8 @@
         plus25Anim = [[CCAnimation animationWithFrames:plus25AnimFrames delay:.06f] retain];
         self.plus25Action = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:plus25Anim restoreOriginalFrame:NO] times:1];
         [plus25AnimFrames release];
+        
+        [TestFlight passCheckpoint:@"Game Started"];
 
         //schedule callbacks for dogs, people, and game value decrements
         personParameters = [[NSMutableArray alloc] initWithCapacity:2];

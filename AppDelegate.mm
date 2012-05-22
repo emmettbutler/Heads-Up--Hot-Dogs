@@ -11,6 +11,7 @@
 #import "AppDelegate.h"
 #import "GameConfig.h"
 #import "TitleScene.h"
+#import "TestFlight.h" 
 #import "RootViewController.h"
 
 @implementation AppDelegate
@@ -112,6 +113,14 @@
 	
     [[director openGLView] setMultipleTouchEnabled:YES];
     
+    // testflight setup ---------------------------------------------------------------
+    [TestFlight takeOff:@"f6bf5ec07ee6b2acb2f1e80502d54baa_NzUyODcyMDEyLTAzLTI2IDIyOjE3OjM4LjMxMjg1OQ"];
+#ifdef DEBUG
+    [TestFlight setDeviceIdentifier:[[UIDevice currentDevice] uniqueIdentifier]];
+#endif
+    //---------------------------------------------------------------------------------
+    
+    // openfeint setup ---------------------------------------------------------------
     NSDictionary* settings = [NSDictionary dictionaryWithObjectsAndKeys:
                               [NSNumber numberWithInt:UIInterfaceOrientationLandscapeRight], OpenFeintSettingDashboardOrientation,
                               @"Heads Up!", OpenFeintSettingShortDisplayName,
@@ -135,6 +144,7 @@
                          andDisplayName:@"Heads Up!"
                             andSettings:settings
                            andDelegates:nil];
+    //---------------------------------------------------------------------------------
     
 	// Run the intro Scene
 	[[CCDirector sharedDirector] runWithScene: [TitleLayer scene]];
