@@ -14,6 +14,7 @@
 	<array>
 		<string>Icon_Head.png</string>
 		<string>Icon_Head_big.png</string>
+		<string>Default.png</string>
 	</array>
 	<key>CFBundleIcons</key>
 	<dict>
@@ -23,6 +24,7 @@
 			<array>
 				<string>Icon_Head.png</string>
 				<string>Icon_Head_big.png</string>
+				<string>Default.png</string>
 			</array>
 			<key>UIPrerenderedIcon</key>
 			<true/>
@@ -48,6 +50,8 @@
 	<array>
 		<string>LostPet.TTF</string>
 	</array>
+	<key>UIApplicationExitsOnSuspend</key>
+	<true/>
 	<key>UIPrerenderedIcon</key>
 	<true/>
 	<key>UIRequiredDeviceCapabilities</key>
@@ -63,7 +67,5 @@
 	<array>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>UIApplicationExitsOnSuspend</key>
-	<true/>
 </dict>
 </plist>

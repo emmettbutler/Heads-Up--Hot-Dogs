@@ -349,12 +349,15 @@
         [dogSprite removeFromParentAndCleanup:YES];
         [ud->overlaySprite removeFromParentAndCleanup:YES];
 
+        if(dogBody->GetPosition().x > winSize.width || dogBody->GetPosition().x < 0)
+            return;
+        
         _world->DestroyBody(dogBody);
-
+        
         free(ud);
         dogBody->SetUserData(NULL);
         dogBody = nil;
-
+        
         if(!_intro){
             CCSprite *dogDroppedIcon = [CCSprite spriteWithSpriteFrameName:@"WienerCount_X.png"];
             dogDroppedIcon.position = ccp(winSize.width-_droppedSpacing, DOG_COUNTER_HT);
@@ -601,7 +604,7 @@
     for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
         if (body->GetUserData() != NULL && body->GetUserData() != (void*)100) {
             bodyUserData *ud = (bodyUserData *)body->GetUserData();
-            if(ud->sprite1.tag >= S_BUSMAN && ud->sprite1.tag <= S_TOPPSN){
+            if(ud && ud->sprite1.tag >= S_BUSMAN && ud->sprite1.tag <= S_TOPPSN){
                 if(ud->sprite1.tag == S_POLICE && character.intValue == 4){
                     spawn = NO;
                 }
@@ -638,7 +641,7 @@
                 _personLower.tag = S_BUSMAN;
                 _personUpper.tag = S_BUSMAN;
                 _personUpperOverlay.tag = S_BUSMAN;
-                hitboxWidth = 22.0;
+                hitboxWidth = 21.0;
                 hitboxHeight = .0001;
                 hitboxCenterX = 0;
                 hitboxCenterY = 4;
@@ -685,7 +688,7 @@
                 _personLower.tag = S_POLICE;
                 _personUpper.tag = S_POLICE;
                 _personUpperOverlay.tag = S_POLICE;
-                hitboxWidth = 22.0;
+                hitboxWidth = 21.5;
                 hitboxHeight = .0001;
                 hitboxCenterX = 0;
                 hitboxCenterY = 4.1;
@@ -742,19 +745,19 @@
                 _personLower.tag = S_CRPUNK;
                 _personUpper.tag = S_CRPUNK;
                 _personUpperOverlay.tag = S_CRPUNK;
-                hitboxWidth = 22.0;
+                hitboxWidth = 16.0;
                 hitboxHeight = .0001;
                 hitboxCenterX = 0;
-                hitboxCenterY = 3.4;
+                hitboxCenterY = 3.2;
                 velocityMul = 160;
                 sensorHeight = 2.0f;
                 sensorWidth = 1.5f;
                 density = 10.0f;
                 restitution = .87f; //bounce
                 friction = 0.15f;
-                framerate = .07f;
+                framerate = .06f;
                 fTag = F_PNKHED;
-                heightOffset = 2.5f;
+                heightOffset = 2.4f;
                 for(int i = 1; i <= 8; i++){
                     [walkAnimFrames addObject:
                      [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -1366,8 +1369,7 @@
                 [self addChild:heartParticles z:60];
                 if(!_intro && !ud->hasTouchedHead){
                     switch(pUd->sprite1.tag){
-                        case 3: _points += 10; break; // businessman
-                        case 4: _points += 30; break; // police
+                        case S_POLICE: _points += 30; break; // police
                         default: _points += 10; break; // any others
                     }
                     NSMutableArray *plusTenParams = [[NSMutableArray alloc] initWithCapacity:2];
@@ -1644,7 +1646,7 @@
                             for(b2Body* body = _world->GetBodyList(); body; body = body->GetNext()){
                                 if(body->GetUserData() && body->GetUserData() != (void*)100){
                                     bodyUserData *dogUd = (bodyUserData*)body->GetUserData();
-                                    if(dogUd->sprite1.tag == S_HOTDOG){
+                                    if(dogUd && dogUd->sprite1.tag == S_HOTDOG){
                                         b2Vec2 dogLocation = b2Vec2(body->GetPosition().x, body->GetPosition().y);
                                         if(fixture->TestPoint(dogLocation) && dogUd->hasTouchedHead && !dogUd->grabbed &&
                                            dogUd->collideFilter == ud->collideFilter){
