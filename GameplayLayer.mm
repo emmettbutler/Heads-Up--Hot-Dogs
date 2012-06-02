@@ -181,9 +181,9 @@
 -(void)timedDecrement{
     if(!_intro){
         CCLOG(@"Decrement called:");
-        if(_spawnLimiter > 0){
+        /*if(_spawnLimiter > 0){
             _spawnLimiter--;
-        }
+        }*/
         if(_personSpawnDelayTime > 1){
             _personSpawnDelayTime -= 1;
         }
@@ -646,7 +646,7 @@
                 hitboxCenterX = 0;
                 hitboxCenterY = 4;
                 velocityMul = 300;
-                sensorHeight = 2.0f;
+                sensorHeight = 2.5f;
                 sensorWidth = 1.5f;
                 density = 10.0f;
                 restitution = .8f; //bounce
@@ -773,10 +773,52 @@
                      [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
                       [NSString stringWithFormat:@"CrustPunk_Head_NoDog_%d.png", i]]];
                 }
-                for(int i = 1; i <= 3; i++){
+                for(int i = 1; i <= 4; i++){
                     [faceDogWalkAnimFrames addObject:
                      [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
                       [NSString stringWithFormat:@"CrustPunk_Head_Dog_%d.png", i]]];
+                }
+                break;
+            case S_JOGGER: //crust punk
+                self.personLower = [CCSprite spriteWithSpriteFrameName:@"Jogger_Run_1.png"];
+                self.personUpper = [CCSprite spriteWithSpriteFrameName:@"Jogger_Head_NoDog_1.png"];
+                self.personUpperOverlay = [CCSprite spriteWithSpriteFrameName:@"Jogger_Head_Dog_1.png"];
+                ogHeadSprite = [NSString stringWithString:@"Jogger_Head_NoDog_1.png"];
+                _personLower.tag = S_JOGGER;
+                _personUpper.tag = S_JOGGER;
+                _personUpperOverlay.tag = S_JOGGER;
+                hitboxWidth = 22.0;
+                hitboxHeight = .0001;
+                hitboxCenterX = 0;
+                hitboxCenterY = 3.7;
+                velocityMul = 350;
+                sensorHeight = 1.3f;
+                sensorWidth = 1.5f;
+                density = 5.0f;
+                restitution = .4f; //bounce
+                friction = 0.15f;
+                framerate = .07f;
+                fTag = F_JOGHED;
+                heightOffset = 2.55f;
+                for(int i = 1; i <= 8; i++){
+                    [walkAnimFrames addObject:
+                     [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                      [NSString stringWithFormat:@"Jogger_Run_%d.png", i]]];
+                }
+                for(int i = 1; i <= 1; i++){
+                    [idleAnimFrames addObject:
+                     [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                      [NSString stringWithFormat:@"Jogger_Run_%d.png", i]]];
+                }
+                for(int i = 1; i <= 8; i++){
+                    [faceWalkAnimFrames addObject:
+                     [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                      [NSString stringWithFormat:@"Jogger_Head_NoDog_%d.png", i]]];
+                }
+                for(int i = 1; i <= 4; i++){
+                    [faceDogWalkAnimFrames addObject:
+                     [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                      [NSString stringWithFormat:@"Jogger_Head_Dog_%d.png", i]]];
                 }
                 break;
         }
@@ -1019,7 +1061,7 @@
     NSNumber *xPosition = [xPositions objectAtIndex:arc4random() % [xPositions count]];
     xPos = [NSNumber numberWithInt:xPosition.intValue];
 
-    characterTag = [characterTags objectAtIndex:arc4random() % ([characterTags count]-_spawnLimiter)];
+    characterTag = [characterTags objectAtIndex:arc4random() % [characterTags count]];
 
     [self walkIn:self data:params];
 
@@ -1151,7 +1193,7 @@
         [xPositions addObject:[NSNumber numberWithInt:winSize.width+30]];
         [xPositions addObject:[NSNumber numberWithInt:-30]];
         characterTags = [[NSMutableArray alloc] initWithCapacity:2];
-        for(int i = S_BUSMAN; i <= S_CRPUNK; i++){ // to allow for more characters, pick a value > S_POLICE && < S_TOPPSN
+        for(int i = S_BUSMAN; i <= S_JOGGER; i++){ // to allow for more characters, pick a value > S_POLICE && < S_TOPPSN
             [characterTags addObject:[NSNumber numberWithInt:i]];
         }
         movementParameters = [[NSMutableArray alloc] initWithCapacity:2];
@@ -1343,6 +1385,7 @@
                         dogFilter = fixture->GetFilterData();
                         // only allow the dog to collide with the person it's on
                         // by setting its mask bits to the person's category bits
+                        // TODO - it's possible to throw dogs offscreen of they pass by a head first. stop that. 
                         dogFilter.maskBits = pUd->collideFilter;
                         fixture->SetFilterData(dogFilter);
                         ud->collideFilter = dogFilter.maskBits;
@@ -1646,7 +1689,7 @@
                             for(b2Body* body = _world->GetBodyList(); body; body = body->GetNext()){
                                 if(body->GetUserData() && body->GetUserData() != (void*)100){
                                     bodyUserData *dogUd = (bodyUserData*)body->GetUserData();
-                                    if(dogUd && dogUd->sprite1.tag == S_HOTDOG){
+                                    if(dogUd != NULL && dogUd->sprite1.tag == S_HOTDOG){
                                         b2Vec2 dogLocation = b2Vec2(body->GetPosition().x, body->GetPosition().y);
                                         if(fixture->TestPoint(dogLocation) && dogUd->hasTouchedHead && !dogUd->grabbed &&
                                            dogUd->collideFilter == ud->collideFilter){
@@ -1865,7 +1908,7 @@
     for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
         fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
         if(fUd->tag == F_DOGCLD){
-            // here, we set the dog's collision filter to disallow any and all collisions.
+            // here, we set the dog's collision filter to disallow all collisions.
             // the original filter data has been saved in the fixture's ogCollideFilter field
             // so that on touch end, we can restore its original collision state
             filter = fixture->GetFilterData();

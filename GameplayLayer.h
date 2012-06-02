@@ -100,6 +100,7 @@
         S_BUSMAN    =   3,
         S_POLICE    =   4,
         S_CRPUNK    =   5,
+        S_JOGGER    =   6,
         S_TOPPSN    =   10, // top person sprite tag, this must be TOPPSN > POLICE > BUSMAN with only person tags between
         S_COPARM    =   11,
         S_CRSHRS    =   20, // crosshairs
@@ -111,17 +112,20 @@
         F_BUSHED    =   3, // businessman's head
         F_COPHED    =   4, // cop's head
         F_PNKHED    =   5, // crust punk's head
+        F_JOGHED    =   6, // jogger's head
         F_TOPHED    =   10, // top head fixture tag, this must be TOPHED > COPHED > BUSHED with only head tags between
         F_COPARM    =   11, 
         F_BUSBDY    =   53, // businessman's body
         F_COPBDY    =   54, // cop's body
         F_PNKBDY    =   55, // crust punk's body
+        F_JOGBDY    =   55, // jogger's body
         F_TOPBDY    =   60, // top body fixture tag, this must be TOPBDY > COPBDY > BUSBDY with only body tags between
         F_GROUND    =   100,
         F_WALLS     =   101,
         F_BUSSEN    =   103, // sensor above businessman's head
         F_COPSEN    =   104, // sensor above cop's head
         F_PNKSEN    =   105, // sensor above crust punk's head
+        F_JOGSEN    =   105, // sensor above jogger's head
         F_TOPSEN    =   110, // top head sensor tag, this must be TOPSEN > COPSEN > BUSSEN with only sensor tags between
     };
     
