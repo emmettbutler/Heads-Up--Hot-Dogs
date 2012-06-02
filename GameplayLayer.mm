@@ -19,7 +19,7 @@
 #define DOG_SPAWN_MINHT 240
 #define PERSON_SPAWN_START 5 //5
 #define WIENER_SPAWN_START 8 //8
-#define SPAWN_LIMIT_DECREMENT_DELAY 30 //30
+#define SPAWN_LIMIT_DECREMENT_DELAY 15 //15
 #define DROPPED_MAX 5
 #define COP_RANGE 4
 #define DOG_COUNTER_HT 295
@@ -1340,10 +1340,10 @@
                     id windowSeq = [CCSequence actions:winDownDelay, tutorialWindow1, winUpDelay, removeWindow, nil];
                     [self runAction:windowSeq];
                 }
+                ud->_dog_isOnHead = false;
+                ud->hasTouchedHead = false;
                 if(dogBody->GetLinearVelocity().y < .1){
                     // dog is definitely not on a head if it's touching the floor
-                    ud->_dog_isOnHead = false;
-                    ud->hasTouchedHead = false;
                     CCAction *wienerDeathAction = (CCAction *)ud->altAction;
 
                     id delay = [CCDelayTime actionWithDuration:_wienerKillDelay];
@@ -1362,8 +1362,7 @@
                 }
             }
             else if (fBUd->tag == F_WALLS){
-                CCLOG(@"Dog/wall collision - _dog_isOnHead: %d", ud->_dog_isOnHead);
-
+                CCLOG(@"Dog/wall collision - _dog_isOnHead: %d - dog is awake: %d", ud->_dog_isOnHead, dogBody->IsAwake());
             }
         }
     }
@@ -1428,6 +1427,19 @@
                                     // we set the filters to their original value (all people, floor, and walls)
                                     b2Filter dogFilter = fixture->GetFilterData();
                                     dogFilter.maskBits = fUd->ogCollideFilters;
+                                    fixture->SetFilterData(dogFilter);
+                                    ud->collideFilter = dogFilter.maskBits;
+                                    break;
+                                }
+                            }
+                        } else if(ud->_dog_isOnHead){
+                            for(b2Fixture* fixture = b->GetFixtureList(); fixture; fixture = fixture->GetNext()){
+                                fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
+                                if(fUd->tag == F_DOGCLD){
+                                    // this is the case in which a dog is not on a person's head.
+                                    // we set the filters to their original value (all people, floor, and walls)
+                                    b2Filter dogFilter = fixture->GetFilterData();
+                                    dogFilter.maskBits = dogFilter.maskBits & 0xffef;
                                     fixture->SetFilterData(dogFilter);
                                     ud->collideFilter = dogFilter.maskBits;
                                     break;
@@ -1641,9 +1653,12 @@
                                         dx = abs(b->GetPosition().x - aimedDog->GetPosition().x);
                                         dy = abs(b->GetPosition().y - aimedDog->GetPosition().y);
                                         a = acos(dx / sqrt((dx*dx) + (dy*dy)));
+                                        CCLOG(@"Angle to dog: %0.2f - Upper angle: %0.2f - lower angle: %0.2f", a, upperArmAngle, lowerArmAngle);
                                         ud->targetAngle = a;
-                                        if(sqrt(pow(aimedDog->GetPosition().x - b->GetPosition().x, 2) + pow(aimedDog->GetPosition().y - b->GetPosition().y, 2)) < rayLength*PTM_RATIO && ud->targetAngle < upperArmAngle && ud->targetAngle > lowerArmAngle){
-                                            ud->overlaySprite.position = CGPointMake(aimedDog->GetPosition().x*PTM_RATIO, aimedDog->GetPosition().y*PTM_RATIO);
+                                        if(sqrt(pow(dx, 2) + pow(dy, 2)) < rayLength * PTM_RATIO && 
+                                           ((ud->sprite1.flipX && ud->targetAngle < upperArmAngle && ud->targetAngle > lowerArmAngle) ||
+                                            (!ud->sprite1.flipX && ud->targetAngle > upperArmAngle && ud->targetAngle < lowerArmAngle))){
+                                                ud->overlaySprite.position = CGPointMake(aimedDog->GetPosition().x*PTM_RATIO, aimedDog->GetPosition().y*PTM_RATIO);
                                         } else {
                                             [aimedUd->sprite1 stopAllActions];
                                             aimedUd->aimedAt = false;
@@ -1679,7 +1694,7 @@
                 ud->sprite1.position = CGPointMake( b->GetPosition().x * PTM_RATIO, b->GetPosition().y * PTM_RATIO);
                 ud->sprite1.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
                 //destroy any sprite/body pair that's offscreen
-                if(ud->sprite1.position.x > winSize.width + 80 || ud->sprite1.position.x < -80 ||
+                if(ud->sprite1.position.x > winSize.width + 100 || ud->sprite1.position.x < -40 ||
                    ud->sprite1.position.y > winSize.height + 40 || ud->sprite1.position.y < -40){
                     // points for dogs that leave the screen on a person's head
                     if(ud->sprite1.tag >= S_BUSMAN && ud->sprite1.tag <= S_TOPPSN){
