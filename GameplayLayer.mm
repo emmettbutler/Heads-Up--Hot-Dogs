@@ -52,6 +52,7 @@
 @synthesize armShootAction = _armShootAction;
 @synthesize plusTenAction = _plusTenAction;
 @synthesize plus25Action = _plus25Action;
+@synthesize plus100Action = _plus100Action;
 
 +(CCScene *) scene {
     CCScene *scene = [CCScene node];
@@ -236,6 +237,22 @@
 
     id seq = [CCSequence actions:_plus25Action, removeAction, nil];
     [twentyFive runAction:seq];
+}
+
+-(void)plusOneHundred:(id)sender data:(void*)params {
+    NSNumber *xPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:0];
+    NSNumber *yPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:1];
+    
+    CCSprite *oneHundred = [CCSprite spriteWithSpriteFrameName:@"Plus_100_1.png"];
+    oneHundred.position = ccp(xPos.intValue, yPos.intValue);
+    [self addChild:oneHundred];
+    
+    NSMutableArray *removeParams = [[NSMutableArray alloc] initWithCapacity:1];
+    [removeParams addObject:[NSValue valueWithPointer:oneHundred]];
+    CCAction *removeAction = [CCCallFuncND actionWithTarget:self selector:@selector(removeSprite:data:) data:removeParams];
+    
+    id seq = [CCSequence actions:_plus100Action, removeAction, nil];
+    [oneHundred runAction:seq];
 }
 
 -(void)setAwake:(id)sender data:(void*)params {
@@ -1268,6 +1285,16 @@
         plus25Anim = [[CCAnimation animationWithFrames:plus25AnimFrames delay:.04f] retain];
         self.plus25Action = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:plus25Anim restoreOriginalFrame:NO] times:1];
         [plus25AnimFrames release];
+        
+        NSMutableArray *plus100AnimFrames = [[NSMutableArray alloc] initWithCapacity:18];
+        for(int i = 1; i <= 18; i++){
+            [plus25AnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"Plus_100_%d.png", i]]];
+        }
+        plus100Anim = [[CCAnimation animationWithFrames:plus100AnimFrames delay:.04f] retain];
+        self.plus100Action = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:plus100Anim restoreOriginalFrame:NO] times:1];
+        [plus100AnimFrames release];
 
         //schedule callbacks for dogs, people, and game value decrements
         personParameters = [[NSMutableArray alloc] initWithCapacity:2];
@@ -1795,12 +1822,20 @@
                 ud->sprite1.position = CGPointMake( b->GetPosition().x * PTM_RATIO, b->GetPosition().y * PTM_RATIO);
                 ud->sprite1.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
                 //destroy any sprite/body pair that's offscreen
-                if(ud->sprite1.position.x > winSize.width + 100 || ud->sprite1.position.x < -40 ||
+                if(ud->sprite1.position.x > winSize.width + 40 || ud->sprite1.position.x < -40 ||
                    ud->sprite1.position.y > winSize.height + 40 || ud->sprite1.position.y < -40){
                     // points for dogs that leave the screen on a person's head
                     if(ud->sprite1.tag >= S_BUSMAN && ud->sprite1.tag <= S_TOPPSN){
-                        // TODO - add a bonus animation here
                         _points += ud->dogsOnHead * 100;
+                        NSMutableArray *plus100Params = [[NSMutableArray alloc] initWithCapacity:2];
+                        if(ud->sprite1.flipX){
+                            [plus100Params addObject:[NSNumber numberWithInt:(b->GetPosition().x-2.3)*PTM_RATIO]];
+                        }
+                        else{
+                            [plus100Params addObject:[NSNumber numberWithInt:(b->GetPosition().x+2.5)*PTM_RATIO]];
+                        }
+                        [plus100Params addObject:[NSNumber numberWithInt:(b->GetPosition().y+4.7)*PTM_RATIO]];
+                        [self runAction:[CCCallFuncND actionWithTarget:self selector:@selector(plusOneHundred:data:) data:plus100Params]];
                         if(ud->sprite1.tag == S_POLICE){
                             _shootLock = 0;
                         }

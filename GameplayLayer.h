@@ -26,8 +26,9 @@
     b2MouseJoint *_mouseJoint;
     CCAction *_walkAction, *_walkFaceAction;
     CCFiniteTimeAction *_idleAction, *_appearAction, *_hitAction, *_shotAction, *_shootAction, *_armShootAction, *_shootFaceAction, *_plusTenAction, *_plus25Action;
+    CCFiniteTimeAction *_plus100Action;
     CCAnimation *walkAnim, *idleAnim, *hitAnim, *dogDeathAnim, *dogAppearAnim, *walkFaceAnim, *walkDogFaceAnim;
-    CCAnimation *dogShotAnim, *shootAnim, *armShootAnim, *shootFaceAnim, *plusTenAnim, *plus25Anim;
+    CCAnimation *dogShotAnim, *shootAnim, *armShootAnim, *shootFaceAnim, *plusTenAnim, *plus25Anim, *plus100Anim;
     CCSpriteBatchNode *spriteSheet;
     CCLabelTTF *scoreLabel, *droppedLabel, *tutorialLabel;
     b2Vec2 policeRayPoint1, policeRayPoint2;
@@ -150,6 +151,7 @@
 @property (nonatomic, retain) CCFiniteTimeAction *armShootAction;
 @property (nonatomic, retain) CCFiniteTimeAction *plusTenAction;
 @property (nonatomic, retain) CCFiniteTimeAction *plus25Action;
+@property (nonatomic, retain) CCFiniteTimeAction *plus100Action;
 @property (nonatomic, retain) CCAction *appearAction;
 
 // returns a CCScene that contains the HelloWorldLayer as the only child
