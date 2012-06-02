@@ -226,7 +226,7 @@
     NSNumber *xPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:0];
     NSNumber *yPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:1];
 
-    CCSprite *twentyFive = [CCSprite spriteWithSpriteFrameName:@"plusTwentyFive1.png"];
+    CCSprite *twentyFive = [CCSprite spriteWithSpriteFrameName:@"Plus_25_sm_1.png"];
     twentyFive.position = ccp(xPos.intValue, yPos.intValue);
     [self addChild:twentyFive];
 
@@ -1260,10 +1260,10 @@
         [plusTenAnimFrames release];
 
         NSMutableArray *plus25AnimFrames = [[NSMutableArray alloc] initWithCapacity:12];
-        for(int i = 1; i <= 12; i++){
+        for(int i = 1; i <= 13; i++){
             [plus25AnimFrames addObject:
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-              [NSString stringWithFormat:@"plusTwentyFive%d.png", i]]];
+              [NSString stringWithFormat:@"Plus_25_sm_%d.png", i]]];
         }
         plus25Anim = [[CCAnimation animationWithFrames:plus25AnimFrames delay:.06f] retain];
         self.plus25Action = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:plus25Anim restoreOriginalFrame:NO] times:1];
