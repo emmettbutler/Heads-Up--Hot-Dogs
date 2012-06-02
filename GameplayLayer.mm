@@ -630,7 +630,7 @@
         CCSprite *target;
 
         switch(character.intValue){
-            case 3: //businessman
+            case S_BUSMAN: //businessman
                 self.personLower = [CCSprite spriteWithSpriteFrameName:@"BusinessMan_Walk_1.png"];
                 self.personUpper = [CCSprite spriteWithSpriteFrameName:@"BusinessHead_NoDog_1.png"];
                 self.personUpperOverlay = [CCSprite spriteWithSpriteFrameName:@"BusinessHead_Dog_1.png"];
@@ -672,7 +672,7 @@
                       [NSString stringWithFormat:@"BusinessHead_Dog_%d.png", i]]];
                 }
                 break;
-            case 4: //police
+            case S_POLICE: //police
                 shootAnimFrames = [NSMutableArray array];
                 shootFaceAnimFrames = [NSMutableArray array];
                 armShootAnimFrames = [NSMutableArray array];
@@ -734,7 +734,7 @@
                       [NSString stringWithFormat:@"Cop_Head_Shoot_%d.png", i]]];
                 }
                 break;
-            case 5: //crust punk
+            case S_CRPUNK: //crust punk
                 self.personLower = [CCSprite spriteWithSpriteFrameName:@"CrustPunk_Walk_1.png"];
                 self.personUpper = [CCSprite spriteWithSpriteFrameName:@"CrustPunk_Head_NoDog_1.png"];
                 self.personUpperOverlay = [CCSprite spriteWithSpriteFrameName:@"CrustPunk_Head_Dog_1.png"];
@@ -986,7 +986,7 @@
         [movementParameters addObject:b];
         [movementParameters addObject:v];
         [movementParameters addObject:idle];
-        if(character.intValue == 3){
+        if(character.intValue == S_BUSMAN){
             [self walkInPauseContinue:_personLower data:movementParameters];
         } else {
             [self walkAcross:_personLower data:movementParameters];
