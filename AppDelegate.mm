@@ -12,6 +12,7 @@
 #import "GameConfig.h"
 #import "TitleScene.h"
 #import "TestFlight.h" 
+#import "OFDelegate.h"
 #import "RootViewController.h"
 
 @implementation AppDelegate
@@ -138,12 +139,15 @@
                               [NSNumber numberWithInt:OFDevelopmentMode_RELEASE], OpenFeintSettingDevelopmentMode,
 #endif
                               nil];
+    ofDelegate = [OFDelegate new];
+    
+    OFDelegatesContainer* delegates = [OFDelegatesContainer containerWithOpenFeintDelegate:ofDelegate];
     
     [OpenFeint initializeWithProductKey:@"S28bdYB1sfE04quqmWWDg"
                               andSecret:@"WWeeuCIQ2DKRfNbXuznbwY4kBQpWu1ZOeb0aLWYTuvE"
                          andDisplayName:@"Heads Up!"
                             andSettings:settings
-                           andDelegates:nil];
+                           andDelegates:delegates];
     //---------------------------------------------------------------------------------
     
 	// Run the intro Scene
