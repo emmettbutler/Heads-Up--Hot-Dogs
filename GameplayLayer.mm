@@ -19,8 +19,15 @@
 #define DOG_SPAWN_MINHT 240
 #define PERSON_SPAWN_START 5 //5
 #define WIENER_SPAWN_START 8 //8
-#define SPAWN_LIMIT_DECREMENT_DELAY 15 //15
+
+#ifdef DEBUG
+#define SPAWN_LIMIT_DECREMENT_DELAY 1
+#define DROPPED_MAX 99
+#else
+#define SPAWN_LIMIT_DECREMENT_DELAY 15
 #define DROPPED_MAX 5
+#endif
+
 #define COP_RANGE 4
 #define DOG_COUNTER_HT 295
 
@@ -173,6 +180,7 @@
 
 -(void)timedDecrement{
     if(!_intro){
+        CCLOG(@"Decrement called:");
         if(_spawnLimiter > 0){
             _spawnLimiter--;
         }
@@ -185,6 +193,10 @@
         if(_wienerKillDelay > 1){
             _wienerKillDelay -= 1;
         }
+        CCLOG(@"WienerKillDelay: %0.2f", _wienerKillDelay);
+        CCLOG(@"SpawnLimiter: %d", _spawnLimiter);
+        CCLOG(@"PersonSpawnDelayTime: %0.2f", _personSpawnDelayTime);
+        CCLOG(@"WienerSpawnDelayTime: %0.2f", _wienerSpawnDelayTime);
     }
 
 }
@@ -567,7 +579,7 @@
 -(void)walkIn:(id)sender data:(void *)params {
     int xVel, velocityMul, zIndex, fTag, armOffset, armBodyXOffset, armBodyYOffset;
     int armJointXOffset, armJointYOffset;
-    float hitboxHeight, hitboxWidth, hitboxCenterX, hitboxCenterY, density, restitution, friction, heightOffset, sensorHeight, sensorWidth;
+    float hitboxHeight, hitboxWidth, hitboxCenterX, hitboxCenterY, density, restitution, friction, heightOffset, sensorHeight, sensorWidth, framerate;
     NSString *ogHeadSprite;
     BOOL spawn;
 
@@ -632,9 +644,10 @@
                 hitboxCenterY = 4;
                 velocityMul = 300;
                 sensorHeight = 2.0f;
-                sensorWidth = 2.0f;
+                sensorWidth = 1.5f;
                 density = 10.0f;
                 restitution = .8f; //bounce
+                framerate = .07f;
                 friction = 0.3f;
                 fTag = F_BUSHED;
                 heightOffset = 2.9f;
@@ -678,7 +691,7 @@
                 hitboxCenterY = 4.1;
                 velocityMul = 350;
                 sensorHeight = 2.0f;
-                sensorWidth = 2.0f;
+                sensorWidth = 1.5f;
                 density = 6.0f;
                 restitution = .5f; //bounce
                 friction = 4.0f;
@@ -686,6 +699,7 @@
                 heightOffset = 2.9f;
                 lowerArmAngle = 0;
                 upperArmAngle = 55;
+                framerate = .07f;
                 armBodyXOffset = 8;
                 armBodyYOffset = 40;
                 armJointXOffset = 15;
@@ -718,6 +732,48 @@
                     [shootFaceAnimFrames addObject:
                      [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
                       [NSString stringWithFormat:@"Cop_Head_Shoot_%d.png", i]]];
+                }
+                break;
+            case 5: //crust punk
+                self.personLower = [CCSprite spriteWithSpriteFrameName:@"CrustPunk_Walk_1.png"];
+                self.personUpper = [CCSprite spriteWithSpriteFrameName:@"CrustPunk_Head_NoDog_1.png"];
+                self.personUpperOverlay = [CCSprite spriteWithSpriteFrameName:@"CrustPunk_Head_Dog_1.png"];
+                ogHeadSprite = [NSString stringWithString:@"CrustPunk_Head_NoDog_1.png"];
+                _personLower.tag = S_CRPUNK;
+                _personUpper.tag = S_CRPUNK;
+                _personUpperOverlay.tag = S_CRPUNK;
+                hitboxWidth = 22.0;
+                hitboxHeight = .0001;
+                hitboxCenterX = 0;
+                hitboxCenterY = 3.4;
+                velocityMul = 160;
+                sensorHeight = 2.0f;
+                sensorWidth = 1.5f;
+                density = 10.0f;
+                restitution = .87f; //bounce
+                friction = 0.15f;
+                framerate = .07f;
+                fTag = F_PNKHED;
+                heightOffset = 2.5f;
+                for(int i = 1; i <= 8; i++){
+                    [walkAnimFrames addObject:
+                     [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                      [NSString stringWithFormat:@"CrustPunk_Walk_%d.png", i]]];
+                }
+                for(int i = 1; i <= 1; i++){
+                    [idleAnimFrames addObject:
+                     [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                      [NSString stringWithFormat:@"CrustPunk_Walk_%d.png", i]]];
+                }
+                for(int i = 1; i <= 4; i++){
+                    [faceWalkAnimFrames addObject:
+                     [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                      [NSString stringWithFormat:@"CrustPunk_Head_NoDog_%d.png", i]]];
+                }
+                for(int i = 1; i <= 3; i++){
+                    [faceDogWalkAnimFrames addObject:
+                     [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                      [NSString stringWithFormat:@"CrustPunk_Head_Dog_%d.png", i]]];
                 }
                 break;
         }
@@ -759,7 +815,7 @@
         }
 
         //create animations for walk, idle, and bobbing head
-        walkAnim = [[CCAnimation animationWithFrames:walkAnimFrames delay:.08f] retain];
+        walkAnim = [[CCAnimation animationWithFrames:walkAnimFrames delay:framerate] retain];
         self.walkAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:walkAnim restoreOriginalFrame:NO]];
         [_personLower runAction:_walkAction];
 
@@ -768,11 +824,11 @@
         CCRepeat *repeatAction = [CCRepeat actionWithAction:_idleAction times:10];
         CCSequence *sequence = [CCSequence actions:_idleAction, repeatAction, nil];
 
-        walkFaceAnim = [[CCAnimation animationWithFrames:faceWalkAnimFrames delay:.08f] retain];
+        walkFaceAnim = [[CCAnimation animationWithFrames:faceWalkAnimFrames delay:framerate] retain];
         self.walkFaceAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:walkFaceAnim restoreOriginalFrame:NO]];
         [_personUpper runAction:_walkFaceAction];
 
-        walkDogFaceAnim = [[CCAnimation animationWithFrames:faceDogWalkAnimFrames delay:.08f] retain];
+        walkDogFaceAnim = [[CCAnimation animationWithFrames:faceDogWalkAnimFrames delay:framerate] retain];
         self.walkDogFaceAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:walkDogFaceAnim restoreOriginalFrame:NO]];
         [_personUpperOverlay runAction:_walkDogFaceAction];
 
@@ -930,7 +986,7 @@
         [movementParameters addObject:b];
         [movementParameters addObject:v];
         [movementParameters addObject:idle];
-        if(character.intValue != 4){
+        if(character.intValue == 3){
             [self walkInPauseContinue:_personLower data:movementParameters];
         } else {
             [self walkAcross:_personLower data:movementParameters];
@@ -1052,7 +1108,7 @@
         droppedRightEnd.position = ccp(winSize.width-182, DOG_COUNTER_HT);
         [self addChild:droppedRightEnd z:70];
         dogIcons = [[NSMutableArray alloc] initWithCapacity:DROPPED_MAX];
-        for(int i = 200; i < 200+(23*5); i += 23){
+        for(int i = 200; i < 200+(23*DROPPED_MAX); i += 23){
             CCSprite *dogIcon = [CCSprite spriteWithSpriteFrameName:@"WienerCount_Wiener.png"];
             dogIcon.position = ccp(winSize.width-i, DOG_COUNTER_HT);
             [self addChild:dogIcon z:70];
@@ -1092,7 +1148,7 @@
         [xPositions addObject:[NSNumber numberWithInt:winSize.width+30]];
         [xPositions addObject:[NSNumber numberWithInt:-30]];
         characterTags = [[NSMutableArray alloc] initWithCapacity:2];
-        for(int i = S_BUSMAN; i <= S_POLICE; i++){ // to allow for more characters, pick a value > S_POLICE && < S_TOPPSN
+        for(int i = S_BUSMAN; i <= S_CRPUNK; i++){ // to allow for more characters, pick a value > S_POLICE && < S_TOPPSN
             [characterTags addObject:[NSNumber numberWithInt:i]];
         }
         movementParameters = [[NSMutableArray alloc] initWithCapacity:2];
