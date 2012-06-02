@@ -1821,21 +1821,24 @@
                 //boilerplate - update sprite positions to match their physics bodies
                 ud->sprite1.position = CGPointMake( b->GetPosition().x * PTM_RATIO, b->GetPosition().y * PTM_RATIO);
                 ud->sprite1.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
+                
                 //destroy any sprite/body pair that's offscreen
                 if(ud->sprite1.position.x > winSize.width + 40 || ud->sprite1.position.x < -40 ||
                    ud->sprite1.position.y > winSize.height + 40 || ud->sprite1.position.y < -40){
                     // points for dogs that leave the screen on a person's head
                     if(ud->sprite1.tag >= S_BUSMAN && ud->sprite1.tag <= S_TOPPSN){
                         _points += ud->dogsOnHead * 100;
-                        NSMutableArray *plus100Params = [[NSMutableArray alloc] initWithCapacity:2];
-                        if(ud->sprite1.flipX){
-                            [plus100Params addObject:[NSNumber numberWithInt:(b->GetPosition().x-2.3)*PTM_RATIO]];
+                        if(ud->dogsOnHead != 0){
+                            NSMutableArray *plus100Params = [[NSMutableArray alloc] initWithCapacity:2];
+                            if(ud->sprite1.flipX){
+                                [plus100Params addObject:[NSNumber numberWithInt:(b->GetPosition().x-2.3)*PTM_RATIO]];
+                            }
+                            else{
+                                [plus100Params addObject:[NSNumber numberWithInt:(b->GetPosition().x+2.5)*PTM_RATIO]];
+                            }
+                            [plus100Params addObject:[NSNumber numberWithInt:(b->GetPosition().y+4.7)*PTM_RATIO]];
+                            [self runAction:[CCCallFuncND actionWithTarget:self selector:@selector(plusOneHundred:data:) data:plus100Params]];
                         }
-                        else{
-                            [plus100Params addObject:[NSNumber numberWithInt:(b->GetPosition().x+2.5)*PTM_RATIO]];
-                        }
-                        [plus100Params addObject:[NSNumber numberWithInt:(b->GetPosition().y+4.7)*PTM_RATIO]];
-                        [self runAction:[CCCallFuncND actionWithTarget:self selector:@selector(plusOneHundred:data:) data:plus100Params]];
                         if(ud->sprite1.tag == S_POLICE){
                             _shootLock = 0;
                         }
