@@ -1255,17 +1255,17 @@
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
               [NSString stringWithFormat:@"plusTen%d.png", i]]];
         }
-        plusTenAnim = [[CCAnimation animationWithFrames:plusTenAnimFrames delay:.06f] retain];
+        plusTenAnim = [[CCAnimation animationWithFrames:plusTenAnimFrames delay:.04f] retain];
         self.plusTenAction = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:plusTenAnim restoreOriginalFrame:NO] times:1];
         [plusTenAnimFrames release];
 
-        NSMutableArray *plus25AnimFrames = [[NSMutableArray alloc] initWithCapacity:12];
+        NSMutableArray *plus25AnimFrames = [[NSMutableArray alloc] initWithCapacity:13];
         for(int i = 1; i <= 13; i++){
             [plus25AnimFrames addObject:
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
               [NSString stringWithFormat:@"Plus_25_sm_%d.png", i]]];
         }
-        plus25Anim = [[CCAnimation animationWithFrames:plus25AnimFrames delay:.06f] retain];
+        plus25Anim = [[CCAnimation animationWithFrames:plus25AnimFrames delay:.04f] retain];
         self.plus25Action = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:plus25Anim restoreOriginalFrame:NO] times:1];
         [plus25AnimFrames release];
 
@@ -1716,7 +1716,7 @@
                         _points += ud->dogsOnHead * 25;
                         NSMutableArray *plus25Params = [[NSMutableArray alloc] initWithCapacity:2];
                         [plus25Params addObject:[NSNumber numberWithInt:b->GetPosition().x*PTM_RATIO]];
-                        [plus25Params addObject:[NSNumber numberWithInt:(b->GetPosition().y+5.2)*PTM_RATIO]];
+                        [plus25Params addObject:[NSNumber numberWithInt:(b->GetPosition().y+4.7)*PTM_RATIO]];
                         [self runAction:[CCCallFuncND actionWithTarget:self selector:@selector(plusTwentyFive:data:) data:plus25Params]];
                     }
                     if(ud->sprite1.tag == S_POLICE){
