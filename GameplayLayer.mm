@@ -796,7 +796,7 @@
                       [NSString stringWithFormat:@"CrustPunk_Head_Dog_%d.png", i]]];
                 }
                 break;
-            case S_JOGGER: //crust punk
+            case S_JOGGER: //jogger
                 self.personLower = [CCSprite spriteWithSpriteFrameName:@"Jogger_Run_1.png"];
                 self.personUpper = [CCSprite spriteWithSpriteFrameName:@"Jogger_Head_NoDog_1.png"];
                 self.personUpperOverlay = [CCSprite spriteWithSpriteFrameName:@"Jogger_Head_Dog_1.png"];
@@ -836,6 +836,48 @@
                     [faceDogWalkAnimFrames addObject:
                      [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
                       [NSString stringWithFormat:@"Jogger_Head_Dog_%d.png", i]]];
+                }
+                break;
+            case S_YNGPRO: //young professional
+                self.personLower = [CCSprite spriteWithSpriteFrameName:@"YoungProfesh_Walk_1.png"];
+                self.personUpper = [CCSprite spriteWithSpriteFrameName:@"YoungProfesh_Head_NoDog_1.png"];
+                self.personUpperOverlay = [CCSprite spriteWithSpriteFrameName:@"YoungProfesh_Head_Dog_1.png"];
+                ogHeadSprite = [NSString stringWithString:@"YoungProfesh_Head_NoDog_1.png"];
+                _personLower.tag = S_YNGPRO;
+                _personUpper.tag = S_YNGPRO;
+                _personUpperOverlay.tag = S_YNGPRO;
+                hitboxWidth = 24.0;
+                hitboxHeight = .0001;
+                hitboxCenterX = 0;
+                hitboxCenterY = 4.0;
+                velocityMul = 300;
+                sensorHeight = 1.3f;
+                sensorWidth = 1.5f;
+                density = 10.0f;
+                restitution = .4f; //bounce
+                friction = 0.15f;
+                framerate = .06f;
+                fTag = F_JOGHED;
+                heightOffset = 2.9f;
+                for(int i = 1; i <= 8; i++){
+                    [walkAnimFrames addObject:
+                     [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                      [NSString stringWithFormat:@"YoungProfesh_Walk_%d.png", i]]];
+                }
+                for(int i = 1; i <= 1; i++){
+                    [idleAnimFrames addObject:
+                     [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                      [NSString stringWithFormat:@"YoungProfesh_Walk_%d.png", i]]];
+                }
+                for(int i = 1; i <= 4; i++){
+                    [faceWalkAnimFrames addObject:
+                     [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                      [NSString stringWithFormat:@"YoungProfesh_Head_NoDog_%d.png", i]]];
+                }
+                for(int i = 1; i <= 4; i++){
+                    [faceDogWalkAnimFrames addObject:
+                     [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                      [NSString stringWithFormat:@"YoungProfesh_Head_Dog_%d.png", i]]];
                 }
                 break;
         }
@@ -1210,7 +1252,7 @@
         [xPositions addObject:[NSNumber numberWithInt:winSize.width+30]];
         [xPositions addObject:[NSNumber numberWithInt:-30]];
         characterTags = [[NSMutableArray alloc] initWithCapacity:2];
-        for(int i = S_BUSMAN; i <= S_JOGGER; i++){ // to allow for more characters, pick a value > S_POLICE && < S_TOPPSN
+        for(int i = S_BUSMAN; i <= S_YNGPRO; i++){ // to allow for more characters, pick a value > S_POLICE && < S_TOPPSN
             [characterTags addObject:[NSNumber numberWithInt:i]];
         }
         movementParameters = [[NSMutableArray alloc] initWithCapacity:2];
