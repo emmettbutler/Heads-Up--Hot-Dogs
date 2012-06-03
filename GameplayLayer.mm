@@ -52,7 +52,8 @@
 @synthesize armShootAction = _armShootAction;
 @synthesize plusTenAction = _plusTenAction;
 @synthesize plus25Action = _plus25Action;
-@synthesize plus100Action = _plus100Action;
+@synthesize plus100LeftAction = _plus100LeftAction;
+@synthesize plus100RightAction = _plus100RightAction;
 
 +(CCScene *) scene {
     CCScene *scene = [CCScene node];
@@ -239,7 +240,7 @@
     [twentyFive runAction:seq];
 }
 
--(void)plusOneHundred:(id)sender data:(void*)params {
+-(void)plusOneHundredLeft:(id)sender data:(void*)params {
     NSNumber *xPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:0];
     NSNumber *yPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:1];
     
@@ -251,7 +252,23 @@
     [removeParams addObject:[NSValue valueWithPointer:oneHundred]];
     CCAction *removeAction = [CCCallFuncND actionWithTarget:self selector:@selector(removeSprite:data:) data:removeParams];
     
-    id seq = [CCSequence actions:_plus100Action, removeAction, nil];
+    id seq = [CCSequence actions:_plus100LeftAction, removeAction, nil];
+    [oneHundred runAction:seq];
+}
+
+-(void)plusOneHundredRight:(id)sender data:(void*)params {
+    NSNumber *xPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:0];
+    NSNumber *yPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:1];
+    
+    CCSprite *oneHundred = [CCSprite spriteWithSpriteFrameName:@"Plus_100_R_1.png"];
+    oneHundred.position = ccp(xPos.intValue, yPos.intValue);
+    [self addChild:oneHundred];
+    
+    NSMutableArray *removeParams = [[NSMutableArray alloc] initWithCapacity:1];
+    [removeParams addObject:[NSValue valueWithPointer:oneHundred]];
+    CCAction *removeAction = [CCCallFuncND actionWithTarget:self selector:@selector(removeSprite:data:) data:removeParams];
+    
+    id seq = [CCSequence actions:_plus100RightAction, removeAction, nil];
     [oneHundred runAction:seq];
 }
 
@@ -1328,15 +1345,25 @@
         self.plus25Action = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:plus25Anim restoreOriginalFrame:NO] times:1];
         [plus25AnimFrames release];
         
-        NSMutableArray *plus100AnimFrames = [[NSMutableArray alloc] initWithCapacity:18];
+        NSMutableArray *plus100LeftAnimFrames = [[NSMutableArray alloc] initWithCapacity:18];
         for(int i = 1; i <= 18; i++){
-            [plus25AnimFrames addObject:
+            [plus100LeftAnimFrames addObject:
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
               [NSString stringWithFormat:@"Plus_100_%d.png", i]]];
         }
-        plus100Anim = [[CCAnimation animationWithFrames:plus100AnimFrames delay:.04f] retain];
-        self.plus100Action = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:plus100Anim restoreOriginalFrame:NO] times:1];
-        [plus100AnimFrames release];
+        plus100LeftAnim = [[CCAnimation animationWithFrames:plus100LeftAnimFrames delay:.04f] retain];
+        self.plus100LeftAction = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:plus100LeftAnim restoreOriginalFrame:NO] times:1];
+        [plus100LeftAnimFrames release];
+        
+        NSMutableArray *plus100RightAnimFrames = [[NSMutableArray alloc] initWithCapacity:18];
+        for(int i = 1; i <= 18; i++){
+            [plus100RightAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"Plus_100_R_%d.png", i]]];
+        }
+        plus100RightAnim = [[CCAnimation animationWithFrames:plus100RightAnimFrames delay:.04f] retain];
+        self.plus100RightAction = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:plus100RightAnim restoreOriginalFrame:NO] times:1];
+        [plus100RightAnimFrames release];
 
         //schedule callbacks for dogs, people, and game value decrements
         personParameters = [[NSMutableArray alloc] initWithCapacity:2];
@@ -1873,13 +1900,16 @@
                         if(ud->dogsOnHead != 0){
                             NSMutableArray *plus100Params = [[NSMutableArray alloc] initWithCapacity:2];
                             if(ud->sprite1.flipX){
-                                [plus100Params addObject:[NSNumber numberWithInt:(b->GetPosition().x-4.2)*PTM_RATIO]];
+                                [plus100Params addObject:[NSNumber numberWithInt:(b->GetPosition().x-5.9)*PTM_RATIO]];
+                                [plus100Params addObject:[NSNumber numberWithInt:(b->GetPosition().y+4.7)*PTM_RATIO]];
+                                [self runAction:[CCCallFuncND actionWithTarget:self selector:@selector(plusOneHundredRight:data:) data:plus100Params]];
                             }
                             else{
-                                [plus100Params addObject:[NSNumber numberWithInt:(b->GetPosition().x+2.5)*PTM_RATIO]];
+                                [plus100Params addObject:[NSNumber numberWithInt:(b->GetPosition().x+4.2)*PTM_RATIO]];
+                                [plus100Params addObject:[NSNumber numberWithInt:(b->GetPosition().y+4.7)*PTM_RATIO]];
+                                [self runAction:[CCCallFuncND actionWithTarget:self selector:@selector(plusOneHundredLeft:data:) data:plus100Params]];
                             }
-                            [plus100Params addObject:[NSNumber numberWithInt:(b->GetPosition().y+4.7)*PTM_RATIO]];
-                            [self runAction:[CCCallFuncND actionWithTarget:self selector:@selector(plusOneHundred:data:) data:plus100Params]];
+                            
                         }
                         if(ud->sprite1.tag == S_POLICE){
                             _shootLock = 0;
