@@ -23,7 +23,6 @@
     b2Body *_wallsBody, *_groundBody, *wienerBody, *targetBody, *_personBody, *_policeArmBody;
     b2Fixture *_bottomFixture, *_wallsFixture, *_wienerFixture, *_targetFixture, *_personFixture, *_policeArmFixture;
     CCSprite *_wiener, *_personLower, *_personUpper, *_personUpperOverlay, *_target, *_pauseButton;
-    b2MouseJoint *_mouseJoint;
     CCAction *_walkAction, *_walkFaceAction;
     CCFiniteTimeAction *_idleAction, *_appearAction, *_hitAction, *_shotAction, *_shootAction, *_armShootAction, *_shootFaceAction, *_plusTenAction, *_plus25Action;
     CCFiniteTimeAction *_plus100Action;
@@ -36,11 +35,11 @@
     CCLayerColor *_pauseLayer;
     CCLayer *_introLayer;
     CCMenu *_pauseMenu;
-    NSMutableArray *floorBits, *xPositions, *characterTags, *wienerParameters, *headParams;
+    NSMutableArray *floorBits, *xPositions, *characterTags, *wienerParameters, *headParams, *mouseJoints;
     NSMutableArray *personParameters, *wakeParameters, *movementPatterns, *movementParameters, *_touchLocations, *dogIcons;
     NSString *scoreText, *droppedText;
     int _points, _droppedCount, _spawnLimiter, time, _curPersonMaskBits, _droppedSpacing, _lastTouchTime, _firstDeathTime, lowerArmAngle, upperArmAngle;
-    int _peopleGrumped, _dogsSaved;
+    int _peopleGrumped, _dogsSaved, _id_counter;
     float _personSpawnDelayTime, _wienerSpawnDelayTime, _wienerKillDelay, _currentRayAngle;
     BOOL _moving, _touchedDog, _rayTouchingDog, _pause, _shootLock, _intro, _dogHasHitGround, _dogHasDied, _policeOnScreen;
     NSString *currentAnimation;
@@ -73,6 +72,7 @@
         BOOL grabbed;
         double targetAngle;
         int dogsOnHead;
+        int unique_id;
         int collideFilter;
         BOOL hasTouchedHead;
         BOOL _dog_isOnHead;
@@ -82,6 +82,12 @@
     struct fixtureUserData {
         int tag;
         int ogCollideFilters;
+    };
+    
+    struct mouseJointUserData {
+        int touch; // the unique identifier for this mouse joint
+        double prevX;
+        double prevY;
     };
 
     enum _collisionFilters {
