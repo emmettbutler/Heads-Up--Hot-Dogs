@@ -450,8 +450,16 @@
     [self addChild:_wiener];
 
     //create death animation
-    NSMutableArray *wienerDeathAnimFrames = [[NSMutableArray alloc] initWithCapacity:9];
-    for(int i = 1; i <= 9; i++){
+    NSMutableArray *wienerDeathAnimFrames = [[NSMutableArray alloc] initWithCapacity:23];
+    for(int i = 0; i < 8; i++){
+        [wienerDeathAnimFrames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithFormat:@"Dog_Die_1.png"]]];
+        [wienerDeathAnimFrames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithFormat:@"Dog_Die_2.png"]]];
+    }
+    for(int i = 1; i <= 7; i++){
         [wienerDeathAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
           [NSString stringWithFormat:@"Dog_Die_%d.png", i]]];
