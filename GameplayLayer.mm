@@ -497,6 +497,7 @@
     ud->altAction2 = _shotAction;
     ud->aimedAt = false;
     ud->hasTouchedHead = false;
+    ud->hasLeftScreen = false;
     ud->_dog_isOnHead = false;
 
     fixtureUserData *fUd1 = new fixtureUserData();
@@ -997,6 +998,7 @@
         ud->altAnimation = walkFaceAnim;
         ud->collideFilter = _curPersonMaskBits;
         ud->aiming = false;
+        ud->hasLeftScreen = false;
         ud->_person_hasTouchedDog = false;
         if(character.intValue == 4){
             ud->altAction2 = _shootAction;
@@ -1359,7 +1361,7 @@
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
               [NSString stringWithFormat:@"Plus_100_%d.png", i]]];
         }
-        plus100LeftAnim = [[CCAnimation animationWithFrames:plus100LeftAnimFrames delay:.04f] retain];
+        plus100LeftAnim = [[CCAnimation animationWithFrames:plus100LeftAnimFrames delay:.05f] retain];
         self.plus100LeftAction = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:plus100LeftAnim restoreOriginalFrame:NO] times:1];
         [plus100LeftAnimFrames release];
         
@@ -1369,7 +1371,7 @@
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
               [NSString stringWithFormat:@"Plus_100_R_%d.png", i]]];
         }
-        plus100RightAnim = [[CCAnimation animationWithFrames:plus100RightAnimFrames delay:.04f] retain];
+        plus100RightAnim = [[CCAnimation animationWithFrames:plus100RightAnimFrames delay:.05f] retain];
         self.plus100RightAction = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:plus100RightAnim restoreOriginalFrame:NO] times:1];
         [plus100RightAnimFrames release];
 
@@ -1580,9 +1582,66 @@
     b2Vec2 intersectionPoint(0,0);
 
     //any non-collision actions that apply to multiple onscreen entities happen here
+    
     for(b2Body* b = _world->GetBodyList(); b; b = b->GetNext()){
         if(b->GetUserData() && b->GetUserData() != (void*)100){
             bodyUserData *ud = (bodyUserData*)b->GetUserData();
+            //boilerplate - update sprite positions to match their physics bodies
+            ud->sprite1.position = CGPointMake( b->GetPosition().x * PTM_RATIO, b->GetPosition().y * PTM_RATIO);
+            ud->sprite1.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
+            
+            if((ud->sprite1.position.x > winSize.width+(ud->sprite1.contentSize.width/2) || ud->sprite1.position.x < 0-(ud->sprite1.contentSize.width/2))
+               && ud->hasLeftScreen == false){
+                ud->hasLeftScreen = true;
+                _points += ud->dogsOnHead * 100;
+                if(ud->dogsOnHead != 0){
+                    CCSprite *oneHundred = [CCSprite spriteWithSpriteFrameName:@"Plus_100_1.png"];
+                    NSMutableArray *plus100Params = [[NSMutableArray alloc] initWithCapacity:2];
+                    if(ud->sprite1.flipX){
+                        [plus100Params addObject:[NSNumber numberWithInt:winSize.width-(oneHundred.contentSize.width/2)]];
+                        [plus100Params addObject:[NSNumber numberWithInt:(b->GetPosition().y+4.7)*PTM_RATIO]];
+                        [self runAction:[CCCallFuncND actionWithTarget:self selector:@selector(plusOneHundredRight:data:) data:plus100Params]];
+                    }
+                    else{
+                        [plus100Params addObject:[NSNumber numberWithInt:(oneHundred.contentSize.width/2)]];
+                        [plus100Params addObject:[NSNumber numberWithInt:(b->GetPosition().y+4.7)*PTM_RATIO]];
+                        [self runAction:[CCCallFuncND actionWithTarget:self selector:@selector(plusOneHundredLeft:data:) data:plus100Params]];
+                    }
+                }
+            }
+            
+            //destroy any sprite/body pair that's offscreen
+            if(ud->sprite1.position.x > winSize.width + 100 || ud->sprite1.position.x < -40 ||
+               ud->sprite1.position.y > winSize.height + 40 || ud->sprite1.position.y < -40){
+                // points for dogs that leave the screen on a person's head
+                if(ud->sprite1.tag >= S_BUSMAN && ud->sprite1.tag <= S_TOPPSN){
+                    if(ud->sprite1.tag == S_POLICE){
+                        _shootLock = 0;
+                    }
+                }
+                _world->DestroyBody(b);
+                if(ud->sprite1.tag == S_HOTDOG){
+                    _dogsSaved++;
+                }
+                if(_mouseJoint && _mouseJoint->GetBodyB() == b){
+                    _world->DestroyJoint(_mouseJoint);
+                    _mouseJoint = NULL;
+                }
+                CCLOG(@"Body removed");
+                [ud->sprite1 removeFromParentAndCleanup:YES];
+                if(ud->sprite2 != NULL){
+                    [ud->sprite2 removeFromParentAndCleanup:YES];
+                }
+                if(ud->angryFace != NULL){
+                    [ud->angryFace removeFromParentAndCleanup:YES];
+                }
+                if(ud->overlaySprite != NULL){
+                    [ud->overlaySprite removeFromParentAndCleanup:YES];
+                }
+                ud = NULL;
+                continue;
+            }
+            
             if(ud->overlaySprite != NULL){
                 if(ud->sprite1.tag == S_POLICE){
                     if(!ud->aiming)
@@ -1785,7 +1844,6 @@
                 }
                 else if(ud->sprite1.tag >= S_BUSMAN && ud->sprite1.tag <= S_TOPPSN){
                     ud->dogsOnHead = 0;
-                    BOOL dogOnHead = false;
                     for(b2Fixture* fixture = b->GetFixtureList(); fixture; fixture = fixture->GetNext()){
                         fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
                         // detect if any people have dogs on or above their heads
@@ -1797,7 +1855,6 @@
                                         b2Vec2 dogLocation = b2Vec2(body->GetPosition().x, body->GetPosition().y);
                                         if(fixture->TestPoint(dogLocation) && dogUd->hasTouchedHead && !dogUd->grabbed &&
                                            dogUd->collideFilter == ud->collideFilter){
-                                            dogOnHead = true;
                                             ud->dogsOnHead++;
                                             // if the dog is within the head sensor, then it is on a head
                                             dogUd->_dog_isOnHead = true;
@@ -1805,14 +1862,12 @@
                                     }
                                 }
                             }
-                            if(!dogOnHead){
-                                ud->dogsOnHead = 0;
+                            if(ud->dogsOnHead == 0){
                                 [ud->angryFace setVisible:NO];
                                 [ud->sprite2 setVisible:YES];
                             } else {
                                 [ud->angryFace setVisible:YES];
                                 [ud->sprite2 setVisible:NO];
-                                //NSLog(@"Dog on head, person has %d dogs on head", ud->dogsOnHead);
                             }
                         }
                     }
@@ -1858,7 +1913,7 @@
                                         dx = abs(b->GetPosition().x - aimedDog->GetPosition().x);
                                         dy = abs(b->GetPosition().y - aimedDog->GetPosition().y);
                                         a = acos(dx / sqrt((dx*dx) + (dy*dy)));
-                                        CCLOG(@"Angle to dog: %0.2f - Upper angle: %0.2f - lower angle: %0.2f", a, upperArmAngle, lowerArmAngle);
+                                        CCLOG(@"Angle to dog: %0.2f - Upper angle: %df - lower angle: %d", a, upperArmAngle, lowerArmAngle);
                                         ud->targetAngle = a;
                                         if(sqrt(pow(dx, 2) + pow(dy, 2)) < rayLength * PTM_RATIO && 
                                            ((ud->sprite1.flipX && ud->targetAngle < upperArmAngle && ud->targetAngle > lowerArmAngle) ||
@@ -1894,55 +1949,6 @@
                     input.p1 = policeRayPoint1;
                     input.p2 = policeRayPoint2;
                     input.maxFraction = 1;
-                }
-                //boilerplate - update sprite positions to match their physics bodies
-                ud->sprite1.position = CGPointMake( b->GetPosition().x * PTM_RATIO, b->GetPosition().y * PTM_RATIO);
-                ud->sprite1.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
-                
-                //destroy any sprite/body pair that's offscreen
-                if(ud->sprite1.position.x > winSize.width + 100 || ud->sprite1.position.x < -40 ||
-                   ud->sprite1.position.y > winSize.height + 40 || ud->sprite1.position.y < -40){
-                    // points for dogs that leave the screen on a person's head
-                    if(ud->sprite1.tag >= S_BUSMAN && ud->sprite1.tag <= S_TOPPSN){
-                        _points += ud->dogsOnHead * 100;
-                        if(ud->dogsOnHead != 0){
-                            NSMutableArray *plus100Params = [[NSMutableArray alloc] initWithCapacity:2];
-                            if(ud->sprite1.flipX){
-                                [plus100Params addObject:[NSNumber numberWithInt:(b->GetPosition().x-5.9)*PTM_RATIO]];
-                                [plus100Params addObject:[NSNumber numberWithInt:(b->GetPosition().y+4.7)*PTM_RATIO]];
-                                [self runAction:[CCCallFuncND actionWithTarget:self selector:@selector(plusOneHundredRight:data:) data:plus100Params]];
-                            }
-                            else{
-                                [plus100Params addObject:[NSNumber numberWithInt:(b->GetPosition().x+4.2)*PTM_RATIO]];
-                                [plus100Params addObject:[NSNumber numberWithInt:(b->GetPosition().y+4.7)*PTM_RATIO]];
-                                [self runAction:[CCCallFuncND actionWithTarget:self selector:@selector(plusOneHundredLeft:data:) data:plus100Params]];
-                            }
-                            
-                        }
-                        if(ud->sprite1.tag == S_POLICE){
-                            _shootLock = 0;
-                        }
-                    }
-                    if(ud->sprite1.tag == S_HOTDOG){
-                        _dogsSaved++;
-                    }
-                    if(_mouseJoint && _mouseJoint->GetBodyB() == b){
-                        _world->DestroyJoint(_mouseJoint);
-                        _mouseJoint = NULL;
-                    }
-                    _world->DestroyBody(b);
-                    CCLOG(@"Body removed");
-                    [ud->sprite1 removeFromParentAndCleanup:YES];
-                    if(ud->sprite2 != NULL){
-                        [ud->sprite2 removeFromParentAndCleanup:YES];
-                    }
-                    if(ud->angryFace != NULL){
-                        [ud->angryFace removeFromParentAndCleanup:YES];
-                    }
-                    if(ud->overlaySprite != NULL){
-                        [ud->overlaySprite removeFromParentAndCleanup:YES];
-                    }
-                    ud = NULL;
                 }
             }
         }

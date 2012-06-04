@@ -71,6 +71,7 @@
         BOOL aimedAt;
         BOOL animLock;
         BOOL grabbed;
+        BOOL hasLeftScreen;
         double targetAngle;
         int dogsOnHead;
         int collideFilter;
