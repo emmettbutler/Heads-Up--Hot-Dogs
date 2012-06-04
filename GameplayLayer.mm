@@ -1611,7 +1611,7 @@
             }
             
             //destroy any sprite/body pair that's offscreen
-            if(ud->sprite1.position.x > winSize.width + 100 || ud->sprite1.position.x < -40 ||
+            if(ud->sprite1.position.x > winSize.width + 500 || ud->sprite1.position.x < -500 ||
                ud->sprite1.position.y > winSize.height + 40 || ud->sprite1.position.y < -40){
                 // points for dogs that leave the screen on a person's head
                 if(ud->sprite1.tag >= S_BUSMAN && ud->sprite1.tag <= S_TOPPSN){
@@ -1851,7 +1851,7 @@
                             for(b2Body* body = _world->GetBodyList(); body; body = body->GetNext()){
                                 if(body->GetUserData() && body->GetUserData() != (void*)100){
                                     bodyUserData *dogUd = (bodyUserData*)body->GetUserData();
-                                    if(dogUd != NULL && dogUd->sprite1.tag == S_HOTDOG){
+                                    if(dogUd != NULL && dogUd->sprite1 && dogUd->sprite1.tag == S_HOTDOG){
                                         b2Vec2 dogLocation = b2Vec2(body->GetPosition().x, body->GetPosition().y);
                                         if(fixture->TestPoint(dogLocation) && dogUd->hasTouchedHead && !dogUd->grabbed &&
                                            dogUd->collideFilter == ud->collideFilter){
@@ -1871,7 +1871,7 @@
                             }
                         }
                     }
-                    if(!(time % 45) && ud->dogsOnHead){
+                    if(!(time % 45) && ud->dogsOnHead != 0){
                         _points += ud->dogsOnHead * 25;
                         NSMutableArray *plus25Params = [[NSMutableArray alloc] initWithCapacity:2];
                         [plus25Params addObject:[NSNumber numberWithInt:b->GetPosition().x*PTM_RATIO]];
