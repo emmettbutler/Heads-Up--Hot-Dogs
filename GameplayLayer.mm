@@ -378,19 +378,19 @@
     CCLOG(@"Destroying dog (tag %d)...", dogSprite.tag);
 
     if(dogSprite.tag == S_HOTDOG){
-        dogBody->SetAwake(false);
-        [dogSprite stopAllActions];
-        [dogSprite removeFromParentAndCleanup:YES];
-        [ud->overlaySprite removeFromParentAndCleanup:YES];
-
         if(dogBody->GetPosition().x > winSize.width || dogBody->GetPosition().x < 0)
             return;
         
+        dogBody->SetAwake(false);
         _world->DestroyBody(dogBody);
+        [dogSprite stopAllActions];
+        [dogSprite removeFromParentAndCleanup:YES];
+        [ud->overlaySprite removeFromParentAndCleanup:YES];
         
         free(ud);
         ud = NULL;
         dogBody->SetUserData(NULL);
+        
         dogBody = nil;
         
         if(!_intro){
@@ -1239,7 +1239,7 @@
         CCSprite *droppedRightEnd = [CCSprite spriteWithSpriteFrameName:@"WienerCount_RightEnd.png"];;
         droppedRightEnd.position = ccp(winSize.width-182, DOG_COUNTER_HT);
         [self addChild:droppedRightEnd z:70];
-        dogIcons = [[NSMutableArray alloc] initWithCapacity:DROPPED_MAX];
+        dogIcons = [[NSMutableArray alloc] initWithCapacity:DROPPED_MAX+1];
         for(int i = 200; i < 200+(23*DROPPED_MAX); i += 23){
             CCSprite *dogIcon = [CCSprite spriteWithSpriteFrameName:@"WienerCount_Wiener.png"];
             dogIcon.position = ccp(winSize.width-i, DOG_COUNTER_HT);
@@ -1851,7 +1851,8 @@
                         if(fUd->tag >= F_BUSSEN && fUd->tag <= F_TOPSEN){
                             for(b2Body* body = _world->GetBodyList(); body; body = body->GetNext()){
                                 if(body->GetUserData() && body->GetUserData() != (void*)100){
-                                    bodyUserData *dogUd = (bodyUserData*)body->GetUserData();
+                                    bodyUserData *dogUd = (bodyUserData *)body->GetUserData();
+                                    if(!dogUd->sprite1) continue;
                                     if(dogUd->sprite1.tag == S_HOTDOG){
                                         b2Vec2 dogLocation = b2Vec2(body->GetPosition().x, body->GetPosition().y);
                                         if(fixture->TestPoint(dogLocation) && dogUd->hasTouchedHead && !dogUd->grabbed &&
@@ -2028,8 +2029,6 @@
     _mouseJoint->SetTarget(locationWorld);
     b2Body *body = _mouseJoint->GetBodyB();
     bodyUserData *ud = (bodyUserData *)body->GetUserData();
-    if(!ud)
-        return;
     CCSprite *sprite = ud->sprite1;
 
     for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
