@@ -52,6 +52,8 @@
 @synthesize armShootAction = _armShootAction;
 @synthesize plusTenAction = _plusTenAction;
 @synthesize plus25Action = _plus25Action;
+@synthesize plus25BigAction = _plus25BigAction;
+@synthesize plus15Action = _plus15Action;
 @synthesize plus100LeftAction = _plus100LeftAction;
 @synthesize plus100RightAction = _plus100RightAction;
 
@@ -192,9 +194,9 @@
         if(_wienerSpawnDelayTime > 1){
             _wienerSpawnDelayTime -= 1;
         }
-        if(_wienerKillDelay > 1){
+        /*if(_wienerKillDelay > 1){
             _wienerKillDelay -= 1;
-        }
+        }*/
         CCLOG(@"WienerKillDelay: %0.2f", _wienerKillDelay);
         CCLOG(@"SpawnLimiter: %d", _spawnLimiter);
         CCLOG(@"PersonSpawnDelayTime: %0.2f", _personSpawnDelayTime);
@@ -208,20 +210,28 @@
     [self removeChild:sprite cleanup:YES];
 }
 
--(void)plusTen:(id)sender data:(void*)params {
+-(void)plusPoints:(id)sender data:(void*)params {
     NSNumber *xPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:0];
     NSNumber *yPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:1];
+    NSNumber *points = (NSNumber *)[(NSMutableArray *) params objectAtIndex:2];
 
-    CCSprite *ten = [CCSprite spriteWithSpriteFrameName:@"plusTen1.png"];
-    ten.position = ccp(xPos.intValue, yPos.intValue);
-    [self addChild:ten];
+    CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"plusTen1.png"];
+    sprite.position = ccp(xPos.intValue, yPos.intValue);
+    [self addChild:sprite];
 
     NSMutableArray *removeParams = [[NSMutableArray alloc] initWithCapacity:1];
-    [removeParams addObject:[NSValue valueWithPointer:ten]];
+    [removeParams addObject:[NSValue valueWithPointer:sprite]];
     CCAction *removeAction = [CCCallFuncND actionWithTarget:self selector:@selector(removeSprite:data:) data:removeParams];
+    
+    id seq;
 
-    id seq = [CCSequence actions:_plusTenAction, removeAction, nil];
-    [ten runAction:seq];
+    switch(points.intValue){
+        case 10: seq = [CCSequence actions:_plusTenAction, removeAction, nil]; break;
+        case 15: seq = [CCSequence actions:_plus15Action, removeAction, nil]; break;
+        case 25: seq = [CCSequence actions:_plus25BigAction, removeAction, nil]; break;
+    }
+    
+    [sprite runAction:seq];
 }
 
 -(void)plusTwentyFive:(id)sender data:(void*)params {
@@ -1353,6 +1363,26 @@
         self.plusTenAction = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:plusTenAnim restoreOriginalFrame:NO] times:1];
         [plusTenAnimFrames release];
 
+        NSMutableArray *plus15AnimFrames = [[NSMutableArray alloc] initWithCapacity:13];
+        for(int i = 1; i <= 11; i++){
+            [plus15AnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"PlusFifteen%d.png", i]]];
+        }
+        plus15Anim = [[CCAnimation animationWithFrames:plus15AnimFrames delay:.04f] retain];
+        self.plus15Action = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:plus15Anim restoreOriginalFrame:NO] times:1];
+        [plus15AnimFrames release];
+        
+        NSMutableArray *plus25BigAnimFrames = [[NSMutableArray alloc] initWithCapacity:13];
+        for(int i = 1; i <= 12; i++){
+            [plus25BigAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"plusTwentyFive%d.png", i]]];
+        }
+        plus25BigAnim = [[CCAnimation animationWithFrames:plus25BigAnimFrames delay:.04f] retain];
+        self.plus25BigAction = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:plus25BigAnim restoreOriginalFrame:NO] times:1];
+        [plus25BigAnimFrames release];
+        
         NSMutableArray *plus25AnimFrames = [[NSMutableArray alloc] initWithCapacity:13];
         for(int i = 1; i <= 13; i++){
             [plus25AnimFrames addObject:
@@ -1485,7 +1515,7 @@
                 // a dog is definitely on a head when it collides with that head
                 ud->_dog_isOnHead = true;
                 if(_intro && time - _lastTouchTime < 80){
-                    //_intro = false;
+                    _intro = false;
                     [standardUserDefaults setInteger:1 forKey:@"introDone"];
                     [standardUserDefaults synchronize];
                 }
@@ -1525,14 +1555,19 @@
                 heartParticles.duration = 0.1f;
                 [self addChild:heartParticles z:60];
                 if(!_intro && !ud->hasTouchedHead){
+                    NSMutableArray *plusPointsParams = [[NSMutableArray alloc] initWithCapacity:3];
+                    [plusPointsParams addObject:[NSNumber numberWithInt:pBody->GetPosition().x*PTM_RATIO]];
+                    [plusPointsParams addObject:[NSNumber numberWithInt:(pBody->GetPosition().y+4.7)*PTM_RATIO]];
+                    int p;
                     switch(pUd->sprite1.tag){
-                        case S_POLICE: _points += 30; break; // police
-                        default: _points += 10; break; // any others
+                        case S_CRPUNK: p = 10; break;
+                        case S_JOGGER: p = 25; break;
+                        case S_BUSMAN: p = 10; break;
+                        default: p = 15; break;
                     }
-                    NSMutableArray *plusTenParams = [[NSMutableArray alloc] initWithCapacity:2];
-                    [plusTenParams addObject:[NSNumber numberWithInt:pBody->GetPosition().x*PTM_RATIO]];
-                    [plusTenParams addObject:[NSNumber numberWithInt:(pBody->GetPosition().y+4.7)*PTM_RATIO]];
-                    [self runAction:[CCCallFuncND actionWithTarget:self selector:@selector(plusTen:data:) data:plusTenParams]];
+                    [plusPointsParams addObject:[NSNumber numberWithInt:p]];
+                    _points += p;
+                    [self runAction:[CCCallFuncND actionWithTarget:self selector:@selector(plusPoints:data:) data:plusPointsParams]];
                 }
                 ud->hasTouchedHead = true;
                 if(!pUd->_person_hasTouchedDog){
@@ -1878,7 +1913,7 @@
                             }
                         }
                     }
-                    if(!(time % 45) && ud->dogsOnHead != 0){
+                    if(!(time % 45) && ud->dogsOnHead != 0 && !_intro){
                         _points += ud->dogsOnHead * 25;
                         NSMutableArray *plus25Params = [[NSMutableArray alloc] initWithCapacity:2];
                         [plus25Params addObject:[NSNumber numberWithInt:b->GetPosition().x*PTM_RATIO]];
@@ -2003,6 +2038,7 @@
                             // if the dog is not already grabbed and one of the touches is on it, make the joint
                             if (!ud->grabbed && ((fixture->TestPoint(locations[0]) && !touched1) || (fixture->TestPoint(locations[1]) && !touched2))){
                                 dogsTouched++;
+                                _lastTouchTime = time;
                                 ud->grabbed = true;
                                 ud->hasTouchedHead = false;
                                 body->SetAwake(false);
@@ -2097,7 +2133,14 @@
                         if(!ud->aimedAt){
                             [sprite stopAllActions];
                         }
-                        if(abs(locations[i].x - jUd->prevX) < .5 && abs(locations[i].y - jUd->prevY) < .5){
+                        if(count > 1){
+                            if(abs(locations[i].x - jUd->prevX) < .5 && abs(locations[i].y - jUd->prevY) < .5){
+                                mj->SetTarget(locations[i]);
+                                //CCLOG(@"Setting target to %0.2f x %0.2f", locations[i].x, locations[i].y);
+                                jUd->prevX = locations[i].x;
+                                jUd->prevY = locations[i].y;
+                            }
+                        } else {
                             mj->SetTarget(locations[i]);
                             //CCLOG(@"Setting target to %0.2f x %0.2f", locations[i].x, locations[i].y);
                             jUd->prevX = locations[i].x;

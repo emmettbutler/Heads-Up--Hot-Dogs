@@ -25,9 +25,9 @@
     CCSprite *_wiener, *_personLower, *_personUpper, *_personUpperOverlay, *_target, *_pauseButton;
     CCAction *_walkAction, *_walkFaceAction;
     CCFiniteTimeAction *_idleAction, *_appearAction, *_hitAction, *_shotAction, *_shootAction, *_armShootAction, *_shootFaceAction, *_plusTenAction, *_plus25Action;
-    CCFiniteTimeAction *_plus100LeftAction, *_plus100RightAction;
+    CCFiniteTimeAction *_plus100LeftAction, *_plus100RightAction, *_plus15Action, *_plus25BigAction;
     CCAnimation *walkAnim, *idleAnim, *hitAnim, *dogDeathAnim, *dogAppearAnim, *walkFaceAnim, *walkDogFaceAnim;
-    CCAnimation *dogShotAnim, *shootAnim, *armShootAnim, *shootFaceAnim, *plusTenAnim, *plus25Anim, *plus100RightAnim, *plus100LeftAnim;
+    CCAnimation *dogShotAnim, *shootAnim, *armShootAnim, *shootFaceAnim, *plusTenAnim, *plus25Anim, *plus100RightAnim, *plus100LeftAnim, *plus15Anim, *plus25BigAnim;
     CCSpriteBatchNode *spriteSheet;
     CCLabelTTF *scoreLabel, *droppedLabel, *tutorialLabel;
     b2Vec2 policeRayPoint1, policeRayPoint2;
@@ -160,7 +160,9 @@
 @property (nonatomic, retain) CCFiniteTimeAction *shootFaceAction;
 @property (nonatomic, retain) CCFiniteTimeAction *armShootAction;
 @property (nonatomic, retain) CCFiniteTimeAction *plusTenAction;
+@property (nonatomic, retain) CCFiniteTimeAction *plus15Action;
 @property (nonatomic, retain) CCFiniteTimeAction *plus25Action;
+@property (nonatomic, retain) CCFiniteTimeAction *plus25BigAction;
 @property (nonatomic, retain) CCFiniteTimeAction *plus100LeftAction;
 @property (nonatomic, retain) CCFiniteTimeAction *plus100RightAction;
 @property (nonatomic, retain) CCAction *appearAction;
