@@ -1535,23 +1535,20 @@
             }
             if(ud->sprite1 != NULL){
                 if(ud->sprite1.tag == S_HOTDOG){
+                    if([mouseJoints count] == 0)
+                        ud->grabbed = false;
                     //things for hot dogs
                     if(b->IsAwake()){
-                        b2MouseJoint *mj;
-                        for(int i = 0; i < [mouseJoints count]; i++){
-                            mj = (b2MouseJoint *)[(NSValue *)[mouseJoints objectAtIndex:i] pointerValue];
-                            mouseJointUserData *jUd = (mouseJointUserData *)mj->GetUserData();
-                            if(jUd->touch != ud->unique_id){
-                                if(b->GetLinearVelocity().y > 1.5){
-                                    [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Dog_Rise.png"]]];
-                                } else if (b->GetLinearVelocity().y < -1.5){
-                                    [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Dog_Fall.png"]]];
-                                } else {
-                                    [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"dog54x12.png"]]];
-                                }
+                        if(!ud->grabbed){
+                            if(b->GetLinearVelocity().y > 1.5){
+                                [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Dog_Rise.png"]]];
+                            } else if (b->GetLinearVelocity().y < -1.5){
+                                [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Dog_Fall.png"]]];
                             } else {
-                                [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Dog_Grabbed.png"]]];
+                                [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"dog54x12.png"]]];
                             }
+                        } else {
+                            [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Dog_Grabbed.png"]]];
                         }
                         // a hacky way to ensure that dogs are registered as not on a head
                         // this works because it measures when a dog is below the level of the lowest head
@@ -1793,7 +1790,7 @@
                                         dx = abs(b->GetPosition().x - aimedDog->GetPosition().x);
                                         dy = abs(b->GetPosition().y - aimedDog->GetPosition().y);
                                         a = acos(dx / sqrt((dx*dx) + (dy*dy)));
-                                        CCLOG(@"Angle to dog: %0.2f - Upper angle: %0.2f - lower angle: %0.2f", a, upperArmAngle, lowerArmAngle);
+                                        CCLOG(@"Angle to dog: %0.2f - Upper angle: %d - lower angle: %d", a, upperArmAngle, lowerArmAngle);
                                         ud->targetAngle = a;
                                         if(sqrt(pow(dx, 2) + pow(dy, 2)) < rayLength * PTM_RATIO && 
                                            ((ud->sprite1.flipX && ud->targetAngle < upperArmAngle && ud->targetAngle > lowerArmAngle) ||
@@ -1913,13 +1910,14 @@
             else
                 [self resumeGame];
         }
-        for(int i = 0; i < count; i++){
+        for(int i = 0; i < count; i++){ // for each touch
             for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
                 if (body->GetUserData() != NULL && body->GetUserData() != (void*)100) {
                     bodyUserData *ud = (bodyUserData *)body->GetUserData();
-                    if(ud->sprite1.tag == S_HOTDOG){
+                    if(ud->sprite1.tag == S_HOTDOG){ // loop over all hot dogs
                         for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
-                            if ((fixture->TestPoint(locations[0]) && !touched1) || (fixture->TestPoint(locations[1]) && !touched2)){
+                            // if the dog is not already grabbed and one of the touches is on it, make the joint
+                            if (!ud->grabbed && ((fixture->TestPoint(locations[0]) && !touched1) || (fixture->TestPoint(locations[1]) && !touched2))){
                                 dogsTouched++;
                                 ud->grabbed = true;
                                 ud->hasTouchedHead = false;
@@ -1979,40 +1977,49 @@
     touchLocation1 = [[CCDirector sharedDirector] convertToGL: touchLocation1];
     b2Vec2 locationWorld1 = b2Vec2(touchLocation1.x/PTM_RATIO, touchLocation1.y/PTM_RATIO);
     locations[0] = locationWorld1;
-    //CCLOG(@"locations[0] %0.2f x %0.2f", locations[0].x, locations[0].y);
+    
     
     if(count > 1){
-        touch = [[allTouches allObjects] objectAtIndex:1];
+        touch = [[allTouches allObjects] objectAtIndex:0];
         CGPoint touchLocation2 = [touch locationInView: [touch view]];
         touchLocation2 = [[CCDirector sharedDirector] convertToGL: touchLocation2];
         b2Vec2 locationWorld2 = b2Vec2(touchLocation2.x/PTM_RATIO, touchLocation2.y/PTM_RATIO);
         locations[1] = locationWorld2;
-        //CCLOG(@"locations[1] %0.2f x %0.2f", locations[1].x, locations[1].y);
+        
+        UITouch *touch = [[allTouches allObjects] objectAtIndex:1];
+        CGPoint touchLocation1 = [touch locationInView: [touch view]];
+        touchLocation1 = [[CCDirector sharedDirector] convertToGL: touchLocation1];
+        b2Vec2 locationWorld1 = b2Vec2(touchLocation1.x/PTM_RATIO, touchLocation1.y/PTM_RATIO);
+        locations[0] = locationWorld1;
+        
     }
     
-    BOOL touched1 = false, touched2 = false;
+#ifdef DEBUG
+    for(int i = 0; i < count; i++){
+        CCLOG(@"locations[%d] %0.2f x %0.2f", i, locations[i].x, locations[i].y);
+    }
+#endif
     
-    for(int i = 0; i < [mouseJoints count]; i++){
-        b2MouseJoint *mj = (b2MouseJoint *)[(NSValue *)[mouseJoints objectAtIndex:i] pointerValue];
-        mouseJointUserData *jUd = (mouseJointUserData *)mj->GetUserData();
-        for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
-            if (body->GetUserData() != NULL && body->GetUserData() != (void*)100) {
-                bodyUserData *ud = (bodyUserData *)body->GetUserData();
-                CCSprite *sprite = ud->sprite1;
-                if(ud->sprite1.tag == S_HOTDOG){
-                    if(jUd->touch == ud->unique_id){
+    for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
+        if (body->GetUserData() != NULL && body->GetUserData() != (void*)100) {
+            bodyUserData *ud = (bodyUserData *)body->GetUserData();
+            CCSprite *sprite = ud->sprite1;
+            if(ud->sprite1.tag == S_HOTDOG && ud->grabbed){
+                for(int i = 0; i < [mouseJoints count]; i++){
+                    b2MouseJoint *mj = (b2MouseJoint *)[(NSValue *)[mouseJoints objectAtIndex:i] pointerValue];
+                    mouseJointUserData *jUd = (mouseJointUserData *)mj->GetUserData();
+                    if(mj->GetBodyB() == body){
                         //don't stop the explosion action!
                         if(!ud->aimedAt){
                             [sprite stopAllActions];
                         }
-                        if(abs(locations[i].x - jUd->prevX) < .1 && abs(locations[i].y - jUd->prevY) < .1){
+                        if(abs(locations[i].x - jUd->prevX) < .5 && abs(locations[i].y - jUd->prevY) < .5){
                             mj->SetTarget(locations[i]);
-                            CCLOG(@"Setting target to %0.2f x %0.2f", locations[i].x, locations[i].y);
+                            //CCLOG(@"Setting target to %0.2f x %0.2f", locations[i].x, locations[i].y);
                             jUd->prevX = locations[i].x;
                             jUd->prevY = locations[i].y;
                         }
                         //CCLOG(@"Setting target to %0.2f x %0.2f", locations[i].x, locations[i].y);
-                        
                         for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
                             fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
                             if(fUd->tag == F_DOGCLD){
@@ -2030,40 +2037,53 @@
                 }
             }
         }
-    }
+    }        
 }
 
 
 - (void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
     b2Filter filter;
     
-    for(int i = 0; i < [mouseJoints count]; i++){
-        b2MouseJoint *mj = (b2MouseJoint *)[(NSValue *)[mouseJoints objectAtIndex:i] pointerValue];
-        mouseJointUserData *jUd = (mouseJointUserData *)mj->GetUserData();
-        for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
-            if (body->GetUserData() != NULL && body->GetUserData() != (void*)100) {
-                bodyUserData *ud = (bodyUserData *)body->GetUserData();
-                if(ud->sprite1.tag == S_HOTDOG){
-                    if(jUd->touch == ud->unique_id){
-                        _world->DestroyJoint(mj);
-                        [mouseJoints removeObject:[mouseJoints objectAtIndex:i]];
-                        
-                        ud->grabbed = false;
-                        body->SetLinearVelocity(b2Vec2(0, 0));
-                        body->SetFixedRotation(false);
-                        
-                        for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
-                            fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
-                            if(fUd->tag == F_DOGCLD){
-                                // here, we restore the fixture's original collision filter from that saved in
-                                // its ogCollideFilter field
-                                filter = fixture->GetFilterData();
-                                filter.maskBits = fUd->ogCollideFilters;
-                                fixture->SetFilterData(filter);
-                                ud->collideFilter = filter.maskBits;
-                            }
+    UITouch *myTouch = [touches anyObject];
+    CGPoint location = [myTouch locationInView:[myTouch view]];
+    location = [[CCDirector sharedDirector] convertToGL:location];
+    b2Vec2 locationWorld = b2Vec2(location.x/PTM_RATIO, location.y/PTM_RATIO);
+
+    CCLOG(@"Mousejoints count: %d", [mouseJoints count]);
+    
+    for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
+        if (body->GetUserData() != NULL && body->GetUserData() != (void*)100) {
+            bodyUserData *ud = (bodyUserData *)body->GetUserData();
+            if(ud->sprite1.tag == S_HOTDOG && ud->grabbed){
+                // if there is not a finger on the dog
+                if(abs(locationWorld.x - body->GetPosition().x) < .3 && abs(locationWorld.y - body->GetPosition().y) < .3){
+                    // drop the dog
+                    // find the corresponding mouse joint
+                    for(int i = 0; i < [mouseJoints count]; i++){
+                        b2MouseJoint *mj = (b2MouseJoint *)[(NSValue *)[mouseJoints objectAtIndex:i] pointerValue];
+                        if(mj->GetBodyB() == body){
+                            [mouseJoints removeObject:[mouseJoints objectAtIndex:i]];
+                            _world->DestroyJoint(mj);
+                            break;
                         }
                     }
+                    
+                    ud->grabbed = false;
+                    body->SetLinearVelocity(b2Vec2(0, 0));
+                    //body->SetFixedRotation(false);
+                    
+                    for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
+                        fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
+                        if(fUd->tag == F_DOGCLD){
+                            // here, we restore the fixture's original collision filter from that saved in
+                            // its ogCollideFilter field
+                            filter = fixture->GetFilterData();
+                            filter.maskBits = fUd->ogCollideFilters;
+                            fixture->SetFilterData(filter);
+                            ud->collideFilter = filter.maskBits;
+                        }
+                    }
+                    break;
                 }
             }
         }
@@ -2072,6 +2092,10 @@
 
 - (void)ccTouchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
     b2Filter filter;
+    UITouch *myTouch = [touches anyObject];
+    CGPoint location = [myTouch locationInView:[myTouch view]];
+    location = [[CCDirector sharedDirector] convertToGL:location];
+    b2Vec2 locationWorld = b2Vec2(location.x/PTM_RATIO, location.y/PTM_RATIO);
     
     for(int i = 0; i < [mouseJoints count]; i++){
         b2MouseJoint *mj = (b2MouseJoint *)[(NSValue *)[mouseJoints objectAtIndex:i] pointerValue];
@@ -2080,13 +2104,13 @@
             if (body->GetUserData() != NULL && body->GetUserData() != (void*)100) {
                 bodyUserData *ud = (bodyUserData *)body->GetUserData();
                 if(ud->sprite1.tag == S_HOTDOG){
-                    if(jUd->touch == ud->unique_id){
-                        _world->DestroyJoint(mj);
+                    if(mj->GetBodyB() == body && jUd->touch == ud->unique_id && (abs(locationWorld.x - mj->GetTarget().x) < 1 && abs(locationWorld.y - mj->GetTarget().y) < 1)){
                         [mouseJoints removeObject:[mouseJoints objectAtIndex:i]];
+                        _world->DestroyJoint(mj);
                         
                         ud->grabbed = false;
                         body->SetLinearVelocity(b2Vec2(0, 0));
-                        body->SetFixedRotation(false);
+                        //body->SetFixedRotation(false);
                         
                         for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
                             fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
