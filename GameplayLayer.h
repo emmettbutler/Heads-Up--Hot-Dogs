@@ -55,6 +55,10 @@
         CCSprite *sprite2;
         float heightOffset2;
         float lengthOffset2;
+        NSString *_dog_fallSprite;
+        NSString *_dog_riseSprite;
+        NSString *_dog_grabSprite;
+        NSString *_dog_mainSprite;
         NSString *ogSprite2;
         NSString *altSprite3; //the 3 here has a different meaning than the 2 above - ie it's the 3rd sprite
         CCSprite *angryFace;
@@ -105,6 +109,7 @@
     
     enum _spriteTags {
         S_HOTDOG    =   1,
+        S_SPCDOG    =   2,
         S_BUSMAN    =   3,
         S_POLICE    =   4,
         S_CRPUNK    =   5,

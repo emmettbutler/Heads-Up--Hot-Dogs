@@ -452,53 +452,91 @@
 
 -(void)putDog:(id)sender data:(void*)params {
     int floor, f;
+    NSString *fallSprite, *riseSprite, *mainSprite, *grabSprite;
     CGPoint location = [(NSValue *)[(NSMutableArray *) params objectAtIndex: 0] CGPointValue];
+    NSNumber *type = (NSNumber *)[(NSMutableArray *) params objectAtIndex: 1];
 
     //add base sprite to scene
     self.wiener = [CCSprite spriteWithSpriteFrameName:@"dog54x12.png"];
     _wiener.position = ccp(location.x, location.y);
     _wiener.tag = S_HOTDOG;
     [self addChild:_wiener];
-
-    //create death animation
-    NSMutableArray *wienerDeathAnimFrames = [[NSMutableArray alloc] initWithCapacity:23];
-    for(int i = 0; i < 8; i++){
-        [wienerDeathAnimFrames addObject:
-         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-          [NSString stringWithFormat:@"Dog_Die_1.png"]]];
-        [wienerDeathAnimFrames addObject:
-         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-          [NSString stringWithFormat:@"Dog_Die_2.png"]]];
-    }
-    for(int i = 1; i <= 7; i++){
-        [wienerDeathAnimFrames addObject:
-         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-          [NSString stringWithFormat:@"Dog_Die_%d.png", i]]];
+    
+    NSMutableArray *wienerDeathAnimFrames = [[NSMutableArray alloc] init];
+    NSMutableArray *wienerShotAnimFrames = [[NSMutableArray alloc] init];
+    NSMutableArray *wienerAppearAnimFrames = [[NSMutableArray alloc] init];
+    
+    switch(type.intValue){
+        case S_SPCDOG:
+            riseSprite = [NSString stringWithString:@"Steak_Rise.png"];
+            fallSprite = [NSString stringWithString:@"Steak_Fall.png"];
+            mainSprite = [NSString stringWithString:@"Steak.png"];
+            grabSprite = [NSString stringWithString:@"Steak_Grabbed.png"];
+            for(int i = 0; i < 8; i++){
+                [wienerDeathAnimFrames addObject:
+                 [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                  [NSString stringWithFormat:@"Dog_Die_1.png"]]];
+                [wienerDeathAnimFrames addObject:
+                 [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                  [NSString stringWithFormat:@"Dog_Die_2.png"]]];
+            }
+            for(int i = 1; i <= 7; i++){
+                [wienerDeathAnimFrames addObject:
+                 [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                  [NSString stringWithFormat:@"Dog_Die_%d.png", i]]];
+            }
+            for(int i = 1; i <= 5; i++){
+                [wienerShotAnimFrames addObject:
+                 [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                  [NSString stringWithFormat:@"Dog_Shot_%d.png", i]]];
+            }
+            for(int i = 1; i <= 6; i++){
+                [wienerAppearAnimFrames addObject:
+                 [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                  [NSString stringWithFormat:@"BonusAppear%d.png", i]]];
+            }
+            break;
+        default:
+            riseSprite = [NSString stringWithString:@"Dog_Rise.png"];
+            fallSprite = [NSString stringWithString:@"Dog_Fall.png"];
+            mainSprite = [NSString stringWithString:@"dog54x12.png"];
+            grabSprite = [NSString stringWithString:@"Dog_Grabbed.png"];
+            for(int i = 0; i < 8; i++){
+                [wienerDeathAnimFrames addObject:
+                 [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                  [NSString stringWithFormat:@"Dog_Die_1.png"]]];
+                [wienerDeathAnimFrames addObject:
+                 [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                  [NSString stringWithFormat:@"Dog_Die_2.png"]]];
+            }
+            for(int i = 1; i <= 7; i++){
+                [wienerDeathAnimFrames addObject:
+                 [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                  [NSString stringWithFormat:@"Dog_Die_%d.png", i]]];
+            }
+            for(int i = 1; i <= 5; i++){
+                [wienerShotAnimFrames addObject:
+                 [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                  [NSString stringWithFormat:@"Dog_Shot_%d.png", i]]];
+            }
+            for(int i = 1; i <= 10; i++){
+                [wienerAppearAnimFrames addObject:
+                 [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                  [NSString stringWithFormat:@"Dog_Appear_%d.png", i]]];
+            }
+            break;
     }
     dogDeathAnim = [CCAnimation animationWithFrames:wienerDeathAnimFrames delay:.1f];
     self.deathAction = [[CCAnimate alloc] initWithAnimation:dogDeathAnim];
-    [wienerDeathAnimFrames release];
-
-    //create shot animation
-    NSMutableArray *wienerShotAnimFrames = [[NSMutableArray alloc] initWithCapacity:5];
-    for(int i = 1; i <= 5; i++){
-        [wienerShotAnimFrames addObject:
-         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-          [NSString stringWithFormat:@"Dog_Shot_%d.png", i]]];
-    }
-    dogShotAnim = [CCAnimation animationWithFrames:wienerShotAnimFrames delay:.1f ];
-    self.shotAction = [[CCAnimate alloc] initWithAnimation:dogShotAnim restoreOriginalFrame:NO];
-    [wienerShotAnimFrames release];
-
-    //create appear animation
-    NSMutableArray *wienerAppearAnimFrames = [[NSMutableArray alloc] initWithCapacity:10];
-    for(int i = 1; i <= 10; i++){
-        [wienerAppearAnimFrames addObject:
-         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-          [NSString stringWithFormat:@"Dog_Appear_%d.png", i]]];
-    }
+    
     dogAppearAnim = [CCAnimation animationWithFrames:wienerAppearAnimFrames delay:.08f];
     self.appearAction = [CCAnimate actionWithAnimation:dogAppearAnim];
+    
+    dogShotAnim = [CCAnimation animationWithFrames:wienerShotAnimFrames delay:.1f ];
+    self.shotAction = [[CCAnimate alloc] initWithAnimation:dogShotAnim restoreOriginalFrame:NO];
+    
+    [wienerShotAnimFrames release];
+    [wienerDeathAnimFrames release];
     [wienerAppearAnimFrames release];
     
     _id_counter++;
@@ -506,6 +544,10 @@
     //set up the userdata structures
     bodyUserData *ud = new bodyUserData();
     ud->sprite1 = _wiener;
+    ud->_dog_fallSprite = fallSprite;
+    ud->_dog_riseSprite = riseSprite;
+    ud->_dog_mainSprite = mainSprite;
+    ud->_dog_grabSprite = grabSprite;
     ud->altAction = _deathAction;
     ud->altAction2 = _shotAction;
     ud->unique_id = _id_counter;
@@ -1144,9 +1186,9 @@
     CGSize winSize = [CCDirector sharedDirector].winSize;
     [self putDog:self data:params];
 
-    wienerParameters = [[NSMutableArray alloc] initWithCapacity:1];
-    NSValue *location = [NSValue valueWithCGPoint:CGPointMake(arc4random() % (int)winSize.width, DOG_SPAWN_MINHT+(arc4random() % (int)(winSize.height-DOG_SPAWN_MINHT)))];
-    [wienerParameters addObject:location];
+    wienerParameters = [[NSMutableArray alloc] initWithCapacity:2];
+    [wienerParameters addObject:[NSValue valueWithCGPoint:CGPointMake(arc4random() % (int)winSize.width, DOG_SPAWN_MINHT+(arc4random() % (int)(winSize.height-DOG_SPAWN_MINHT)))]];
+    [wienerParameters addObject:[NSNumber numberWithInt:arc4random() % 10]];
 
     id delay = [CCDelayTime actionWithDuration:_wienerSpawnDelayTime];
     id callBackAction = [CCCallFuncND actionWithTarget: self selector: @selector(wienerCallback:data:) data:wienerParameters];
@@ -1421,9 +1463,9 @@
         [personParameters addObject:character];
         [self spawnCallback:self data:personParameters];
 
-        NSMutableArray *wienerParams = [[NSMutableArray alloc] initWithCapacity:1];
-        NSValue *location = [NSValue valueWithCGPoint:CGPointMake(200, 200)];
-        [wienerParams addObject:location];
+        NSMutableArray *wienerParams = [[NSMutableArray alloc] initWithCapacity:2];
+        [wienerParams addObject:[NSValue valueWithCGPoint:CGPointMake(200, 200)]];
+        [wienerParams addObject:[NSNumber numberWithInt:arc4random() % 10]];
         [self wienerCallback:self data:wienerParams];
 
         CCDelayTime *delay = [CCDelayTime actionWithDuration:SPAWN_LIMIT_DECREMENT_DELAY];
@@ -1709,14 +1751,14 @@
                     if(b->IsAwake()){
                         if(!ud->grabbed){
                             if(b->GetLinearVelocity().y > 1.5){
-                                [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Dog_Rise.png"]]];
+                                [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:ud->_dog_riseSprite]];
                             } else if (b->GetLinearVelocity().y < -1.5){
-                                [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Dog_Fall.png"]]];
+                                [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:ud->_dog_fallSprite]];
                             } else {
-                                [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"dog54x12.png"]]];
+                                [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:ud->_dog_mainSprite]];
                             }
                         } else {
-                            [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Dog_Grabbed.png"]]];
+                            [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:ud->_dog_grabSprite]];
                         }
                         // a hacky way to ensure that dogs are registered as not on a head
                         // this works because it measures when a dog is below the level of the lowest head
