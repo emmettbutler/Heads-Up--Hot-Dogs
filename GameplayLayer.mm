@@ -18,14 +18,15 @@
 #define FLOOR4_HT 1.2
 #define DOG_SPAWN_MINHT 240
 #define PERSON_SPAWN_START 5 //5
-#define WIENER_SPAWN_START 8 //8
 
 #ifdef DEBUG
-#define SPAWN_LIMIT_DECREMENT_DELAY 1
+#define SPAWN_LIMIT_DECREMENT_DELAY 100
 #define DROPPED_MAX 99
+#define WIENER_SPAWN_START 5
 #else
 #define SPAWN_LIMIT_DECREMENT_DELAY 15
 #define DROPPED_MAX 5
+#define WIENER_SPAWN_START 8
 #endif
 
 #define COP_RANGE 4
@@ -1665,6 +1666,17 @@
     b2Vec2 intersectionNormal(0,0);
     float rayLength = COP_RANGE;
     b2Vec2 intersectionPoint(0,0);
+    
+    for(int i = 0; i < [mouseJoints count]; i++){
+        b2MouseJoint *j = (b2MouseJoint *)[(NSValue *)[mouseJoints objectAtIndex:i] pointerValue];
+        if((j->GetTarget().x == 0 && j->GetTarget().y == 0) || [mouseJoints count] > 2){
+            bodyUserData *ud = (bodyUserData *)((b2Body *)j->GetBodyB())->GetUserData();
+            ud->grabbed = false;
+            _world->DestroyJoint(j);
+            [mouseJoints removeObject:[mouseJoints objectAtIndex:i]];
+        }   
+        CCLOG(@"Mousejoints[%d] target: %0.2f x %0.2f", i, j->GetTarget().x, j->GetTarget().y);
+    }
 
     //any non-collision actions that apply to multiple onscreen entities happen here
     
@@ -2070,6 +2082,7 @@
                 [self pauseButton];
             else
                 [self resumeGame];
+            return;
         }
         for(int i = 0; i < count; i++){ // for each touch
             for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
@@ -2130,6 +2143,7 @@
 }
 
 -(void)ccTouchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
+    CGSize winSize = [[CCDirector sharedDirector] winSize];
     NSSet *allTouches = [event allTouches];
     int count = [allTouches count];
     b2Vec2 *locations = new b2Vec2[count];
@@ -2140,20 +2154,12 @@
     b2Vec2 locationWorld1 = b2Vec2(touchLocation1.x/PTM_RATIO, touchLocation1.y/PTM_RATIO);
     locations[0] = locationWorld1;
     
-    
     if(count > 1){
-        touch = [[allTouches allObjects] objectAtIndex:0];
+        touch = [[allTouches allObjects] objectAtIndex:1];
         CGPoint touchLocation2 = [touch locationInView: [touch view]];
         touchLocation2 = [[CCDirector sharedDirector] convertToGL: touchLocation2];
         b2Vec2 locationWorld2 = b2Vec2(touchLocation2.x/PTM_RATIO, touchLocation2.y/PTM_RATIO);
         locations[1] = locationWorld2;
-        
-        UITouch *touch = [[allTouches allObjects] objectAtIndex:1];
-        CGPoint touchLocation1 = [touch locationInView: [touch view]];
-        touchLocation1 = [[CCDirector sharedDirector] convertToGL: touchLocation1];
-        b2Vec2 locationWorld1 = b2Vec2(touchLocation1.x/PTM_RATIO, touchLocation1.y/PTM_RATIO);
-        locations[0] = locationWorld1;
-        
     }
     
 #ifdef DEBUG
@@ -2175,14 +2181,8 @@
                         if(!ud->aimedAt){
                             [sprite stopAllActions];
                         }
-                        if(count > 1){
-                            if(abs(locations[i].x - jUd->prevX) < .5 && abs(locations[i].y - jUd->prevY) < .5){
-                                mj->SetTarget(locations[i]);
-                                //CCLOG(@"Setting target to %0.2f x %0.2f", locations[i].x, locations[i].y);
-                                jUd->prevX = locations[i].x;
-                                jUd->prevY = locations[i].y;
-                            }
-                        } else {
+                        for(int i = 0; i < 2; i++){
+                            if(!(abs(locations[i].x - jUd->prevX) < .5 && abs(locations[i].y - jUd->prevY) < .5)) continue;
                             mj->SetTarget(locations[i]);
                             //CCLOG(@"Setting target to %0.2f x %0.2f", locations[i].x, locations[i].y);
                             jUd->prevX = locations[i].x;
