@@ -12,7 +12,6 @@
 #import "GameConfig.h"
 #import "TitleScene.h"
 #import "TestFlight.h" 
-#import "OFDelegate.h"
 #import "RootViewController.h"
 
 @implementation AppDelegate
@@ -119,35 +118,6 @@
 #ifdef DEBUG
     [TestFlight setDeviceIdentifier:[[UIDevice currentDevice] uniqueIdentifier]];
 #endif
-    //---------------------------------------------------------------------------------
-    
-    // openfeint setup ---------------------------------------------------------------
-    NSDictionary* settings = [NSDictionary dictionaryWithObjectsAndKeys:
-                              [NSNumber numberWithInt:UIInterfaceOrientationLandscapeRight], OpenFeintSettingDashboardOrientation,
-                              @"Heads Up!", OpenFeintSettingShortDisplayName,
-                              [NSNumber numberWithBool:YES], OpenFeintSettingEnablePushNotifications,
-                              [NSNumber numberWithBool:NO], OpenFeintSettingDisableUserGeneratedContent,
-                              [NSNumber numberWithBool:NO], OpenFeintSettingAlwaysAskForApprovalInDebug,
-#ifdef DEBUG
-                              [NSNumber numberWithInt:OFDevelopmentMode_DEVELOPMENT], OpenFeintSettingDevelopmentMode,
-#else
-                              [NSNumber numberWithInt:OFDevelopmentMode_RELEASE], OpenFeintSettingDevelopmentMode,
-#endif
-#ifdef DEBUG
-                              [NSNumber numberWithInt:OFDevelopmentMode_DEVELOPMENT], OpenFeintSettingDevelopmentMode,
-#else
-                              [NSNumber numberWithInt:OFDevelopmentMode_RELEASE], OpenFeintSettingDevelopmentMode,
-#endif
-                              nil];
-    ofDelegate = [OFDelegate new];
-    
-    OFDelegatesContainer* delegates = [OFDelegatesContainer containerWithOpenFeintDelegate:ofDelegate];
-    
-    [OpenFeint initializeWithProductKey:@"S28bdYB1sfE04quqmWWDg"
-                              andSecret:@"WWeeuCIQ2DKRfNbXuznbwY4kBQpWu1ZOeb0aLWYTuvE"
-                         andDisplayName:@"Heads Up!"
-                            andSettings:settings
-                           andDelegates:delegates];
     //---------------------------------------------------------------------------------
     
 	// Run the intro Scene

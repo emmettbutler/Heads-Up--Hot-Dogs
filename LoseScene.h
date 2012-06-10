@@ -7,9 +7,6 @@
 //
 
 #import "cocos2d.h"
-#import "OpenFeint/OpenFeint.h"
-#import "OpenFeint/OFControllerLoaderObjC.h"
-#import "OpenFeint/OFLeaderboard.h"
 
 @interface LoseLayer : CCLayer
 {
@@ -19,8 +16,6 @@
     CCSpriteBatchNode *spriteSheet;
     NSInteger highScore;
     ccColor3B _color_pink, _color_blue, _color_darkblue;
-    CCSprite *_OFButton;
-    CGRect _OFButtonRect;
 }
 
 +(CCScene *) sceneWithData:(void*)data;

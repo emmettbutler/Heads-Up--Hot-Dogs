@@ -105,11 +105,6 @@
         [menu setPosition:ccp(370, 26)];
         [self addChild:menu z:11];
         
-        _OFButton = [CCSprite spriteWithSpriteFrameName:@"Icon_OpenFeint_dummy.png"];;
-        _OFButton.position = ccp(20, 299);
-        [self addChild:_OFButton z:70];
-        _OFButtonRect = CGRectMake((_OFButton.position.x-(_OFButton.contentSize.width)/2), (_OFButton.position.y-(_OFButton.contentSize.height)/2), (_OFButton.contentSize.width+10), (_OFButton.contentSize.height+10));
-        
         _lock = 0;
         
         [TestFlight passCheckpoint:@"Game Over Screen"];
@@ -135,13 +130,6 @@
             scoreNotify = [CCLabelTTF labelWithString:@"New high score!" fontName:@"LostPet.TTF" fontSize:26.0];
             [scoreNotify setPosition:ccp((size.width/2), (size.height/2)-100)];
             [self addChild:scoreNotify];
-            
-            // this score submission code doesn't work yet
-            NSMutableArray *leaderboards = [[OFLeaderboard leaderboards] mutableCopy];
-            OFHighScore* score = [[[OFHighScore alloc] initForSubmissionWithScore:highScore] autorelease];
-            score.displayText = @"Test display! text";
-            score.customData = @"Test custom data!";
-            [score submitTo:(OFLeaderboard* )[leaderboards objectAtIndex:0]];
         }
         if(_timePlayed > bestTime){
             [standardUserDefaults setInteger:_timePlayed forKey:@"bestTime"];
@@ -179,21 +167,10 @@
     [[CCDirector sharedDirector] replaceScene:[TitleLayer scene]];
 }
 
-- (void)OFButtonCallback{
-    NSLog(@"Callback hit");
-    [OpenFeint launchDashboard];
-}
-
 - (void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     UITouch *myTouch = [touches anyObject];
     CGPoint location = [myTouch locationInView:[myTouch view]];
-    location = [[CCDirector sharedDirector] convertToGL:location];
-    
-    if(CGRectContainsPoint(_OFButtonRect, location)){
-        [self OFButtonCallback];
-    } else {
-        NSLog(@"Got touch");
-    }
+    location = [[CCDirector sharedDirector] convertToGL:location];  
 }
 
 -(void) dealloc{
