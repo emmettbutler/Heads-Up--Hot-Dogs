@@ -2225,7 +2225,13 @@
             bodyUserData *ud = (bodyUserData *)body->GetUserData();
             if(ud->sprite1.tag == S_HOTDOG && ud->grabbed){
                 // if there is not a finger on the dog
-                if(abs(locationWorld.x - body->GetPosition().x) < .3 && abs(locationWorld.y - body->GetPosition().y) < .3){
+                b2JointEdge *j = body->GetJointList();
+                b2Vec2 target;
+                if(j && j->joint->GetType() == e_mouseJoint){
+                    b2MouseJoint *mj = (b2MouseJoint *)j->joint;
+                    target = mj->GetTarget();
+                }
+                if(abs(locationWorld.x - target.x) < .6 && abs(locationWorld.y - target.y) < .6){
                     // drop the dog
                     // find the corresponding mouse joint
                     for(int i = 0; i < [mouseJoints count]; i++){
