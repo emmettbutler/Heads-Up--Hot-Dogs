@@ -108,8 +108,6 @@
 }
 
 -(void) tick: (ccTime) dt {
-    CGSize size = [[CCDirector sharedDirector] winSize];
-    
     NSUserDefaults *standardUserDefaults = [NSUserDefaults standardUserDefaults];
     highScore = [standardUserDefaults integerForKey:@"highScore"];
     NSInteger bestTime = [standardUserDefaults integerForKey:@"bestTime"];

@@ -17,20 +17,19 @@
 #define FLOOR3_HT .8
 #define FLOOR4_HT 1.2
 #define DOG_SPAWN_MINHT 240
-#define PERSON_SPAWN_START 5 //5
+#define PERSON_SPAWN_START 5
+#define COP_RANGE 4
+#define DOG_COUNTER_HT 295
 
 #ifdef DEBUG
 #define SPAWN_LIMIT_DECREMENT_DELAY 1
-#define DROPPED_MAX 1
+#define DROPPED_MAX 49
 #define WIENER_SPAWN_START 5
 #else
 #define SPAWN_LIMIT_DECREMENT_DELAY 15
 #define DROPPED_MAX 5
 #define WIENER_SPAWN_START 8
 #endif
-
-#define COP_RANGE 4
-#define DOG_COUNTER_HT 295
 
 @implementation GameplayLayer
 
@@ -1339,7 +1338,11 @@
             
         [standardUserDefaults synchronize];
 
-        background = [CCSprite spriteWithSpriteFrameName:@"bg_philly.png"];
+        int bgSelect = arc4random() % 2;
+        switch(bgSelect){
+            case 0: background = [CCSprite spriteWithSpriteFrameName:@"bg_philly.png"]; break;
+            case 1: background = [CCSprite spriteWithSpriteFrameName:@"BG_NYC.png"]; break;
+        }
         background.anchorPoint = CGPointZero;
         [self addChild:background z:-10];
 
