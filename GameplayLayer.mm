@@ -20,8 +20,8 @@
 #define PERSON_SPAWN_START 5 //5
 
 #ifdef DEBUG
-#define SPAWN_LIMIT_DECREMENT_DELAY 100
-#define DROPPED_MAX 99
+#define SPAWN_LIMIT_DECREMENT_DELAY 1
+#define DROPPED_MAX 49
 #define WIENER_SPAWN_START 5
 #else
 #define SPAWN_LIMIT_DECREMENT_DELAY 15
@@ -807,7 +807,7 @@
                 armBodyYOffset = 40;
                 armJointXOffset = 15;
                 armJointYOffset = 40;
-                target = [CCSprite spriteWithSpriteFrameName:@"cop_target.png"];
+                target = [CCSprite spriteWithSpriteFrameName:@"Target_NoDog.png"];
                 for(int i = 1; i <= 8; i++){
                     [walkAnimFrames addObject:
                      [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -1675,7 +1675,7 @@
             _world->DestroyJoint(j);
             [mouseJoints removeObject:[mouseJoints objectAtIndex:i]];
         }   
-        CCLOG(@"Mousejoints[%d] target: %0.2f x %0.2f", i, j->GetTarget().x, j->GetTarget().y);
+        //CCLOG(@"Mousejoints[%d] target: %0.2f x %0.2f", i, j->GetTarget().x, j->GetTarget().y);
     }
 
     //any non-collision actions that apply to multiple onscreen entities happen here
@@ -1737,8 +1737,11 @@
             
             if(ud->overlaySprite != NULL){
                 if(ud->sprite1.tag == S_POLICE){
-                    if(!ud->aiming)
+                    if(!ud->aiming){
+                        [ud->overlaySprite setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Target_NoDog.png"]]];
                         ud->overlaySprite.position = CGPointMake(policeRayPoint2.x*PTM_RATIO, policeRayPoint2.y*PTM_RATIO);
+                        ud->overlaySprite.rotation = 3 * (time % 360);
+                    }
                 }
                 else {
                     ud->overlaySprite.position = CGPointMake((b->GetPosition().x)*PTM_RATIO,
@@ -2014,7 +2017,10 @@
                                         if(sqrt(pow(dx, 2) + pow(dy, 2)) < rayLength * PTM_RATIO && 
                                            ((ud->sprite1.flipX && ud->targetAngle < upperArmAngle && ud->targetAngle > lowerArmAngle) ||
                                             (!ud->sprite1.flipX && ud->targetAngle > upperArmAngle && ud->targetAngle < lowerArmAngle))){
-                                                ud->overlaySprite.position = CGPointMake(aimedDog->GetPosition().x*PTM_RATIO, aimedDog->GetPosition().y*PTM_RATIO);
+                                               [ud->overlaySprite setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Target_Dog.png"]]];
+                                               ud->overlaySprite.position = CGPointMake(aimedDog->GetPosition().x*PTM_RATIO, aimedDog->GetPosition().y*PTM_RATIO);
+                                               ud->overlaySprite.rotation = 6 * (time % 360);
+                                               
                                         } else {
                                             [aimedUd->sprite1 stopAllActions];
                                             aimedUd->aimedAt = false;
@@ -2143,7 +2149,6 @@
 }
 
 -(void)ccTouchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
-    CGSize winSize = [[CCDirector sharedDirector] winSize];
     NSSet *allTouches = [event allTouches];
     int count = [allTouches count];
     b2Vec2 *locations = new b2Vec2[count];
@@ -2164,7 +2169,7 @@
     
 #ifdef DEBUG
     for(int i = 0; i < count; i++){
-        CCLOG(@"locations[%d] %0.2f x %0.2f", i, locations[i].x, locations[i].y);
+        //CCLOG(@"locations[%d] %0.2f x %0.2f", i, locations[i].x, locations[i].y);
     }
 #endif
     
