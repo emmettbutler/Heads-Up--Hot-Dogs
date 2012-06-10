@@ -195,10 +195,6 @@
         if(_wienerSpawnDelayTime > 1){
             _wienerSpawnDelayTime -= 1;
         }
-        /*if(_wienerKillDelay > 1){
-            _wienerKillDelay -= 1;
-        }*/
-        CCLOG(@"WienerKillDelay: %0.2f", _wienerKillDelay);
         CCLOG(@"SpawnLimiter: %d", _spawnLimiter);
         CCLOG(@"PersonSpawnDelayTime: %0.2f", _personSpawnDelayTime);
         CCLOG(@"WienerSpawnDelayTime: %0.2f", _wienerSpawnDelayTime);
@@ -303,6 +299,42 @@
 
     b2Vec2 pos = body->GetPosition();
     body->SetTransform(pos, angle.intValue);
+}
+
+-(void)colorFG:(id)sender data:(void*)params{
+    NSNumber *dark = (NSNumber *)[(NSMutableArray *) params objectAtIndex:0];
+    
+    for(b2Body* b = _world->GetBodyList(); b; b = b->GetNext()){
+        if(b->GetUserData() && b->GetUserData() != (void*)100){
+            bodyUserData *ud = (bodyUserData*)b->GetUserData();
+            if((ud->sprite1.tag >= S_BUSMAN && ud->sprite1.tag <= S_TOPPSN) || ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG || ud->sprite1.tag == S_COPARM){
+                if(dark.intValue == 1){
+                    [ud->sprite1 setColor:ccc3(80,80,80)];
+                    [ud->sprite2 setColor:ccc3(80,80,80)];
+                    [ud->overlaySprite setColor:ccc3(80,80,80)];
+                }
+                else {
+                    [ud->sprite1 setColor:ccc3(255,255,255)];
+                    [ud->sprite2 setColor:ccc3(255,255,255)];
+                    [ud->overlaySprite setColor:ccc3(255,255,255)];
+                }
+            }
+        }
+    }
+}
+
+-(void)screenFlash:(id)sender data:(void*)params{
+    NSNumber *light = (NSNumber *)[(NSMutableArray *) params objectAtIndex:0];
+    CGSize winSize = [[CCDirector sharedDirector] winSize];
+
+    if(light.intValue == 1){
+        _flashLayer = [CCLayerColor layerWithColor:ccc4(255, 255, 255, 200) width:winSize.width height:winSize.height];
+        [self addChild:_flashLayer z:-1];
+    }
+    else {
+        [self removeChild:_flashLayer cleanup:YES];
+        _flashLayer = NULL;
+    }
 }
 
 -(void) applyForce:(id)sender data:(void*)params{
@@ -453,6 +485,7 @@
 
 -(void)putDog:(id)sender data:(void*)params {
     int floor, f;
+    float deathDelay;
     NSString *fallSprite, *riseSprite, *mainSprite, *grabSprite;
     CGPoint location = [(NSValue *)[(NSMutableArray *) params objectAtIndex: 0] CGPointValue];
     NSNumber *type = (NSNumber *)[(NSMutableArray *) params objectAtIndex: 1];
@@ -473,6 +506,7 @@
             fallSprite = [NSString stringWithString:@"Steak_Fall.png"];
             mainSprite = [NSString stringWithString:@"Steak.png"];
             grabSprite = [NSString stringWithString:@"Steak_Grabbed.png"];
+            deathDelay = .1;
             for(int i = 0; i < 1; i++){
                 [wienerDeathAnimFrames addObject:
                  [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -502,6 +536,7 @@
             fallSprite = [NSString stringWithString:@"Dog_Fall.png"];
             mainSprite = [NSString stringWithString:@"dog54x12.png"];
             grabSprite = [NSString stringWithString:@"Dog_Grabbed.png"];
+            deathDelay = 4.0;
             for(int i = 0; i < 8; i++){
                 [wienerDeathAnimFrames addObject:
                  [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -552,6 +587,7 @@
     ud->altAction = _deathAction;
     ud->altAction2 = _shotAction;
     ud->unique_id = _id_counter;
+    ud->deathDelay = deathDelay;
     ud->aimedAt = false;
     ud->hasTouchedHead = false;
     ud->hasLeftScreen = false;
@@ -1185,11 +1221,30 @@
 
 -(void)wienerCallback:(id)sender data:(void *)params {
     CGSize winSize = [CCDirector sharedDirector].winSize;
+    NSNumber *dogType = [NSNumber numberWithInt:arc4random() % 25];
+    //NSNumber *dogType = [NSNumber numberWithInt:1];
+    
+    NSNumber *thisType = (NSNumber *)[(NSMutableArray *) params objectAtIndex:1];
+    
+    if(thisType.intValue == S_SPCDOG){
+        NSMutableArray *colorParams = [[NSMutableArray alloc] initWithCapacity:1];
+        
+        [colorParams addObject:[NSNumber numberWithInt:1]];
+        id screenLightenAction = [CCCallFuncND actionWithTarget:self selector:@selector(screenFlash:data:) data:colorParams];
+        id darkenFGAction = [CCCallFuncND actionWithTarget:self selector:@selector(colorFG:data:) data:colorParams];
+        colorParams = [[NSMutableArray alloc] initWithCapacity:1];
+        [colorParams addObject:[NSNumber numberWithInt:0]];
+        id lightenFGAction = [CCCallFuncND actionWithTarget:self selector:@selector(colorFG:data:) data:colorParams];
+        id screenDarkenAction = [CCCallFuncND actionWithTarget:self selector:@selector(screenFlash:data:) data:colorParams];
+        id delay2 = [CCDelayTime actionWithDuration:.2];
+        id sequence2 = [CCSequence actions: screenLightenAction, darkenFGAction, delay2, lightenFGAction, screenDarkenAction, nil];
+        [self runAction:sequence2];
+    }
     [self putDog:self data:params];
 
     wienerParameters = [[NSMutableArray alloc] initWithCapacity:2];
     [wienerParameters addObject:[NSValue valueWithCGPoint:CGPointMake(arc4random() % (int)winSize.width, DOG_SPAWN_MINHT+(arc4random() % (int)(winSize.height-DOG_SPAWN_MINHT)))]];
-    [wienerParameters addObject:[NSNumber numberWithInt:arc4random() % 10]];
+    [wienerParameters addObject:dogType];
 
     id delay = [CCDelayTime actionWithDuration:_wienerSpawnDelayTime];
     id callBackAction = [CCCallFuncND actionWithTarget: self selector: @selector(wienerCallback:data:) data:wienerParameters];
@@ -1251,7 +1306,6 @@
         _spawnLimiter = [characterTags count] - ([characterTags count]-1);
         _personSpawnDelayTime = PERSON_SPAWN_START;
         _wienerSpawnDelayTime = WIENER_SPAWN_START;
-        _wienerKillDelay = 4.0f;
         _points = 0;
         _peopleGrumped = 0;
         _id_counter = 0;
@@ -1285,7 +1339,7 @@
             
         [standardUserDefaults synchronize];
 
-        CCSprite *background = [CCSprite spriteWithSpriteFrameName:@"bg_philly.png"];
+        background = [CCSprite spriteWithSpriteFrameName:@"bg_philly.png"];
         background.anchorPoint = CGPointZero;
         [self addChild:background z:-10];
 
@@ -1501,6 +1555,10 @@
         [self addChild:menu];
         return;
     }
+    
+    if(_flashLayer){
+        [_flashLayer setOpacity:255 - (190+((5*time) % 255))];
+    }
 
     time++;
 
@@ -1639,7 +1697,7 @@
                     // dog is definitely not on a head if it's touching the floor
                     CCAction *wienerDeathAction = (CCAction *)ud->altAction;
 
-                    id delay = [CCDelayTime actionWithDuration:_wienerKillDelay];
+                    id delay = [CCDelayTime actionWithDuration:ud->deathDelay];
                     wienerParameters = [[NSMutableArray alloc] initWithCapacity:2];
                     [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
                     [wienerParameters addObject:[NSNumber numberWithInt:0]];

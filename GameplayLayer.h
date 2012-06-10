@@ -22,7 +22,7 @@
     GLESDebugDraw *m_debugDraw;
     b2Body *_wallsBody, *_groundBody, *wienerBody, *targetBody, *_personBody, *_policeArmBody;
     b2Fixture *_bottomFixture, *_wallsFixture, *_wienerFixture, *_targetFixture, *_personFixture, *_policeArmFixture;
-    CCSprite *_wiener, *_personLower, *_personUpper, *_personUpperOverlay, *_target, *_pauseButton;
+    CCSprite *_wiener, *_personLower, *_personUpper, *_personUpperOverlay, *_target, *_pauseButton, *background;
     CCAction *_walkAction, *_walkFaceAction;
     CCFiniteTimeAction *_idleAction, *_appearAction, *_hitAction, *_shotAction, *_shootAction, *_armShootAction, *_shootFaceAction, *_plusTenAction, *_plus25Action;
     CCFiniteTimeAction *_plus100LeftAction, *_plus100RightAction, *_plus15Action, *_plus25BigAction;
@@ -32,7 +32,7 @@
     CCLabelTTF *scoreLabel, *droppedLabel, *tutorialLabel;
     b2Vec2 policeRayPoint1, policeRayPoint2;
     b2RevoluteJoint *policeArmJoint;
-    CCLayerColor *_pauseLayer;
+    CCLayerColor *_pauseLayer, *_flashLayer;
     CCLayer *_introLayer;
     CCMenu *_pauseMenu;
     NSMutableArray *floorBits, *xPositions, *characterTags, *wienerParameters, *headParams, *mouseJoints;
@@ -40,7 +40,7 @@
     NSString *scoreText, *droppedText;
     int _points, _droppedCount, _spawnLimiter, time, _curPersonMaskBits, _droppedSpacing, _lastTouchTime, _firstDeathTime, lowerArmAngle, upperArmAngle;
     int _peopleGrumped, _dogsSaved, _id_counter, _numTouches;
-    float _personSpawnDelayTime, _wienerSpawnDelayTime, _wienerKillDelay, _currentRayAngle;
+    float _personSpawnDelayTime, _wienerSpawnDelayTime, _currentRayAngle;
     BOOL _moving, _touchedDog, _rayTouchingDog, _pause, _shootLock, _intro, _dogHasHitGround, _dogHasDied, _policeOnScreen;
     NSString *currentAnimation;
     CGRect _pauseButtonRect;
@@ -70,6 +70,7 @@
         CCAnimation *altAnimation;
         CCAnimation *altWalkAnim;
         float armSpeed;
+        float deathDelay;
         BOOL aiming;
         BOOL aimedAt;
         BOOL animLock;
