@@ -27,6 +27,28 @@
 			<false/>
 		</dict>
 		
+		<key>Icon_OpenFeint_dummy.png</key>
+		<dict>
+			<key>aliases</key>
+			<array>
+			
+			</array>
+			<key>spriteColorRect</key>
+			<string>{{0, 0}, {30, 30}}</string>
+			<key>spriteOffset</key>
+			<string>{0, -0}</string>
+			<key>spriteSize</key>
+			<string>{30, 30}</string>
+			<key>spriteSourceSize</key>
+			<string>{30, 30}</string>
+			<key>spriteTrimmed</key>
+			<true/>
+			<key>textureRect</key>
+			<string>{{124, 322}, {30, 30}}</string>
+			<key>textureRotated</key>
+			<false/>
+		</dict>
+		
 		<key>MenuItems_BG.png</key>
 		<dict>
 			<key>aliases</key>

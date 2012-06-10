@@ -1,5 +1,5 @@
 //
-//  OptionsLayer.mm
+//  TutorialLayer.mm
 //  sandbox
 //
 //  Created by Emmett Butler on 1/14/12.
@@ -8,19 +8,15 @@
 
 #import "GameplayLayer.h"
 #import "TitleScene.h"
-#import "OptionsLayer.h"
-#import "TestFlight.h"
+#import "TutorialLayer.h"
 
-#define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
-#define CCLOG(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
-
-@implementation OptionsLayer
+@implementation TutorialLayer
 
 +(CCScene *) scene{
 	CCScene *scene = [CCScene node];
     CCLOG(@"in scenewithData");
-	OptionsLayer *layer;
-    layer = [OptionsLayer node];
+	TutorialLayer *layer;
+    layer = [TutorialLayer node];
 	[scene addChild:layer];
 	return scene;
 }
@@ -58,8 +54,6 @@
         menu = [CCMenu menuWithItems:button, nil];
         [menu setPosition:ccp(370, 26)];
         [self addChild:menu z:11];
-        
-        [TestFlight passCheckpoint:@"Options Screen"];
         
         [self schedule: @selector(tick:)];
     }

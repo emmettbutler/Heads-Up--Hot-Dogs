@@ -9,6 +9,10 @@
 #import "LoseScene.h"
 #import "GameplayLayer.h"
 #import "TitleScene.h"
+#import "TestFlight.h"
+
+#define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
+#define CCLOG(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 
 @implementation LoseLayer
 
@@ -35,6 +39,7 @@
 
 -(id) init{
     if ((self = [super init])){
+        self.isTouchEnabled = YES;
         // color definitions
         _color_pink = ccc3(255, 62, 166);
         _color_blue = ccc3(6, 110, 163);
@@ -102,6 +107,8 @@
         
         _lock = 0;
         
+        [TestFlight passCheckpoint:@"Game Over Screen"];
+        
         [self schedule: @selector(tick:)];
     }
     return self;
@@ -156,6 +163,12 @@
 
 - (void)switchSceneQuit{
     [[CCDirector sharedDirector] replaceScene:[TitleLayer scene]];
+}
+
+- (void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+    UITouch *myTouch = [touches anyObject];
+    CGPoint location = [myTouch locationInView:[myTouch view]];
+    location = [[CCDirector sharedDirector] convertToGL:location];  
 }
 
 -(void) dealloc{

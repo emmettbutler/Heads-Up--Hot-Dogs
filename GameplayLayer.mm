@@ -8,6 +8,7 @@
 
 #import "GameplayLayer.h"
 #import "TitleScene.h"
+#import "TestFlight.h"
 #import "LoseScene.h"
 
 #define PTM_RATIO 32
@@ -20,6 +21,8 @@
 #define PERSON_SPAWN_START 5
 #define COP_RANGE 4
 #define DOG_COUNTER_HT 295
+#define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
+#define CCLOG(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 
 #ifdef DEBUG
 #define SPAWN_LIMIT_DECREMENT_DELAY 1
@@ -72,6 +75,7 @@
 }
 
 - (void)loseScene{
+    [TestFlight passCheckpoint:@"Game Over"];
     NSMutableArray *loseParams = [[NSMutableArray alloc] initWithCapacity:2];
     [loseParams addObject:[NSNumber numberWithInteger:_points]];
     [loseParams addObject:[NSNumber numberWithInteger:time]];
@@ -85,6 +89,11 @@
     [self removeChild:_pauseLayer cleanup:YES];
     [[CCDirector sharedDirector] resume];
     _pause = false;
+}
+
+-(IBAction)launchFeedback{
+    [TestFlight passCheckpoint:@"Feedback Clicked"];
+    [TestFlight openFeedbackView];
 }
 
 -(void)setShootLock:(id)sender data:(void*)params{
@@ -126,20 +135,31 @@
         CCMenuItem *savedItem = [CCMenuItemLabel itemWithLabel:label];
 
         CCSprite *otherButton = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
-        otherButton.position = ccp((winSize.width/2)-43, 40);
+        otherButton.position = ccp((winSize.width/2)-43, 27);
         [_pauseLayer addChild:otherButton z:81];
         label = [CCLabelTTF labelWithString:@"     Quit     " fontName:@"LostPet.TTF" fontSize:24.0];
         [[label texture] setAliasTexParameters];
         label.color = _color_pink;
         CCMenuItem *title = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(titleScene)];
-        CCMenu *quitButton = [CCMenu menuWithItems:title, nil];
-        quitButton.position = ccp((winSize.width/2)-43, 39);
+        
+        otherButton = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
+        otherButton.position = ccp((winSize.width/2)-43, 70);
+        [_pauseLayer addChild:otherButton z:81];
+        label = [CCLabelTTF labelWithString:@"   Feedback   " fontName:@"LostPet.TTF" fontSize:24.0];
+        [[label texture] setAliasTexParameters];
+        label.color = _color_pink;
+        CCMenuItem *feedback = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(launchFeedback)];
+        CCMenu *quitButton = [CCMenu menuWithItems:title, feedback, nil];
+        [quitButton alignItemsVerticallyWithPadding:20];
+        quitButton.position = ccp((winSize.width/2)-43, 47);
         [_pauseLayer addChild:quitButton z:82];
 
         _pauseMenu = [CCMenu menuWithItems: score, timeItem, peopleItem, savedItem, totalTimeItem, nil];
-        [_pauseMenu setPosition:ccp(winSize.width/2, winSize.height/2)];
+        [_pauseMenu setPosition:ccp(winSize.width/2, winSize.height/2+30)];
         [_pauseMenu alignItemsVertically];
         [self addChild:_pauseMenu z:81];
+        
+        [TestFlight passCheckpoint:@"Pause Menu"];
     }
 }
 
@@ -1294,7 +1314,6 @@
         _overallTime = [standardUserDefaults integerForKey:@"overallTime"];
 
         //basic game/box2d/cocos2d initialization
-        self.isAccelerometerEnabled = YES;
         self.isTouchEnabled = YES;
         time = 0;
         _pause = false;
@@ -1512,6 +1531,8 @@
         plus100RightAnim = [[CCAnimation animationWithFrames:plus100RightAnimFrames delay:.05f] retain];
         self.plus100RightAction = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:plus100RightAnim restoreOriginalFrame:NO] times:1];
         [plus100RightAnimFrames release];
+
+        [TestFlight passCheckpoint:@"Game Started"];
 
         //schedule callbacks for dogs, people, and game value decrements
         personParameters = [[NSMutableArray alloc] initWithCapacity:2];
@@ -1922,7 +1943,7 @@
                                             NSValue *cBody = [NSValue valueWithPointer:copBody];
                                             [walkParameters addObject:cBody];
                                             [walkParameters addObject:[NSNumber numberWithInteger:0]];
-                                            id stopWalkingAction = [CCCallFuncND actionWithTarget:self selector:@selector(setAwake:data:) data:walkParameters];
+                                            [self setAwake:self data:walkParameters];
 
                                             CCFiniteTimeAction *copShootAnimAction = (CCFiniteTimeAction *)copUd->altAction2;
                                             CCAnimation *copWalkAnim = (CCAnimation *)copUd->defaultAnim;
@@ -1959,9 +1980,13 @@
                                             [aimParameters addObject:cBody];
                                             id copFlipAimingAction = [CCCallFuncND actionWithTarget:self selector:@selector(copFlipAim:data:) data:aimParameters];
 
+                                            [self copFlipAim:self data:aimParameters];
+                                            
                                             CCDelayTime *delay = [CCDelayTime actionWithDuration:1];
+                                            
+                                            
 
-                                            id copSeq = [CCSequence actions:stopWalkingAction, copFlipAimingAction, delay, copShootAnimAction, copFlipAimingAction, wakeUpAction, startWalkingAction, walkAnimateAction, unlockAction, nil];
+                                            id copSeq = [CCSequence actions:delay, copShootAnimAction, copFlipAimingAction, wakeUpAction, startWalkingAction, walkAnimateAction, unlockAction, nil];
                                             [copUd->sprite1 stopAllActions];
                                             [copUd->sprite1 runAction:copSeq];
 
@@ -1990,10 +2015,10 @@
 
                                             NSMutableArray *aimedAtParameters = [[NSMutableArray alloc] initWithCapacity:1];
                                             [aimedAtParameters addObject:dBody];
-                                            id dogFlipAimedAtAction = [CCCallFuncND actionWithTarget:self selector:@selector(dogFlipAimedAt:data:) data:aimedAtParameters];
+                                            [self dogFlipAimedAt:self data:aimedAtParameters];
 
                                             CCFiniteTimeAction *wienerExplodeAction = (CCFiniteTimeAction *)ud->altAction2;
-                                            id dogSeq = [CCSequence actions:dogFlipAimedAtAction, delay, wienerExplodeAction, destroyAction, nil];
+                                            id dogSeq = [CCSequence actions:delay, wienerExplodeAction, destroyAction, nil];
                                             [ud->sprite1 stopAllActions];
                                             [ud->sprite1 runAction:dogSeq];
 
@@ -2085,7 +2110,6 @@
                                                [ud->overlaySprite setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Target_Dog.png"]]];
                                                ud->overlaySprite.position = CGPointMake(aimedDog->GetPosition().x*PTM_RATIO, aimedDog->GetPosition().y*PTM_RATIO);
                                                ud->overlaySprite.rotation = 6 * (time % 360);
-                                               
                                         } else {
                                             [aimedUd->sprite1 stopAllActions];
                                             aimedUd->aimedAt = false;

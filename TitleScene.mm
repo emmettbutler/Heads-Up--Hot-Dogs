@@ -9,6 +9,10 @@
 #import "TitleScene.h"
 #import "GameplayLayer.h"
 #import "OptionsLayer.h"
+#import "TestFlight.h"
+
+#define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
+#define CCLOG(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 
 @implementation TitleLayer
 
@@ -76,6 +80,8 @@
         screen = CGRectMake(0, 0, size.width, size.height);
         
         [background runAction:_titleAnimAction];
+        
+        [TestFlight passCheckpoint:@"Title Screen"];
         
         [self schedule: @selector(tick:)];
     }
