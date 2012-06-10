@@ -473,23 +473,23 @@
             fallSprite = [NSString stringWithString:@"Steak_Fall.png"];
             mainSprite = [NSString stringWithString:@"Steak.png"];
             grabSprite = [NSString stringWithString:@"Steak_Grabbed.png"];
-            for(int i = 0; i < 8; i++){
+            for(int i = 0; i < 1; i++){
                 [wienerDeathAnimFrames addObject:
                  [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                  [NSString stringWithFormat:@"Dog_Die_1.png"]]];
+                  [NSString stringWithFormat:@"Steak_Die_1.png"]]];
                 [wienerDeathAnimFrames addObject:
                  [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                  [NSString stringWithFormat:@"Dog_Die_2.png"]]];
+                  [NSString stringWithFormat:@"Steak_Die_2.png"]]];
             }
             for(int i = 1; i <= 7; i++){
                 [wienerDeathAnimFrames addObject:
                  [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                  [NSString stringWithFormat:@"Dog_Die_%d.png", i]]];
+                  [NSString stringWithFormat:@"Steak_Die_%d.png", i]]];
             }
-            for(int i = 1; i <= 5; i++){
+            for(int i = 1; i <= 9; i++){
                 [wienerShotAnimFrames addObject:
                  [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                  [NSString stringWithFormat:@"Dog_Shot_%d.png", i]]];
+                  [NSString stringWithFormat:@"Steak_Shot_%d.png", i]]];
             }
             for(int i = 1; i <= 6; i++){
                 [wienerAppearAnimFrames addObject:
