@@ -420,7 +420,7 @@
 
     CCLOG(@"Destroying dog (tag %d)...", dogSprite.tag);
 
-    if(dogSprite.tag == S_HOTDOG){
+    if(dogSprite.tag == S_HOTDOG || dogSprite.tag == S_SPCDOG){
         if(dogBody->GetPosition().x > winSize.width || dogBody->GetPosition().x < 0)
             return;
         
@@ -1615,7 +1615,7 @@
             if(fBUd->tag >= F_BUSHED && fBUd->tag <= F_TOPHED){
                 // a dog is definitely on a head when it collides with that head
                 ud->_dog_isOnHead = true;
-                if(_intro && time - _lastTouchTime < 80){
+                if(_intro && time - _lastTouchTime < 200){
                     _intro = false;
                     [standardUserDefaults setInteger:1 forKey:@"introDone"];
                     [standardUserDefaults synchronize];
@@ -1660,11 +1660,15 @@
                     [plusPointsParams addObject:[NSNumber numberWithInt:pBody->GetPosition().x*PTM_RATIO]];
                     [plusPointsParams addObject:[NSNumber numberWithInt:(pBody->GetPosition().y+4.7)*PTM_RATIO]];
                     int p;
-                    switch(pUd->sprite1.tag){
-                        case S_CRPUNK: p = 10; break;
-                        case S_JOGGER: p = 25; break;
-                        case S_BUSMAN: p = 10; break;
-                        default: p = 15; break;
+                    if(ud->sprite1.tag == S_SPCDOG)
+                        p = 100;
+                    else {
+                        switch(pUd->sprite1.tag){
+                            case S_CRPUNK: p = 10; break;
+                            case S_JOGGER: p = 25; break;
+                            case S_BUSMAN: p = 10; break;
+                            default: p = 15; break;
+                        }
                     }
                     [plusPointsParams addObject:[NSNumber numberWithInt:p]];
                     _points += p;
