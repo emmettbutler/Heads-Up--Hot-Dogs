@@ -115,9 +115,7 @@
     
     // testflight setup ---------------------------------------------------------------
     [TestFlight takeOff:@"f6bf5ec07ee6b2acb2f1e80502d54baa_NzUyODcyMDEyLTAzLTI2IDIyOjE3OjM4LjMxMjg1OQ"];
-#ifdef DEBUG
     [TestFlight setDeviceIdentifier:[[UIDevice currentDevice] uniqueIdentifier]];
-#endif
     //---------------------------------------------------------------------------------
     
 	// Run the intro Scene

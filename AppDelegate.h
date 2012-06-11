@@ -9,12 +9,10 @@
 #import <UIKit/UIKit.h>
 
 @class RootViewController;
-@class OFDelegate;
 
 @interface AppDelegate : NSObject <UIApplicationDelegate> {
 	UIWindow			*window;
 	RootViewController	*viewController;
-    OFDelegate *ofDelegate;
 }
 
 @property (nonatomic, retain) UIWindow *window;

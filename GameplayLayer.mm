@@ -22,7 +22,6 @@
 #define COP_RANGE 4
 #define DOG_COUNTER_HT 295
 #define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
-#define CCLOG(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 
 #ifdef DEBUG
 #define SPAWN_LIMIT_DECREMENT_DELAY 1
@@ -204,19 +203,12 @@
 
 -(void)timedDecrement{
     if(!_intro){
-        CCLOG(@"Decrement called:");
-        /*if(_spawnLimiter > 0){
-            _spawnLimiter--;
-        }*/
         if(_personSpawnDelayTime > 1){
             _personSpawnDelayTime -= 1;
         }
         if(_wienerSpawnDelayTime > 1){
             _wienerSpawnDelayTime -= 1;
         }
-        CCLOG(@"SpawnLimiter: %d", _spawnLimiter);
-        CCLOG(@"PersonSpawnDelayTime: %0.2f", _personSpawnDelayTime);
-        CCLOG(@"WienerSpawnDelayTime: %0.2f", _wienerSpawnDelayTime);
     }
 
 }
@@ -362,8 +354,6 @@
     b2Body *body = (b2Body *)[(NSValue *)[(NSMutableArray *) params objectAtIndex:0] pointerValue];
     NSNumber *v = (NSNumber *)[(NSMutableArray *) params objectAtIndex:1];
 
-    CCLOG(@"applyForce: called with vel: %d", v.intValue);
-
     vThresh = 1;
     
     b2Vec2 force = b2Vec2(v.intValue, 0);
@@ -400,9 +390,6 @@
     CCSprite *sprite = (CCSprite *)[(NSValue *)[(NSMutableArray *) params objectAtIndex:0] pointerValue];
     if(!isCop)
         [sprite stopAllActions];
-    if(isCop){
-        CCLOG(@"Cop called spriteRunAnim");
-    }
     if([(NSMutableArray *) params count] > 1){
         CCAnimation *anim = (CCAnimation *)[(NSValue *)[(NSMutableArray *) params objectAtIndex:1] pointerValue];
         CCAction *wFAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO]];
@@ -437,7 +424,7 @@
 
     CCSprite *dogSprite = (CCSprite *)sender;
 
-    CCLOG(@"Destroying dog (tag %d)...", dogSprite.tag);
+    NSLog(@"Destroying dog (tag %d)...", dogSprite.tag);
 
     if(dogSprite.tag == S_HOTDOG || dogSprite.tag == S_SPCDOG){
         if(dogBody->GetPosition().x > winSize.width || dogBody->GetPosition().x < 0)
@@ -680,7 +667,7 @@
     CCSequence *seq = [CCSequence actions:_appearAction, wakeAction, nil];
     [_wiener runAction:seq];
 
-    CCLOG(@"Spawned wiener with maskBits: %d", wienerShapeDef.filter.maskBits);
+    NSLog(@"Spawned wiener with maskBits: %d", wienerShapeDef.filter.maskBits);
 }
 
 -(void) walkInPauseContinue:(id)sender data:(void*)params{
@@ -1145,7 +1132,6 @@
         personShapeDef.restitution = restitution;
         personShapeDef.userData = fUd1;
         personShapeDef.filter.categoryBits = _curPersonMaskBits;
-        CCLOG(@"personMaskBits: %d", _curPersonMaskBits);
         personShapeDef.filter.maskBits = WIENER;
         _personFixture = _personBody->CreateFixture(&personShapeDef);
 
@@ -1234,7 +1220,7 @@
         } else {
             [self walkAcross:_personLower data:movementParameters];
         }
-        CCLOG(@"Spawned person with tag %d", fTag);
+        NSLog(@"Spawned person with tag %d", fTag);
     } //the end of the if(spawn) conditional
 }
 
@@ -1761,7 +1747,6 @@
             _world->DestroyJoint(j);
             [mouseJoints removeObject:[mouseJoints objectAtIndex:i]];
         }   
-        //CCLOG(@"Mousejoints[%d] target: %0.2f x %0.2f", i, j->GetTarget().x, j->GetTarget().y);
     }
 
     //any non-collision actions that apply to multiple onscreen entities happen here
@@ -1806,7 +1791,7 @@
                 if(ud->sprite1.tag == S_HOTDOG){
                     _dogsSaved++;
                 }
-                CCLOG(@"Body removed");
+                NSLog(@"Body removed - tag %d", ud->sprite1.tag);
                 [ud->sprite1 removeFromParentAndCleanup:YES];
                 if(ud->sprite2 != NULL){
                     [ud->sprite2 removeFromParentAndCleanup:YES];
@@ -2196,7 +2181,7 @@
                                 body->SetFixedRotation(true);
                                 body->SetAwake(true);
                                 
-                                CCLOG(@"Touched dog %d id: %d", i, ud->unique_id);
+                                NSLog(@"Touched dog %d id: %d", i, ud->unique_id);
                                 
                                 mouseJointUserData *jUd = new mouseJointUserData();
                                 jUd->touch = ud->unique_id;
@@ -2222,7 +2207,6 @@
                                 
                                 b2MouseJoint *_mouseJoint = (b2MouseJoint *)_world->CreateJoint(&md);
                                 [mouseJoints addObject:[NSValue valueWithPointer:_mouseJoint]];
-                                CCLOG(@"Mousejoints count: %d", [mouseJoints count]);
 
                                 break;
                             }
@@ -2232,7 +2216,6 @@
             }
         }
     }
-    CCLOG(@"Dogs touched: %d", dogsTouched);
     
     return;
 }
@@ -2278,11 +2261,9 @@
                         for(int i = 0; i < 2; i++){
                             if(!(abs(locations[i].x - jUd->prevX) < .5 && abs(locations[i].y - jUd->prevY) < .5)) continue;
                             mj->SetTarget(locations[i]);
-                            //CCLOG(@"Setting target to %0.2f x %0.2f", locations[i].x, locations[i].y);
                             jUd->prevX = locations[i].x;
                             jUd->prevY = locations[i].y;
                         }
-                        //CCLOG(@"Setting target to %0.2f x %0.2f", locations[i].x, locations[i].y);
                         for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
                             fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
                             if(fUd->tag == F_DOGCLD){
@@ -2311,8 +2292,6 @@
     CGPoint location = [myTouch locationInView:[myTouch view]];
     location = [[CCDirector sharedDirector] convertToGL:location];
     b2Vec2 locationWorld = b2Vec2(location.x/PTM_RATIO, location.y/PTM_RATIO);
-
-    CCLOG(@"Mousejoints count: %d", [mouseJoints count]);
     
     for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
         if (body->GetUserData() != NULL && body->GetUserData() != (void*)100) {
