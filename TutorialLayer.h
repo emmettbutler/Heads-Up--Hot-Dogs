@@ -16,6 +16,8 @@
     NSMutableArray *tutCaptions, *tutPages, *animFrames;
     CCAnimation *anim;
     CCAction *action;
+    CCSprite *s;
+    int count;
 }
 
 +(CCScene *)scene;

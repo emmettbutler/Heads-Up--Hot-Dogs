@@ -8,6 +8,7 @@
 
 #import "TitleScene.h"
 #import "GameplayLayer.h"
+#import "TutorialLayer.h"
 #import "OptionsLayer.h"
 #import "TestFlight.h"
 
@@ -98,7 +99,7 @@
 }
 
 - (void)switchSceneStart{
-    [[CCDirector sharedDirector] replaceScene:[GameplayLayer scene]];
+    [[CCDirector sharedDirector] replaceScene:[TutorialLayer scene]];
 }
 
 - (void)switchSceneOptions{

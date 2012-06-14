@@ -1262,6 +1262,7 @@
 
         //basic game/box2d/cocos2d initialization
         self.isTouchEnabled = YES;
+        
         time = 0;
         _pause = false;
         _dogHasHitGround = false;
