@@ -181,15 +181,12 @@
 }
 
 -(void)timedDecrement{
-    if(!_intro){
-        if(_personSpawnDelayTime > 1){
-            _personSpawnDelayTime -= 1;
-        }
-        if(_wienerSpawnDelayTime > 1){
-            _wienerSpawnDelayTime -= 1;
-        }
+    if(_personSpawnDelayTime > 1){
+        _personSpawnDelayTime -= 1;
     }
-
+    if(_wienerSpawnDelayTime > 1){
+        _wienerSpawnDelayTime -= 1;
+    }
 }
 
 -(void)removeSprite:(id)sender data:(void*)params {
@@ -1267,7 +1264,6 @@
         self.isTouchEnabled = YES;
         time = 0;
         _pause = false;
-        _intro = true;
         _dogHasHitGround = false;
         _lastTouchTime = 0;
         _curPersonMaskBits = 0x1000;
@@ -1297,13 +1293,8 @@
 
         // if the intro has already been completed, don't do it again
         NSInteger introDone = [standardUserDefaults integerForKey:@"introDone"];
-        NSLog(@"IntroDone: %d", introDone);
-        if(introDone == 1)
-            _intro = false;
-        else {
-            [standardUserDefaults setInteger:0 forKey:@"overallTime"];
-            [standardUserDefaults setInteger:0 forKey:@"highScore"];
-        }
+        //[standardUserDefaults setInteger:0 forKey:@"overallTime"];
+        //[standardUserDefaults setInteger:0 forKey:@"highScore"];
             
         [standardUserDefaults synchronize];
 
@@ -1567,11 +1558,6 @@
             if(fBUd->tag >= F_BUSHED && fBUd->tag <= F_TOPHED){
                 // a dog is definitely on a head when it collides with that head
                 ud->_dog_isOnHead = true;
-                if(_intro && time - _lastTouchTime < 200){
-                    _intro = false;
-                    [standardUserDefaults setInteger:1 forKey:@"introDone"];
-                    [standardUserDefaults synchronize];
-                }
                 pBody = pdContact.fixtureB->GetBody();
                 CCLOG(@"Dog/Person Collision - Y Vel: %0.2f", dogBody->GetLinearVelocity().x);
                 bodyUserData *pUd = (bodyUserData *)pBody->GetUserData();
@@ -1607,7 +1593,7 @@
                 heartParticles.position = position;
                 heartParticles.duration = 0.1f;
                 [self addChild:heartParticles z:60];
-                if(!_intro && !ud->hasTouchedHead){
+                if(!ud->hasTouchedHead){
                     NSMutableArray *plusPointsParams = [[NSMutableArray alloc] initWithCapacity:3];
                     [plusPointsParams addObject:[NSNumber numberWithInt:pBody->GetPosition().x*PTM_RATIO]];
                     [plusPointsParams addObject:[NSNumber numberWithInt:(pBody->GetPosition().y+4.7)*PTM_RATIO]];
@@ -1973,7 +1959,7 @@
                             }
                         }
                     }
-                    if(!(time % 45) && ud->dogsOnHead != 0 && !_intro){
+                    if(!(time % 45) && ud->dogsOnHead != 0){
                         _points += ud->dogsOnHead * 25;
                         NSMutableArray *plus25Params = [[NSMutableArray alloc] initWithCapacity:2];
                         [plus25Params addObject:[NSNumber numberWithInt:b->GetPosition().x*PTM_RATIO]];
