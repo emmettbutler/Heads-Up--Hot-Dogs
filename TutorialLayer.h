@@ -23,7 +23,7 @@
 +(CCScene *)scene;
 
 struct tutorialSprite {
-    CCAction *animation;
+    NSMutableArray *animFrames;
     CGPoint location;
 };
 

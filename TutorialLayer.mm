@@ -44,7 +44,7 @@
 
 -(CCAction *)frames2Action:(NSMutableArray *)frames{
     anim = [CCAnimation animationWithFrames:frames delay:.1f];
-    return [[CCAnimate alloc] initWithAnimation:anim];
+    return [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO]];
 }
 
 -(id) init{
@@ -59,10 +59,10 @@
         
         tutPages = [[NSMutableArray alloc] init];
         animFrames = [[NSMutableArray alloc] init];
+        
         page = new tutorialPage();
         tSprite = new tutorialSprite();
         page->sprites = [[NSMutableArray alloc] init];
-        
         page->caption = [NSString stringWithString:@"This is a hot dog.\nIt loves to travel."];
         for(int i = 1; i <= 10; i++){
             [animFrames addObject:
@@ -74,11 +74,14 @@
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
               [NSString stringWithFormat:@"dog54x12.png", i]]];
         }
-        tSprite->animation = [self frames2Action:animFrames];
+        tSprite->animFrames = animFrames;
         tSprite->location = CGPointMake(100,100);
         [page->sprites addObject:[NSValue valueWithPointer:tSprite]];
         [tutPages addObject:[NSValue valueWithPointer:page]];
         
+        page = new tutorialPage();
+        tSprite = new tutorialSprite();
+        page->sprites = [[NSMutableArray alloc] init];
         page->caption = [NSString stringWithString:@"It hates sitting still."];
         for(int i = 0; i < 8; i++){
             [animFrames addObject:
@@ -93,9 +96,10 @@
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
               [NSString stringWithFormat:@"Dog_Die_%d.png", i]]];
         }
-        tSprite->animation = [self frames2Action:animFrames];
+        tSprite->animFrames = animFrames;
         tSprite->location = CGPointMake(100,100);
         [page->sprites addObject:[NSValue valueWithPointer:tSprite]];
+        tSprite = new tutorialSprite();
         for(int i = 0; i < 12; i++){
             [animFrames addObject:
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -106,37 +110,44 @@
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
               [NSString stringWithFormat:@"WienerCount_X.png"]]];
         }
-        tSprite->animation = [self frames2Action:animFrames];
+        tSprite->animFrames = animFrames;
         tSprite->location = CGPointMake(100,100);
         [page->sprites addObject:[NSValue valueWithPointer:tSprite]];
         [tutPages addObject:[NSValue valueWithPointer:page]];
         
+        page = new tutorialPage();
+        tSprite = new tutorialSprite();
+        page->sprites = [[NSMutableArray alloc] init];
         page->caption = [NSString stringWithString:@"This is the hot dogs' transportation."];
         for(int i = 1; i < 6; i++){
             [animFrames addObject:
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
               [NSString stringWithFormat:@"BusinessMan_Walk_%d.png", i]]];
         }
-        tSprite->animation = [self frames2Action:animFrames];
+        tSprite->animFrames = animFrames;
         tSprite->location = CGPointMake(100,100);
         [page->sprites addObject:[NSValue valueWithPointer:tSprite]];
+        tSprite = new tutorialSprite();
         for(int i = 1; i < 3; i++){
             [animFrames addObject:
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
               [NSString stringWithFormat:@"BusinessHead_NoDog_%d.png", i]]];
         }
-        tSprite->animation = [self frames2Action:animFrames];
+        tSprite->animFrames = animFrames;
         tSprite->location = CGPointMake(100,100);
         [page->sprites addObject:[NSValue valueWithPointer:tSprite]];
         [tutPages addObject:[NSValue valueWithPointer:page]];
         
+        page = new tutorialPage();
+        tSprite = new tutorialSprite();
+        page->sprites = [[NSMutableArray alloc] init];
         page->caption = [NSString stringWithString:@"Their heads carry hot dogs quite well.\nThis gives you points."];
         for(int i = 1; i < 6; i++){
             [animFrames addObject:
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
               [NSString stringWithFormat:@"BusinessMan_Walk_%d.png", i]]];
         }
-        tSprite->animation = [self frames2Action:animFrames];
+        tSprite->animFrames = animFrames;
         tSprite->location = CGPointMake(100,100);
         [page->sprites addObject:[NSValue valueWithPointer:tSprite]];
         for(int i = 1; i < 3; i++){
@@ -144,7 +155,7 @@
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
               [NSString stringWithFormat:@"BusinessHead_NoDog_%d.png", i]]];
         }
-        tSprite->animation = [self frames2Action:animFrames];
+        tSprite->animFrames = animFrames;
         tSprite->location = CGPointMake(100,100);
         [page->sprites addObject:[NSValue valueWithPointer:tSprite]];
         for(int i = 1; i < 11; i++){
@@ -152,24 +163,27 @@
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
               [NSString stringWithFormat:@"plusTen%d.png", i]]];
         }
-        tSprite->animation = [self frames2Action:animFrames];
+        tSprite->animFrames = animFrames;
         tSprite->location = CGPointMake(100,100);
         [page->sprites addObject:[NSValue valueWithPointer:tSprite]];
         [animFrames addObject:
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
               [NSString stringWithFormat:@"dog54x12.png"]]];
-        tSprite->animation = [self frames2Action:animFrames];
+        tSprite->animFrames = animFrames;
         tSprite->location = CGPointMake(100,100);
         [page->sprites addObject:[NSValue valueWithPointer:tSprite]];
         [tutPages addObject:[NSValue valueWithPointer:page]];
         
+        page = new tutorialPage();
+        tSprite = new tutorialSprite();
+        page->sprites = [[NSMutableArray alloc] init];
         page->caption = [NSString stringWithString:@"Extra points if they get carry hot dogs offscreen."];
         for(int i = 1; i < 6; i++){
             [animFrames addObject:
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
               [NSString stringWithFormat:@"BusinessMan_Walk_%d.png", i]]];
         }
-        tSprite->animation = [self frames2Action:animFrames];
+        tSprite->animFrames = animFrames;
         tSprite->location = CGPointMake(100,100);
         [page->sprites addObject:[NSValue valueWithPointer:tSprite]];
         for(int i = 1; i < 3; i++){
@@ -177,7 +191,7 @@
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
               [NSString stringWithFormat:@"BusinessHead_NoDog_%d.png", i]]];
         }
-        tSprite->animation = [self frames2Action:animFrames];
+        tSprite->animFrames = animFrames;
         tSprite->location = CGPointMake(100,100);
         [page->sprites addObject:[NSValue valueWithPointer:tSprite]];
         for(int i = 1; i < 18; i++){
@@ -185,22 +199,25 @@
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
               [NSString stringWithFormat:@"Plus_100_%d.png", i]]];
         }
-        tSprite->animation = [self frames2Action:animFrames];
+        tSprite->animFrames = animFrames;
         tSprite->location = CGPointMake(100,100);
         [page->sprites addObject:[NSValue valueWithPointer:tSprite]];
         [animFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
           [NSString stringWithFormat:@"dog54x12.png"]]];
-        tSprite->animation = [self frames2Action:animFrames];
+        tSprite->animFrames = animFrames;
         tSprite->location = CGPointMake(100,100);
         [page->sprites addObject:[NSValue valueWithPointer:tSprite]];
         [tutPages addObject:[NSValue valueWithPointer:page]];
         
+        page = new tutorialPage();
+        tSprite = new tutorialSprite();
+        page->sprites = [[NSMutableArray alloc] init];
         page->caption = [NSString stringWithString:@"Watch out for the police, they want to ruin the hot dogs' fun."];
         [animFrames addObject:
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
               [NSString stringWithFormat:@"Cop_Idle.png"]]];
-        tSprite->animation = [self frames2Action:animFrames];
+        tSprite->animFrames = animFrames;
         tSprite->location = CGPointMake(100,100);
         [page->sprites addObject:[NSValue valueWithPointer:tSprite]];
         for(int i = 1; i < 3; i++){
@@ -208,7 +225,7 @@
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
               [NSString stringWithFormat:@"Cop_Head_Shoot_%d.png", i]]];
         }
-        tSprite->animation = [self frames2Action:animFrames];
+        tSprite->animFrames = animFrames;
         tSprite->location = CGPointMake(100,100);
         [page->sprites addObject:[NSValue valueWithPointer:tSprite]];
         for(int i = 1; i < 5; i++){
@@ -221,7 +238,7 @@
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
               [NSString stringWithFormat:@"Cop_Arm_Shoot_%d.png", i]]];
         }
-        tSprite->animation = [self frames2Action:animFrames];
+        tSprite->animFrames = animFrames;
         tSprite->location = CGPointMake(100,100);
         [page->sprites addObject:[NSValue valueWithPointer:tSprite]];
         for(int i = 1; i < 5; i++){
@@ -234,7 +251,7 @@
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
               [NSString stringWithFormat:@"Dog_Shot_%d.png", i]]];
         }
-        tSprite->animation = [self frames2Action:animFrames];
+        tSprite->animFrames = animFrames;
         tSprite->location = CGPointMake(100,100);
         [page->sprites addObject:[NSValue valueWithPointer:tSprite]];
         [tutPages addObject:[NSValue valueWithPointer:page]];
@@ -275,12 +292,14 @@
         [boxParams addObject:[NSValue valueWithPointer:page1->caption]];
         [self introTutorialTextBox:boxParams];
         
+        CCLOG(@"Page1 sprites count: %d", [page1->sprites count]);
+        
         for(int i = 0; i < [page1->sprites count]; i++){
             s = [CCSprite spriteWithSpriteFrameName:@"dog54x12.png"]; //placeholder
             tutorialSprite *ts = (tutorialSprite *)[(NSValue *)[page1->sprites objectAtIndex:i]  pointerValue];
             s.position = ts->location;
             [self addChild:s];
-            [s runAction:ts->animation];
+            [s runAction:[self frames2Action:ts->animFrames]];
         }
         
         [self schedule: @selector(tick:)];
@@ -296,18 +315,22 @@
     count++;
     CCLOG(@"Touch registered, count %d", count);
     
+    if(count > 5)
+        return;
+    
     tutorialPage *page = (tutorialPage *)[(NSValue *)[tutPages objectAtIndex:count] pointerValue];
     
     NSMutableArray *boxParams = [[NSMutableArray alloc] init];
     [boxParams addObject:[NSValue valueWithPointer:page->caption]];
     [self introTutorialTextBox:boxParams];
     
+    CCLOG(@"Page sprites count: %d", [page->sprites count]);
     for(int i = 0; i < [page->sprites count]; i++){
         s = [CCSprite spriteWithSpriteFrameName:@"dog54x12.png"]; //placeholder
         tutorialSprite *ts = (tutorialSprite *)[(NSValue *)[page->sprites objectAtIndex:i] pointerValue];
         s.position = ts->location;
         [self addChild:s];
-        [s runAction:ts->animation];
+        [s runAction:[self frames2Action:ts->animFrames]];
     }
 }
 
