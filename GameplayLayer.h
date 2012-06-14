@@ -29,11 +29,10 @@
     CCAnimation *walkAnim, *idleAnim, *hitAnim, *dogDeathAnim, *dogAppearAnim, *walkFaceAnim, *walkDogFaceAnim;
     CCAnimation *dogShotAnim, *shootAnim, *armShootAnim, *shootFaceAnim, *plusTenAnim, *plus25Anim, *plus100RightAnim, *plus100LeftAnim, *plus15Anim, *plus25BigAnim;
     CCSpriteBatchNode *spriteSheet;
-    CCLabelTTF *scoreLabel, *droppedLabel, *tutorialLabel;
+    CCLabelTTF *scoreLabel, *droppedLabel;
     b2Vec2 policeRayPoint1, policeRayPoint2;
     b2RevoluteJoint *policeArmJoint;
     CCLayerColor *_pauseLayer, *_flashLayer;
-    CCLayer *_introLayer;
     CCMenu *_pauseMenu;
     NSMutableArray *floorBits, *xPositions, *characterTags, *wienerParameters, *headParams, *mouseJoints;
     NSMutableArray *personParameters, *wakeParameters, *movementPatterns, *movementParameters, *_touchLocations, *dogIcons;

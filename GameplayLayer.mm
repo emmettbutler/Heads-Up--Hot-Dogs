@@ -162,27 +162,6 @@
     }
 }
 
--(void)introTutorialTextBox:(id)sender data:(void*)params {
-    int boxY = 0;
-
-    CGSize winSize = [[CCDirector sharedDirector] winSize];
-    _introLayer = [CCLayerColor layerWithColor:ccc4(0, 0, 255, 125) width:490 height:60];
-    _introLayer.position = ccp((winSize.width/2)-(_introLayer.contentSize.width/2), boxY);
-    [self addChild:_introLayer z:80];
-
-    NSString *text = (NSString *)[(NSValue *)[(NSMutableArray *) params objectAtIndex:0] pointerValue];
-    tutorialLabel = [CCLabelTTF labelWithString:text fontName:@"LostPet.TTF" fontSize:16.0];
-    [tutorialLabel setPosition:ccp(winSize.width/2, boxY+(_introLayer.contentSize.height/2))];
-    [_introLayer addChild:tutorialLabel z:81];
-}
-
--(void)tutorialBoxRemove{
-    if(_introLayer != NULL){
-        [self removeChild:_introLayer cleanup:YES];
-        _introLayer = NULL;
-    }
-}
-
 -(void)debugDraw{
     if(!m_debugDraw){
         m_debugDraw = new GLESDebugDraw( PTM_RATIO );
@@ -442,28 +421,12 @@
         
         dogBody = nil;
         
-        if(!_intro){
-            CCSprite *dogDroppedIcon = [CCSprite spriteWithSpriteFrameName:@"WienerCount_X.png"];
-            dogDroppedIcon.position = ccp(winSize.width-_droppedSpacing, DOG_COUNTER_HT);
-            [self addChild:dogDroppedIcon z:72];
-            [self removeChild:(CCSprite*)[(NSValue *)[dogIcons objectAtIndex:_droppedCount] pointerValue] cleanup:YES];
-            _droppedCount++;
-            _droppedSpacing += 23;
-        } else if(_intro && !_dogHasDied){
-            _dogHasDied = true;
-            _firstDeathTime = time;
-
-            winUpDelay = [CCDelayTime actionWithDuration:7];
-            winDownDelay = [CCDelayTime actionWithDuration:1];
-            removeWindow = [CCCallFuncN actionWithTarget:self selector:@selector(tutorialBoxRemove)];
-
-            NSMutableArray *textBoxParameters = [[NSMutableArray alloc] initWithCapacity:1];
-            [textBoxParameters addObject:[NSValue valueWithPointer:[NSString stringWithString:@"Oh man, it died!"]]];
-            id tutorialWindow1 = [CCCallFuncND actionWithTarget:self selector:@selector(introTutorialTextBox:data:) data:textBoxParameters];
-
-            id windowSeq = [CCSequence actions:tutorialWindow1, winUpDelay, removeWindow, nil];
-            [self runAction:windowSeq];
-        }
+        CCSprite *dogDroppedIcon = [CCSprite spriteWithSpriteFrameName:@"WienerCount_X.png"];
+        dogDroppedIcon.position = ccp(winSize.width-_droppedSpacing, DOG_COUNTER_HT);
+        [self addChild:dogDroppedIcon z:72];
+        [self removeChild:(CCSprite*)[(NSValue *)[dogIcons objectAtIndex:_droppedCount] pointerValue] cleanup:YES];
+        _droppedCount++;
+        _droppedSpacing += 23;
     }
 }
 
@@ -506,6 +469,7 @@
     NSMutableArray *wienerShotAnimFrames = [[NSMutableArray alloc] init];
     NSMutableArray *wienerAppearAnimFrames = [[NSMutableArray alloc] init];
     
+    // TODO - decide body dimensions on a per-type basis
     switch(type.intValue){
         case S_SPCDOG:
             riseSprite = [NSString stringWithString:@"Steak_Rise.png"];
@@ -1576,29 +1540,7 @@
     if(_droppedCount >= DROPPED_MAX){
         [self loseScene];
     }
-
-    if(_dogHasDied && time - _firstDeathTime == 800 && _intro){
-        winUpDelay = [CCDelayTime actionWithDuration:4];
-        winDownDelay = [CCDelayTime actionWithDuration:.5];
-        removeWindow = [CCCallFuncN actionWithTarget:self selector:@selector(tutorialBoxRemove)];
-
-        NSMutableArray *textBoxParameters = [[NSMutableArray alloc] initWithCapacity:1];
-        [textBoxParameters addObject:[NSValue valueWithPointer:[NSString stringWithString:@"There's another! Quick, save it!"]]];
-        id tutorialWindow1 = [CCCallFuncND actionWithTarget:self selector:@selector(introTutorialTextBox:data:) data:textBoxParameters];
-
-        textBoxParameters = [[NSMutableArray alloc] initWithCapacity:1];
-        [textBoxParameters addObject:[NSValue valueWithPointer:[NSString stringWithString:@"Put it somewhere safe..."]]];
-        id tutorialWindow2 = [CCCallFuncND actionWithTarget:self selector:@selector(introTutorialTextBox:data:) data:textBoxParameters];
-
-        textBoxParameters = [[NSMutableArray alloc] initWithCapacity:1];
-        [textBoxParameters addObject:[NSValue valueWithPointer:[NSString stringWithString:@"Touch a dog and drag it to place it somewhere safe"]]];
-        id tutorialWindow3 = [CCCallFuncND actionWithTarget:self selector:@selector(introTutorialTextBox:data:) data:textBoxParameters];
-
-        id tutorialSeq = [CCSequence actions:tutorialWindow1, winUpDelay, removeWindow, winDownDelay, tutorialWindow2, winUpDelay, removeWindow,
-                          winDownDelay, tutorialWindow3, winUpDelay, removeWindow, nil];
-        [self runAction:tutorialSeq];
-    }
-
+    
     _world->Step(dt, velocityIterations, positionIterations);
 
     //score and dropped count
@@ -1691,20 +1633,6 @@
                 }
             }
             else if (fBUd->tag == F_GROUND){
-                if(_intro && !_dogHasHitGround){
-                    _dogHasHitGround = true;
-
-                    winUpDelay = [CCDelayTime actionWithDuration:4];
-                    winDownDelay = [CCDelayTime actionWithDuration:.5];
-                    removeWindow = [CCCallFuncN actionWithTarget:self selector:@selector(tutorialBoxRemove)];
-
-                    NSMutableArray *textBoxParameters = [[NSMutableArray alloc] initWithCapacity:1];
-                    [textBoxParameters addObject:[NSValue valueWithPointer:[NSString stringWithString:@"Whoa, what was that? A hot dog?"]]];
-                    id tutorialWindow1 = [CCCallFuncND actionWithTarget:self selector:@selector(introTutorialTextBox:data:) data:textBoxParameters];
-
-                    id windowSeq = [CCSequence actions:winDownDelay, tutorialWindow1, winUpDelay, removeWindow, nil];
-                    [self runAction:windowSeq];
-                }
                 ud->_dog_isOnHead = false;
                 ud->hasTouchedHead = false;
                 if(dogBody->GetLinearVelocity().y < .1){
@@ -2259,7 +2187,7 @@
                             [sprite stopAllActions];
                         }
                         for(int i = 0; i < 2; i++){
-                            if(!(abs(locations[i].x - jUd->prevX) < .5 && abs(locations[i].y - jUd->prevY) < .5)) continue;
+                            if(!(abs(locations[i].x - jUd->prevX) < 1.6 && abs(locations[i].y - jUd->prevY) < 1.6)) continue;
                             mj->SetTarget(locations[i]);
                             jUd->prevX = locations[i].x;
                             jUd->prevY = locations[i].y;
@@ -2304,7 +2232,7 @@
                     b2MouseJoint *mj = (b2MouseJoint *)j->joint;
                     target = mj->GetTarget();
                 }
-                if(abs(locationWorld.x - target.x) < .6 && abs(locationWorld.y - target.y) < .6){
+                if(abs(locationWorld.x - target.x) < 1.5 && abs(locationWorld.y - target.y) < 1.5){
                     // drop the dog
                     // find the corresponding mouse joint
                     for(int i = 0; i < [mouseJoints count]; i++){

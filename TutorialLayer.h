@@ -11,8 +11,23 @@
 @interface TutorialLayer : CCLayer
 {
     CCSpriteBatchNode *spriteSheet;
+    CCLayer *_introLayer;
+    CCLabelTTF *tutorialLabel;
+    NSMutableArray *tutCaptions, *tutPages, *animFrames;
+    CCAnimation *anim;
+    CCAction *action;
 }
 
 +(CCScene *)scene;
+
+struct tutorialSprite {
+    CCAction *animation;
+    CGPoint location;
+};
+
+struct tutorialPage {
+    NSMutableArray *sprites;
+    NSString *caption;
+};
 
 @end
