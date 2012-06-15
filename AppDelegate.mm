@@ -118,6 +118,12 @@
     [TestFlight setDeviceIdentifier:[[UIDevice currentDevice] uniqueIdentifier]];
     //---------------------------------------------------------------------------------
     
+    standardUserDefaults = [NSUserDefaults standardUserDefaults];
+#ifdef DEBUG
+    [standardUserDefaults setInteger:0 forKey:@"introDone"];
+    [standardUserDefaults synchronize];
+#endif
+    
 	// Run the intro Scene
 	[[CCDirector sharedDirector] runWithScene: [TitleLayer scene]];
 }

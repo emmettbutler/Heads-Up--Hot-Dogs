@@ -1253,9 +1253,6 @@
         [menu setPosition:ccp(40, winSize.height-50)];
         [menu alignItemsVertically];
         [self addChild:menu];
-        
-        // comment this to stop erasing data on startup
-        [standardUserDefaults setInteger:0 forKey:@"introDone"];
 #endif
         
         _overallTime = [standardUserDefaults integerForKey:@"overallTime"];
@@ -2294,7 +2291,7 @@
 }
 
 - (void) dealloc {
-    [[CCSpriteFrameCache sharedSpriteFrameCache] removeUnusedSpriteFrames];
+    //[[CCSpriteFrameCache sharedSpriteFrameCache] removeUnusedSpriteFrames];
     [[CCTextureCache sharedTextureCache] removeUnusedTextures];
 
     self.personLower = nil;

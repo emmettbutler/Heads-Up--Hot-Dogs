@@ -16,6 +16,7 @@
     CCSprite *background;
     CGRect screen;
     ccColor3B _color_pink;
+    NSUserDefaults *standardUserDefaults;
 }
 
 +(CCScene *) scene;

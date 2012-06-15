@@ -16,6 +16,8 @@
     NSMutableArray *tutCaptions, *tutPages, *animFrames;
     CCAnimation *anim;
     CCAction *action;
+    CCLayer *spritesLayer;
+    NSUserDefaults *standardUserDefaults;
     CCSprite *s;
     int count;
 }

@@ -28,6 +28,7 @@
 
 -(id) init{
     if ((self = [super init])){
+        standardUserDefaults = [NSUserDefaults standardUserDefaults];
 #ifdef DEBUG
         NSLog(@"DEBUG MODE ON");
 #endif
@@ -99,7 +100,13 @@
 }
 
 - (void)switchSceneStart{
-    [[CCDirector sharedDirector] replaceScene:[TutorialLayer scene]];
+    NSInteger introDone = [standardUserDefaults integerForKey:@"introDone"];
+    CCLOG(@"introDone: %d", introDone);
+    if(introDone == 1)
+        [[CCDirector sharedDirector] replaceScene:[GameplayLayer scene]];
+    else if(introDone == 0){
+        [[CCDirector sharedDirector] replaceScene:[TutorialLayer scene]];
+    }
 }
 
 - (void)switchSceneOptions{
