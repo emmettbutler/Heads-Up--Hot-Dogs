@@ -7,6 +7,7 @@
 //
 
 #import "cocos2d.h"
+#import <CocosDenshion/SimpleAudioEngine.h>
 
 @interface LoseLayer : CCLayer
 {

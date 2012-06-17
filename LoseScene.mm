@@ -48,6 +48,8 @@
         spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"end_sprites_default.png"];
         [self addChild:spriteSheet];
         
+        [[SimpleAudioEngine sharedEngine] preloadEffect:@"game over sting.wav"];
+        
         CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"GameEnd_BG"];
         sprite.anchorPoint = CGPointZero;
         [self addChild:sprite z:-1];
@@ -120,6 +122,8 @@
     NSInteger overallTime = [standardUserDefaults integerForKey:@"overallTime"];
     if(!_lock){
         _lock = 1;
+        [[SimpleAudioEngine sharedEngine] stopBackgroundMusic];
+        [[SimpleAudioEngine sharedEngine] playEffect:@"game over sting.wav"];
         if(_score > highScore){
             [standardUserDefaults setInteger:_score forKey:@"highScore"];
             highScore = _score;

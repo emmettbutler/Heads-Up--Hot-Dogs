@@ -7,6 +7,7 @@
 //
 
 #import "cocos2d.h"
+#import <CocosDenshion/SimpleAudioEngine.h>
 
 @interface TitleLayer : CCLayer 
 {
@@ -17,6 +18,10 @@
     CGRect screen;
     ccColor3B _color_pink;
     NSUserDefaults *standardUserDefaults;
+    float introSoundLen;
+    ALuint soundId;
+    CDSoundEngine *engine;
+    float time;
 }
 
 +(CCScene *) scene;

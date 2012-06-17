@@ -32,11 +32,22 @@
 #ifdef DEBUG
         NSLog(@"DEBUG MODE ON");
 #endif
+        
         // color definitions
         _color_pink = ccc3(255, 62, 166);
         
         CGSize size = [[CCDirector sharedDirector] winSize];
         [[CCDirector sharedDirector] setDisplayFPS:NO];
+        
+        [[SimpleAudioEngine sharedEngine] playEffect:@"menu intro.wav"];
+        
+        SimpleAudioEngine *sae = [SimpleAudioEngine sharedEngine];
+        if (sae != nil) {
+            [sae preloadBackgroundMusic:@"menu 2.wav"];
+            if (sae.willPlayBackgroundMusic) {
+                sae.backgroundMusicVolume = 0.5f;
+            }
+        }
         
         [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile: @"title_sprites_default.plist"];
         spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"title_sprites_default.png"];
@@ -80,6 +91,8 @@
         
         screen = CGRectMake(0, 0, size.width, size.height);
         
+        time = 0;
+        
         [background runAction:_titleAnimAction];
         
         [TestFlight passCheckpoint:@"Title Screen"];
@@ -91,6 +104,10 @@
 
 -(void) tick: (ccTime) dt {
     //CGSize size = [[CCDirector sharedDirector] winSize];
+    time++;
+    if(abs((time/60)-1.6) < .01){
+        [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"menu 2.wav" loop:YES];
+    }
 }
 
 - (void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {

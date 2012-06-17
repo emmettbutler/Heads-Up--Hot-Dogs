@@ -104,6 +104,7 @@
     if(!_pause){
         _pause = true;
         [[CCDirector sharedDirector] pause];
+        [[SimpleAudioEngine sharedEngine] pauseBackgroundMusic];
         CGSize winSize = [[CCDirector sharedDirector] winSize];
         _pauseLayer = [CCLayerColor layerWithColor:ccc4(0, 0, 255, 155) width:390 height:270];
         _pauseLayer.position = ccp((winSize.width/2)-(_pauseLayer.contentSize.width/2), (winSize.height/2)-(_pauseLayer.contentSize.height/2));
@@ -208,13 +209,21 @@
     CCAction *removeAction = [CCCallFuncND actionWithTarget:self selector:@selector(removeSprite:data:) data:removeParams];
     
     id seq;
+    NSString *sound;
 
     switch(points.intValue){
-        case 10: seq = [CCSequence actions:_plusTenAction, removeAction, nil]; break;
-        case 15: seq = [CCSequence actions:_plus15Action, removeAction, nil]; break;
-        case 25: seq = [CCSequence actions:_plus25BigAction, removeAction, nil]; break;
+        case 10: seq = [CCSequence actions:_plusTenAction, removeAction, nil];
+            sound = [NSString stringWithString:@"25pts.wav"];
+            break;
+        case 15: seq = [CCSequence actions:_plus15Action, removeAction, nil];
+            sound = [NSString stringWithString:@"50pts.wav"];
+            break;
+        case 25: seq = [CCSequence actions:_plus25BigAction, removeAction, nil];
+            sound = [NSString stringWithString:@"100pts.wav"];
+            break;
     }
     
+    [[SimpleAudioEngine sharedEngine] playEffect:sound];
     [sprite runAction:seq];
 }
 
@@ -246,6 +255,8 @@
     [removeParams addObject:[NSValue valueWithPointer:oneHundred]];
     CCAction *removeAction = [CCCallFuncND actionWithTarget:self selector:@selector(removeSprite:data:) data:removeParams];
     
+    [[SimpleAudioEngine sharedEngine] playEffect:@"100pts.wav"];
+    
     id seq = [CCSequence actions:_plus100LeftAction, removeAction, nil];
     [oneHundred runAction:seq];
 }
@@ -261,6 +272,8 @@
     NSMutableArray *removeParams = [[NSMutableArray alloc] initWithCapacity:1];
     [removeParams addObject:[NSValue valueWithPointer:oneHundred]];
     CCAction *removeAction = [CCCallFuncND actionWithTarget:self selector:@selector(removeSprite:data:) data:removeParams];
+    
+    [[SimpleAudioEngine sharedEngine] playEffect:@"100pts.wav"];
     
     id seq = [CCSequence actions:_plus100RightAction, removeAction, nil];
     [oneHundred runAction:seq];
@@ -424,6 +437,8 @@
         [self removeChild:(CCSprite*)[(NSValue *)[dogIcons objectAtIndex:_droppedCount] pointerValue] cleanup:YES];
         _droppedCount++;
         _droppedSpacing += 23;
+        
+        [[SimpleAudioEngine sharedEngine] playEffect:@"hot dog disappear.wav"];
     }
 }
 
@@ -627,6 +642,8 @@
     CCCallFuncND *wakeAction = [CCCallFuncND actionWithTarget:self selector:@selector(setAwake:data:) data:wakeParameters];
     CCSequence *seq = [CCSequence actions:_appearAction, wakeAction, nil];
     [_wiener runAction:seq];
+    
+    [[SimpleAudioEngine sharedEngine] playEffect:@"hot dog appear 1.wav"];
 
     NSLog(@"Spawned wiener with maskBits: %d", wienerShapeDef.filter.maskBits);
 }
@@ -1244,6 +1261,14 @@
         CGSize winSize = [CCDirector sharedDirector].winSize;
         standardUserDefaults = [NSUserDefaults standardUserDefaults];
         [[CCDirector sharedDirector] setDisplayFPS:NO];
+        
+        [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"menu 3.wav" loop:YES];
+        [[SimpleAudioEngine sharedEngine] preloadEffect:@"pause 3.wav"];
+        [[SimpleAudioEngine sharedEngine] preloadEffect:@"hot dog appear 1.wav"];
+        [[SimpleAudioEngine sharedEngine] preloadEffect:@"hot dog disappear.wav"];
+        [[SimpleAudioEngine sharedEngine] preloadEffect:@"25pts.wav"];
+        [[SimpleAudioEngine sharedEngine] preloadEffect:@"50pts.wav"];
+        [[SimpleAudioEngine sharedEngine] preloadEffect:@"100pts.wav"];
 
 #ifdef DEBUG
         //debug labels
@@ -1880,8 +1905,6 @@
                                             [self copFlipAim:self data:aimParameters];
                                             
                                             CCDelayTime *delay = [CCDelayTime actionWithDuration:1];
-                                            
-                                            
 
                                             id copSeq = [CCSequence actions:delay, copShootAnimAction, copFlipAimingAction, wakeUpAction, startWalkingAction, walkAnimateAction, unlockAction, nil];
                                             [copUd->sprite1 stopAllActions];
@@ -2070,10 +2093,14 @@
     if (count <= 2){
         CCLOG(@"%d touches", count);
         if(CGRectContainsPoint(_pauseButtonRect, touchLocation1)){
-            if(!_pause)
+            if(!_pause){
                 [self pauseButton];
-            else
+                [[SimpleAudioEngine sharedEngine] playEffect:@"pause 3.wav"];
+            }
+            else{
+                [[SimpleAudioEngine sharedEngine] resumeBackgroundMusic];
                 [self resumeGame];
+            }
             return;
         }
         for(int i = 0; i < count; i++){ // for each touch

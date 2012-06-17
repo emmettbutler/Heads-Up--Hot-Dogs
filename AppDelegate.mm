@@ -124,6 +124,14 @@
     [standardUserDefaults synchronize];
 #endif
     
+    SimpleAudioEngine *sae = [SimpleAudioEngine sharedEngine];
+    if (sae != nil) {
+        [sae preloadBackgroundMusic:@"menu 2.wav"];
+        if (sae.willPlayBackgroundMusic) {
+            sae.backgroundMusicVolume = 0.5f;
+        }
+    }
+    
 	// Run the intro Scene
 	[[CCDirector sharedDirector] runWithScene: [TitleLayer scene]];
 }
