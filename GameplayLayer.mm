@@ -2196,12 +2196,17 @@
                             [sprite stopAllActions];
                         }
                         for(int i = 0; i < 2; i++){
-                            if(!(abs(locations[i].x - jUd->prevX) < 1.6 && abs(locations[i].y - jUd->prevY) < 1.6)){
-                                continue;
+                            /*NSLog(@"locations[%d].x: %0.2f", i, locations[i].x);
+                            NSLog(@"prevX: %0.2f", jUd->prevX);
+                            NSLog(@"minus: %0.2f", locations[i].x - jUd->prevX);*/
+                            if((abs(locations[i].x - jUd->prevX) < 1.6 && abs(locations[i].y - jUd->prevY) < 1.6)){
+                                if(locations[i].x < 1.6 && locations[i].y < 1.6){
+                                    locations[i] = b2Vec2(locations[i].x+.4, locations[i].y+.4);
+                                }
+                                mj->SetTarget(locations[i]);
+                                jUd->prevX = locations[i].x;
+                                jUd->prevY = locations[i].y;
                             }
-                            mj->SetTarget(locations[i]);
-                            jUd->prevX = locations[i].x;
-                            jUd->prevY = locations[i].y;
                         }
                         for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
                             fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
@@ -2257,6 +2262,9 @@
                     
                     ud->grabbed = false;
                     body->SetLinearVelocity(b2Vec2(0, 0));
+                    
+                    if(body->GetPosition().y < .5)
+                        body->SetTransform(b2Vec2(body->GetPosition().x, 1.5), 0);
                     //body->SetFixedRotation(false);
                     
                     for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
@@ -2266,6 +2274,7 @@
                             // its ogCollideFilter field
                             filter = fixture->GetFilterData();
                             filter.maskBits = fUd->ogCollideFilters;
+                            filter.maskBits = filter.maskBits | FLOOR1;
                             fixture->SetFilterData(filter);
                             ud->collideFilter = filter.maskBits;
                         }
@@ -2298,6 +2307,8 @@
                         ud->grabbed = false;
                         body->SetLinearVelocity(b2Vec2(0, 0));
                         //body->SetFixedRotation(false);
+                        if(body->GetPosition().y < .5)
+                            body->SetTransform(b2Vec2(body->GetPosition().x, 1.5), 0);
                         
                         for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
                             fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
@@ -2306,6 +2317,7 @@
                                 // its ogCollideFilter field
                                 filter = fixture->GetFilterData();
                                 filter.maskBits = fUd->ogCollideFilters;
+                                filter.maskBits = filter.maskBits | FLOOR1;
                                 fixture->SetFilterData(filter);
                                 ud->collideFilter = filter.maskBits;
                             }
