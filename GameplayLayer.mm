@@ -587,13 +587,13 @@
         f = f | FLOOR1;
     }
     else if(floor == 2){
-        f = f | FLOOR2;
+        f = f | FLOOR2 | FLOOR1;
     }
     else if(floor == 3){
-        f = f | FLOOR3;
+        f = f | FLOOR3 | FLOOR2 | FLOOR1;
     }
     else {
-        f = f | FLOOR4;
+        f = f | FLOOR4 | FLOOR3 | FLOOR2 | FLOOR1;
     }
     // at this point, the dog's collide filter allows it to touch any person, all walls, and
     // one randomly chosen floor. this should remain constant until the dog is either
@@ -1269,6 +1269,7 @@
         [[SimpleAudioEngine sharedEngine] preloadEffect:@"25pts.wav"];
         [[SimpleAudioEngine sharedEngine] preloadEffect:@"50pts.wav"];
         [[SimpleAudioEngine sharedEngine] preloadEffect:@"100pts.wav"];
+        [[SimpleAudioEngine sharedEngine] preloadEffect:@"hot dog on head.wav"];
 
 #ifdef DEBUG
         //debug labels
@@ -1318,6 +1319,8 @@
         //[standardUserDefaults setInteger:0 forKey:@"highScore"];
             
         [standardUserDefaults synchronize];
+        
+        allTouchHashes = [[NSMutableArray alloc] init];
 
         int bgSelect = arc4random() % 2;
         switch(bgSelect){
@@ -1577,6 +1580,7 @@
             bodyUserData *ud = (bodyUserData *)dogBody->GetUserData();
             fixtureUserData *fBUd = (fixtureUserData *)pdContact.fixtureB->GetUserData();
             if(fBUd->tag >= F_BUSHED && fBUd->tag <= F_TOPHED){
+                [[SimpleAudioEngine sharedEngine] playEffect:@"hot dog on head.wav" pitch:1 pan:0 gain:.3];
                 // a dog is definitely on a head when it collides with that head
                 ud->_dog_isOnHead = true;
                 pBody = pdContact.fixtureB->GetBody();
@@ -2248,7 +2252,7 @@
                     b2MouseJoint *mj = (b2MouseJoint *)j->joint;
                     target = mj->GetTarget();
                 }
-                if(abs(locationWorld.x - target.x) < 1.5 && abs(locationWorld.y - target.y) < 1.5){
+                if((abs(locationWorld.x - target.x) < 1.5 && abs(locationWorld.y - target.y) < 1.5) || [[event allTouches] count] == 1){
                     // drop the dog
                     // find the corresponding mouse joint
                     for(int i = 0; i < [mouseJoints count]; i++){
@@ -2263,9 +2267,10 @@
                     ud->grabbed = false;
                     body->SetLinearVelocity(b2Vec2(0, 0));
                     
-                    if(body->GetPosition().y < .5)
+                    if(body->GetPosition().y < .5 && body->GetPosition().x < .5)
                         body->SetTransform(b2Vec2(body->GetPosition().x, 1.5), 0);
-                    //body->SetFixedRotation(false);
+                    if(body->GetPosition().x < .5)
+                        body->SetTransform(b2Vec2(1.5, body->GetPosition().y), 0);
                     
                     for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
                         fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
