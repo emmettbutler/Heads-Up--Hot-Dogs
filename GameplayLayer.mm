@@ -24,7 +24,7 @@
 #define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 
 #ifdef DEBUG
-#define SPAWN_LIMIT_DECREMENT_DELAY 1
+#define SPAWN_LIMIT_DECREMENT_DELAY 6
 #define DROPPED_MAX 49
 #define WIENER_SPAWN_START 5
 #else
@@ -1314,8 +1314,6 @@
         // color definitions
         _color_pink = ccc3(255, 62, 166);
 
-        // if the intro has already been completed, don't do it again
-        NSInteger introDone = [standardUserDefaults integerForKey:@"introDone"];
         //[standardUserDefaults setInteger:0 forKey:@"overallTime"];
         //[standardUserDefaults setInteger:0 forKey:@"highScore"];
             
@@ -2198,7 +2196,9 @@
                             [sprite stopAllActions];
                         }
                         for(int i = 0; i < 2; i++){
-                            if(!(abs(locations[i].x - jUd->prevX) < 1.6 && abs(locations[i].y - jUd->prevY) < 1.6)) continue;
+                            if(!(abs(locations[i].x - jUd->prevX) < 1.6 && abs(locations[i].y - jUd->prevY) < 1.6)){
+                                continue;
+                            }
                             mj->SetTarget(locations[i]);
                             jUd->prevX = locations[i].x;
                             jUd->prevY = locations[i].y;

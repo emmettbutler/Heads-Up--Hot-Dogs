@@ -381,8 +381,6 @@
     if(count > 5){
         [standardUserDefaults setInteger:1 forKey:@"introDone"];
         [standardUserDefaults synchronize];
-        NSInteger introDone = [standardUserDefaults integerForKey:@"introDone"];
-        CCLOG(@"introDone: %d", introDone);
         [[CCDirector sharedDirector] replaceScene:[GameplayLayer scene]];
         return;
     }
