@@ -29,16 +29,22 @@
 }
 
 -(void)introTutorialTextBox:(void*)params {
-    int boxY = 0;
+    int boxY = 50;
+    int boxX = 80;
     
-    CGSize winSize = [[CCDirector sharedDirector] winSize];
-    _introLayer = [CCLayerColor layerWithColor:ccc4(0, 0, 255, 125) width:490 height:60];
-    _introLayer.position = ccp((winSize.width/2)-(_introLayer.contentSize.width/2), boxY);
-    [spritesLayer addChild:_introLayer z:80];
     
     NSString *text = (NSString *)[(NSValue *)[(NSMutableArray *) params objectAtIndex:0] pointerValue];
     tutorialLabel = [CCLabelTTF labelWithString:text fontName:@"LostPet.TTF" fontSize:16.0];
-    [tutorialLabel setPosition:ccp(winSize.width/2, boxY+(_introLayer.contentSize.height/2))];
+    
+    _introLayer = [CCLayerColor layerWithColor:ccc4(0, 0, 255, 125) width:(tutorialLabel.contentSize.width+20) height:50];
+    _introLayer.position = ccp(boxX, boxY);
+    [spritesLayer addChild:_introLayer z:80];
+    
+    [tutorialLabel setPosition:ccp((_introLayer.contentSize.width/2), (_introLayer.contentSize.height/2)+7)];
+    [_introLayer addChild:tutorialLabel z:81];
+    
+    tutorialLabel = [CCLabelTTF labelWithString:@"tap" fontName:@"LostPet.TTF" fontSize:14.0];
+    [tutorialLabel setPosition:ccp((_introLayer.contentSize.width/2), (_introLayer.contentSize.height/2)-15)];
     [_introLayer addChild:tutorialLabel z:81];
 }
 
@@ -65,7 +71,7 @@
         page = new tutorialPage();
         tSprite = new tutorialSprite();
         page->sprites = [[NSMutableArray alloc] init];
-        page->caption = [NSString stringWithString:@"This is a hot dog.\nIt loves to travel."];
+        page->caption = [NSString stringWithString:@"This is a hot dog. It loves to travel."];
         for(int i = 1; i <= 10; i++){
             [animFrames addObject:
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -148,7 +154,7 @@
         page = new tutorialPage();
         tSprite = new tutorialSprite();
         page->sprites = [[NSMutableArray alloc] init];
-        page->caption = [NSString stringWithString:@"Their heads carry hot dogs quite well.\nThis gives you points."];
+        page->caption = [NSString stringWithString:@"Their heads can carry hot dogs."];
         for(int i = 1; i < 6; i++){
             [animFrames addObject:
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -191,7 +197,7 @@
         page = new tutorialPage();
         tSprite = new tutorialSprite();
         page->sprites = [[NSMutableArray alloc] init];
-        page->caption = [NSString stringWithString:@"Extra points if they get carry hot dogs offscreen."];
+        page->caption = [NSString stringWithString:@"The dogs get carried away"];
         for(int i = 1; i < 6; i++){
             [animFrames addObject:
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -234,7 +240,7 @@
         page = new tutorialPage();
         tSprite = new tutorialSprite();
         page->sprites = [[NSMutableArray alloc] init];
-        page->caption = [NSString stringWithString:@"Watch out for the police, they want to ruin the hot dogs' fun."];
+        page->caption = [NSString stringWithString:@"But watch out for the police!"];
         for(int i = 1; i < 6; i++){
             [animFrames addObject:
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -377,6 +383,7 @@
         [standardUserDefaults synchronize];
         NSInteger introDone = [standardUserDefaults integerForKey:@"introDone"];
         CCLOG(@"introDone: %d", introDone);
+        [[CCDirector sharedDirector] replaceScene:[GameplayLayer scene]];
         return;
     }
     
