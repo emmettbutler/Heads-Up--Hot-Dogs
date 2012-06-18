@@ -431,12 +431,14 @@
         
         dogBody = nil;
         
-        CCSprite *dogDroppedIcon = [CCSprite spriteWithSpriteFrameName:@"WienerCount_X.png"];
-        dogDroppedIcon.position = ccp(winSize.width-_droppedSpacing, DOG_COUNTER_HT);
-        [self addChild:dogDroppedIcon z:72];
-        [self removeChild:(CCSprite*)[(NSValue *)[dogIcons objectAtIndex:_droppedCount] pointerValue] cleanup:YES];
-        _droppedCount++;
-        _droppedSpacing += 23;
+        if(_droppedCount < DROPPED_MAX){
+            CCSprite *dogDroppedIcon = [CCSprite spriteWithSpriteFrameName:@"WienerCount_X.png"];
+            dogDroppedIcon.position = ccp(winSize.width-_droppedSpacing, DOG_COUNTER_HT);
+            [self addChild:dogDroppedIcon z:72];
+            [self removeChild:(CCSprite*)[(NSValue *)[dogIcons objectAtIndex:_droppedCount] pointerValue] cleanup:YES];
+            _droppedCount++;
+            _droppedSpacing += 23;
+        }
         
         [[SimpleAudioEngine sharedEngine] playEffect:@"hot dog disappear.wav"];
     }
