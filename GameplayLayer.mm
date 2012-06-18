@@ -431,7 +431,7 @@
         
         dogBody = nil;
         
-        if(_droppedCount < DROPPED_MAX){
+        if(_droppedCount <= DROPPED_MAX){
             CCSprite *dogDroppedIcon = [CCSprite spriteWithSpriteFrameName:@"WienerCount_X.png"];
             dogDroppedIcon.position = ccp(winSize.width-_droppedSpacing, DOG_COUNTER_HT);
             [self addChild:dogDroppedIcon z:72];
