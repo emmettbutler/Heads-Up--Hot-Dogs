@@ -27,12 +27,12 @@
 #define SPAWN_LIMIT_DECREMENT_DELAY 6
 #define DROPPED_MAX 49
 #define WIENER_SPAWN_START 5
-#define MAX_DOGS_ONSCREEN 6
+#define MAX_DOGS_ONSCREEN 3
 #else
 #define SPAWN_LIMIT_DECREMENT_DELAY 15
 #define DROPPED_MAX 5
 #define WIENER_SPAWN_START 8
-#define MAX_DOGS_ONSCREEN 6
+#define MAX_DOGS_ONSCREEN 4
 #endif
 
 @implementation GameplayLayer
@@ -1535,7 +1535,7 @@
 
 //the "GAME LOOP"
 -(void) tick: (ccTime) dt {
-    int32 velocityIterations = 3;
+    int32 velocityIterations = 2;
     int32 positionIterations = 1;
     
     if(!_policeOnScreen)
@@ -2124,6 +2124,7 @@
                             // if the dog is not already grabbed and one of the touches is on it, make the joint
                             if (!ud->grabbed && ((fixture->TestPoint(locationWorld1) && !touched1) || (fixture->TestPoint(locationWorld2) && !touched2))){
                                 dogsTouched++;
+                                [ud->sprite1 stopAllActions];
                                 _lastTouchTime = time;
                                 ud->grabbed = true;
                                 ud->hasTouchedHead = false;
@@ -2203,15 +2204,9 @@
                     b2MouseJoint *mj = (b2MouseJoint *)[(NSValue *)[mouseJoints objectAtIndex:i] pointerValue];
                     mouseJointUserData *jUd = (mouseJointUserData *)mj->GetUserData();
                     if(mj->GetBodyB() == body){
-                        //don't stop the explosion action!
-                        if(!ud->aimedAt){
-                            [sprite stopAllActions];
-                        }
+                        [sprite stopAllActions];
                         for(int i = 0; i < 2; i++){
-                            /*NSLog(@"locations[%d].x: %0.2f", i, locations[i].x);
-                            NSLog(@"prevX: %0.2f", jUd->prevX);
-                            NSLog(@"minus: %0.2f", locations[i].x - jUd->prevX);*/
-                            if((abs(locations[i].x - jUd->prevX) < 1.6 && abs(locations[i].y - jUd->prevY) < 1.6)){
+                             if((abs(locations[i].x - jUd->prevX) < 1.6 && abs(locations[i].y - jUd->prevY) < 1.6)){
                                 if(locations[i].x < 1.6 && locations[i].y < 1.6){
                                     locations[i] = b2Vec2(1, 1);
                                 }
