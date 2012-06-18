@@ -627,7 +627,7 @@
     wienerShapeDef.friction = 1.0f;
     wienerShapeDef.userData = fUd2;
     wienerShapeDef.filter.maskBits = f;
-    wienerShapeDef.restitution = 0.3f;
+    wienerShapeDef.restitution = 0.2f;
     wienerShapeDef.filter.categoryBits = WIENER;
     _wienerFixture = wienerBody->CreateFixture(&wienerShapeDef);
 
@@ -2112,7 +2112,7 @@
                     if(ud->sprite1.tag == S_HOTDOG){ // loop over all hot dogs
                         for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
                             // if the dog is not already grabbed and one of the touches is on it, make the joint
-                            if (!ud->grabbed && ((fixture->TestPoint(locations[0]) && !touched1) || (fixture->TestPoint(locations[1]) && !touched2))){
+                            if (!ud->grabbed && ((fixture->TestPoint(locationWorld1) && !touched1) || (fixture->TestPoint(locationWorld2) && !touched2))){
                                 dogsTouched++;
                                 _lastTouchTime = time;
                                 ud->grabbed = true;
@@ -2122,21 +2122,19 @@
                                 body->SetFixedRotation(true);
                                 body->SetAwake(true);
                                 
-                                NSLog(@"Touched dog %d id: %d", i, ud->unique_id);
-                                
                                 mouseJointUserData *jUd = new mouseJointUserData();
                                 jUd->touch = ud->unique_id;
                                 
                                 b2MouseJointDef md;
                                 md.bodyA = _groundBody;
                                 md.bodyB = body;
-                                if(fixture->TestPoint(locations[0])){
+                                if(fixture->TestPoint(locationWorld1)){
                                     md.target = locationWorld1;
                                     jUd->prevX = locationWorld1.x;
                                     jUd->prevY = locationWorld1.y;
                                     touched1 = true;
                                 }
-                                else if(fixture->TestPoint(locations[1])){
+                                else if(fixture->TestPoint(locationWorld2)){
                                     md.target = locationWorld2;
                                     jUd->prevX = locationWorld2.x;
                                     jUd->prevY = locationWorld2.y;
@@ -2205,7 +2203,7 @@
                             NSLog(@"minus: %0.2f", locations[i].x - jUd->prevX);*/
                             if((abs(locations[i].x - jUd->prevX) < 1.6 && abs(locations[i].y - jUd->prevY) < 1.6)){
                                 if(locations[i].x < 1.6 && locations[i].y < 1.6){
-                                    locations[i] = b2Vec2(locations[i].x+.4, locations[i].y+.4);
+                                    locations[i] = b2Vec2(1, 1);
                                 }
                                 mj->SetTarget(locations[i]);
                                 jUd->prevX = locations[i].x;
@@ -2267,9 +2265,9 @@
                     ud->grabbed = false;
                     body->SetLinearVelocity(b2Vec2(0, 0));
                     
-                    if(body->GetPosition().y < .5 && body->GetPosition().x < .5)
-                        body->SetTransform(b2Vec2(body->GetPosition().x, 1.5), 0);
-                    if(body->GetPosition().x < .5)
+                    if(body->GetPosition().y < .8 && body->GetPosition().x < .5)
+                        body->SetTransform(b2Vec2(body->GetPosition().x, 1.8), 0);
+                    if(body->GetPosition().x < 1)
                         body->SetTransform(b2Vec2(1.5, body->GetPosition().y), 0);
                     
                     for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
@@ -2293,41 +2291,56 @@
 
 - (void)ccTouchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
     b2Filter filter;
+    
     UITouch *myTouch = [touches anyObject];
     CGPoint location = [myTouch locationInView:[myTouch view]];
     location = [[CCDirector sharedDirector] convertToGL:location];
     b2Vec2 locationWorld = b2Vec2(location.x/PTM_RATIO, location.y/PTM_RATIO);
     
-    for(int i = 0; i < [mouseJoints count]; i++){
-        b2MouseJoint *mj = (b2MouseJoint *)[(NSValue *)[mouseJoints objectAtIndex:i] pointerValue];
-        mouseJointUserData *jUd = (mouseJointUserData *)mj->GetUserData();
-        for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
-            if (body->GetUserData() != NULL && body->GetUserData() != (void*)100) {
-                bodyUserData *ud = (bodyUserData *)body->GetUserData();
-                if(ud->sprite1.tag == S_HOTDOG){
-                    if(mj->GetBodyB() == body && jUd->touch == ud->unique_id && (abs(locationWorld.x - mj->GetTarget().x) < 1 && abs(locationWorld.y - mj->GetTarget().y) < 1)){
-                        [mouseJoints removeObject:[mouseJoints objectAtIndex:i]];
-                        _world->DestroyJoint(mj);
-                        
-                        ud->grabbed = false;
-                        body->SetLinearVelocity(b2Vec2(0, 0));
-                        //body->SetFixedRotation(false);
-                        if(body->GetPosition().y < .5)
-                            body->SetTransform(b2Vec2(body->GetPosition().x, 1.5), 0);
-                        
-                        for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
-                            fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
-                            if(fUd->tag == F_DOGCLD){
-                                // here, we restore the fixture's original collision filter from that saved in
-                                // its ogCollideFilter field
-                                filter = fixture->GetFilterData();
-                                filter.maskBits = fUd->ogCollideFilters;
-                                filter.maskBits = filter.maskBits | FLOOR1;
-                                fixture->SetFilterData(filter);
-                                ud->collideFilter = filter.maskBits;
-                            }
+    for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
+        if (body->GetUserData() != NULL && body->GetUserData() != (void*)100) {
+            bodyUserData *ud = (bodyUserData *)body->GetUserData();
+            if(ud->sprite1.tag == S_HOTDOG && ud->grabbed){
+                // if there is not a finger on the dog
+                b2JointEdge *j = body->GetJointList();
+                b2Vec2 target;
+                if(j && j->joint->GetType() == e_mouseJoint){
+                    b2MouseJoint *mj = (b2MouseJoint *)j->joint;
+                    target = mj->GetTarget();
+                }
+                if((abs(locationWorld.x - target.x) < 1.5 && abs(locationWorld.y - target.y) < 1.5) || [[event allTouches] count] == 1){
+                    // drop the dog
+                    // find the corresponding mouse joint
+                    for(int i = 0; i < [mouseJoints count]; i++){
+                        b2MouseJoint *mj = (b2MouseJoint *)[(NSValue *)[mouseJoints objectAtIndex:i] pointerValue];
+                        if(mj->GetBodyB() == body){
+                            [mouseJoints removeObject:[mouseJoints objectAtIndex:i]];
+                            _world->DestroyJoint(mj);
+                            break;
                         }
                     }
+                    
+                    ud->grabbed = false;
+                    body->SetLinearVelocity(b2Vec2(0, 0));
+                    
+                    if(body->GetPosition().y < .8 && body->GetPosition().x < .5)
+                        body->SetTransform(b2Vec2(body->GetPosition().x, 1.8), 0);
+                    if(body->GetPosition().x < 1)
+                        body->SetTransform(b2Vec2(1.5, body->GetPosition().y), 0);
+                    
+                    for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
+                        fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
+                        if(fUd->tag == F_DOGCLD){
+                            // here, we restore the fixture's original collision filter from that saved in
+                            // its ogCollideFilter field
+                            filter = fixture->GetFilterData();
+                            filter.maskBits = fUd->ogCollideFilters;
+                            filter.maskBits = filter.maskBits | FLOOR1;
+                            fixture->SetFilterData(filter);
+                            ud->collideFilter = filter.maskBits;
+                        }
+                    }
+                    break;
                 }
             }
         }
