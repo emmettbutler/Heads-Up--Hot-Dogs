@@ -39,7 +39,7 @@
     NSMutableArray *personParameters, *wakeParameters, *movementPatterns, *movementParameters, *_touchLocations, *dogIcons, *allTouchHashes;
     NSString *scoreText, *droppedText;
     int _points, _droppedCount, _spawnLimiter, time, _curPersonMaskBits, _droppedSpacing, _lastTouchTime, _firstDeathTime, lowerArmAngle, upperArmAngle;
-    int _peopleGrumped, _dogsSaved, _id_counter, _numTouches;
+    int _peopleGrumped, _dogsSaved, _id_counter, _numTouches, _dogsOnscreen;
     float _personSpawnDelayTime, _wienerSpawnDelayTime, _currentRayAngle;
     BOOL _moving, _touchedDog, _rayTouchingDog, _pause, _shootLock, _dogHasHitGround, _dogHasDied, _policeOnScreen;
     NSString *currentAnimation;

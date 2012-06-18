@@ -27,10 +27,12 @@
 #define SPAWN_LIMIT_DECREMENT_DELAY 6
 #define DROPPED_MAX 49
 #define WIENER_SPAWN_START 5
+#define MAX_DOGS_ONSCREEN 6
 #else
 #define SPAWN_LIMIT_DECREMENT_DELAY 15
 #define DROPPED_MAX 5
 #define WIENER_SPAWN_START 8
+#define MAX_DOGS_ONSCREEN 6
 #endif
 
 @implementation GameplayLayer
@@ -1209,23 +1211,28 @@
     NSNumber *dogType = [NSNumber numberWithInt:arc4random() % 25];
     //NSNumber *dogType = [NSNumber numberWithInt:1];
     
-    NSNumber *thisType = (NSNumber *)[(NSMutableArray *) params objectAtIndex:1];
+    CCLOG(@"Dogs onscreen: %d", _dogsOnscreen);
     
-    if(thisType.intValue == S_SPCDOG){
-        NSMutableArray *colorParams = [[NSMutableArray alloc] initWithCapacity:1];
-        
-        [colorParams addObject:[NSNumber numberWithInt:1]];
-        id screenLightenAction = [CCCallFuncND actionWithTarget:self selector:@selector(screenFlash:data:) data:colorParams];
-        id darkenFGAction = [CCCallFuncND actionWithTarget:self selector:@selector(colorFG:data:) data:colorParams];
-        colorParams = [[NSMutableArray alloc] initWithCapacity:1];
-        [colorParams addObject:[NSNumber numberWithInt:0]];
-        id lightenFGAction = [CCCallFuncND actionWithTarget:self selector:@selector(colorFG:data:) data:colorParams];
-        id screenDarkenAction = [CCCallFuncND actionWithTarget:self selector:@selector(screenFlash:data:) data:colorParams];
-        id delay2 = [CCDelayTime actionWithDuration:.2];
-        id sequence2 = [CCSequence actions: screenLightenAction, darkenFGAction, delay2, lightenFGAction, screenDarkenAction, nil];
-        [self runAction:sequence2];
+    if(_dogsOnscreen <= MAX_DOGS_ONSCREEN){
+    
+        NSNumber *thisType = (NSNumber *)[(NSMutableArray *) params objectAtIndex:1];
+    
+        if(thisType.intValue == S_SPCDOG){
+            NSMutableArray *colorParams = [[NSMutableArray alloc] initWithCapacity:1];
+            
+            [colorParams addObject:[NSNumber numberWithInt:1]];
+            id screenLightenAction = [CCCallFuncND actionWithTarget:self selector:@selector(screenFlash:data:) data:colorParams];
+            id darkenFGAction = [CCCallFuncND actionWithTarget:self selector:@selector(colorFG:data:) data:colorParams];
+            colorParams = [[NSMutableArray alloc] initWithCapacity:1];
+            [colorParams addObject:[NSNumber numberWithInt:0]];
+            id lightenFGAction = [CCCallFuncND actionWithTarget:self selector:@selector(colorFG:data:) data:colorParams];
+            id screenDarkenAction = [CCCallFuncND actionWithTarget:self selector:@selector(screenFlash:data:) data:colorParams];
+            id delay2 = [CCDelayTime actionWithDuration:.2];
+            id sequence2 = [CCSequence actions: screenLightenAction, darkenFGAction, delay2, lightenFGAction, screenDarkenAction, nil];
+            [self runAction:sequence2];
+        }
+        [self putDog:self data:params];
     }
-    [self putDog:self data:params];
 
     wienerParameters = [[NSMutableArray alloc] initWithCapacity:2];
     [wienerParameters addObject:[NSValue valueWithCGPoint:CGPointMake(arc4random() % (int)winSize.width, DOG_SPAWN_MINHT+(arc4random() % (int)(winSize.height-DOG_SPAWN_MINHT)))]];
@@ -1299,6 +1306,7 @@
         _points = 0;
         _peopleGrumped = 0;
         _id_counter = 0;
+        _dogsOnscreen = 0;
         _dogsSaved = 0;
         _shootLock = NO;
         _droppedSpacing = 200;
@@ -1691,6 +1699,7 @@
     }
 
     //any non-collision actions that apply to multiple onscreen entities happen here
+    _dogsOnscreen = 0;
     
     for(b2Body* b = _world->GetBodyList(); b; b = b->GetNext()){
         if(b->GetUserData() && b->GetUserData() != (void*)100){
@@ -1772,8 +1781,7 @@
             }
             if(ud->sprite1 != NULL){
                 if(ud->sprite1.tag == S_HOTDOG){
-                    if([mouseJoints count] == 0)
-                        ud->grabbed = false;
+                    _dogsOnscreen++;
                     //things for hot dogs
                     if(b->IsAwake()){
                         if(!ud->grabbed){
