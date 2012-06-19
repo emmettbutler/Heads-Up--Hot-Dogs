@@ -27,12 +27,12 @@
 #define SPAWN_LIMIT_DECREMENT_DELAY 6
 #define DROPPED_MAX 49
 #define WIENER_SPAWN_START 5
-#define MAX_DOGS_ONSCREEN 3
+#define MAX_DOGS_ONSCREEN 6
 #else
 #define SPAWN_LIMIT_DECREMENT_DELAY 15
 #define DROPPED_MAX 5
 #define WIENER_SPAWN_START 8
-#define MAX_DOGS_ONSCREEN 4
+#define MAX_DOGS_ONSCREEN 6
 #endif
 
 @implementation GameplayLayer
@@ -586,7 +586,7 @@
     //for the collision fixture userdata struct, randomly assign floor
     fixtureUserData *fUd2 = new fixtureUserData();
     floor = arc4random() % 4;
-    f = 0xfffff000 | WALLS; //any person
+    f =  WALLS;
     if(floor == 1){
         f = f | FLOOR1;
     }
@@ -599,9 +599,6 @@
     else {
         f = f | FLOOR4 | FLOOR3 | FLOOR2 | FLOOR1;
     }
-    // at this point, the dog's collide filter allows it to touch any person, all walls, and
-    // one randomly chosen floor. this should remain constant until the dog is either
-    // grabbed or touches a person's head.
     fUd2->ogCollideFilters = f;
     fUd2->tag = F_DOGCLD;
 
@@ -1197,6 +1194,7 @@
         [movementParameters addObject:b];
         [movementParameters addObject:v];
         [movementParameters addObject:idle];
+        // TODO - consider having the people's bodies not be fixtures anymore to improve performance
         if(character.intValue == S_BUSMAN){
             [self walkInPauseContinue:_personLower data:movementParameters];
         } else {
@@ -1535,7 +1533,7 @@
 
 //the "GAME LOOP"
 -(void) tick: (ccTime) dt {
-    int32 velocityIterations = 2;
+    int32 velocityIterations = 3;
     int32 positionIterations = 1;
     
     if(!_policeOnScreen)
@@ -2124,7 +2122,6 @@
                             // if the dog is not already grabbed and one of the touches is on it, make the joint
                             if (!ud->grabbed && ((fixture->TestPoint(locationWorld1) && !touched1) || (fixture->TestPoint(locationWorld2) && !touched2))){
                                 dogsTouched++;
-                                [ud->sprite1 stopAllActions];
                                 _lastTouchTime = time;
                                 ud->grabbed = true;
                                 ud->hasTouchedHead = false;
@@ -2204,9 +2201,15 @@
                     b2MouseJoint *mj = (b2MouseJoint *)[(NSValue *)[mouseJoints objectAtIndex:i] pointerValue];
                     mouseJointUserData *jUd = (mouseJointUserData *)mj->GetUserData();
                     if(mj->GetBodyB() == body){
-                        [sprite stopAllActions];
+                        //don't stop the explosion action!
+                        if(!ud->aimedAt){
+                            [sprite stopAllActions];
+                        }
                         for(int i = 0; i < 2; i++){
-                             if((abs(locations[i].x - jUd->prevX) < 1.6 && abs(locations[i].y - jUd->prevY) < 1.6)){
+                            /*NSLog(@"locations[%d].x: %0.2f", i, locations[i].x);
+                            NSLog(@"prevX: %0.2f", jUd->prevX);
+                            NSLog(@"minus: %0.2f", locations[i].x - jUd->prevX);*/
+                            if((abs(locations[i].x - jUd->prevX) < 1.6 && abs(locations[i].y - jUd->prevY) < 1.6)){
                                 if(locations[i].x < 1.6 && locations[i].y < 1.6){
                                     locations[i] = b2Vec2(1, 1);
                                 }
@@ -2281,6 +2284,7 @@
                             // here, we restore the fixture's original collision filter from that saved in
                             // its ogCollideFilter field
                             filter = fixture->GetFilterData();
+                            fUd->ogCollideFilters = fUd->ogCollideFilters | 0xfffff000;
                             filter.maskBits = fUd->ogCollideFilters;
                             filter.maskBits = filter.maskBits | FLOOR1;
                             fixture->SetFilterData(filter);

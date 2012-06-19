@@ -39,6 +39,7 @@
         CGSize size = [[CCDirector sharedDirector] winSize];
         [[CCDirector sharedDirector] setDisplayFPS:NO];
         
+        [[SimpleAudioEngine sharedEngine] preloadEffect:@"menu intro.wav"];
         [[SimpleAudioEngine sharedEngine] playEffect:@"menu intro.wav"];
         
         SimpleAudioEngine *sae = [SimpleAudioEngine sharedEngine];
