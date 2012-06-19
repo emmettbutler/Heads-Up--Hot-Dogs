@@ -1273,6 +1273,7 @@
         
         b2Vec2 gravity = b2Vec2(0.0f, -30.0f);
         _world = new b2World(gravity, true);
+        [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile: @"sprites_default.plist"];
         spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_default.png"];
         [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"menu 3.wav" loop:YES];
 

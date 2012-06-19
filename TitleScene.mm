@@ -97,8 +97,6 @@
         
         [TestFlight passCheckpoint:@"Title Screen"];
         
-        [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile: @"sprites_default.plist"];
-        
         [self schedule: @selector(tick:)];
     }
     return self;
