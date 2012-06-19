@@ -203,7 +203,7 @@
 
     CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"plusTen1.png"];
     sprite.position = ccp(xPos.intValue, yPos.intValue);
-    [spriteSheet addChild:sprite];
+    [spriteSheet addChild:sprite z:100];
 
     NSMutableArray *removeParams = [[NSMutableArray alloc] initWithCapacity:1];
     [removeParams addObject:[NSValue valueWithPointer:sprite]];
@@ -234,7 +234,7 @@
 
     CCSprite *twentyFive = [CCSprite spriteWithSpriteFrameName:@"Plus_25_sm_1.png"];
     twentyFive.position = ccp(xPos.intValue, yPos.intValue);
-    [spriteSheet addChild:twentyFive];
+    [spriteSheet addChild:twentyFive z:100];
 
     NSMutableArray *removeParams = [[NSMutableArray alloc] initWithCapacity:1];
     [removeParams addObject:[NSValue valueWithPointer:twentyFive]];
@@ -250,7 +250,7 @@
     
     CCSprite *oneHundred = [CCSprite spriteWithSpriteFrameName:@"Plus_100_1.png"];
     oneHundred.position = ccp(xPos.intValue, yPos.intValue);
-    [spriteSheet addChild:oneHundred];
+    [spriteSheet addChild:oneHundred z:100];
     
     NSMutableArray *removeParams = [[NSMutableArray alloc] initWithCapacity:1];
     [removeParams addObject:[NSValue valueWithPointer:oneHundred]];
@@ -268,7 +268,7 @@
     
     CCSprite *oneHundred = [CCSprite spriteWithSpriteFrameName:@"Plus_100_R_1.png"];
     oneHundred.position = ccp(xPos.intValue, yPos.intValue);
-    [spriteSheet addChild:oneHundred];
+    [spriteSheet addChild:oneHundred z:100];
     
     NSMutableArray *removeParams = [[NSMutableArray alloc] initWithCapacity:1];
     [removeParams addObject:[NSValue valueWithPointer:oneHundred]];
