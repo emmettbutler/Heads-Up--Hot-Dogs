@@ -18,20 +18,21 @@
 #define FLOOR3_HT .8
 #define FLOOR4_HT 1.2
 #define DOG_SPAWN_MINHT 240
-#define PERSON_SPAWN_START 5
 #define COP_RANGE 4
 #define DOG_COUNTER_HT 295
 #define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 
 #ifdef DEBUG
 #define SPAWN_LIMIT_DECREMENT_DELAY 6
+#define SPECIAL_DOG_PROBABILITY .2
 #define DROPPED_MAX 49
 #define WIENER_SPAWN_START 5
 #define MAX_DOGS_ONSCREEN 6
 #else
-#define SPAWN_LIMIT_DECREMENT_DELAY 15
+#define SPAWN_LIMIT_DECREMENT_DELAY 4
+#define SPECIAL_DOG_PROBABILITY .02
 #define DROPPED_MAX 5
-#define WIENER_SPAWN_START 8
+#define WIENER_SPAWN_START 7
 #define MAX_DOGS_ONSCREEN 6
 #endif
 
@@ -184,11 +185,8 @@
 }
 
 -(void)timedDecrement{
-    if(_personSpawnDelayTime > 1){
-        _personSpawnDelayTime -= 1;
-    }
     if(_wienerSpawnDelayTime > 1){
-        _wienerSpawnDelayTime -= 1;
+        _wienerSpawnDelayTime = _wienerSpawnDelayTime - .1;
     }
 }
 
@@ -474,12 +472,6 @@
     NSString *fallSprite, *riseSprite, *mainSprite, *grabSprite;
     CGPoint location = [(NSValue *)[(NSMutableArray *) params objectAtIndex: 0] CGPointValue];
     NSNumber *type = (NSNumber *)[(NSMutableArray *) params objectAtIndex: 1];
-
-    //add base sprite to scene
-    self.wiener = [CCSprite spriteWithSpriteFrameName:@"dog54x12.png"];
-    _wiener.position = ccp(location.x, location.y);
-    _wiener.tag = S_HOTDOG;
-    [self addChild:_wiener];
     
     NSMutableArray *wienerDeathAnimFrames = [[NSMutableArray alloc] init];
     NSMutableArray *wienerShotAnimFrames = [[NSMutableArray alloc] init];
@@ -522,7 +514,7 @@
             fallSprite = [NSString stringWithString:@"Dog_Fall.png"];
             mainSprite = [NSString stringWithString:@"dog54x12.png"];
             grabSprite = [NSString stringWithString:@"Dog_Grabbed.png"];
-            deathDelay = 4.0;
+            deathDelay = 3.0;
             for(int i = 0; i < 8; i++){
                 [wienerDeathAnimFrames addObject:
                  [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -548,6 +540,12 @@
             }
             break;
     }
+    //add base sprite to scene
+    self.wiener = [CCSprite spriteWithSpriteFrameName:mainSprite];
+    _wiener.position = ccp(location.x, location.y);
+    _wiener.tag = S_HOTDOG;
+    [self addChild:_wiener];
+    
     dogDeathAnim = [CCAnimation animationWithFrames:wienerDeathAnimFrames delay:.1f];
     self.deathAction = [[CCAnimate alloc] initWithAnimation:dogDeathAnim];
     
@@ -1206,7 +1204,7 @@
 
 -(void)wienerCallback:(id)sender data:(void *)params {
     CGSize winSize = [CCDirector sharedDirector].winSize;
-    NSNumber *dogType = [NSNumber numberWithInt:arc4random() % 25];
+    NSNumber *dogType = [NSNumber numberWithInt:arc4random() % (int)(1/SPECIAL_DOG_PROBABILITY)];
     //NSNumber *dogType = [NSNumber numberWithInt:1];
     
     CCLOG(@"Dogs onscreen: %d", _dogsOnscreen);
@@ -1257,7 +1255,7 @@
     [personParameters addObject:xPos];
     [personParameters addObject:characterTag];
 
-    id delay = [CCDelayTime actionWithDuration:_personSpawnDelayTime];
+    id delay = [CCDelayTime actionWithDuration:1];
     id callBackAction = [CCCallFuncND actionWithTarget: self selector: @selector(spawnCallback:data:) data:personParameters];
     id sequence = [CCSequence actions: delay, callBackAction, nil];
     [self runAction:sequence];
@@ -1299,7 +1297,6 @@
         _lastTouchTime = 0;
         _curPersonMaskBits = 0x1000;
         _spawnLimiter = [characterTags count] - ([characterTags count]-1);
-        _personSpawnDelayTime = PERSON_SPAWN_START;
         _wienerSpawnDelayTime = WIENER_SPAWN_START;
         _points = 0;
         _peopleGrumped = 0;
@@ -1533,7 +1530,7 @@
 
 //the "GAME LOOP"
 -(void) tick: (ccTime) dt {
-    int32 velocityIterations = 3;
+    int32 velocityIterations = 2;
     int32 positionIterations = 1;
     
     if(!_policeOnScreen)
@@ -2272,6 +2269,7 @@
                     
                     ud->grabbed = false;
                     body->SetLinearVelocity(b2Vec2(0, 0));
+                    body->SetFixedRotation(false);
                     
                     if(body->GetPosition().y < .8 && body->GetPosition().x < .5)
                         body->SetTransform(b2Vec2(body->GetPosition().x, 1.8), 0);
