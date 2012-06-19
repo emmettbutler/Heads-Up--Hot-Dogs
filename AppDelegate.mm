@@ -124,6 +124,22 @@
     [standardUserDefaults synchronize];
 #endif
     
+    [[SimpleAudioEngine sharedEngine] preloadEffect:@"menu intro.wav"];
+    [[SimpleAudioEngine sharedEngine] preloadEffect:@"pause 3.wav"];
+    [[SimpleAudioEngine sharedEngine] preloadEffect:@"hot dog appear 1.wav"];
+    [[SimpleAudioEngine sharedEngine] preloadEffect:@"hot dog disappear.wav"];
+    [[SimpleAudioEngine sharedEngine] preloadEffect:@"25pts.wav"];
+    [[SimpleAudioEngine sharedEngine] preloadEffect:@"50pts.wav"];
+    [[SimpleAudioEngine sharedEngine] preloadEffect:@"100pts.wav"];
+    [[SimpleAudioEngine sharedEngine] preloadEffect:@"hot dog on head.wav"];
+    [[SimpleAudioEngine sharedEngine] preloadEffect:@"game over sting.wav"];
+    
+    [CCTexture2D setDefaultAlphaPixelFormat:kTexture2DPixelFormat_RGBA4444];
+    
+    // must be called before any other call to the director
+    if( ! [CCDirector setDirectorType:kCCDirectorTypeDisplayLink] )
+        [CCDirector setDirectorType:kCCDirectorTypeMainLoop];
+    
 	// Run the intro Scene
 	[[CCDirector sharedDirector] runWithScene: [TitleLayer scene]];
 }

@@ -48,8 +48,6 @@
         spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"end_sprites_default.png"];
         [self addChild:spriteSheet];
         
-        [[SimpleAudioEngine sharedEngine] preloadEffect:@"game over sting.wav"];
-        
         CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"GameEnd_BG"];
         sprite.anchorPoint = CGPointZero;
         [self addChild:sprite z:-1];
@@ -116,11 +114,11 @@
 }
 
 -(void) tick: (ccTime) dt {
-    NSUserDefaults *standardUserDefaults = [NSUserDefaults standardUserDefaults];
-    highScore = [standardUserDefaults integerForKey:@"highScore"];
-    NSInteger bestTime = [standardUserDefaults integerForKey:@"bestTime"];
-    NSInteger overallTime = [standardUserDefaults integerForKey:@"overallTime"];
     if(!_lock){
+        NSUserDefaults *standardUserDefaults = [NSUserDefaults standardUserDefaults];
+        highScore = [standardUserDefaults integerForKey:@"highScore"];
+        NSInteger bestTime = [standardUserDefaults integerForKey:@"bestTime"];
+        NSInteger overallTime = [standardUserDefaults integerForKey:@"overallTime"];
         _lock = 1;
         [[SimpleAudioEngine sharedEngine] stopBackgroundMusic];
         [[SimpleAudioEngine sharedEngine] playEffect:@"game over sting.wav"];
@@ -142,22 +140,22 @@
         CCLOG(@"OverallTime + _timePlayed/60 --> %d + %d = %d", overallTime, _timePlayed/60, overallTime+(_timePlayed/60));
         [standardUserDefaults setInteger:overallTime+(_timePlayed/60) forKey:@"overallTime"];
         [standardUserDefaults synchronize];
+    
+        [scoreLine setString:[NSString stringWithFormat:@"Total points: %06d", _score]];
+    
+        int seconds = _timePlayed/60;
+        int minutes = seconds/60;
+        [timeLine setString:[NSString stringWithFormat:@"Time lasted: %02d:%02d", minutes, seconds%60]];
+        [dogsLine setString:[NSString stringWithFormat:@"Dogs saved: %d", _dogsSaved]];
+        [peopleLine setString:[NSString stringWithFormat:@"People grumped: %d", _peopleGrumped]];
+        [highScoreLine setString:[NSString stringWithFormat:@"HIGH SCORE: %d", highScore]];
+    
+        [scoreLine setPosition:ccp(62+(scoreLine.contentSize.width/2), 225)];
+        [timeLine setPosition:ccp(62+(timeLine.contentSize.width/2), 195)];
+        [dogsLine setPosition:ccp(62+(dogsLine.contentSize.width/2), 165)];
+        [peopleLine setPosition:ccp(62+(peopleLine.contentSize.width/2), 135)];
+        [highScoreLine setPosition:ccp(389-(highScoreLine.contentSize.width/2), 70)];
     }
-    
-    [scoreLine setString:[NSString stringWithFormat:@"Total points: %06d", _score]];
-    
-    int seconds = _timePlayed/60;
-    int minutes = seconds/60;
-    [timeLine setString:[NSString stringWithFormat:@"Time lasted: %02d:%02d", minutes, seconds%60]];
-    [dogsLine setString:[NSString stringWithFormat:@"Dogs saved: %d", _dogsSaved]];
-    [peopleLine setString:[NSString stringWithFormat:@"People grumped: %d", _peopleGrumped]];
-    [highScoreLine setString:[NSString stringWithFormat:@"HIGH SCORE: %d", highScore]];
-    
-    [scoreLine setPosition:ccp(62+(scoreLine.contentSize.width/2), 225)];
-    [timeLine setPosition:ccp(62+(timeLine.contentSize.width/2), 195)];
-    [dogsLine setPosition:ccp(62+(dogsLine.contentSize.width/2), 165)];
-    [peopleLine setPosition:ccp(62+(peopleLine.contentSize.width/2), 135)];
-    [highScoreLine setPosition:ccp(389-(highScoreLine.contentSize.width/2), 70)];
 }
 
 - (void)switchSceneRestart{

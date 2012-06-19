@@ -39,7 +39,6 @@
         CGSize size = [[CCDirector sharedDirector] winSize];
         [[CCDirector sharedDirector] setDisplayFPS:NO];
         
-        [[SimpleAudioEngine sharedEngine] preloadEffect:@"menu intro.wav"];
         [[SimpleAudioEngine sharedEngine] playEffect:@"menu intro.wav"];
         
         SimpleAudioEngine *sae = [SimpleAudioEngine sharedEngine];
@@ -97,6 +96,8 @@
         [background runAction:_titleAnimAction];
         
         [TestFlight passCheckpoint:@"Title Screen"];
+        
+        [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile: @"sprites_default.plist"];
         
         [self schedule: @selector(tick:)];
     }

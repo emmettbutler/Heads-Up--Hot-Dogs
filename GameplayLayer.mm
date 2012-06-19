@@ -21,6 +21,7 @@
 #define COP_RANGE 4
 #define DOG_COUNTER_HT 295
 #define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
+#define GAME_AUTOROTATION kGameAutorotationCCDirector
 
 #ifdef DEBUG
 #define SPAWN_LIMIT_DECREMENT_DELAY 6
@@ -29,10 +30,10 @@
 #define WIENER_SPAWN_START 5
 #define MAX_DOGS_ONSCREEN 6
 #else
-#define SPAWN_LIMIT_DECREMENT_DELAY 4
+#define SPAWN_LIMIT_DECREMENT_DELAY 2
 #define SPECIAL_DOG_PROBABILITY .02
 #define DROPPED_MAX 5
-#define WIENER_SPAWN_START 7
+#define WIENER_SPAWN_START 5
 #define MAX_DOGS_ONSCREEN 6
 #endif
 
@@ -192,7 +193,7 @@
 
 -(void)removeSprite:(id)sender data:(void*)params {
     CCSprite *sprite = (CCSprite *)[(NSValue *)[(NSMutableArray *) params objectAtIndex:0] pointerValue];
-    [self removeChild:sprite cleanup:YES];
+    [spriteSheet removeChild:sprite cleanup:YES];
 }
 
 -(void)plusPoints:(id)sender data:(void*)params {
@@ -202,7 +203,7 @@
 
     CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"plusTen1.png"];
     sprite.position = ccp(xPos.intValue, yPos.intValue);
-    [self addChild:sprite];
+    [spriteSheet addChild:sprite];
 
     NSMutableArray *removeParams = [[NSMutableArray alloc] initWithCapacity:1];
     [removeParams addObject:[NSValue valueWithPointer:sprite]];
@@ -233,7 +234,7 @@
 
     CCSprite *twentyFive = [CCSprite spriteWithSpriteFrameName:@"Plus_25_sm_1.png"];
     twentyFive.position = ccp(xPos.intValue, yPos.intValue);
-    [self addChild:twentyFive];
+    [spriteSheet addChild:twentyFive];
 
     NSMutableArray *removeParams = [[NSMutableArray alloc] initWithCapacity:1];
     [removeParams addObject:[NSValue valueWithPointer:twentyFive]];
@@ -249,7 +250,7 @@
     
     CCSprite *oneHundred = [CCSprite spriteWithSpriteFrameName:@"Plus_100_1.png"];
     oneHundred.position = ccp(xPos.intValue, yPos.intValue);
-    [self addChild:oneHundred];
+    [spriteSheet addChild:oneHundred];
     
     NSMutableArray *removeParams = [[NSMutableArray alloc] initWithCapacity:1];
     [removeParams addObject:[NSValue valueWithPointer:oneHundred]];
@@ -267,7 +268,7 @@
     
     CCSprite *oneHundred = [CCSprite spriteWithSpriteFrameName:@"Plus_100_R_1.png"];
     oneHundred.position = ccp(xPos.intValue, yPos.intValue);
-    [self addChild:oneHundred];
+    [spriteSheet addChild:oneHundred];
     
     NSMutableArray *removeParams = [[NSMutableArray alloc] initWithCapacity:1];
     [removeParams addObject:[NSValue valueWithPointer:oneHundred]];
@@ -413,7 +414,7 @@
 
     CCSprite *dogSprite = (CCSprite *)sender;
 
-    NSLog(@"Destroying dog (tag %d)...", dogSprite.tag);
+    CCLOG(@"Destroying dog (tag %d)...", dogSprite.tag);
 
     if(dogSprite.tag == S_HOTDOG || dogSprite.tag == S_SPCDOG){
         if(dogBody->GetPosition().x > winSize.width || dogBody->GetPosition().x < 0)
@@ -434,8 +435,8 @@
         if(_droppedCount <= DROPPED_MAX){
             CCSprite *dogDroppedIcon = [CCSprite spriteWithSpriteFrameName:@"WienerCount_X.png"];
             dogDroppedIcon.position = ccp(winSize.width-_droppedSpacing, DOG_COUNTER_HT);
-            [self addChild:dogDroppedIcon z:72];
-            [self removeChild:(CCSprite*)[(NSValue *)[dogIcons objectAtIndex:_droppedCount] pointerValue] cleanup:YES];
+            [spriteSheet addChild:dogDroppedIcon z:72];
+            [spriteSheet removeChild:(CCSprite*)[(NSValue *)[dogIcons objectAtIndex:_droppedCount] pointerValue] cleanup:YES];
             _droppedCount++;
             _droppedSpacing += 23;
         }
@@ -544,7 +545,7 @@
     self.wiener = [CCSprite spriteWithSpriteFrameName:mainSprite];
     _wiener.position = ccp(location.x, location.y);
     _wiener.tag = S_HOTDOG;
-    [self addChild:_wiener];
+    [spriteSheet addChild:_wiener z:50];
     
     dogDeathAnim = [CCAnimation animationWithFrames:wienerDeathAnimFrames delay:.1f];
     self.deathAction = [[CCAnimate alloc] initWithAnimation:dogDeathAnim];
@@ -644,7 +645,7 @@
     
     [[SimpleAudioEngine sharedEngine] playEffect:@"hot dog appear 1.wav"];
 
-    NSLog(@"Spawned wiener with maskBits: %d", wienerShapeDef.filter.maskBits);
+    CCLOG(@"Spawned wiener with maskBits: %d", wienerShapeDef.filter.maskBits);
 }
 
 -(void) walkInPauseContinue:(id)sender data:(void*)params{
@@ -1046,7 +1047,7 @@
             self.shootFaceAction = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:shootFaceAnim restoreOriginalFrame:YES] times:1];
 
             target.tag = S_CRSHRS;
-            [self addChild:target];
+            [spriteSheet addChild:target z:100];
         }
 
         //put the sprites in place
@@ -1198,7 +1199,7 @@
         } else {
             [self walkAcross:_personLower data:movementParameters];
         }
-        NSLog(@"Spawned person with tag %d", fTag);
+        CCLOG(@"Spawned person with tag %d", fTag);
     } //the end of the if(spawn) conditional
 }
 
@@ -1264,17 +1265,16 @@
 -(id) init {
     if( (self=[super init])) {
         CGSize winSize = [CCDirector sharedDirector].winSize;
+        
         standardUserDefaults = [NSUserDefaults standardUserDefaults];
         [[CCDirector sharedDirector] setDisplayFPS:NO];
+        [CCTexture2D setDefaultAlphaPixelFormat:kCCTexture2DPixelFormat_RGBA4444];
+        self.isTouchEnabled = YES;
         
+        b2Vec2 gravity = b2Vec2(0.0f, -30.0f);
+        _world = new b2World(gravity, true);
+        spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_default.png"];
         [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"menu 3.wav" loop:YES];
-        [[SimpleAudioEngine sharedEngine] preloadEffect:@"pause 3.wav"];
-        [[SimpleAudioEngine sharedEngine] preloadEffect:@"hot dog appear 1.wav"];
-        [[SimpleAudioEngine sharedEngine] preloadEffect:@"hot dog disappear.wav"];
-        [[SimpleAudioEngine sharedEngine] preloadEffect:@"25pts.wav"];
-        [[SimpleAudioEngine sharedEngine] preloadEffect:@"50pts.wav"];
-        [[SimpleAudioEngine sharedEngine] preloadEffect:@"100pts.wav"];
-        [[SimpleAudioEngine sharedEngine] preloadEffect:@"hot dog on head.wav"];
 
 #ifdef DEBUG
         //debug labels
@@ -1289,8 +1289,6 @@
         _overallTime = [standardUserDefaults integerForKey:@"overallTime"];
 
         //basic game/box2d/cocos2d initialization
-        self.isTouchEnabled = YES;
-        
         time = 0;
         _pause = false;
         _dogHasHitGround = false;
@@ -1307,11 +1305,9 @@
         _droppedSpacing = 200;
         _droppedCount = 0;
         _currentRayAngle = 0;
-        b2Vec2 gravity = b2Vec2(0.0f, -30.0f);
-        _world = new b2World(gravity, true);
+        
         //create spriteFrameCache from sprite sheet
-        [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile: @"sprites_default.plist"];
-        spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_default.png"];
+        
         [self addChild:spriteSheet];
         //contact listener init
         personDogContactListener = new PersonDogContactListener();
@@ -1333,26 +1329,26 @@
             case 1: background = [CCSprite spriteWithSpriteFrameName:@"BG_NYC.png"]; break;
         }
         background.anchorPoint = CGPointZero;
-        [self addChild:background z:-10];
+        [spriteSheet addChild:background z:-10];
 
         //HUD objects
         CCSprite *droppedLeftEnd = [CCSprite spriteWithSpriteFrameName:@"WienerCount_LeftEnd.png"];;
         droppedLeftEnd.position = ccp(winSize.width-310, DOG_COUNTER_HT);
-        [self addChild:droppedLeftEnd z:70];
+        [spriteSheet addChild:droppedLeftEnd z:70];
         CCSprite *droppedRightEnd = [CCSprite spriteWithSpriteFrameName:@"WienerCount_RightEnd.png"];;
         droppedRightEnd.position = ccp(winSize.width-182, DOG_COUNTER_HT);
-        [self addChild:droppedRightEnd z:70];
+        [spriteSheet addChild:droppedRightEnd z:70];
         dogIcons = [[NSMutableArray alloc] initWithCapacity:DROPPED_MAX+1];
         for(int i = 200; i < 200+(23*DROPPED_MAX); i += 23){
             CCSprite *dogIcon = [CCSprite spriteWithSpriteFrameName:@"WienerCount_Wiener.png"];
             dogIcon.position = ccp(winSize.width-i, DOG_COUNTER_HT);
-            [self addChild:dogIcon z:70];
+            [spriteSheet addChild:dogIcon z:70];
             [dogIcons addObject:[NSValue valueWithPointer:dogIcon]];
         }
 
         CCSprite *scoreBG = [CCSprite spriteWithSpriteFrameName:@"Score_BG.png"];;
         scoreBG.position = ccp(winSize.width-80, DOG_COUNTER_HT);
-        [self addChild:scoreBG z:70];
+        [spriteSheet addChild:scoreBG z:70];
 
         //labels for score
         scoreText = [[NSString alloc] initWithFormat:@"%06d", _points];
@@ -1371,7 +1367,7 @@
 
         _pauseButton = [CCSprite spriteWithSpriteFrameName:@"Pause_Button.png"];;
         _pauseButton.position = ccp(20, 305);
-        [self addChild:_pauseButton z:70];
+        [spriteSheet addChild:_pauseButton z:70];
         _pauseButtonRect = CGRectMake((_pauseButton.position.x-(_pauseButton.contentSize.width)/2), (_pauseButton.position.y-(_pauseButton.contentSize.height)/2), (_pauseButton.contentSize.width+10), (_pauseButton.contentSize.height+10));
 
         //initialize global arrays for possible x,y positions and charTags
@@ -1441,6 +1437,8 @@
         wallsBox.SetAsEdge(b2Vec2(winSize.width/PTM_RATIO, winSize.height/PTM_RATIO), b2Vec2(winSize.width/PTM_RATIO, 0));
         _wallsFixture = _wallsBody->CreateFixture(&wallsBoxDef);
 
+        //TODO - preload as many assets as possible
+        
         // set up point notifiers
         NSMutableArray *plusTenAnimFrames = [[NSMutableArray alloc] initWithCapacity:11];
         for(int i = 1; i <= 11; i++){
@@ -1606,7 +1604,6 @@
                     }
                 }
                 int particle = (arc4random() % 3) + 1;
-
                 CCNode *contactNode = (CCNode *)ud->sprite1;
                 CGPoint position = contactNode.position;
                 CCParticleSystem* heartParticles = [CCParticleFire node];
@@ -1736,7 +1733,7 @@
                 if(ud->sprite1.tag == S_HOTDOG){
                     _dogsSaved++;
                 }
-                NSLog(@"Body removed - tag %d", ud->sprite1.tag);
+                CCLOG(@"Body removed - tag %d", ud->sprite1.tag);
                 [ud->sprite1 removeFromParentAndCleanup:YES];
                 if(ud->sprite2 != NULL){
                     [ud->sprite2 removeFromParentAndCleanup:YES];
@@ -2203,9 +2200,9 @@
                             [sprite stopAllActions];
                         }
                         for(int i = 0; i < 2; i++){
-                            /*NSLog(@"locations[%d].x: %0.2f", i, locations[i].x);
-                            NSLog(@"prevX: %0.2f", jUd->prevX);
-                            NSLog(@"minus: %0.2f", locations[i].x - jUd->prevX);*/
+                            /*CCLOG(@"locations[%d].x: %0.2f", i, locations[i].x);
+                            CCLOG(@"prevX: %0.2f", jUd->prevX);
+                            CCLOG(@"minus: %0.2f", locations[i].x - jUd->prevX);*/
                             if((abs(locations[i].x - jUd->prevX) < 1.6 && abs(locations[i].y - jUd->prevY) < 1.6)){
                                 if(locations[i].x < 1.6 && locations[i].y < 1.6){
                                     locations[i] = b2Vec2(1, 1);
