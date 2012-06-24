@@ -25,10 +25,10 @@
     b2Fixture *_bottomFixture, *_wallsFixture, *_wienerFixture, *_targetFixture, *_personFixture, *_policeArmFixture;
     CCSprite *_wiener, *_personLower, *_personUpper, *_personUpperOverlay, *_target, *_pauseButton, *background;
     CCAction *_walkAction, *_walkFaceAction;
-    CCFiniteTimeAction *_idleAction, *_appearAction, *_hitAction, *_shotAction, *_shootAction, *_armShootAction, *_shootFaceAction, *_plusTenAction, *_plus25Action;
-    CCFiniteTimeAction *_plus100LeftAction, *_plus100RightAction, *_plus15Action, *_plus25BigAction;
+    CCFiniteTimeAction *_idleAction, *_appearAction, *_hitAction, *_shotAction, *_shootAction, *_armShootAction, *_shootFaceAction, *_plusTenAction, *_plus25Action, *_bonusVaporTrailAction;
+    CCFiniteTimeAction *_plus100Action, *_plus15Action, *_plus25BigAction;
     CCAnimation *walkAnim, *idleAnim, *hitAnim, *dogDeathAnim, *dogAppearAnim, *walkFaceAnim, *walkDogFaceAnim;
-    CCAnimation *dogShotAnim, *shootAnim, *armShootAnim, *shootFaceAnim, *plusTenAnim, *plus25Anim, *plus100RightAnim, *plus100LeftAnim, *plus15Anim, *plus25BigAnim;
+    CCAnimation *dogShotAnim, *shootAnim, *armShootAnim, *shootFaceAnim, *plusTenAnim, *plus25Anim, *plus100Anim, *plus15Anim, *plus25BigAnim, *bonusVaporTrailAnim;
     CCSpriteBatchNode *spriteSheet;
     CCLabelTTF *scoreLabel, *droppedLabel;
     b2Vec2 policeRayPoint1, policeRayPoint2;
@@ -169,8 +169,8 @@
 @property (nonatomic, retain) CCFiniteTimeAction *plus15Action;
 @property (nonatomic, retain) CCFiniteTimeAction *plus25Action;
 @property (nonatomic, retain) CCFiniteTimeAction *plus25BigAction;
-@property (nonatomic, retain) CCFiniteTimeAction *plus100LeftAction;
-@property (nonatomic, retain) CCFiniteTimeAction *plus100RightAction;
+@property (nonatomic, retain) CCFiniteTimeAction *plus100Action;
+@property (nonatomic, retain) CCFiniteTimeAction *bonusVaporTrailAction;
 @property (nonatomic, retain) CCAction *appearAction;
 
 // returns a CCScene that contains the HelloWorldLayer as the only child

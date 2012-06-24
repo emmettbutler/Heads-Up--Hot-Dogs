@@ -60,8 +60,8 @@
 @synthesize plus25Action = _plus25Action;
 @synthesize plus25BigAction = _plus25BigAction;
 @synthesize plus15Action = _plus15Action;
-@synthesize plus100LeftAction = _plus100LeftAction;
-@synthesize plus100RightAction = _plus100RightAction;
+@synthesize plus100Action = _plus100Action;
+@synthesize bonusVaporTrailAction = _bonusVaporTrailAction;
 
 +(CCScene *) scene {
     CCScene *scene = [CCScene node];
@@ -103,6 +103,8 @@
     NSNumber *lockBool = (NSNumber *)[(NSMutableArray *) params objectAtIndex:0];
     _shootLock = lockBool.intValue;
 }
+
+// TODO - implement new pause screen layout from mockup
 
 -(void) pauseButton{
     if(!_pause){
@@ -203,7 +205,7 @@
 
     CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"plusTen1.png"];
     sprite.position = ccp(xPos.intValue, yPos.intValue);
-    [spriteSheet addChild:sprite z:100];
+    //[spriteSheet addChild:sprite z:100];
 
     NSMutableArray *removeParams = [[NSMutableArray alloc] initWithCapacity:1];
     [removeParams addObject:[NSValue valueWithPointer:sprite]];
@@ -225,7 +227,7 @@
     }
     
     [[SimpleAudioEngine sharedEngine] playEffect:sound];
-    [sprite runAction:seq];
+    //[sprite runAction:seq];
 }
 
 -(void)plusTwentyFive:(id)sender data:(void*)params {
@@ -244,7 +246,10 @@
     [twentyFive runAction:seq];
 }
 
--(void)plusOneHundredLeft:(id)sender data:(void*)params {
+// TODO - reimplement plus 100 with new sprites
+
+-(void)plusOneHundred:(id)sender data:(void*)params {
+    CGSize winSize = [[CCDirector sharedDirector] winSize];
     NSNumber *xPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:0];
     NSNumber *yPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:1];
     
@@ -252,23 +257,12 @@
     oneHundred.position = ccp(xPos.intValue, yPos.intValue);
     [spriteSheet addChild:oneHundred z:100];
     
-    NSMutableArray *removeParams = [[NSMutableArray alloc] initWithCapacity:1];
-    [removeParams addObject:[NSValue valueWithPointer:oneHundred]];
-    CCAction *removeAction = [CCCallFuncND actionWithTarget:self selector:@selector(removeSprite:data:) data:removeParams];
-    
-    [[SimpleAudioEngine sharedEngine] playEffect:@"100pts.wav"];
-    
-    id seq = [CCSequence actions:_plus100LeftAction, removeAction, nil];
-    [oneHundred runAction:seq];
-}
-
--(void)plusOneHundredRight:(id)sender data:(void*)params {
-    NSNumber *xPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:0];
-    NSNumber *yPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:1];
-    
-    CCSprite *oneHundred = [CCSprite spriteWithSpriteFrameName:@"Plus_100_R_1.png"];
-    oneHundred.position = ccp(xPos.intValue, yPos.intValue);
-    [spriteSheet addChild:oneHundred z:100];
+    CCSprite *blast = [CCSprite spriteWithSpriteFrameName:@"CarryOff_Blast_1.png"];
+    blast.position = ccp(xPos.intValue, yPos.intValue);
+    if(xPos.intValue > winSize.width/2){
+        blast.flipX = true;
+    }
+    [spriteSheet addChild:blast z:95];
     
     NSMutableArray *removeParams = [[NSMutableArray alloc] initWithCapacity:1];
     [removeParams addObject:[NSValue valueWithPointer:oneHundred]];
@@ -276,8 +270,14 @@
     
     [[SimpleAudioEngine sharedEngine] playEffect:@"100pts.wav"];
     
-    id seq = [CCSequence actions:_plus100RightAction, removeAction, nil];
+    id seq = [CCSequence actions:_plus100Action, removeAction, nil];
     [oneHundred runAction:seq];
+    
+    NSMutableArray *removeParams2 = [[NSMutableArray alloc] initWithCapacity:1];
+    [removeParams2 addObject:[NSValue valueWithPointer:blast]];
+    CCAction *removeAction2 = [CCCallFuncND actionWithTarget:self selector:@selector(removeSprite:data:) data:removeParams2];
+    id seq2 = [CCSequence actions:_bonusVaporTrailAction, removeAction2, nil];
+    [blast runAction:seq2];
 }
 
 -(void)setAwake:(id)sender data:(void*)params {
@@ -1275,7 +1275,7 @@
         _world = new b2World(gravity, true);
         [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile: @"sprites_default.plist"];
         spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_default.png"];
-        [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"menu 3.wav" loop:YES];
+        //[[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"menu 3.wav" loop:YES];
 
 #ifdef DEBUG
         //debug labels
@@ -1481,25 +1481,25 @@
         self.plus25Action = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:plus25Anim restoreOriginalFrame:NO] times:1];
         [plus25AnimFrames release];
         
-        NSMutableArray *plus100LeftAnimFrames = [[NSMutableArray alloc] initWithCapacity:18];
-        for(int i = 1; i <= 18; i++){
-            [plus100LeftAnimFrames addObject:
+        NSMutableArray *plus100AnimFrames = [[NSMutableArray alloc] initWithCapacity:18];
+        for(int i = 1; i <= 17; i++){
+            [plus100AnimFrames addObject:
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
               [NSString stringWithFormat:@"Plus_100_%d.png", i]]];
         }
-        plus100LeftAnim = [[CCAnimation animationWithFrames:plus100LeftAnimFrames delay:.05f] retain];
-        self.plus100LeftAction = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:plus100LeftAnim restoreOriginalFrame:NO] times:1];
-        [plus100LeftAnimFrames release];
+        plus100Anim = [[CCAnimation animationWithFrames:plus100AnimFrames delay:.06f] retain];
+        self.plus100Action = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:plus100Anim restoreOriginalFrame:NO] times:1];
+        [plus100AnimFrames release];
         
-        NSMutableArray *plus100RightAnimFrames = [[NSMutableArray alloc] initWithCapacity:18];
-        for(int i = 1; i <= 18; i++){
-            [plus100RightAnimFrames addObject:
+        NSMutableArray *bonusVaporTrailAnimFrames = [[NSMutableArray alloc] initWithCapacity:18];
+        for(int i = 1; i <= 13; i++){
+            [bonusVaporTrailAnimFrames addObject:
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-              [NSString stringWithFormat:@"Plus_100_R_%d.png", i]]];
+              [NSString stringWithFormat:@"CarryOff_Blast_%d.png", i]]];
         }
-        plus100RightAnim = [[CCAnimation animationWithFrames:plus100RightAnimFrames delay:.05f] retain];
-        self.plus100RightAction = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:plus100RightAnim restoreOriginalFrame:NO] times:1];
-        [plus100RightAnimFrames release];
+        bonusVaporTrailAnim = [[CCAnimation animationWithFrames:bonusVaporTrailAnimFrames delay:.07f] retain];
+        self.bonusVaporTrailAction = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:bonusVaporTrailAnim restoreOriginalFrame:NO] times:1];
+        [bonusVaporTrailAnimFrames release];
 
         [TestFlight passCheckpoint:@"Game Started"];
 
@@ -1636,6 +1636,7 @@
                             default: p = 15; break;
                         }
                     }
+                    // TODO - add new point notifier sprites for special dog
                     [plusPointsParams addObject:[NSNumber numberWithInt:p]];
                     _points += p;
                     [self runAction:[CCCallFuncND actionWithTarget:self selector:@selector(plusPoints:data:) data:plusPointsParams]];
@@ -1709,14 +1710,14 @@
                     CCSprite *oneHundred = [CCSprite spriteWithSpriteFrameName:@"Plus_100_1.png"];
                     NSMutableArray *plus100Params = [[NSMutableArray alloc] initWithCapacity:2];
                     if(ud->sprite1.flipX){
-                        [plus100Params addObject:[NSNumber numberWithInt:winSize.width-(oneHundred.contentSize.width/2)]];
+                        [plus100Params addObject:[NSNumber numberWithInt:winSize.width-(oneHundred.contentSize.width/2)-10]];
                         [plus100Params addObject:[NSNumber numberWithInt:(b->GetPosition().y+4.7)*PTM_RATIO]];
-                        [self runAction:[CCCallFuncND actionWithTarget:self selector:@selector(plusOneHundredRight:data:) data:plus100Params]];
+                        [self runAction:[CCCallFuncND actionWithTarget:self selector:@selector(plusOneHundred:data:) data:plus100Params]];
                     }
                     else{
                         [plus100Params addObject:[NSNumber numberWithInt:(oneHundred.contentSize.width/2)]];
                         [plus100Params addObject:[NSNumber numberWithInt:(b->GetPosition().y+4.7)*PTM_RATIO]];
-                        [self runAction:[CCCallFuncND actionWithTarget:self selector:@selector(plusOneHundredLeft:data:) data:plus100Params]];
+                        [self runAction:[CCCallFuncND actionWithTarget:self selector:@selector(plusOneHundred:data:) data:plus100Params]];
                     }
                 }
             }

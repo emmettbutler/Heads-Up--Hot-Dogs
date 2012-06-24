@@ -1,6 +1,9 @@
+// TODO - implement new pause screen layout from mockup
+// TODO - reimplement plus 100 with new sprites
     // TODO - decide body dimensions on a per-type basis
         // TODO - consider having the people's bodies not be fixtures anymore to improve performance
         //TODO - preload as many assets as possible
                         // TODO - it's possible to throw dogs offscreen of they pass by a head first. stop that. 
+                    // TODO - add new point notifier sprites for special dog
                                         // TODO - this only works for forward-facing cops, do the math and make it work for both
                     //TODO - make all global components of cop raycasting into instance variables to allow maybe multiple cops onscreen
