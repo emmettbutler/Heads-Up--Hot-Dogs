@@ -205,7 +205,7 @@
 
     CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"plusTen1.png"];
     sprite.position = ccp(xPos.intValue, yPos.intValue);
-    //[spriteSheet addChild:sprite z:100];
+    [spriteSheet addChild:sprite z:100];
 
     NSMutableArray *removeParams = [[NSMutableArray alloc] initWithCapacity:1];
     [removeParams addObject:[NSValue valueWithPointer:sprite]];
@@ -215,7 +215,7 @@
     NSString *sound;
 
     switch(points.intValue){
-        case 10: seq = [CCSequence actions:_plusTenAction, removeAction, nil];
+        default: seq = [CCSequence actions:_plusTenAction, removeAction, nil];
             sound = [NSString stringWithString:@"25pts.wav"];
             break;
         case 15: seq = [CCSequence actions:_plus15Action, removeAction, nil];
@@ -227,7 +227,7 @@
     }
     
     [[SimpleAudioEngine sharedEngine] playEffect:sound];
-    //[sprite runAction:seq];
+    [sprite runAction:seq];
 }
 
 -(void)plusTwentyFive:(id)sender data:(void*)params {
@@ -1275,7 +1275,7 @@
         _world = new b2World(gravity, true);
         [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile: @"sprites_default.plist"];
         spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_default.png"];
-        //[[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"menu 3.wav" loop:YES];
+        [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"menu 3.wav" loop:YES];
 
 #ifdef DEBUG
         //debug labels
