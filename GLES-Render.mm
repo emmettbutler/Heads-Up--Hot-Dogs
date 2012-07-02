@@ -32,16 +32,16 @@
 
 #include <cstring>
 
-GLESDebugDraw::GLESDebugDraw()
+GLESDraw::GLESDraw()
 	: mRatio( 1.0f )
 {
 }
-GLESDebugDraw::GLESDebugDraw( float32 ratio )
+GLESDraw::GLESDraw( float32 ratio )
 	: mRatio( ratio )
 {
 }
 
-void GLESDebugDraw::DrawPolygon(const b2Vec2* old_vertices, int32 vertexCount, const b2Color& color)
+void GLESDraw::DrawPolygon(const b2Vec2* old_vertices, int32 vertexCount, const b2Color& color)
 {
 	ccVertex2F vertices[vertexCount];
 	
@@ -57,7 +57,7 @@ void GLESDebugDraw::DrawPolygon(const b2Vec2* old_vertices, int32 vertexCount, c
 	glDrawArrays(GL_LINE_LOOP, 0, vertexCount);	
 }
 
-void GLESDebugDraw::DrawSolidPolygon(const b2Vec2* old_vertices, int32 vertexCount, const b2Color& color)
+void GLESDraw::DrawSolidPolygon(const b2Vec2* old_vertices, int32 vertexCount, const b2Color& color)
 {
 	ccVertex2F vertices[vertexCount];
 	
@@ -78,7 +78,7 @@ void GLESDebugDraw::DrawSolidPolygon(const b2Vec2* old_vertices, int32 vertexCou
 	glDrawArrays(GL_LINE_LOOP, 0, vertexCount);
 }
 
-void GLESDebugDraw::DrawCircle(const b2Vec2& center, float32 radius, const b2Color& color)
+void GLESDraw::DrawCircle(const b2Vec2& center, float32 radius, const b2Color& color)
 {
 		
 	const float32 k_segments = 16.0f;
@@ -101,7 +101,7 @@ void GLESDebugDraw::DrawCircle(const b2Vec2& center, float32 radius, const b2Col
 	glDrawArrays(GL_LINE_LOOP, 0, vertexCount);
 }
 
-void GLESDebugDraw::DrawSolidCircle(const b2Vec2& center, float32 radius, const b2Vec2& axis, const b2Color& color)
+void GLESDraw::DrawSolidCircle(const b2Vec2& center, float32 radius, const b2Vec2& axis, const b2Color& color)
 {
 		
 	const float32 k_segments = 16.0f;
@@ -128,7 +128,7 @@ void GLESDebugDraw::DrawSolidCircle(const b2Vec2& center, float32 radius, const 
 	DrawSegment(center,center+radius*axis,color);
 }
 
-void GLESDebugDraw::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color)
+void GLESDraw::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color)
 {
 	glColor4f(color.r, color.g, color.b,1);
 	GLfloat				glVertices[] = {
@@ -139,19 +139,19 @@ void GLESDebugDraw::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Colo
 	glDrawArrays(GL_LINES, 0, 2);
 }
 
-void GLESDebugDraw::DrawTransform(const b2Transform& xf)
+void GLESDraw::DrawTransform(const b2Transform& xf)
 {
-	b2Vec2 p1 = xf.position, p2;
+	/*b2Vec2 p1 = xf.position, p2;
 	const float32 k_axisScale = 0.4f;
 
 	p2 = p1 + k_axisScale * xf.R.col1;
 	DrawSegment(p1,p2,b2Color(1,0,0));
 	
 	p2 = p1 + k_axisScale * xf.R.col2;
-	DrawSegment(p1,p2,b2Color(0,1,0));
+	DrawSegment(p1,p2,b2Color(0,1,0));*/
 }
 
-void GLESDebugDraw::DrawPoint(const b2Vec2& p, float32 size, const b2Color& color)
+void GLESDraw::DrawPoint(const b2Vec2& p, float32 size, const b2Color& color)
 {
 	glColor4f(color.r, color.g, color.b,1);
 	glPointSize(size);
@@ -163,14 +163,14 @@ void GLESDebugDraw::DrawPoint(const b2Vec2& p, float32 size, const b2Color& colo
 	glPointSize(1.0f);
 }
 
-void GLESDebugDraw::DrawString(int x, int y, const char *string, ...)
+void GLESDraw::DrawString(int x, int y, const char *string, ...)
 {
 //	NSLog(@"DrawString: unsupported: %s", string);
 	//printf(string);
 	/* Unsupported as yet. Could replace with bitmap font renderer at a later date */
 }
 
-void GLESDebugDraw::DrawAABB(b2AABB* aabb, const b2Color& c)
+void GLESDraw::DrawAABB(b2AABB* aabb, const b2Color& c)
 {
 	glColor4f(c.r, c.g, c.b,1);
 

@@ -7,7 +7,7 @@
 //
 
 #import "cocos2d.h"
-#import <CocosDenshion/SimpleAudioEngine.h>
+#import <SimpleAudioEngine.h>
 
 @interface TitleLayer : CCLayer 
 {

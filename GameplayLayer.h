@@ -20,7 +20,7 @@
 @interface GameplayLayer : CCLayer
 {
     b2World *_world;
-    GLESDebugDraw *m_debugDraw;
+    GLESDraw *m_debugDraw;
     b2Body *_wallsBody, *_groundBody, *wienerBody, *targetBody, *_personBody, *_policeArmBody;
     b2Fixture *_bottomFixture, *_wallsFixture, *_wienerFixture, *_targetFixture, *_personFixture, *_policeArmFixture;
     CCSprite *_wiener, *_personLower, *_personUpper, *_personUpperOverlay, *_target, *_pauseButton, *background;
@@ -66,11 +66,17 @@
         CCAction *altAction;
         CCAction *altAction2;
         CCAction *altAction3;
+        CCAction *idleAction;
         CCAnimation *defaultAnim;
+        CCAction *defaultAction;
         CCAnimation *altAnimation;
-        CCAnimation *altWalkAnim;
+        CCAction *altWalkAction;
         float armSpeed;
-        float deathDelay;
+        float deathDelay; // how long a hot dog sits on the ground before dying, in seconds
+        float moveDelta; // the linear velocity of the person
+        int stopTime; // time into walk at which person should pause
+        int stopTimeDelta; // how long the pause should last
+        int timeWalking; // how long has this person been walking
         BOOL aiming;
         BOOL aimedAt;
         BOOL animLock;

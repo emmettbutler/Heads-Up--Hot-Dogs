@@ -39,6 +39,8 @@
         CGSize size = [[CCDirector sharedDirector] winSize];
         [[CCDirector sharedDirector] setDisplayFPS:NO];
         
+#ifdef DEBUG
+#else
         [[SimpleAudioEngine sharedEngine] playEffect:@"menu intro.wav"];
         
         SimpleAudioEngine *sae = [SimpleAudioEngine sharedEngine];
@@ -48,6 +50,7 @@
                 sae.backgroundMusicVolume = 0.5f;
             }
         }
+#endif
         
         [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile: @"title_sprites_default.plist"];
         spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"title_sprites_default.png"];
@@ -105,9 +108,12 @@
 -(void) tick: (ccTime) dt {
     //CGSize size = [[CCDirector sharedDirector] winSize];
     time++;
+#ifdef DEBUG
+#else
     if(abs((time/60)-1.6) < .01){
         [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"menu 2.wav" loop:YES];
     }
+#endif
 }
 
 - (void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {

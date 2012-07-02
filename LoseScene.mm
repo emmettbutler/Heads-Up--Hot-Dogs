@@ -120,8 +120,11 @@
         NSInteger bestTime = [standardUserDefaults integerForKey:@"bestTime"];
         NSInteger overallTime = [standardUserDefaults integerForKey:@"overallTime"];
         _lock = 1;
+#ifdef DEBUG
+#else
         [[SimpleAudioEngine sharedEngine] stopBackgroundMusic];
         [[SimpleAudioEngine sharedEngine] playEffect:@"game over sting.wav"];
+#endif
         if(_score > highScore){
             [standardUserDefaults setInteger:_score forKey:@"highScore"];
             highScore = _score;

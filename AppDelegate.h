@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <CocosDenshion/SimpleAudioEngine.h>
+#import <SimpleAudioEngine.h>
 
 @class RootViewController;
 
