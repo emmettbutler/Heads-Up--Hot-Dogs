@@ -995,11 +995,9 @@
     ud->sprite1 = _personLower;
     ud->sprite2 = _personUpper;
     ud->angryFace = _personUpperOverlay;
-    ud->defaultAnim = walkAnim;
     ud->defaultAction = _walkAction;
     ud->altWalkAction = _walkDogFaceAction;
     ud->heightOffset2 = heightOffset;
-    ud->ogSprite2 = ogHeadSprite;
     ud->altAction = _walkFaceAction;
     ud->idleAction = _idleAction;
     ud->altAnimation = walkFaceAnim;
@@ -1657,6 +1655,9 @@
                         _shootLock = 0;
                     }
                 }
+                if(b->GetJointList()){
+                    _world->DestroyJoint(b->GetJointList()->joint);
+                }
                 _world->DestroyBody(b);
                 if(ud->sprite1.tag == S_HOTDOG){
                     _dogsSaved++;
@@ -1672,6 +1673,7 @@
                 if(ud->overlaySprite != NULL){
                     [ud->overlaySprite removeFromParentAndCleanup:YES];
                 }
+                
                 ud = NULL;
                 continue;
             }
@@ -1799,15 +1801,6 @@
                                             [walkParameters addObject:[NSNumber numberWithInteger:0]];
                                             [self setAwake:self data:walkParameters];
 
-                                            CCFiniteTimeAction *copShootAnimAction = (CCFiniteTimeAction *)copUd->altAction2;
-                                            CCAnimation *copWalkAnim = (CCAnimation *)copUd->defaultAnim;
-                                            walkParameters = [[NSMutableArray alloc] initWithCapacity:3];
-                                            [walkParameters addObject:[NSValue valueWithPointer:copUd->sprite1]];
-                                            [walkParameters addObject:[NSValue valueWithPointer:copWalkAnim]];
-                                            [walkParameters addObject:[NSNumber numberWithInt:-69]];
-                                            id walkAnimateAction = [CCCallFuncND actionWithTarget:self selector:@selector(spriteRunAnim:data:) data:walkParameters];
-
-
                                             NSMutableArray *aimParameters = [[NSMutableArray alloc] initWithCapacity:2];
                                             NSValue *dBody = [NSValue valueWithPointer:dogBody];
                                             [aimParameters addObject:cBody];
@@ -1824,10 +1817,6 @@
                                             //[self copFlipAim:self data:aimParameters];
                                             
                                             CCDelayTime *delay = [CCDelayTime actionWithDuration:ud->stopTimeDelta];
-
-                                            id copSeq = [CCSequence actions:delay, copShootAnimAction, copFlipAimingAction, walkAnimateAction, unlockAction, nil];
-                                            //[copUd->sprite1 stopAllActions];
-                                            //[copUd->sprite1 runAction:copSeq];
 
                                             CCFiniteTimeAction *faceShootAction = (CCFiniteTimeAction *)copUd->altAction3;
                                             NSMutableArray *walkFaceParameters = [[NSMutableArray alloc] initWithCapacity:2];
@@ -1942,10 +1931,9 @@
                             b2JointEdge *j = b->GetJointList();
                             if(j && j->joint->GetType() == e_revoluteJoint){
                                 b2RevoluteJoint *r = (b2RevoluteJoint *)j->joint;
-                                //r->SetMotorSpeed(ud->armSpeed);
-                                r->SetMotorSpeed(0);
+                                r->SetMotorSpeed(ud->armSpeed);
                             }
-                            ud->armSpeed = 4 * cosf(.1 * time);
+                            ud->armSpeed = 8 * cosf(.07 * time);
                         } else {
                             b2JointEdge *j;
                             b2Body *aimedDog;

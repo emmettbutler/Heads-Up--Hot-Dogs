@@ -59,14 +59,12 @@
         NSString *_dog_grabSprite;
         NSString *_dog_mainSprite;
         NSString *ogSprite2;
-        NSString *altSprite3; //the 3 here has a different meaning than the 2 above - ie it's the 3rd sprite
         CCSprite *angryFace;
         CCSprite *overlaySprite;
         CCAction *altAction;
         CCAction *altAction2;
         CCAction *altAction3;
         CCAction *idleAction;
-        CCAnimation *defaultAnim;
         CCAction *defaultAction;
         CCAnimation *altAnimation;
         CCAction *altWalkAction;
@@ -78,7 +76,6 @@
         int timeWalking; // how long has this person been walking
         BOOL aiming;
         BOOL aimedAt;
-        BOOL animLock;
         BOOL grabbed;
         BOOL hasLeftScreen;
         double targetAngle;
