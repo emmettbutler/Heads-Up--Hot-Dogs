@@ -369,13 +369,20 @@
     _world->DrawDebugData();
 
     if(m_debugDraw){
-        if(!_rayTouchingDog)
-            glColor4ub(255, 0, 0, 255);
-        else
-            glColor4ub(0, 255, 0, 255);
+        glColor4ub(255, 0, 0, 255);
         ccDrawLine(CGPointMake(policeRayPoint1.x*PTM_RATIO, policeRayPoint1.y*PTM_RATIO), CGPointMake(policeRayPoint2.x*PTM_RATIO, policeRayPoint2.y*PTM_RATIO));
+        glColor4ub(0, 255, 0, 255);
+        b2Joint *j = _world->GetJointList();
+        if(j && j->GetType() == e_revoluteJoint){
+            b2RevoluteJoint *r = (b2RevoluteJoint *)j;
+            b2Body *body = j->GetBodyB();
+            b2Vec2 lowerLimitPoint = b2Vec2(body->GetPosition() + 9 * b2Vec2(cosf(r->GetLowerLimit() ), sinf(r->GetLowerLimit())));
+            b2Vec2 upperLimitPoint = b2Vec2(body->GetPosition() + 9 * b2Vec2(cosf(r->GetUpperLimit() ), sinf(r->GetUpperLimit())));
+            ccDrawLine(CGPointMake(body->GetPosition().x*PTM_RATIO, body->GetPosition().y*PTM_RATIO), CGPointMake(lowerLimitPoint.x*PTM_RATIO, lowerLimitPoint.y*PTM_RATIO));
+            ccDrawLine(CGPointMake(body->GetPosition().x*PTM_RATIO, body->GetPosition().y*PTM_RATIO), CGPointMake(upperLimitPoint.x*PTM_RATIO, upperLimitPoint.y*PTM_RATIO));
+        }
     }
-
+        
     glEnable(GL_TEXTURE_2D);
     glEnableClientState(GL_COLOR_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -625,7 +632,7 @@
 }
 
 -(void)walkIn:(id)sender data:(void *)params {
-    int zIndex, fTag, armOffset, armBodyXOffset, armBodyYOffset, yPos;
+    int zIndex, fTag, armBodyXOffset, armBodyYOffset, yPos;
     int armJointXOffset, armJointYOffset;
     float hitboxHeight, hitboxWidth, hitboxCenterX, hitboxCenterY, density, restitution, friction, heightOffset, sensorHeight, sensorWidth, framerate, moveDelta;
     NSString *ogHeadSprite;
@@ -635,19 +642,18 @@
     NSNumber *floorBit = [floorBits objectAtIndex:arc4random() % [floorBits count]];
     NSNumber *character = (NSNumber *)[(NSMutableArray *) params objectAtIndex:1];
     //first, see if a person should spawn
-    for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
-        if (body->GetUserData() != NULL && body->GetUserData() != (void*)100) {
-            bodyUserData *ud = (bodyUserData *)body->GetUserData();
-            if(ud && ud->sprite1.tag >= S_BUSMAN && ud->sprite1.tag <= S_TOPPSN){
-                if(ud->sprite1.tag == S_POLICE && character.intValue == 4){
-                    spawn = NO;
-                }
-            }
-            for(b2Fixture* f = body->GetFixtureList(); f; f = f->GetNext()){
-                if(f->GetFilterData().maskBits == floorBit.intValue){
-                    if(ud->sprite1.flipX != _personLower.flipX){
-                        spawn = NO;
-                        break;
+    if(_policeOnScreen && character.intValue == 4){
+        spawn = NO;
+    } else {
+        for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
+            if (body->GetUserData() != NULL && body->GetUserData() != (void*)100) {
+                bodyUserData *ud = (bodyUserData *)body->GetUserData();
+                for(b2Fixture* f = body->GetFixtureList(); f; f = f->GetNext()){
+                    if(f->GetFilterData().maskBits == floorBit.intValue){
+                        if(ud->sprite1.flipX != _personLower.flipX){
+                            spawn = NO;
+                            break;
+                        }
                     }
                 }
             }
@@ -911,10 +917,9 @@
     if(xPos.intValue > winSize.width/2){
         moveDelta = -1*moveDelta;
         if(character.intValue == 4){
-            armOffset = 38;
             armBodyXOffset = -6;
             armJointXOffset = -10;
-            lowerArmAngle = 125;
+            lowerArmAngle = 105;
             upperArmAngle = 175;
             _policeArm.flipX = YES;
             _policeArm.flipY = YES;
@@ -926,7 +931,6 @@
         _personUpperOverlay.flipX = YES;
         if(character.intValue == 4){
             _policeArm.flipX = YES;
-            armOffset = 30;
         }
     }
     if(floorBit.intValue == 1){
@@ -1030,7 +1034,6 @@
     personBodyDef.position.Set(xPos.floatValue/PTM_RATIO, yPos/PTM_RATIO);
     personBodyDef.userData = ud;
     personBodyDef.fixedRotation = true;
-    personBodyDef.gravityScale = 0.0f;
     _personBody = _world->CreateBody(&personBodyDef);
 
     //fixture for head hitbox
@@ -1114,8 +1117,7 @@
         armJointDef.maxMotorTorque = 10000.0f;
         armJointDef.lowerAngle = CC_DEGREES_TO_RADIANS(lowerArmAngle);
         armJointDef.upperAngle = CC_DEGREES_TO_RADIANS(upperArmAngle);
-
-        policeArmJoint = (b2RevoluteJoint*)_world->CreateJoint(&armJointDef);
+        _world->CreateJoint(&armJointDef);
     }
     CCLOG(@"Spawned person with tag %d", fTag);
 }
@@ -1241,8 +1243,8 @@
         [standardUserDefaults synchronize];
         
         allTouchHashes = [[NSMutableArray alloc] init];
-//#ifdef DEBUG
-//#else
+#ifdef DEBUG
+#else
         int bgSelect = arc4random() % 2;
         switch(bgSelect){
             case 0: background = [CCSprite spriteWithSpriteFrameName:@"bg_philly.png"]; break;
@@ -1250,7 +1252,7 @@
         }
         background.anchorPoint = CGPointZero;
         [spriteSheet addChild:background z:-10];
-//#endif
+#endif
 
         //HUD objects
         CCSprite *droppedLeftEnd = [CCSprite spriteWithSpriteFrameName:@"WienerCount_LeftEnd.png"];;
@@ -1924,6 +1926,8 @@
                     }
                     if(ud->sprite1.tag == S_POLICE){
                         _policeOnScreen = YES;
+                        if(ud->hasLeftScreen)
+                            _policeOnScreen = NO;
                         //cop arm rotation
                         if(!ud->aiming){
                             //if not aiming, make sure there are no world dogs with aimedAt on
@@ -1932,18 +1936,16 @@
                                     bodyUserData *aimedUd = (bodyUserData *)aimedBody->GetUserData();
                                     if(aimedUd->sprite1.tag == S_HOTDOG && aimedUd->aimedAt == true){
                                         aimedUd->aimedAt = false;
-                                        break;
                                     }
                                 }
                             }
                             b2JointEdge *j = b->GetJointList();
-                            if(j){
-                                if(j->joint->GetType() == e_revoluteJoint){
-                                    b2RevoluteJoint *r = (b2RevoluteJoint *)j->joint;
-                                    r->SetMotorSpeed(ud->armSpeed);
-                                }
+                            if(j && j->joint->GetType() == e_revoluteJoint){
+                                b2RevoluteJoint *r = (b2RevoluteJoint *)j->joint;
+                                //r->SetMotorSpeed(ud->armSpeed);
+                                r->SetMotorSpeed(0);
                             }
-                            ud->armSpeed = 6 * cosf(.1 * time);
+                            ud->armSpeed = 4 * cosf(.1 * time);
                         } else {
                             b2JointEdge *j;
                             b2Body *aimedDog;

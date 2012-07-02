@@ -32,7 +32,6 @@
     CCSpriteBatchNode *spriteSheet;
     CCLabelTTF *scoreLabel, *droppedLabel;
     b2Vec2 policeRayPoint1, policeRayPoint2;
-    b2RevoluteJoint *policeArmJoint;
     CCLayerColor *_pauseLayer, *_flashLayer;
     CCMenu *_pauseMenu;
     NSMutableArray *floorBits, *xPositions, *characterTags, *wienerParameters, *headParams, *mouseJoints;
