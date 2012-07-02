@@ -251,8 +251,6 @@
     [twentyFive runAction:seq];
 }
 
-// TODO - reimplement plus 100 with new sprites
-
 -(void)plusOneHundred:(id)sender data:(void*)params {
     CGSize winSize = [[CCDirector sharedDirector] winSize];
     NSNumber *xPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:0];
@@ -456,7 +454,6 @@
     NSMutableArray *wienerShotAnimFrames = [[NSMutableArray alloc] init];
     NSMutableArray *wienerAppearAnimFrames = [[NSMutableArray alloc] init];
     
-    // TODO - decide body dimensions on a per-type basis
     switch(type.intValue){
         case S_SPCDOG:
             riseSprite = [NSString stringWithString:@"Steak_Rise.png"];
@@ -681,6 +678,8 @@
     NSMutableArray *armShootAnimFrames;
     CCSprite *target;
 
+    density = 10;
+    
     switch(character.intValue){
         case S_BUSMAN: //businessman
             self.personLower = [CCSprite spriteWithSpriteFrameName:@"BusinessMan_Walk_1.png"];
@@ -697,7 +696,6 @@
             moveDelta = 3.6;
             sensorHeight = 2.5f;
             sensorWidth = 1.5f;
-            density = 10.0f;
             restitution = .8f; //bounce
             framerate = .07f;
             friction = 0.3f;
@@ -744,7 +742,6 @@
             moveDelta = 5;
             sensorHeight = 2.0f;
             sensorWidth = 1.5f;
-            density = 6.0f;
             restitution = .5f; //bounce
             friction = 4.0f;
             fTag = F_COPHED;
@@ -753,9 +750,8 @@
             upperArmAngle = 55;
             framerate = .07f;
             armBodyXOffset = 8;
-            armBodyYOffset = 40;
+            armBodyYOffset = armJointYOffset = 0;
             armJointXOffset = 15;
-            armJointYOffset = 40;
             target = [CCSprite spriteWithSpriteFrameName:@"Target_NoDog.png"];
             for(int i = 1; i <= 8; i++){
                 [walkAnimFrames addObject:
@@ -801,7 +797,6 @@
             moveDelta = 3;
             sensorHeight = 2.0f;
             sensorWidth = 1.5f;
-            density = 10.0f;
             restitution = .87f; //bounce
             friction = 0.15f;
             framerate = .06f;
@@ -843,7 +838,6 @@
             moveDelta = 6;
             sensorHeight = 1.3f;
             sensorWidth = 1.5f;
-            density = 5.0f;
             restitution = .4f; //bounce
             friction = 0.15f;
             framerate = .07f;
@@ -885,7 +879,6 @@
             moveDelta = 3.7;
             sensorHeight = 1.3f;
             sensorWidth = 1.5f;
-            density = 10.0f;
             restitution = .4f; //bounce
             friction = 0.15f;
             framerate = .06f;
@@ -1104,7 +1097,7 @@
         armShape.SetAsBox(_policeArm.contentSize.width/PTM_RATIO/2, _policeArm.contentSize.height/PTM_RATIO/2);
         b2FixtureDef armShapeDef;
         armShapeDef.shape = &armShape;
-        armShapeDef.density = 0.0001;
+        armShapeDef.density = 1;
         fUd->tag = F_COPARM;
         armShapeDef.userData = fUd;
         armShapeDef.filter.maskBits = 0x0000;
@@ -1124,7 +1117,6 @@
 
         policeArmJoint = (b2RevoluteJoint*)_world->CreateJoint(&armJointDef);
     }
-    // TODO - consider having the people's bodies not be fixtures anymore to improve performance
     CCLOG(@"Spawned person with tag %d", fTag);
 }
 
@@ -1585,24 +1577,21 @@
             else if (fBUd->tag == F_GROUND){
                 ud->_dog_isOnHead = false;
                 ud->hasTouchedHead = false;
-                if(dogBody->GetLinearVelocity().y < .1){
-                    // dog is definitely not on a head if it's touching the floor
-                    CCAction *wienerDeathAction = (CCAction *)ud->altAction;
-
-                    id delay = [CCDelayTime actionWithDuration:ud->deathDelay];
-                    wienerParameters = [[NSMutableArray alloc] initWithCapacity:2];
-                    [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
-                    [wienerParameters addObject:[NSNumber numberWithInt:0]];
-                    id sleepAction = [CCCallFuncND actionWithTarget:self selector:@selector(setAwake:data:) data:wienerParameters];
-                    id angleAction = [CCCallFuncND actionWithTarget:self selector:@selector(setRotation:data:) data:wienerParameters];
-                    wienerParameters = [[NSMutableArray alloc] initWithCapacity:1];
-                    [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
-                    id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:wienerParameters];
-                    id sequence = [CCSequence actions: delay, sleepAction, angleAction, wienerDeathAction, destroyAction, nil];
-                    [ud->sprite1 stopAllActions];
-                    [ud->sprite1 runAction:sequence];
-                    CCLOG(@"Run death action");
-                }
+                // dog is definitely not on a head if it's touching the floor
+                CCAction *wienerDeathAction = (CCAction *)ud->altAction;
+                id delay = [CCDelayTime actionWithDuration:ud->deathDelay];
+                wienerParameters = [[NSMutableArray alloc] initWithCapacity:2];
+                [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
+                [wienerParameters addObject:[NSNumber numberWithInt:0]];
+                id sleepAction = [CCCallFuncND actionWithTarget:self selector:@selector(setAwake:data:) data:wienerParameters];
+                id angleAction = [CCCallFuncND actionWithTarget:self selector:@selector(setRotation:data:) data:wienerParameters];
+                wienerParameters = [[NSMutableArray alloc] initWithCapacity:1];
+                [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
+                id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:wienerParameters];
+                id sequence = [CCSequence actions: delay, sleepAction, angleAction, wienerDeathAction, destroyAction, nil];
+                [ud->sprite1 stopAllActions];
+                [ud->sprite1 runAction:sequence];
+                CCLOG(@"Run death action");
             }
             else if (fBUd->tag == F_WALLS){
                 CCLOG(@"Dog/wall collision - _dog_isOnHead: %d - dog is awake: %d", ud->_dog_isOnHead, dogBody->IsAwake());
@@ -1761,10 +1750,10 @@
                             fixtureUserData *fUd = (fixtureUserData *)f->GetUserData();
                             b2RayCastOutput output;
                             if(fUd->tag == F_DOGCLD){
-                                //if(!f->RayCast(&output, input)){
-                                //    _rayTouchingDog = false;
+                                if(!f->RayCast(&output, input, 1)){
+                                    _rayTouchingDog = false;
                                     continue;
-                                //}
+                                }
                                 if(output.fraction < closestFraction){
                                     CCLOG(@"_shootLock: %d", _shootLock);
                                     if(!_shootLock && !((bodyUserData *)b->GetUserData())->grabbed){
@@ -1867,8 +1856,8 @@
 
                                             CCFiniteTimeAction *wienerExplodeAction = (CCFiniteTimeAction *)ud->altAction2;
                                             id dogSeq = [CCSequence actions:delay, wienerExplodeAction, destroyAction, nil];
-                                            [ud->sprite1 stopAllActions];
-                                            [ud->sprite1 runAction:dogSeq];
+                                            //[ud->sprite1 stopAllActions];
+                                            //[ud->sprite1 runAction:dogSeq];
 
                                             break;
                                         }
@@ -1954,7 +1943,7 @@
                                     r->SetMotorSpeed(ud->armSpeed);
                                 }
                             }
-                            ud->armSpeed = 3 * cosf(.1 * time);
+                            ud->armSpeed = 6 * cosf(.1 * time);
                         } else {
                             b2JointEdge *j;
                             b2Body *aimedDog;
@@ -2064,6 +2053,7 @@
                             // if the dog is not already grabbed and one of the touches is on it, make the joint
                             if (!ud->grabbed && ((fixture->TestPoint(locationWorld1) && !touched1) || (fixture->TestPoint(locationWorld2) && !touched2))){
                                 dogsTouched++;
+                                [ud->sprite1 stopAllActions];
                                 _lastTouchTime = time;
                                 ud->grabbed = true;
                                 ud->hasTouchedHead = false;
