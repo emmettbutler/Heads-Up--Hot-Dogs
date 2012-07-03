@@ -34,7 +34,7 @@
 #define SPECIAL_DOG_PROBABILITY .02
 #define DROPPED_MAX 5
 #define WIENER_SPAWN_START 5
-#define MAX_DOGS_ONSCREEN 6
+#define MAX_DOGS_ONSCREEN 4
 #endif
 
 @implementation GameplayLayer
@@ -1114,9 +1114,9 @@
 }
 
 -(void)wienerCallback:(id)sender data:(void *)params {
+    CCLOG(@"_wienerSpawnDelayTime: %f", _wienerSpawnDelayTime);
     CGSize winSize = [CCDirector sharedDirector].winSize;
     NSNumber *dogType = [NSNumber numberWithInt:arc4random() % (int)(1/SPECIAL_DOG_PROBABILITY)];
-    //NSNumber *dogType = [NSNumber numberWithInt:1];
     
     CCLOG(@"Dogs onscreen: %d", _dogsOnscreen);
     
@@ -1166,7 +1166,7 @@
     [personParameters addObject:xPos];
     [personParameters addObject:characterTag];
 
-    id delay = [CCDelayTime actionWithDuration:2];
+    id delay = [CCDelayTime actionWithDuration:1];
     id callBackAction = [CCCallFuncND actionWithTarget: self selector: @selector(spawnCallback:data:) data:personParameters];
     id sequence = [CCSequence actions: delay, callBackAction, nil];
     [self runAction:sequence];
@@ -1433,12 +1433,6 @@
         [wienerParams addObject:[NSNumber numberWithInt:arc4random() % 10]];
         [self wienerCallback:self data:wienerParams];
 
-        CCDelayTime *delay = [CCDelayTime actionWithDuration:SPAWN_LIMIT_DECREMENT_DELAY];
-        CCCallFunc *decrementLimitAction = [CCCallFunc actionWithTarget:self selector:@selector(timedDecrement)];
-        CCSequence *sequence = [CCSequence actions: delay, decrementLimitAction, nil];
-        CCSequence *s = [CCRepeatForever actionWithAction:sequence];
-        [self runAction:s];
-
         [self schedule: @selector(tick:)];
     }
     return self;
@@ -1453,6 +1447,22 @@
         _shootLock = 0;
 
     CGSize winSize = [CCDirector sharedDirector].winSize;
+    
+    if(_points > 19000 && _wienerSpawnDelayTime != .7){
+        _wienerSpawnDelayTime = .7;
+    } else if(_points > 14000 && _wienerSpawnDelayTime != .8){
+        _wienerSpawnDelayTime = .8;
+    } else if(_points > 12000 && _wienerSpawnDelayTime != .9) {
+        _wienerSpawnDelayTime = .9;
+    } else if(_points > 7000 && _wienerSpawnDelayTime != 1) {
+        _wienerSpawnDelayTime = 1;
+    } else if(_points > 5000 && _wienerSpawnDelayTime != 2) {
+        _wienerSpawnDelayTime = 2;
+    } else if(_points > 2000 && _wienerSpawnDelayTime != 3) {
+        _wienerSpawnDelayTime = 3;
+    } else if(_points > 1000 && _wienerSpawnDelayTime != 4) {
+        _wienerSpawnDelayTime = 4;
+    }
 
     if(_pause){
         CCLabelTTF *label = [CCLabelTTF labelWithString:@"Pause" fontName:@"LostPet.TTF" fontSize:18.0];
