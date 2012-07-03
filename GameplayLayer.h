@@ -157,23 +157,12 @@
 @property (nonatomic, retain) CCSprite *policeArm;
 @property (nonatomic, retain) CCSprite *wiener;
 @property (nonatomic, retain) CCSprite *target;
-@property (nonatomic, retain) CCAction *walkAction;
-@property (nonatomic, retain) CCAction *walkFaceAction;
-@property (nonatomic, retain) CCAction *walkDogFaceAction;
-@property (nonatomic, retain) CCAction *idleAction;
-@property (nonatomic, retain) CCFiniteTimeAction *deathAction;
-@property (nonatomic, retain) CCFiniteTimeAction *idleFaceAction;
-@property (nonatomic, retain) CCFiniteTimeAction *shotAction;
-@property (nonatomic, retain) CCFiniteTimeAction *shootAction;
-@property (nonatomic, retain) CCFiniteTimeAction *shootFaceAction;
-@property (nonatomic, retain) CCFiniteTimeAction *armShootAction;
 @property (nonatomic, retain) CCFiniteTimeAction *plusTenAction;
 @property (nonatomic, retain) CCFiniteTimeAction *plus15Action;
 @property (nonatomic, retain) CCFiniteTimeAction *plus25Action;
 @property (nonatomic, retain) CCFiniteTimeAction *plus25BigAction;
 @property (nonatomic, retain) CCFiniteTimeAction *plus100Action;
 @property (nonatomic, retain) CCFiniteTimeAction *bonusVaporTrailAction;
-@property (nonatomic, retain) CCAction *appearAction;
 
 // returns a CCScene that contains the HelloWorldLayer as the only child
 +(CCScene *) scene;

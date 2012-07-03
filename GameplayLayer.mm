@@ -45,17 +45,6 @@
 @synthesize policeArm = _policeArm;
 @synthesize wiener = _wiener;
 @synthesize target = _target;
-@synthesize walkAction = _walkAction;
-@synthesize walkFaceAction = _walkFaceAction;
-@synthesize walkDogFaceAction = _walkDogFaceAction;
-@synthesize idleAction = _idleAction;
-@synthesize deathAction = _deathAction;
-@synthesize appearAction = _appearAction;
-@synthesize idleFaceAction = _idleFaceAction;
-@synthesize shotAction = _shotAction;
-@synthesize shootAction = _shootAction;
-@synthesize shootFaceAction = _shootFaceAction;
-@synthesize armShootAction = _armShootAction;
 @synthesize plusTenAction = _plusTenAction;
 @synthesize plus25Action = _plus25Action;
 @synthesize plus25BigAction = _plus25BigAction;
@@ -530,13 +519,13 @@
     [spriteSheet addChild:_wiener z:50];
     
     dogDeathAnim = [CCAnimation animationWithFrames:wienerDeathAnimFrames delay:.1f];
-    self.deathAction = [[CCAnimate alloc] initWithAnimation:dogDeathAnim];
+    CCAction *_deathAction = [[CCAnimate alloc] initWithAnimation:dogDeathAnim];
     
     dogAppearAnim = [CCAnimation animationWithFrames:wienerAppearAnimFrames delay:.08f];
-    self.appearAction = [CCAnimate actionWithAnimation:dogAppearAnim];
+    _appearAction = [CCAnimate actionWithAnimation:dogAppearAnim];
     
     dogShotAnim = [CCAnimation animationWithFrames:wienerShotAnimFrames delay:.1f ];
-    self.shotAction = [[CCAnimate alloc] initWithAnimation:dogShotAnim restoreOriginalFrame:NO];
+    _shotAction = [[CCAnimate alloc] initWithAnimation:dogShotAnim restoreOriginalFrame:NO];
     
     [wienerShotAnimFrames release];
     [wienerDeathAnimFrames release];
@@ -930,27 +919,27 @@
     }
 
     //create animations for walk, idle, and bobbing head
-    walkAnim = [[CCAnimation animationWithFrames:walkAnimFrames delay:framerate] retain];
-    self.walkAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:walkAnim restoreOriginalFrame:NO]] retain];
+    walkAnim = [CCAnimation animationWithFrames:walkAnimFrames delay:framerate];
+    _walkAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:walkAnim restoreOriginalFrame:NO]] retain];
     [_personLower runAction:_walkAction];
 
     idleAnim = [CCAnimation animationWithFrames:idleAnimFrames delay:.2f];
-    self.idleAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:idleAnim restoreOriginalFrame:NO]] retain];
+    _idleAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:idleAnim restoreOriginalFrame:NO]] retain];
 
-    walkFaceAnim = [[CCAnimation animationWithFrames:faceWalkAnimFrames delay:framerate] retain];
-    self.walkFaceAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:walkFaceAnim restoreOriginalFrame:NO]] retain];
+    walkFaceAnim = [CCAnimation animationWithFrames:faceWalkAnimFrames delay:framerate];
+    _walkFaceAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:walkFaceAnim restoreOriginalFrame:NO]] retain];
     [_personUpper runAction:_walkFaceAction];
 
-    walkDogFaceAnim = [[CCAnimation animationWithFrames:faceDogWalkAnimFrames delay:framerate] retain];
-    self.walkDogFaceAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:walkDogFaceAnim restoreOriginalFrame:NO]] retain];
+    walkDogFaceAnim = [CCAnimation animationWithFrames:faceDogWalkAnimFrames delay:framerate];
+    CCAction *_walkDogFaceAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:walkDogFaceAnim restoreOriginalFrame:NO]] retain];
     [_personUpperOverlay runAction:_walkDogFaceAction];
 
     if(character.intValue == 4){
-        shootAnim = [[CCAnimation animationWithFrames:shootAnimFrames delay:.08f] retain];
-        self.shootAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:shootAnim restoreOriginalFrame:NO] times:1] retain];
+        shootAnim = [CCAnimation animationWithFrames:shootAnimFrames delay:.08f];
+        _shootAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:shootAnim restoreOriginalFrame:NO] times:1] retain];
 
-        shootFaceAnim = [[CCAnimation animationWithFrames:shootFaceAnimFrames delay:.08f] retain];
-        self.shootFaceAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:shootFaceAnim restoreOriginalFrame:YES] times:1] retain];
+        shootFaceAnim = [CCAnimation animationWithFrames:shootFaceAnimFrames delay:.08f];
+        _shootFaceAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:shootFaceAnim restoreOriginalFrame:YES] times:1] retain];
 
         target.tag = S_CRSHRS;
         [spriteSheet addChild:target z:100];
@@ -1083,8 +1072,8 @@
                 [NSString stringWithFormat:@"Cop_Arm_Shoot_%d.png", i]]];
         }
 
-        armShootAnim = [[CCAnimation animationWithFrames:armShootAnimFrames delay:.08f] retain];
-        self.armShootAction = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:armShootAnim restoreOriginalFrame:YES] times:1];
+        armShootAnim = [CCAnimation animationWithFrames:armShootAnimFrames delay:.08f];
+        _armShootAction = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:armShootAnim restoreOriginalFrame:YES] times:1];
 
         bodyUserData *ud = new bodyUserData();
         ud->sprite1 = _policeArm;
@@ -1177,7 +1166,7 @@
     [personParameters addObject:xPos];
     [personParameters addObject:characterTag];
 
-    id delay = [CCDelayTime actionWithDuration:1];
+    id delay = [CCDelayTime actionWithDuration:2];
     id callBackAction = [CCCallFuncND actionWithTarget: self selector: @selector(spawnCallback:data:) data:personParameters];
     id sequence = [CCSequence actions: delay, callBackAction, nil];
     [self runAction:sequence];
@@ -1375,7 +1364,7 @@
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
               [NSString stringWithFormat:@"plusTen%d.png", i]]];
         }
-        plusTenAnim = [[CCAnimation animationWithFrames:plusTenAnimFrames delay:.04f] retain];
+        plusTenAnim = [CCAnimation animationWithFrames:plusTenAnimFrames delay:.04f];
         self.plusTenAction = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:plusTenAnim restoreOriginalFrame:NO] times:1];
         [plusTenAnimFrames release];
 
@@ -1385,7 +1374,7 @@
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
               [NSString stringWithFormat:@"PlusFifteen%d.png", i]]];
         }
-        plus15Anim = [[CCAnimation animationWithFrames:plus15AnimFrames delay:.04f] retain];
+        plus15Anim = [CCAnimation animationWithFrames:plus15AnimFrames delay:.04f];
         self.plus15Action = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:plus15Anim restoreOriginalFrame:NO] times:1];
         [plus15AnimFrames release];
         
@@ -1395,7 +1384,7 @@
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
               [NSString stringWithFormat:@"plusTwentyFive%d.png", i]]];
         }
-        plus25BigAnim = [[CCAnimation animationWithFrames:plus25BigAnimFrames delay:.04f] retain];
+        plus25BigAnim = [CCAnimation animationWithFrames:plus25BigAnimFrames delay:.04f];
         self.plus25BigAction = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:plus25BigAnim restoreOriginalFrame:NO] times:1];
         [plus25BigAnimFrames release];
         
@@ -1405,7 +1394,7 @@
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
               [NSString stringWithFormat:@"Plus_25_sm_%d.png", i]]];
         }
-        plus25Anim = [[CCAnimation animationWithFrames:plus25AnimFrames delay:.04f] retain];
+        plus25Anim = [CCAnimation animationWithFrames:plus25AnimFrames delay:.04f];
         self.plus25Action = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:plus25Anim restoreOriginalFrame:NO] times:1];
         [plus25AnimFrames release];
         
@@ -1415,7 +1404,7 @@
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
               [NSString stringWithFormat:@"Plus_100_%d.png", i]]];
         }
-        plus100Anim = [[CCAnimation animationWithFrames:plus100AnimFrames delay:.06f] retain];
+        plus100Anim = [CCAnimation animationWithFrames:plus100AnimFrames delay:.06f];
         self.plus100Action = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:plus100Anim restoreOriginalFrame:NO] times:1];
         [plus100AnimFrames release];
         
@@ -1425,7 +1414,7 @@
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
               [NSString stringWithFormat:@"CarryOff_Blast_%d.png", i]]];
         }
-        bonusVaporTrailAnim = [[CCAnimation animationWithFrames:bonusVaporTrailAnimFrames delay:.07f] retain];
+        bonusVaporTrailAnim = [CCAnimation animationWithFrames:bonusVaporTrailAnimFrames delay:.07f];
         self.bonusVaporTrailAction = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:bonusVaporTrailAnim restoreOriginalFrame:NO] times:1];
         [bonusVaporTrailAnimFrames release];
 
@@ -1581,7 +1570,7 @@
             else if (fBUd->tag == F_GROUND){
                 ud->_dog_isOnHead = false;
                 ud->hasTouchedHead = false;
-                if([ud->sprite1 numberOfRunningActions] == 0){
+                if([ud->sprite1 numberOfRunningActions] == 0    ){
                     // dog is definitely not on a head if it's touching the floor
                     CCAction *wienerDeathAction = (CCAction *)ud->altAction;
                     id delay = [CCDelayTime actionWithDuration:ud->deathDelay];
@@ -1807,7 +1796,7 @@
 
                                             armUd = (bodyUserData *)copArmBody->GetUserData();
                                             CCFiniteTimeAction *armShootAnimAction = (CCFiniteTimeAction *)armUd->altAction;
-                                            id armSeq = [CCSequence actions:delay, armShootAnimAction, nil];
+                                            //id armSeq = [CCSequence actions:delay, armShootAnimAction, nil];
                                             //[armUd->sprite1 stopAllActions];
                                             //[armUd->sprite1 runAction:armSeq];
 
@@ -2258,8 +2247,7 @@
 
     self.personLower = nil;
     self.personUpper = nil;
-    self.idleFaceAction = nil;
-    self.walkFaceAction = nil;
+    _walkFaceAction = nil;
     self.wiener = nil;
     self.target = nil;
 
@@ -2273,9 +2261,7 @@
     [movementPatterns release];
     [movementParameters release];
     [headParams release];
-    [_deathAction release];
     [_shotAction release];
-
 
     delete personDogContactListener;
 
