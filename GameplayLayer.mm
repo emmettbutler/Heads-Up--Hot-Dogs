@@ -1018,6 +1018,7 @@
         ud->altAction3 = _shootFaceAction;
         ud->overlaySprite = target;
         ud->stopTimeDelta = 80;
+        ud->stopTime = 9999; // huge number init so that cops don't freeze on enter
     }
 
     fixtureUserData *fUd1 = new fixtureUserData();
@@ -1580,7 +1581,7 @@
             else if (fBUd->tag == F_GROUND){
                 ud->_dog_isOnHead = false;
                 ud->hasTouchedHead = false;
-                if(dogBody->GetLinearVelocity().y < 1.5){
+                if([ud->sprite1 numberOfRunningActions] == 0){
                     // dog is definitely not on a head if it's touching the floor
                     CCAction *wienerDeathAction = (CCAction *)ud->altAction;
                     id delay = [CCDelayTime actionWithDuration:ud->deathDelay];
@@ -1593,7 +1594,6 @@
                     [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
                     id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:wienerParameters];
                     id sequence = [CCSequence actions: delay, sleepAction, angleAction, wienerDeathAction, destroyAction, nil];
-                    [ud->sprite1 stopAllActions];
                     [ud->sprite1 runAction:sequence];
                     CCLOG(@"Run death action");
                 }
@@ -1907,7 +1907,7 @@
                                 b2RevoluteJoint *r = (b2RevoluteJoint *)j->joint;
                                 r->SetMotorSpeed(ud->armSpeed);
                             }
-                            ud->armSpeed = 7 * cosf(.07 * time);
+                            ud->armSpeed = 8 * cosf(.07 * time);
                         } else {
                             b2JointEdge *j;
                             b2Body *aimedDog;
@@ -2162,7 +2162,6 @@
                         if(mj->GetBodyB() == body){
                             [mouseJoints removeObject:[mouseJoints objectAtIndex:i]];
                             _world->DestroyJoint(mj);
-                            break;
                         }
                     }
                     
