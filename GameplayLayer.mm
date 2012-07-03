@@ -755,8 +755,6 @@
             lowerArmAngle = 0;
             upperArmAngle = 55;
             framerate = .07f;
-            armBodyXOffset = 8;
-            armBodyYOffset = armJointYOffset = 0;
             armJointXOffset = 15;
             target = [CCSprite spriteWithSpriteFrameName:@"Target_NoDog.png"];
             for(int i = 1; i <= 8; i++){
@@ -912,27 +910,7 @@
             }
             break;
     }
-
-    //set secondary values based on the direction of the walk
-    if(xPos.intValue > winSize.width/2){
-        moveDelta = -1*moveDelta;
-        if(character.intValue == 4){
-            armBodyXOffset = -6;
-            armJointXOffset = -10;
-            lowerArmAngle = 105;
-            upperArmAngle = 175;
-            _policeArm.flipX = YES;
-            _policeArm.flipY = YES;
-        }
-    }
-    else {
-        _personLower.flipX = YES;
-        _personUpper.flipX = YES;
-        _personUpperOverlay.flipX = YES;
-        if(character.intValue == 4){
-            _policeArm.flipX = YES;
-        }
-    }
+    
     if(floorBit.intValue == 1){
         zIndex = 42;
         yPos = 76;
@@ -979,15 +957,40 @@
     }
 
     //put the sprites in place
-    _personLower.position = ccp(xPos.intValue, 123);
-    _personUpper.position = ccp(xPos.intValue, 123);
-    _personUpperOverlay.position = ccp(xPos.intValue, 123);
+    _personLower.position = ccp(xPos.intValue, yPos);
+    _personUpper.position = ccp(xPos.intValue, yPos);
+    _personUpperOverlay.position = ccp(xPos.intValue, yPos);
     [spriteSheet addChild:_personLower z:zIndex];
     [spriteSheet addChild:_personUpper z:zIndex+2];
     [spriteSheet addChild:_personUpperOverlay z:zIndex+2];
     if(character.intValue == 4){
-        _policeArm.position = ccp(xPos.intValue, 123);
+        _policeArm.position = ccp(xPos.intValue, yPos);
         [spriteSheet addChild:_policeArm z:zIndex-2];
+    }
+    
+    //set secondary values based on the direction of the walk
+    if(xPos.intValue > winSize.width/2){
+        moveDelta = -1*moveDelta;
+        if(character.intValue == 4){
+            lowerArmAngle = 132;
+            upperArmAngle = 175;
+            armBodyXOffset = 8;
+            armBodyYOffset = 42;
+            armJointYOffset = 40;
+            _policeArm.flipX = YES;
+            _policeArm.flipY = YES;
+        }
+    }
+    else {
+        _personLower.flipX = YES;
+        _personUpper.flipX = YES;
+        _personUpperOverlay.flipX = YES;
+        if(character.intValue == 4){
+            armBodyXOffset = 8;
+            armBodyYOffset = 39;
+            armJointYOffset = 44;
+            _policeArm.flipX = YES;
+        }
     }
 
     //set up userdata structs
@@ -1088,8 +1091,8 @@
 
         b2BodyDef armBodyDef;
         armBodyDef.type = b2_dynamicBody;
-        armBodyDef.position.Set((_personLower.position.x+(_policeArm.contentSize.width/2)+armBodyXOffset)/PTM_RATIO,
-                                (_personLower.position.y+(armBodyYOffset))/PTM_RATIO);
+        armBodyDef.position.Set(((_personBody->GetPosition().x*PTM_RATIO)+(_policeArm.contentSize.width/2)+armBodyXOffset)/PTM_RATIO,
+                                ((_personBody->GetPosition().y*PTM_RATIO)+(armBodyYOffset))/PTM_RATIO);
         armBodyDef.userData = ud;
         _policeArmBody = _world->CreateBody(&armBodyDef);
 
@@ -1102,13 +1105,13 @@
         fUd->tag = F_COPARM;
         armShapeDef.userData = fUd;
         armShapeDef.filter.maskBits = 0x0000;
-        _policeArmFixture = _policeArmBody->CreateFixture(&armShapeDef);
+        _policeArmBody->CreateFixture(&armShapeDef);
 
         //"shoulder" joint
         b2RevoluteJointDef armJointDef;
         armJointDef.Initialize(_personBody, _policeArmBody,
-                                b2Vec2((_personLower.position.x+(armJointXOffset))/PTM_RATIO,
-                                        (_personLower.position.y+(armJointYOffset))/PTM_RATIO));
+                                b2Vec2(_personBody->GetPosition().x,
+                                        ((_personBody->GetPosition().y*PTM_RATIO)+armJointYOffset)/PTM_RATIO));
         armJointDef.enableMotor = true;
         armJointDef.enableLimit = true;
         armJointDef.motorSpeed = 0.0f;
@@ -1577,21 +1580,23 @@
             else if (fBUd->tag == F_GROUND){
                 ud->_dog_isOnHead = false;
                 ud->hasTouchedHead = false;
-                // dog is definitely not on a head if it's touching the floor
-                CCAction *wienerDeathAction = (CCAction *)ud->altAction;
-                id delay = [CCDelayTime actionWithDuration:ud->deathDelay];
-                wienerParameters = [[NSMutableArray alloc] initWithCapacity:2];
-                [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
-                [wienerParameters addObject:[NSNumber numberWithInt:0]];
-                id sleepAction = [CCCallFuncND actionWithTarget:self selector:@selector(setAwake:data:) data:wienerParameters];
-                id angleAction = [CCCallFuncND actionWithTarget:self selector:@selector(setRotation:data:) data:wienerParameters];
-                wienerParameters = [[NSMutableArray alloc] initWithCapacity:1];
-                [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
-                id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:wienerParameters];
-                id sequence = [CCSequence actions: delay, sleepAction, angleAction, wienerDeathAction, destroyAction, nil];
-                [ud->sprite1 stopAllActions];
-                [ud->sprite1 runAction:sequence];
-                CCLOG(@"Run death action");
+                if(dogBody->GetLinearVelocity().y < 1.5){
+                    // dog is definitely not on a head if it's touching the floor
+                    CCAction *wienerDeathAction = (CCAction *)ud->altAction;
+                    id delay = [CCDelayTime actionWithDuration:ud->deathDelay];
+                    wienerParameters = [[NSMutableArray alloc] initWithCapacity:2];
+                    [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
+                    [wienerParameters addObject:[NSNumber numberWithInt:0]];
+                    id sleepAction = [CCCallFuncND actionWithTarget:self selector:@selector(setAwake:data:) data:wienerParameters];
+                    id angleAction = [CCCallFuncND actionWithTarget:self selector:@selector(setRotation:data:) data:wienerParameters];
+                    wienerParameters = [[NSMutableArray alloc] initWithCapacity:1];
+                    [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
+                    id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:wienerParameters];
+                    id sequence = [CCSequence actions: delay, sleepAction, angleAction, wienerDeathAction, destroyAction, nil];
+                    [ud->sprite1 stopAllActions];
+                    [ud->sprite1 runAction:sequence];
+                    CCLOG(@"Run death action");
+                }
             }
             else if (fBUd->tag == F_WALLS){
                 CCLOG(@"Dog/wall collision - _dog_isOnHead: %d - dog is awake: %d", ud->_dog_isOnHead, dogBody->IsAwake());
@@ -1792,42 +1797,11 @@
 
                                         if(copBody && copBody->GetUserData() && copArmBody && copArmBody->GetUserData()){
                                             copUd = (bodyUserData *)copBody->GetUserData();
-                                            copUd->stopTime = time;
-                                            copUd->targetAngle = -1;
-
-                                            NSMutableArray *walkParameters = [[NSMutableArray alloc] initWithCapacity:2];
                                             NSValue *cBody = [NSValue valueWithPointer:copBody];
-                                            [walkParameters addObject:cBody];
-                                            [walkParameters addObject:[NSNumber numberWithInteger:0]];
-                                            [self setAwake:self data:walkParameters];
 
-                                            NSMutableArray *aimParameters = [[NSMutableArray alloc] initWithCapacity:2];
                                             NSValue *dBody = [NSValue valueWithPointer:dogBody];
-                                            [aimParameters addObject:cBody];
-                                            [aimParameters addObject:dBody];
 
-                                            NSMutableArray *unlockParameters = [[NSMutableArray alloc] initWithCapacity:1];
-                                            [unlockParameters addObject:(NSNumber *)[NSNumber numberWithInt:0]];
-                                            id unlockAction = [CCCallFuncND actionWithTarget:self selector:@selector(setShootLock:data:) data:unlockParameters];
-
-                                            aimParameters = [[NSMutableArray alloc] initWithCapacity:1];
-                                            [aimParameters addObject:cBody];
-                                            id copFlipAimingAction = [CCCallFuncND actionWithTarget:self selector:@selector(copFlipAim:data:) data:aimParameters];
-
-                                            //[self copFlipAim:self data:aimParameters];
-                                            
                                             CCDelayTime *delay = [CCDelayTime actionWithDuration:ud->stopTimeDelta];
-
-                                            CCFiniteTimeAction *faceShootAction = (CCFiniteTimeAction *)copUd->altAction3;
-                                            NSMutableArray *walkFaceParameters = [[NSMutableArray alloc] initWithCapacity:2];
-                                            [walkFaceParameters addObject:[NSValue valueWithPointer:(CCSprite *)copUd->sprite2]];
-                                            [walkFaceParameters addObject:[NSValue valueWithPointer:(CCAction *)copUd->altAnimation]];
-                                            id faceWalkAction = [CCCallFuncND actionWithTarget:self selector:@selector(spriteRunAnim:data:) data:walkFaceParameters];
-                                            [copUd->sprite2 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Cop_Head_Aiming_1.png"]]];
-
-                                            id copHeadSeq = [CCSequence actions:delay, faceShootAction, faceWalkAction, nil];
-                                            //[copUd->sprite2 stopAllActions];
-                                            //[copUd->sprite2 runAction:copHeadSeq];
 
                                             [copUd->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Cop_Idle.png"]]];
 
@@ -1933,7 +1907,7 @@
                                 b2RevoluteJoint *r = (b2RevoluteJoint *)j->joint;
                                 r->SetMotorSpeed(ud->armSpeed);
                             }
-                            ud->armSpeed = 8 * cosf(.07 * time);
+                            ud->armSpeed = 7 * cosf(.07 * time);
                         } else {
                             b2JointEdge *j;
                             b2Body *aimedDog;
