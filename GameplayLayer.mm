@@ -28,13 +28,11 @@
 #define SPECIAL_DOG_PROBABILITY .2
 #define DROPPED_MAX 49
 #define WIENER_SPAWN_START 5
-#define MAX_DOGS_ONSCREEN 6
 #else
 #define SPAWN_LIMIT_DECREMENT_DELAY 2
 #define SPECIAL_DOG_PROBABILITY .02
 #define DROPPED_MAX 5
 #define WIENER_SPAWN_START 5
-#define MAX_DOGS_ONSCREEN 4
 #endif
 
 @implementation GameplayLayer
@@ -51,6 +49,9 @@
 @synthesize plus15Action = _plus15Action;
 @synthesize plus100Action = _plus100Action;
 @synthesize bonusVaporTrailAction = _bonusVaporTrailAction;
+@synthesize bonusPlus100Action = _bonusPlus100Action;
+@synthesize bonusPlus1000Action = _bonusPlus1000Action;
+@synthesize bonusPlus250Action = _bonusPlus250Action;
 
 +(CCScene *) scene {
     CCScene *scene = [CCScene node];
@@ -216,6 +217,9 @@
         case 25: seq = [CCSequence actions:_plus25BigAction, removeAction, nil];
             sound = [NSString stringWithString:@"100pts.wav"];
             break;
+        case 100: seq = [CCSequence actions:_bonusPlus100Action, removeAction, nil];
+            sound = [NSString stringWithString:@"100pts.wav"];
+            break;
     }
 #ifdef DEBUG
 #else
@@ -227,6 +231,7 @@
 -(void)plusTwentyFive:(id)sender data:(void*)params {
     NSNumber *xPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:0];
     NSNumber *yPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:1];
+    NSNumber *spec = (NSNumber *)[(NSMutableArray *) params objectAtIndex:2];
 
     CCSprite *twentyFive = [CCSprite spriteWithSpriteFrameName:@"Plus_25_sm_1.png"];
     twentyFive.position = ccp(xPos.intValue, yPos.intValue);
@@ -236,7 +241,11 @@
     [removeParams addObject:[NSValue valueWithPointer:twentyFive]];
     CCAction *removeAction = [CCCallFuncND actionWithTarget:self selector:@selector(removeSprite:data:) data:removeParams];
 
-    id seq = [CCSequence actions:_plus25Action, removeAction, nil];
+    id seq;
+    if(spec.intValue == 1)
+        seq = [CCSequence actions:_bonusPlus250Action, removeAction, nil];
+    else if(spec.intValue == 0)
+        seq = [CCSequence actions:_plus25Action, removeAction, nil];
     [twentyFive runAction:seq];
 }
 
@@ -244,6 +253,7 @@
     CGSize winSize = [[CCDirector sharedDirector] winSize];
     NSNumber *xPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:0];
     NSNumber *yPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:1];
+    NSNumber *spec = (NSNumber *)[(NSMutableArray *) params objectAtIndex:2]; // 1 means a special dog
     
     CCSprite *oneHundred = [CCSprite spriteWithSpriteFrameName:@"Plus_100_1.png"];
     oneHundred.position = ccp(xPos.intValue, yPos.intValue);
@@ -263,7 +273,11 @@
 #else
     [[SimpleAudioEngine sharedEngine] playEffect:@"100pts.wav"];
 #endif
-    id seq = [CCSequence actions:_plus100Action, removeAction, nil];
+    id seq;
+    if (spec.intValue == 1)
+        seq = [CCSequence actions:_bonusPlus1000Action, removeAction, nil];
+    else
+        seq = [CCSequence actions:_plus100Action, removeAction, nil];
     [oneHundred runAction:seq];
     
     NSMutableArray *removeParams2 = [[NSMutableArray alloc] initWithCapacity:1];
@@ -440,7 +454,7 @@
 }
 
 -(void)putDog:(id)sender data:(void*)params {
-    int floor, f;
+    int floor, f, tag;
     float deathDelay;
     NSString *fallSprite, *riseSprite, *mainSprite, *grabSprite;
     CGPoint location = [(NSValue *)[(NSMutableArray *) params objectAtIndex: 0] CGPointValue];
@@ -457,6 +471,7 @@
             mainSprite = [NSString stringWithString:@"Steak.png"];
             grabSprite = [NSString stringWithString:@"Steak_Grabbed.png"];
             deathDelay = .1;
+            tag = S_SPCDOG;
             for(int i = 0; i < 1; i++){
                 [wienerDeathAnimFrames addObject:
                  [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -487,6 +502,7 @@
             mainSprite = [NSString stringWithString:@"dog54x12.png"];
             grabSprite = [NSString stringWithString:@"Dog_Grabbed.png"];
             deathDelay = 3.0;
+            tag = S_HOTDOG;
             for(int i = 0; i < 8; i++){
                 [wienerDeathAnimFrames addObject:
                  [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -515,7 +531,7 @@
     //add base sprite to scene
     self.wiener = [CCSprite spriteWithSpriteFrameName:mainSprite];
     _wiener.position = ccp(location.x, location.y);
-    _wiener.tag = S_HOTDOG;
+    _wiener.tag = tag;
     [spriteSheet addChild:_wiener z:50];
     
     dogDeathAnim = [CCAnimation animationWithFrames:wienerDeathAnimFrames delay:.1f];
@@ -1117,10 +1133,11 @@
     CCLOG(@"_wienerSpawnDelayTime: %f", _wienerSpawnDelayTime);
     CGSize winSize = [CCDirector sharedDirector].winSize;
     NSNumber *dogType = [NSNumber numberWithInt:arc4random() % (int)(1/SPECIAL_DOG_PROBABILITY)];
+    //NSNumber *dogType = [NSNumber numberWithInt:2];
     
     CCLOG(@"Dogs onscreen: %d", _dogsOnscreen);
     
-    if(_dogsOnscreen <= MAX_DOGS_ONSCREEN){
+    if(_dogsOnscreen <= _maxDogsOnScreen){
     
         NSNumber *thisType = (NSNumber *)[(NSMutableArray *) params objectAtIndex:1];
     
@@ -1213,6 +1230,7 @@
         _id_counter = 0;
         _dogsOnscreen = 0;
         _dogsSaved = 0;
+        _maxDogsOnScreen = 4;
         _shootLock = NO;
         _droppedSpacing = 200;
         _droppedCount = 0;
@@ -1417,6 +1435,36 @@
         bonusVaporTrailAnim = [CCAnimation animationWithFrames:bonusVaporTrailAnimFrames delay:.07f];
         self.bonusVaporTrailAction = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:bonusVaporTrailAnim restoreOriginalFrame:NO] times:1];
         [bonusVaporTrailAnimFrames release];
+        
+        NSMutableArray *bonusPlus250AnimFrames = [[NSMutableArray alloc] initWithCapacity:11];
+        for(int i = 1; i <= 11; i++){
+            [bonusPlus250AnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"Bonus_Plus250_sm_%d.png", i]]];
+        }
+        bonusPlus250Anim = [CCAnimation animationWithFrames:bonusPlus250AnimFrames delay:.04f];
+        self.bonusPlus250Action = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:bonusPlus250Anim restoreOriginalFrame:NO] times:1];
+        [bonusPlus250AnimFrames release];
+        
+        NSMutableArray *bonusPlus100AnimFrames = [[NSMutableArray alloc] initWithCapacity:11];
+        for(int i = 1; i <= 11; i++){
+            [bonusPlus100AnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"Bonus_Plus_Hundred_%d.png", i]]];
+        }
+        bonusPlus100Anim = [CCAnimation animationWithFrames:bonusPlus100AnimFrames delay:.07f];
+        self.bonusPlus100Action = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:bonusPlus100Anim restoreOriginalFrame:NO] times:1];
+        [bonusPlus100AnimFrames release];
+        
+        NSMutableArray *bonusPlus1000AnimFrames = [[NSMutableArray alloc] initWithCapacity:13];
+        for(int i = 1; i <= 13; i++){
+            [bonusPlus1000AnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"Bonus_Plus_1000_%d.png", i]]];
+        }
+        bonusPlus1000Anim = [CCAnimation animationWithFrames:bonusPlus1000AnimFrames delay:.07f];
+        self.bonusPlus1000Action = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:bonusPlus1000Anim restoreOriginalFrame:NO] times:1];
+        [bonusPlus1000AnimFrames release];
 
         [TestFlight passCheckpoint:@"Game Started"];
 
@@ -1448,14 +1496,17 @@
 
     CGSize winSize = [CCDirector sharedDirector].winSize;
     
-    if(_points > 19000 && _wienerSpawnDelayTime != .7){
+    if(_points > 19000 && _wienerSpawnDelayTime != .6){
+        _wienerSpawnDelayTime = .6;
+        _maxDogsOnScreen = 8;
+    } else if(_points > 14000 && _wienerSpawnDelayTime != .7){
+        _maxDogsOnScreen = 7;
         _wienerSpawnDelayTime = .7;
-    } else if(_points > 14000 && _wienerSpawnDelayTime != .8){
-        _wienerSpawnDelayTime = .8;
     } else if(_points > 12000 && _wienerSpawnDelayTime != .9) {
         _wienerSpawnDelayTime = .9;
     } else if(_points > 7000 && _wienerSpawnDelayTime != 1) {
         _wienerSpawnDelayTime = 1;
+        _maxDogsOnScreen = 5;
     } else if(_points > 5000 && _wienerSpawnDelayTime != 2) {
         _wienerSpawnDelayTime = 2;
     } else if(_points > 2000 && _wienerSpawnDelayTime != 3) {
@@ -1556,8 +1607,9 @@
                     [plusPointsParams addObject:[NSNumber numberWithInt:pBody->GetPosition().x*PTM_RATIO]];
                     [plusPointsParams addObject:[NSNumber numberWithInt:(pBody->GetPosition().y+4.7)*PTM_RATIO]];
                     int p;
-                    if(ud->sprite1.tag == S_SPCDOG)
+                    if(ud->sprite1.tag == S_SPCDOG){
                         p = 100;
+                    }
                     else {
                         switch(pUd->sprite1.tag){
                             case S_CRPUNK: p = 10; break;
@@ -1634,19 +1686,23 @@
                && ud->hasLeftScreen == false){
                 ud->hasLeftScreen = true;
                 _points += ud->dogsOnHead * 100;
+                _points += ud->spcDogsOnHead * 1000;
                 if(ud->dogsOnHead != 0){
                     CCSprite *oneHundred = [CCSprite spriteWithSpriteFrameName:@"Plus_100_1.png"];
-                    NSMutableArray *plus100Params = [[NSMutableArray alloc] initWithCapacity:2];
+                    NSMutableArray *plus100Params = [[NSMutableArray alloc] initWithCapacity:3];
                     if(ud->sprite1.flipX){
                         [plus100Params addObject:[NSNumber numberWithInt:winSize.width-(oneHundred.contentSize.width/2)-10]];
                         [plus100Params addObject:[NSNumber numberWithInt:(b->GetPosition().y+4.7)*PTM_RATIO]];
-                        [self runAction:[CCCallFuncND actionWithTarget:self selector:@selector(plusOneHundred:data:) data:plus100Params]];
                     }
                     else{
                         [plus100Params addObject:[NSNumber numberWithInt:(oneHundred.contentSize.width/2)]];
                         [plus100Params addObject:[NSNumber numberWithInt:(b->GetPosition().y+4.7)*PTM_RATIO]];
-                        [self runAction:[CCCallFuncND actionWithTarget:self selector:@selector(plusOneHundred:data:) data:plus100Params]];
                     }
+                    if(ud->spcDogsOnHead > 0)
+                        [plus100Params addObject:[NSNumber numberWithInt:1]];
+                    else
+                        [plus100Params addObject:[NSNumber numberWithInt:0]];
+                    [self runAction:[CCCallFuncND actionWithTarget:self selector:@selector(plusOneHundred:data:) data:plus100Params]];
                 }
             }
             
@@ -1663,7 +1719,7 @@
                     _world->DestroyJoint(b->GetJointList()->joint);
                 }
                 _world->DestroyBody(b);
-                if(ud->sprite1.tag == S_HOTDOG){
+                if(ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG){
                     _dogsSaved++;
                 }
                 CCLOG(@"Body removed - tag %d", ud->sprite1.tag);
@@ -1706,8 +1762,9 @@
                 ud->angryFace.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
             }
             if(ud->sprite1 != NULL){
-                if(ud->sprite1.tag == S_HOTDOG){
-                    _dogsOnscreen++;
+                if(ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG){
+                    if(ud->sprite1.position.x > 0 && ud->sprite1.position.x < winSize.width)
+                        _dogsOnscreen++;
                     //things for hot dogs
                     if(b->IsAwake()){
                         if(!ud->grabbed){
@@ -1833,6 +1890,7 @@
                 }
                 else if(ud->sprite1.tag >= S_BUSMAN && ud->sprite1.tag <= S_TOPPSN){
                     ud->dogsOnHead = 0;
+                    ud->spcDogsOnHead = 0;
                     ud->timeWalking++;
                     // move person across screen at the appropriate speed
                     if((ud->timeWalking <= ud->stopTime || ud->timeWalking >= ud->stopTime + ud->stopTimeDelta) && !ud->aiming){
@@ -1859,11 +1917,13 @@
                                 if(body->GetUserData() && body->GetUserData() != (void*)100){
                                     bodyUserData *dogUd = (bodyUserData *)body->GetUserData();
                                     if(!dogUd->sprite1) continue;
-                                    if(dogUd->sprite1.tag == S_HOTDOG){
+                                    if(dogUd->sprite1.tag == S_HOTDOG || dogUd->sprite1.tag == S_SPCDOG){
                                         b2Vec2 dogLocation = b2Vec2(body->GetPosition().x, body->GetPosition().y);
                                         if(fixture->TestPoint(dogLocation) && dogUd->hasTouchedHead && !dogUd->grabbed &&
                                            dogUd->collideFilter == ud->collideFilter){
                                             ud->dogsOnHead++;
+                                            if(dogUd->sprite1.tag == S_SPCDOG)
+                                                ud->spcDogsOnHead++;
                                             // if the dog is within the head sensor, then it is on a head
                                             dogUd->_dog_isOnHead = true;
                                         }
@@ -1881,9 +1941,13 @@
                     }
                     if(!(time % 45) && ud->dogsOnHead != 0){
                         _points += ud->dogsOnHead * 25;
-                        NSMutableArray *plus25Params = [[NSMutableArray alloc] initWithCapacity:2];
+                        NSMutableArray *plus25Params = [[NSMutableArray alloc] initWithCapacity:3];
                         [plus25Params addObject:[NSNumber numberWithInt:b->GetPosition().x*PTM_RATIO]];
                         [plus25Params addObject:[NSNumber numberWithInt:(b->GetPosition().y+4.7)*PTM_RATIO]];
+                        if(ud->spcDogsOnHead > 0)
+                            [plus25Params addObject:[NSNumber numberWithInt:1]];
+                        else
+                            [plus25Params addObject:[NSNumber numberWithInt:0]];
                         [self runAction:[CCCallFuncND actionWithTarget:self selector:@selector(plusTwentyFive:data:) data:plus25Params]];
                     }
                     if(ud->sprite1.tag == S_POLICE){
@@ -1896,7 +1960,7 @@
                             for(b2Body* aimedBody = _world->GetBodyList(); aimedBody; aimedBody = aimedBody->GetNext()){
                                 if(aimedBody->GetUserData() && aimedBody->GetUserData() != (void*)100){
                                     bodyUserData *aimedUd = (bodyUserData *)aimedBody->GetUserData();
-                                    if(aimedUd->sprite1.tag == S_HOTDOG && aimedUd->aimedAt == true){
+                                    if((aimedUd->sprite1.tag == S_HOTDOG || aimedUd->sprite1.tag == S_SPCDOG) && aimedUd->aimedAt == true){
                                         aimedUd->aimedAt = false;
                                     }
                                 }
@@ -1914,7 +1978,7 @@
                             for(b2Body* aimedBody = _world->GetBodyList(); aimedBody; aimedBody = aimedBody->GetNext()){
                                 if(aimedBody->GetUserData() && aimedBody->GetUserData() != (void*)100){
                                     bodyUserData *aimedUd = (bodyUserData *)aimedBody->GetUserData();
-                                    if(aimedUd->sprite1.tag == S_HOTDOG && aimedUd->aimedAt == true){
+                                    if((aimedUd->sprite1.tag == S_HOTDOG || aimedUd->sprite1.tag == S_SPCDOG) && aimedUd->aimedAt == true){
                                         // TODO - this only works for forward-facing cops, do the math and make it work for both
                                         aimedDog = aimedBody;
                                         dx = abs(b->GetPosition().x - aimedDog->GetPosition().x);
@@ -2011,7 +2075,7 @@
             for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
                 if (body->GetUserData() != NULL && body->GetUserData() != (void*)100) {
                     bodyUserData *ud = (bodyUserData *)body->GetUserData();
-                    if(ud->sprite1.tag == S_HOTDOG){ // loop over all hot dogs
+                    if(ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG){ // loop over all hot dogs
                         for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
                             // if the dog is not already grabbed and one of the touches is on it, make the joint
                             if (!ud->grabbed && ((fixture->TestPoint(locationWorld1) && !touched1) || (fixture->TestPoint(locationWorld2) && !touched2))){
@@ -2091,7 +2155,7 @@
         if (body->GetUserData() != NULL && body->GetUserData() != (void*)100) {
             bodyUserData *ud = (bodyUserData *)body->GetUserData();
             CCSprite *sprite = ud->sprite1;
-            if(ud->sprite1.tag == S_HOTDOG && ud->grabbed){
+            if((ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG) && ud->grabbed){
                 for(int i = 0; i < [mouseJoints count]; i++){
                     b2MouseJoint *mj = (b2MouseJoint *)[(NSValue *)[mouseJoints objectAtIndex:i] pointerValue];
                     mouseJointUserData *jUd = (mouseJointUserData *)mj->GetUserData();
@@ -2145,7 +2209,7 @@
     for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
         if (body->GetUserData() != NULL && body->GetUserData() != (void*)100) {
             bodyUserData *ud = (bodyUserData *)body->GetUserData();
-            if(ud->sprite1.tag == S_HOTDOG && ud->grabbed){
+            if((ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG) && ud->grabbed){
                 // if there is not a finger on the dog
                 b2JointEdge *j = body->GetJointList();
                 b2Vec2 target;
@@ -2204,7 +2268,7 @@
     for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
         if (body->GetUserData() != NULL && body->GetUserData() != (void*)100) {
             bodyUserData *ud = (bodyUserData *)body->GetUserData();
-            if(ud->sprite1.tag == S_HOTDOG && ud->grabbed){
+            if((ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG) && ud->grabbed){
                 // if there is not a finger on the dog
                 b2JointEdge *j = body->GetJointList();
                 b2Vec2 target;

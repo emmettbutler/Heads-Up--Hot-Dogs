@@ -26,9 +26,9 @@
     CCSprite *_wiener, *_personLower, *_personUpper, *_personUpperOverlay, *_target, *_pauseButton, *background;
     CCAction *_walkAction, *_walkFaceAction;
     CCFiniteTimeAction *_idleAction, *_appearAction, *_hitAction, *_shotAction, *_shootAction, *_armShootAction, *_shootFaceAction, *_plusTenAction, *_plus25Action, *_bonusVaporTrailAction;
-    CCFiniteTimeAction *_plus100Action, *_plus15Action, *_plus25BigAction;
+    CCFiniteTimeAction *_plus100Action, *_plus15Action, *_plus25BigAction, *_bonusPlus250Action, *_bonusPlus1000Action, *_bonusPlus100Action;
     CCAnimation *walkAnim, *idleAnim, *hitAnim, *dogDeathAnim, *dogAppearAnim, *walkFaceAnim, *walkDogFaceAnim;
-    CCAnimation *dogShotAnim, *shootAnim, *armShootAnim, *shootFaceAnim, *plusTenAnim, *plus25Anim, *plus100Anim, *plus15Anim, *plus25BigAnim, *bonusVaporTrailAnim;
+    CCAnimation *dogShotAnim, *shootAnim, *armShootAnim, *shootFaceAnim, *plusTenAnim, *plus25Anim, *plus100Anim, *plus15Anim, *plus25BigAnim, *bonusVaporTrailAnim, *bonusPlus250Anim, *bonusPlus1000Anim, *bonusPlus100Anim;
     CCSpriteBatchNode *spriteSheet;
     CCLabelTTF *scoreLabel, *droppedLabel;
     b2Vec2 policeRayPoint1, policeRayPoint2;
@@ -38,7 +38,7 @@
     NSMutableArray *personParameters, *wakeParameters, *movementPatterns, *movementParameters, *_touchLocations, *dogIcons, *allTouchHashes;
     NSString *scoreText, *droppedText;
     int _points, _droppedCount, _spawnLimiter, time, _curPersonMaskBits, _droppedSpacing, _lastTouchTime, _firstDeathTime, lowerArmAngle, upperArmAngle;
-    int _peopleGrumped, _dogsSaved, _id_counter, _numTouches, _dogsOnscreen;
+    int _peopleGrumped, _dogsSaved, _id_counter, _numTouches, _dogsOnscreen, _maxDogsOnScreen;
     float _wienerSpawnDelayTime, _currentRayAngle;
     BOOL _moving, _touchedDog, _rayTouchingDog, _pause, _shootLock, _dogHasHitGround, _dogHasDied, _policeOnScreen;
     NSString *currentAnimation;
@@ -80,6 +80,7 @@
         BOOL hasLeftScreen;
         double targetAngle;
         int dogsOnHead;
+        int spcDogsOnHead;
         int unique_id;
         int collideFilter;
         BOOL hasTouchedHead;
@@ -163,6 +164,9 @@
 @property (nonatomic, retain) CCFiniteTimeAction *plus25BigAction;
 @property (nonatomic, retain) CCFiniteTimeAction *plus100Action;
 @property (nonatomic, retain) CCFiniteTimeAction *bonusVaporTrailAction;
+@property (nonatomic, retain) CCFiniteTimeAction *bonusPlus100Action;
+@property (nonatomic, retain) CCFiniteTimeAction *bonusPlus250Action;
+@property (nonatomic, retain) CCFiniteTimeAction *bonusPlus1000Action;
 
 // returns a CCScene that contains the HelloWorldLayer as the only child
 +(CCScene *) scene;
