@@ -41,7 +41,7 @@
     int _peopleGrumped, _dogsSaved, _id_counter, _numTouches, _dogsOnscreen, _maxDogsOnScreen;
     float _wienerSpawnDelayTime, _currentRayAngle;
     BOOL _moving, _touchedDog, _rayTouchingDog, _pause, _shootLock, _dogHasHitGround, _dogHasDied, _policeOnScreen;
-    NSString *currentAnimation;
+    NSString *currentAnimation, *slug;
     CGRect _pauseButtonRect;
     NSUserDefaults *standardUserDefaults;
     NSInteger _overallTime;
@@ -177,6 +177,7 @@
 @property (nonatomic, retain) CCFiniteTimeAction *bonusPlus1000Action;
 
 // returns a CCScene that contains the HelloWorldLayer as the only child
-+(CCScene *) scene;
++(CCScene *) sceneWithData:(void *)data;
++(id) initWithSlug:(NSString *)levelSlug;
 
 @end

@@ -11,6 +11,7 @@
 #import "TutorialLayer.h"
 #import "OptionsLayer.h"
 #import "TestFlight.h"
+#import "LevelSelectLayer.h"
 
 #define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 
@@ -125,8 +126,9 @@
 - (void)switchSceneStart{
     NSInteger introDone = [standardUserDefaults integerForKey:@"introDone"];
     CCLOG(@"introDone: %d", introDone);
+    introDone = 1;
     if(introDone == 1)
-        [[CCDirector sharedDirector] replaceScene:[GameplayLayer scene]];
+        [[CCDirector sharedDirector] replaceScene:[LevelSelectLayer scene]];
     else if(introDone == 0){
         [[CCDirector sharedDirector] replaceScene:[TutorialLayer scene]];
     }

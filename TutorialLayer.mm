@@ -381,7 +381,9 @@
     if(count > 5){
         [standardUserDefaults setInteger:1 forKey:@"introDone"];
         [standardUserDefaults synchronize];
-        [[CCDirector sharedDirector] replaceScene:[GameplayLayer scene]];
+        NSMutableArray *params = [[NSMutableArray alloc] initWithCapacity:1];
+        [params addObject:[NSString stringWithString:@"phlly"]];
+        [[CCDirector sharedDirector] replaceScene:[GameplayLayer sceneWithData:params]];
         return;
     }
     
@@ -402,7 +404,9 @@
 }
 
 - (void)switchSceneStart{
-    [[CCDirector sharedDirector] replaceScene:[GameplayLayer scene]];
+    NSMutableArray *params = [[NSMutableArray alloc] initWithCapacity:1];
+    [params addObject:[NSString stringWithString:@"phily"]];
+    [[CCDirector sharedDirector] replaceScene:[GameplayLayer sceneWithData:params]];
 }
 
 - (void)switchSceneTitleScreen{

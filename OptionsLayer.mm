@@ -69,7 +69,9 @@
 }
 
 - (void)switchSceneStart{
-    [[CCDirector sharedDirector] replaceScene:[GameplayLayer scene]];
+    NSMutableArray *params = [[NSMutableArray alloc] initWithCapacity:1];
+    [params addObject:[NSString stringWithString:@"philly"]];
+    [[CCDirector sharedDirector] replaceScene:[GameplayLayer sceneWithData:params]];
 }
 
 - (void)switchSceneTitleScreen{

@@ -26,10 +26,12 @@
     NSInteger *timePlayed = (NSInteger *)[(NSValue *)[(NSMutableArray *) data objectAtIndex:1] pointerValue]; 
     NSInteger *peopleGrumped = (NSInteger *)[(NSValue *)[(NSMutableArray *) data objectAtIndex:2] pointerValue]; 
     NSInteger *dogsSaved = (NSInteger *)[(NSValue *)[(NSMutableArray *) data objectAtIndex:3] pointerValue]; 
+    NSString *slug = (NSString *)[(NSMutableArray *) data objectAtIndex:4]; 
     layer->_score = (int)score;
     layer->_timePlayed = (int)timePlayed;
     layer->_peopleGrumped = (int)peopleGrumped;
     layer->_dogsSaved = (int)dogsSaved;
+    layer->slug = slug;
     CCLOG(@"In sceneWithData: score = %d, time = %d, peopleGrumped = %d, dogsSaved = %d", layer->_score, layer->_timePlayed, layer->_peopleGrumped, layer->_dogsSaved);
     
 	[scene addChild:layer];
@@ -162,7 +164,9 @@
 }
 
 - (void)switchSceneRestart{
-    [[CCDirector sharedDirector] replaceScene:[GameplayLayer scene]];
+    NSMutableArray *params = [[NSMutableArray alloc] initWithCapacity:1];
+    [params addObject:slug];
+    [[CCDirector sharedDirector] replaceScene:[GameplayLayer sceneWithData:params]];
 }
 
 - (void)switchSceneQuit{

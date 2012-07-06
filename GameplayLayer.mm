@@ -54,9 +54,13 @@
 @synthesize bonusPlus1000Action = _bonusPlus1000Action;
 @synthesize bonusPlus250Action = _bonusPlus250Action;
 
-+(CCScene *) scene {
++(CCScene *) sceneWithData:(void *)data {
+    
     CCScene *scene = [CCScene node];
-    GameplayLayer *layer = [GameplayLayer node];
+    NSString *levelSlug = (NSString *)[(NSMutableArray *) data objectAtIndex:0];
+    CCLOG(@"sceneWithData slug: %@", levelSlug);
+    GameplayLayer *layer = [[GameplayLayer alloc] initWithSlug:levelSlug];
+    layer->slug = levelSlug;
     [scene addChild: layer];
     return scene;
 }
@@ -70,11 +74,12 @@
 
 - (void)loseScene{
     [TestFlight passCheckpoint:@"Game Over"];
-    NSMutableArray *loseParams = [[NSMutableArray alloc] initWithCapacity:2];
+    NSMutableArray *loseParams = [[NSMutableArray alloc] initWithCapacity:5];
     [loseParams addObject:[NSNumber numberWithInteger:_points]];
     [loseParams addObject:[NSNumber numberWithInteger:time]];
     [loseParams addObject:[NSNumber numberWithInteger:_peopleGrumped]];
     [loseParams addObject:[NSNumber numberWithInteger:_dogsSaved]];
+    [loseParams addObject:slug];
     [[CCDirector sharedDirector] replaceScene:[LoseLayer sceneWithData:loseParams]];
 }
 
@@ -1211,7 +1216,7 @@
     [self runAction:sequence];
 }
 
--(id) init {
+-(id) initWithSlug:(NSString *)levelSlug {
     if( (self=[super init])) {
         CGSize winSize = [CCDirector sharedDirector].winSize;
         
@@ -1221,8 +1226,13 @@
         self.isTouchEnabled = YES;
         
         [self buildLevels];
-        NSValue *v = [levelStructs objectAtIndex:arc4random() % [levelStructs count]];
-        levelProps *level = (levelProps *)[v pointerValue];
+        levelProps *level;
+        for(int i = 0; i < [levelStructs count]; i++){
+            level = (levelProps *)[[levelStructs objectAtIndex:i] pointerValue];
+            if(level->slug == levelSlug){
+                break;
+            }
+        }
         
         b2Vec2 gravity = b2Vec2(0.0f, level->gravity);
         _world = new b2World(gravity);
