@@ -17,6 +17,8 @@
 #import "GLES-Render.h"
 #import "PersonDogContactListener.h"
 
+static NSMutableArray *levelStructs;
+
 @interface GameplayLayer : CCLayer
 {
     b2World *_world;
@@ -35,7 +37,7 @@
     CCLayerColor *_pauseLayer, *_flashLayer;
     CCMenu *_pauseMenu;
     NSMutableArray *floorBits, *xPositions, *characterTags, *wienerParameters, *headParams, *mouseJoints;
-    NSMutableArray *personParameters, *wakeParameters, *movementPatterns, *movementParameters, *_touchLocations, *dogIcons, *allTouchHashes, *levelStructs;
+    NSMutableArray *personParameters, *wakeParameters, *movementPatterns, *movementParameters, *_touchLocations, *dogIcons, *allTouchHashes;
     NSString *scoreText, *droppedText;
     int _points, _droppedCount, _spawnLimiter, time, _curPersonMaskBits, _droppedSpacing, _lastTouchTime, _firstDeathTime, lowerArmAngle, upperArmAngle;
     int _peopleGrumped, _dogsSaved, _id_counter, _numTouches, _dogsOnscreen, _maxDogsOnScreen;
@@ -105,6 +107,9 @@
         float gravity;
         NSString *name;
         NSString *slug;
+        int highScore;
+        NSString *highScoreSaveKey;
+        NSString *func;
     };
 
     enum _collisionFilters {
@@ -179,5 +184,6 @@
 // returns a CCScene that contains the HelloWorldLayer as the only child
 +(CCScene *) sceneWithData:(void *)data;
 +(id) initWithSlug:(NSString *)levelSlug;
++(NSMutableArray *)buildLevels;
 
 @end

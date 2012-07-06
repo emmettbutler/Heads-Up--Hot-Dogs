@@ -95,7 +95,7 @@
     [TestFlight openFeedbackView];
 }
 
--(void)buildLevels{
++(NSMutableArray *)buildLevels{
     levelStructs = [[NSMutableArray alloc] initWithCapacity:NUM_LEVELS];
     levelProps *lp;
     
@@ -105,6 +105,8 @@
     lp->bg = [NSString stringWithString:@"bg_philly.png"];
     lp->bgm = [NSString stringWithString:@"menu 3.wav"];
     lp->gravity = -30.0f;
+    lp->highScoreSaveKey = [NSString stringWithString:@"highScorePhilly"];
+    lp->func = [NSString stringWithString:@"switchScreenPhilly"];
     [levelStructs addObject:[NSValue valueWithPointer:lp]];
     
     lp = new levelProps();
@@ -113,7 +115,11 @@
     lp->bg = [NSString stringWithString:@"BG_NYC.png"];
     lp->bgm = [NSString stringWithString:@"menu 3.wav"];
     lp->gravity = -30.0f;
+    lp->highScoreSaveKey = [NSString stringWithString:@"highScoreNYC"];
+    lp->func = [NSString stringWithString:@"switchScreenNYC"];
     [levelStructs addObject:[NSValue valueWithPointer:lp]];
+    
+    return levelStructs;
 }
 
 -(void)setShootLock:(id)sender data:(void*)params{
@@ -1225,7 +1231,7 @@
         [CCTexture2D setDefaultAlphaPixelFormat:kCCTexture2DPixelFormat_RGBA4444];
         self.isTouchEnabled = YES;
         
-        [self buildLevels];
+        [GameplayLayer buildLevels];
         levelProps *level;
         for(int i = 0; i < [levelStructs count]; i++){
             level = (levelProps *)[[levelStructs objectAtIndex:i] pointerValue];

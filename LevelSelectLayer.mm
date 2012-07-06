@@ -37,20 +37,24 @@
         sprite.anchorPoint = CGPointZero;
         [self addChild:sprite z:-1];
         
-        CCLabelTTF *label = [CCLabelTTF labelWithString:@"Philly" fontName:@"LostPet.TTF" fontSize:25.0];
-        [[label texture] setAliasTexParameters];
-        label.color = _color_pink;
-        CCMenuItem *buttonPhilly = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(switchScreenPhila)];
+        NSMutableArray *lStructs = [GameplayLayer buildLevels];
+        levelProps *level;
+        CCMenuItem *button;
+        CCLOG(@"levelStructs count: %d", [lStructs count]);
+        for(int i = 0; i < [lStructs count]; i++){
+            level = (levelProps *)[[lStructs objectAtIndex:i] pointerValue];
+            
+            CCLabelTTF *label = [CCLabelTTF labelWithString:level->name fontName:@"LostPet.TTF" fontSize:25.0];
+            [[label texture] setAliasTexParameters];
+            label.color = _color_pink;
+            button = [CCMenuItemLabel itemWithLabel:label target:self selector:NSSelectorFromString(level->func)];
+            [button setPosition:ccp(110, 200-(i*20))];
+            
+            [self addChild:button z:11];
+        }
         
-        label = [CCLabelTTF labelWithString:@"Big Apple" fontName:@"LostPet.TTF" fontSize:25.0];
-        [[label texture] setAliasTexParameters];
-        label.color = _color_pink;
-        CCMenuItem *buttonNYC = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(switchScreenNYC)];
-        
-        CCMenu *menu = [CCMenu menuWithItems:buttonPhilly, buttonNYC, nil];
-        [menu setPosition:ccp(110, 200)];
-        [menu alignItemsVertically];
-        [self addChild:menu z:11];
+        //CCMenu *menu = [CCMenu menuWithItems:button, buttonNYC, nil];
+        //[menu alignItemsVertically];
     }
     return self;
 }
@@ -66,7 +70,7 @@
     location = [[CCDirector sharedDirector] convertToGL:location];
 }
 
--(void)switchScreenPhila{
+-(void)switchScreenPhilly{
     [self switchScreenStartWithSlug:[NSString stringWithString:@"philly"]];
 }
 
