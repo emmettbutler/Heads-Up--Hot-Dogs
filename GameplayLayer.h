@@ -35,7 +35,7 @@
     CCLayerColor *_pauseLayer, *_flashLayer;
     CCMenu *_pauseMenu;
     NSMutableArray *floorBits, *xPositions, *characterTags, *wienerParameters, *headParams, *mouseJoints;
-    NSMutableArray *personParameters, *wakeParameters, *movementPatterns, *movementParameters, *_touchLocations, *dogIcons, *allTouchHashes;
+    NSMutableArray *personParameters, *wakeParameters, *movementPatterns, *movementParameters, *_touchLocations, *dogIcons, *allTouchHashes, *levelStructs;
     NSString *scoreText, *droppedText;
     int _points, _droppedCount, _spawnLimiter, time, _curPersonMaskBits, _droppedSpacing, _lastTouchTime, _firstDeathTime, lowerArmAngle, upperArmAngle;
     int _peopleGrumped, _dogsSaved, _id_counter, _numTouches, _dogsOnscreen, _maxDogsOnScreen;
@@ -97,6 +97,14 @@
         int touch; // the unique identifier for this mouse joint
         double prevX;
         double prevY;
+    };
+    
+    struct levelProps{
+        NSString *bg;
+        NSString *bgm;
+        float gravity;
+        NSString *name;
+        NSString *slug;
     };
 
     enum _collisionFilters {

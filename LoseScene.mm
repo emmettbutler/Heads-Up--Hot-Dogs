@@ -123,7 +123,7 @@
 #ifdef DEBUG
 #else
         [[SimpleAudioEngine sharedEngine] stopBackgroundMusic];
-        [[SimpleAudioEngine sharedEngine] playEffect:@"game over sting.wav"];
+        sting = [[SimpleAudioEngine sharedEngine] playEffect:@"game over sting.wav"];
 #endif
         if(_score > highScore){
             [standardUserDefaults setInteger:_score forKey:@"highScore"];
@@ -178,6 +178,7 @@
 -(void) dealloc{
     //[[CCSpriteFrameCache sharedSpriteFrameCache] removeUnusedSpriteFrames];
     //[[CCTextureCache sharedTextureCache] removeUnusedTextures];
+    [[SimpleAudioEngine sharedEngine] stopEffect:sting];
     [super dealloc];
 }
 

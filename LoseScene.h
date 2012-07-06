@@ -16,6 +16,7 @@
     CCLabelTTF *scoreNotify, *timeNotify;
     CCSpriteBatchNode *spriteSheet;
     NSInteger highScore;
+    ALuint sting;
     ccColor3B _color_pink, _color_blue, _color_darkblue;
 }
 

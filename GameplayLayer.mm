@@ -20,6 +20,7 @@
 #define DOG_SPAWN_MINHT 240
 #define COP_RANGE 4
 #define DOG_COUNTER_HT 295
+#define NUM_LEVELS 2
 #define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 #define GAME_AUTOROTATION kGameAutorotationCCDirector
 
@@ -87,6 +88,27 @@
 -(IBAction)launchFeedback{
     [TestFlight passCheckpoint:@"Feedback Clicked"];
     [TestFlight openFeedbackView];
+}
+
+-(void)buildLevels{
+    levelStructs = [[NSMutableArray alloc] initWithCapacity:NUM_LEVELS];
+    levelProps *lp;
+    
+    lp = new levelProps();
+    lp->slug = [NSString stringWithString:@"philly"];
+    lp->name = [NSString stringWithString:@"Philly"];
+    lp->bg = [NSString stringWithString:@"bg_philly.png"];
+    lp->bgm = [NSString stringWithString:@"menu 3.wav"];
+    lp->gravity = -30.0f;
+    [levelStructs addObject:[NSValue valueWithPointer:lp]];
+    
+    lp = new levelProps();
+    lp->slug = [NSString stringWithString:@"nyc"];
+    lp->name = [NSString stringWithString:@"Big Apple"];
+    lp->bg = [NSString stringWithString:@"BG_NYC.png"];
+    lp->bgm = [NSString stringWithString:@"menu 3.wav"];
+    lp->gravity = -30.0f;
+    [levelStructs addObject:[NSValue valueWithPointer:lp]];
 }
 
 -(void)setShootLock:(id)sender data:(void*)params{
@@ -1198,7 +1220,11 @@
         [CCTexture2D setDefaultAlphaPixelFormat:kCCTexture2DPixelFormat_RGBA4444];
         self.isTouchEnabled = YES;
         
-        b2Vec2 gravity = b2Vec2(0.0f, -30.0f);
+        [self buildLevels];
+        NSValue *v = [levelStructs objectAtIndex:arc4random() % [levelStructs count]];
+        levelProps *level = (levelProps *)[v pointerValue];
+        
+        b2Vec2 gravity = b2Vec2(0.0f, level->gravity);
         _world = new b2World(gravity);
         [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile: @"sprites_default.plist"];
         spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_default.png"];
@@ -1212,9 +1238,9 @@
         CCLOG(@"Debug draw added");
         [self addChild:menu z:1000];
 #else
-        [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"menu 3.wav" loop:YES];
+        [[SimpleAudioEngine sharedEngine] playBackgroundMusic:level->bgm loop:YES];
 #endif
-        
+
         _overallTime = [standardUserDefaults integerForKey:@"overallTime"];
 
         //basic game/box2d/cocos2d initialization
@@ -1252,16 +1278,13 @@
         [standardUserDefaults synchronize];
         
         allTouchHashes = [[NSMutableArray alloc] init];
-#ifdef DEBUG
-#else
-        int bgSelect = arc4random() % 2;
-        switch(bgSelect){
-            case 0: background = [CCSprite spriteWithSpriteFrameName:@"bg_philly.png"]; break;
-            case 1: background = [CCSprite spriteWithSpriteFrameName:@"BG_NYC.png"]; break;
-        }
+
+        background = [CCSprite spriteWithSpriteFrameName:level->bg];
         background.anchorPoint = CGPointZero;
+//#ifdef DEBUG
+//#else
         [spriteSheet addChild:background z:-10];
-#endif
+//#endif
 
         //HUD objects
         CCSprite *droppedLeftEnd = [CCSprite spriteWithSpriteFrameName:@"WienerCount_LeftEnd.png"];;
