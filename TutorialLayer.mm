@@ -414,6 +414,8 @@
 }
 
 -(void) dealloc{
+    // this causes a crash in gameplaylayer?
+    //[[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile: @"tutorial_sprites_default.plist"];
     [super dealloc];
 }
 

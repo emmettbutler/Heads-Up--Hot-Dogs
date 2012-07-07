@@ -25,22 +25,25 @@
     levelStructs = [[NSMutableArray alloc] initWithCapacity:NUM_LEVELS];
     levelProps *lp;
     spcDogData *dd;
-    [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile: @"sprites_default.plist"];
     
-    // TODO - spritesheet per level, divide into "common" and "per level" sheets
+    // TODO - importing all of these defeats part of the purpose of using different sprite sheets
+    [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_common.plist"];
+    [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_nyc.plist"];
+    [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_philly.plist"];
     
-    /******************************************
-    * PHILLY LEVEL SETTINGS
-    ******************************************/
+    /********************************************************************************
+     * PHILLY LEVEL SETTINGS
+     *******************************************************************************/
     
     lp = new levelProps();
     lp->slug = [NSString stringWithString:@"philly"];
     lp->name = [NSString stringWithString:@"Philly"];
     lp->bg = [NSString stringWithString:@"bg_philly.png"];
-    lp->bgm = [NSString stringWithString:@"menu 3.wav"];
+    lp->bgm = [NSString stringWithString:@"gameplay 1.wav"];
     lp->gravity = -30.0f;
     lp->highScoreSaveKey = [NSString stringWithString:@"highScorePhilly"];
     lp->func = [NSString stringWithString:@"switchScreenPhilly"];
+    lp->spritesheet = [NSString stringWithString:@"sprites_philly"];
     
     dd = new spcDogData();
     dd->riseSprite = [NSString stringWithString:@"Steak_Rise.png"];
@@ -72,18 +75,19 @@
     
     
     
-    /******************************************
+    /********************************************************************************
      * NYC LEVEL SETTINGS
-     ******************************************/
+     *******************************************************************************/
     
     lp = new levelProps();
     lp->slug = [NSString stringWithString:@"nyc"];
     lp->name = [NSString stringWithString:@"Big Apple"];
     lp->bg = [NSString stringWithString:@"BG_NYC.png"];
-    lp->bgm = [NSString stringWithString:@"menu 3.wav"];
+    lp->bgm = [NSString stringWithString:@"gameplay 3.wav"];
     lp->gravity = -30.0f;
     lp->highScoreSaveKey = [NSString stringWithString:@"highScoreNYC"];
     lp->func = [NSString stringWithString:@"switchScreenNYC"];
+    lp->spritesheet = [NSString stringWithString:@"sprites_nyc"];
     
     dd = new spcDogData();
     // TODO - audio per level
@@ -115,6 +119,10 @@
     
     lp->specialDog = dd;
     [levelStructs addObject:[NSValue valueWithPointer:lp]];
+    
+    [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_common.plist"];
+    [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_nyc.plist"];
+    [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_philly.plist"];
     
     return levelStructs;
 }
@@ -156,6 +164,8 @@
             [self addChild:menu z:11];
         }
     }
+    
+    // TODO - level select screen design implementation
     return self;
 }
 
@@ -185,8 +195,6 @@
 }
 
 -(void) dealloc{
-    //[[CCSpriteFrameCache sharedSpriteFrameCache] removeUnusedSpriteFrames];
-    //[[CCTextureCache sharedTextureCache] removeUnusedTextures];
     [super dealloc];
 }
 

@@ -242,7 +242,7 @@
 
     CCSprite *twentyFive = [CCSprite spriteWithSpriteFrameName:@"Plus_25_sm_1.png"];
     twentyFive.position = ccp(xPos.intValue, yPos.intValue);
-    [spriteSheet addChild:twentyFive z:100];
+    [spriteSheetCommon addChild:twentyFive z:100];
 
     NSMutableArray *removeParams = [[NSMutableArray alloc] initWithCapacity:1];
     [removeParams addObject:[NSValue valueWithPointer:twentyFive]];
@@ -266,14 +266,14 @@
     
     CCSprite *oneHundred = [CCSprite spriteWithSpriteFrameName:@"Plus_100_1.png"];
     oneHundred.position = ccp(xPos.intValue, yPos.intValue);
-    [spriteSheet addChild:oneHundred z:100];
+    [spriteSheetCommon addChild:oneHundred z:100];
     
     CCSprite *blast = [CCSprite spriteWithSpriteFrameName:@"CarryOff_Blast_1.png"];
     blast.position = ccp(xPos.intValue, yPos.intValue);
     if(xPos.intValue > winSize.width/2){
         blast.flipX = true;
     }
-    [spriteSheet addChild:blast z:95];
+    [spriteSheetCommon addChild:blast z:95];
     
     NSMutableArray *removeParams = [[NSMutableArray alloc] initWithCapacity:1];
     [removeParams addObject:[NSValue valueWithPointer:oneHundred]];
@@ -428,8 +428,8 @@
         if(_droppedCount <= DROPPED_MAX){
             CCSprite *dogDroppedIcon = [CCSprite spriteWithSpriteFrameName:@"WienerCount_X.png"];
             dogDroppedIcon.position = ccp(winSize.width-_droppedSpacing, DOG_COUNTER_HT);
-            [spriteSheet addChild:dogDroppedIcon z:72];
-            [spriteSheet removeChild:(CCSprite*)[(NSValue *)[dogIcons objectAtIndex:_droppedCount] pointerValue] cleanup:YES];
+            [spriteSheetCommon addChild:dogDroppedIcon z:72];
+            [spriteSheetCommon removeChild:(CCSprite*)[(NSValue *)[dogIcons objectAtIndex:_droppedCount] pointerValue] cleanup:YES];
             _droppedCount++;
             _droppedSpacing += 23;
         }
@@ -476,7 +476,6 @@
     spcDogData *dd = (spcDogData *)level->specialDog;
     
     switch(type.intValue){
-            // TODO - move attributes of special dog to level structure
         case S_SPCDOG:
             riseSprite = dd->riseSprite;
             fallSprite = dd->fallSprite;
@@ -528,7 +527,10 @@
     self.wiener = [CCSprite spriteWithSpriteFrameName:mainSprite];
     _wiener.position = ccp(location.x, location.y);
     _wiener.tag = tag;
-    [spriteSheet addChild:_wiener z:50];
+    if(_wiener.tag == S_HOTDOG)
+        [spriteSheetCommon addChild:_wiener z:50];
+    else if(_wiener.tag == S_SPCDOG)
+        [spriteSheetLevel addChild:_wiener z:50];
     
     dogDeathAnim = [CCAnimation animationWithFrames:wienerDeathAnimFrames delay:.1f];
     CCAction *_deathAction = [[CCAnimate alloc] initWithAnimation:dogDeathAnim];
@@ -957,19 +959,19 @@
         _shootFaceAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:shootFaceAnim restoreOriginalFrame:YES] times:1] retain];
 
         target.tag = S_CRSHRS;
-        [spriteSheet addChild:target z:100];
+        [spriteSheetLevel addChild:target z:100];
     }
 
     //put the sprites in place
     _personLower.position = ccp(xPos.intValue, yPos);
     _personUpper.position = ccp(xPos.intValue, yPos);
     _personUpperOverlay.position = ccp(xPos.intValue, yPos);
-    [spriteSheet addChild:_personLower z:zIndex];
-    [spriteSheet addChild:_personUpper z:zIndex+2];
-    [spriteSheet addChild:_personUpperOverlay z:zIndex+2];
+    [spriteSheetLevel addChild:_personLower z:zIndex];
+    [spriteSheetLevel addChild:_personUpper z:zIndex+2];
+    [spriteSheetLevel addChild:_personUpperOverlay z:zIndex+2];
     if(character.intValue == 4){
         _policeArm.position = ccp(xPos.intValue, yPos);
-        [spriteSheet addChild:_policeArm z:zIndex-2];
+        [spriteSheetLevel addChild:_policeArm z:zIndex-2];
     }
     
     //set secondary values based on the direction of the walk
@@ -1151,8 +1153,8 @@
 -(void)wienerCallback:(id)sender data:(void *)params {
     CCLOG(@"_wienerSpawnDelayTime: %f", _wienerSpawnDelayTime);
     CGSize winSize = [CCDirector sharedDirector].winSize;
-    //NSNumber *dogType = [NSNumber numberWithInt:arc4random() % (int)(1/SPECIAL_DOG_PROBABILITY)];
-    NSNumber *dogType = [NSNumber numberWithInt:2];
+    NSNumber *dogType = [NSNumber numberWithInt:arc4random() % (int)(1/SPECIAL_DOG_PROBABILITY)];
+    //NSNumber *dogType = [NSNumber numberWithInt:2];
     
     CCLOG(@"Dogs onscreen: %d", _dogsOnscreen);
     
@@ -1227,8 +1229,23 @@
         
         b2Vec2 gravity = b2Vec2(0.0f, level->gravity);
         _world = new b2World(gravity);
-        [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile: @"sprites_default.plist"];
-        spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_default.png"];
+        
+        // spritesheets setup
+        [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_common.plist"];
+        [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:[NSString stringWithFormat:@"%@.plist", level->spritesheet]];
+        
+        spriteSheetCommon = [CCSpriteBatchNode batchNodeWithFile:@"sprites_common.png"];
+        spriteSheetLevel = [CCSpriteBatchNode batchNodeWithFile:[NSString stringWithFormat:@"%@.png", level->spritesheet]];
+        
+        [self addChild:spriteSheetLevel];
+        [self addChild:spriteSheetCommon];
+
+        background = [CCSprite spriteWithSpriteFrameName:level->bg];
+        background.anchorPoint = CGPointZero;
+//#ifdef DEBUG
+//#else
+        [spriteSheetLevel addChild:background z:-10];
+//#endif
         
 #ifdef DEBUG
         //debug labels
@@ -1262,10 +1279,7 @@
         _droppedSpacing = 200;
         _droppedCount = 0;
         _currentRayAngle = 0;
-        
-        //create spriteFrameCache from sprite sheet
-        
-        [self addChild:spriteSheet];
+
         //contact listener init
         personDogContactListener = new PersonDogContactListener();
         _world->SetContactListener(personDogContactListener);
@@ -1280,31 +1294,24 @@
         
         allTouchHashes = [[NSMutableArray alloc] init];
 
-        background = [CCSprite spriteWithSpriteFrameName:level->bg];
-        background.anchorPoint = CGPointZero;
-//#ifdef DEBUG
-//#else
-        [spriteSheet addChild:background z:-10];
-//#endif
-
         //HUD objects
         CCSprite *droppedLeftEnd = [CCSprite spriteWithSpriteFrameName:@"WienerCount_LeftEnd.png"];;
         droppedLeftEnd.position = ccp(winSize.width-310, DOG_COUNTER_HT);
-        [spriteSheet addChild:droppedLeftEnd z:70];
+        [spriteSheetCommon addChild:droppedLeftEnd z:70];
         CCSprite *droppedRightEnd = [CCSprite spriteWithSpriteFrameName:@"WienerCount_RightEnd.png"];;
         droppedRightEnd.position = ccp(winSize.width-182, DOG_COUNTER_HT);
-        [spriteSheet addChild:droppedRightEnd z:70];
+        [spriteSheetCommon addChild:droppedRightEnd z:70];
         dogIcons = [[NSMutableArray alloc] initWithCapacity:DROPPED_MAX+1];
         for(int i = 200; i < 200+(23*DROPPED_MAX); i += 23){
             CCSprite *dogIcon = [CCSprite spriteWithSpriteFrameName:@"WienerCount_Wiener.png"];
             dogIcon.position = ccp(winSize.width-i, DOG_COUNTER_HT);
-            [spriteSheet addChild:dogIcon z:70];
+            [spriteSheetCommon addChild:dogIcon z:70];
             [dogIcons addObject:[NSValue valueWithPointer:dogIcon]];
         }
 
         CCSprite *scoreBG = [CCSprite spriteWithSpriteFrameName:@"Score_BG.png"];;
         scoreBG.position = ccp(winSize.width-80, DOG_COUNTER_HT);
-        [spriteSheet addChild:scoreBG z:70];
+        [spriteSheetCommon addChild:scoreBG z:70];
 
         //labels for score
         scoreText = [[NSString alloc] initWithFormat:@"%06d", _points];
@@ -1323,7 +1330,7 @@
 
         _pauseButton = [CCSprite spriteWithSpriteFrameName:@"Pause_Button.png"];;
         _pauseButton.position = ccp(20, 305);
-        [spriteSheet addChild:_pauseButton z:70];
+        [spriteSheetCommon addChild:_pauseButton z:70];
         _pauseButtonRect = CGRectMake((_pauseButton.position.x-(_pauseButton.contentSize.width)/2), (_pauseButton.position.y-(_pauseButton.contentSize.height)/2), (_pauseButton.contentSize.width+10), (_pauseButton.contentSize.height+10));
 
         //initialize global arrays for possible x,y positions and charTags
@@ -1907,7 +1914,6 @@
                                 if(aimedBody->GetUserData() && aimedBody->GetUserData() != (void*)100){
                                     bodyUserData *aimedUd = (bodyUserData *)aimedBody->GetUserData();
                                     if((aimedUd->sprite1.tag == S_HOTDOG || aimedUd->sprite1.tag == S_SPCDOG) && aimedUd->aimedAt == true){
-                                        // TODO - this only works for forward-facing cops, do the math and make it work for both
                                         aimedDog = aimedBody;
                                         dx = abs(b->GetPosition().x - aimedDog->GetPosition().x);
                                         dy = abs(b->GetPosition().y - aimedDog->GetPosition().y);
@@ -1944,7 +1950,6 @@
                 }
                 else if(ud->sprite1.tag == S_COPARM){
                     //things for cop's arm and raycasting
-                    //TODO - make all global components of cop raycasting into instance variables to allow maybe multiple cops onscreen
                     policeRayPoint1 = b->GetPosition();
                     policeRayPoint2 = policeRayPoint1 + rayLength * b2Vec2(cosf(b->GetAngle()), sinf(b->GetAngle()));
                     input.p1 = policeRayPoint1;
@@ -2244,8 +2249,9 @@
 }
 
 - (void) dealloc {
-    //[[CCSpriteFrameCache sharedSpriteFrameCache] removeUnusedSpriteFrames];
     [[CCTextureCache sharedTextureCache] removeUnusedTextures];
+    [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_common.plist"];
+    [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:[NSString stringWithFormat:@"%@.plist", level->spritesheet]];
 
     self.personLower = nil;
     self.personUpper = nil;

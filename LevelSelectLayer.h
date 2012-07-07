@@ -36,6 +36,7 @@ static NSMutableArray *levelStructs;
         NSString *highScoreSaveKey;
         NSString *func;
         spcDogData *specialDog;
+        NSString *spritesheet;
     };
 }
 

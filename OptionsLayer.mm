@@ -79,8 +79,7 @@
 }
 
 -(void) dealloc{
-    //[[CCSpriteFrameCache sharedSpriteFrameCache] removeUnusedSpriteFrames];
-    //[[CCTextureCache sharedTextureCache] removeUnusedTextures];
+    [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile: @"end_sprites_default.plist"];
     [super dealloc];
 }
 

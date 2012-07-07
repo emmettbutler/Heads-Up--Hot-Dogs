@@ -40,19 +40,6 @@
         CGSize size = [[CCDirector sharedDirector] winSize];
         [[CCDirector sharedDirector] setDisplayFPS:NO];
         
-#ifdef DEBUG
-#else
-        [[SimpleAudioEngine sharedEngine] playEffect:@"menu intro.wav"];
-        
-        SimpleAudioEngine *sae = [SimpleAudioEngine sharedEngine];
-        if (sae != nil) {
-            [sae preloadBackgroundMusic:@"menu 2.wav"];
-            if (sae.willPlayBackgroundMusic) {
-                sae.backgroundMusicVolume = 0.5f;
-            }
-        }
-#endif
-        
         [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile: @"title_sprites_default.plist"];
         spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"title_sprites_default.png"];
         [self addChild:spriteSheet];
@@ -138,8 +125,7 @@
 }
 
 -(void) dealloc{
-    //[[CCSpriteFrameCache sharedSpriteFrameCache] removeUnusedSpriteFrames];
-    //[[CCTextureCache sharedTextureCache] removeUnusedTextures];
+    [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile: @"title_sprites_default.plist"];
     [super dealloc];
 }
 
