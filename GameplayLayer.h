@@ -17,8 +17,6 @@
 #import "GLES-Render.h"
 #import "PersonDogContactListener.h"
 
-static NSMutableArray *levelStructs;
-
 @interface GameplayLayer : CCLayer
 {
     b2World *_world;
@@ -100,17 +98,6 @@ static NSMutableArray *levelStructs;
         double prevX;
         double prevY;
     };
-    
-    struct levelProps{
-        NSString *bg;
-        NSString *bgm;
-        float gravity;
-        NSString *name;
-        NSString *slug;
-        int highScore;
-        NSString *highScoreSaveKey;
-        NSString *func;
-    };
 
     enum _collisionFilters {
         FLOOR1  = 0x0001,
@@ -184,6 +171,5 @@ static NSMutableArray *levelStructs;
 // returns a CCScene that contains the HelloWorldLayer as the only child
 +(CCScene *) sceneWithData:(void *)data;
 +(id) initWithSlug:(NSString *)levelSlug;
-+(NSMutableArray *)buildLevels;
 
 @end

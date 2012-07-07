@@ -10,6 +10,7 @@
 #import "TitleScene.h"
 #import "TestFlight.h"
 #import "LoseScene.h"
+#import "LevelSelectLayer.h"
 
 #define PTM_RATIO 32
 #define DEGTORAD 0.0174532
@@ -20,7 +21,6 @@
 #define DOG_SPAWN_MINHT 240
 #define COP_RANGE 4
 #define DOG_COUNTER_HT 295
-#define NUM_LEVELS 2
 #define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 #define GAME_AUTOROTATION kGameAutorotationCCDirector
 
@@ -95,32 +95,7 @@
     [TestFlight openFeedbackView];
 }
 
-+(NSMutableArray *)buildLevels{
-    levelStructs = [[NSMutableArray alloc] initWithCapacity:NUM_LEVELS];
-    levelProps *lp;
-    
-    lp = new levelProps();
-    lp->slug = [NSString stringWithString:@"philly"];
-    lp->name = [NSString stringWithString:@"Philly"];
-    lp->bg = [NSString stringWithString:@"bg_philly.png"];
-    lp->bgm = [NSString stringWithString:@"menu 3.wav"];
-    lp->gravity = -30.0f;
-    lp->highScoreSaveKey = [NSString stringWithString:@"highScorePhilly"];
-    lp->func = [NSString stringWithString:@"switchScreenPhilly"];
-    [levelStructs addObject:[NSValue valueWithPointer:lp]];
-    
-    lp = new levelProps();
-    lp->slug = [NSString stringWithString:@"nyc"];
-    lp->name = [NSString stringWithString:@"Big Apple"];
-    lp->bg = [NSString stringWithString:@"BG_NYC.png"];
-    lp->bgm = [NSString stringWithString:@"menu 3.wav"];
-    lp->gravity = -30.0f;
-    lp->highScoreSaveKey = [NSString stringWithString:@"highScoreNYC"];
-    lp->func = [NSString stringWithString:@"switchScreenNYC"];
-    [levelStructs addObject:[NSValue valueWithPointer:lp]];
-    
-    return levelStructs;
-}
+
 
 -(void)setShootLock:(id)sender data:(void*)params{
     NSNumber *lockBool = (NSNumber *)[(NSMutableArray *) params objectAtIndex:0];
@@ -1231,7 +1206,7 @@
         [CCTexture2D setDefaultAlphaPixelFormat:kCCTexture2DPixelFormat_RGBA4444];
         self.isTouchEnabled = YES;
         
-        [GameplayLayer buildLevels];
+        NSMutableArray *levelStructs = [LevelSelectLayer buildLevels];
         levelProps *level;
         for(int i = 0; i < [levelStructs count]; i++){
             level = (levelProps *)[[levelStructs objectAtIndex:i] pointerValue];

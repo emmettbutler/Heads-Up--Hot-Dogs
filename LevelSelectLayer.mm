@@ -9,6 +9,8 @@
 #import "LevelSelectLayer.h"
 #import "GameplayLayer.h"
 
+#define NUM_LEVELS 2
+
 @implementation LevelSelectLayer
 
 +(CCScene *) scene
@@ -19,10 +21,37 @@
 	return scene;
 }
 
++(NSMutableArray *)buildLevels{
+    levelStructs = [[NSMutableArray alloc] initWithCapacity:NUM_LEVELS];
+    levelProps *lp;
+    
+    lp = new levelProps();
+    lp->slug = [NSString stringWithString:@"philly"];
+    lp->name = [NSString stringWithString:@"Philly"];
+    lp->bg = [NSString stringWithString:@"bg_philly.png"];
+    lp->bgm = [NSString stringWithString:@"menu 3.wav"];
+    lp->gravity = -30.0f;
+    lp->highScoreSaveKey = [NSString stringWithString:@"highScorePhilly"];
+    lp->func = [NSString stringWithString:@"switchScreenPhilly"];
+    [levelStructs addObject:[NSValue valueWithPointer:lp]];
+    
+    lp = new levelProps();
+    lp->slug = [NSString stringWithString:@"nyc"];
+    lp->name = [NSString stringWithString:@"Big Apple"];
+    lp->bg = [NSString stringWithString:@"BG_NYC.png"];
+    lp->bgm = [NSString stringWithString:@"menu 3.wav"];
+    lp->gravity = -30.0f;
+    lp->highScoreSaveKey = [NSString stringWithString:@"highScoreNYC"];
+    lp->func = [NSString stringWithString:@"switchScreenNYC"];
+    [levelStructs addObject:[NSValue valueWithPointer:lp]];
+    
+    return levelStructs;
+}
+
 -(id) init{
     if ((self = [super init])){
         standardUserDefaults = [NSUserDefaults standardUserDefaults];
-        CGSize size = [[CCDirector sharedDirector] winSize];
+        //CGSize size = [[CCDirector sharedDirector] winSize];
         [[CCDirector sharedDirector] setDisplayFPS:NO];
         
         self.isTouchEnabled = true;
@@ -37,9 +66,10 @@
         sprite.anchorPoint = CGPointZero;
         [self addChild:sprite z:-1];
         
-        NSMutableArray *lStructs = [GameplayLayer buildLevels];
+        NSMutableArray *lStructs = [LevelSelectLayer buildLevels];
         levelProps *level;
         CCMenuItem *button;
+        CCMenu *menu;
         CCLOG(@"levelStructs count: %d", [lStructs count]);
         for(int i = 0; i < [lStructs count]; i++){
             level = (levelProps *)[[lStructs objectAtIndex:i] pointerValue];
@@ -48,13 +78,12 @@
             [[label texture] setAliasTexParameters];
             label.color = _color_pink;
             button = [CCMenuItemLabel itemWithLabel:label target:self selector:NSSelectorFromString(level->func)];
-            [button setPosition:ccp(110, 200-(i*20))];
             
-            [self addChild:button z:11];
+            menu = [CCMenu menuWithItems:button, nil];
+            //[menu alignItemsVertically];
+            [menu setPosition:ccp(110, 200-(i*20))];
+            [self addChild:menu z:11];
         }
-        
-        //CCMenu *menu = [CCMenu menuWithItems:button, buttonNYC, nil];
-        //[menu alignItemsVertically];
     }
     return self;
 }
