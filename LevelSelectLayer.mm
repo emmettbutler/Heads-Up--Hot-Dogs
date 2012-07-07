@@ -31,6 +31,8 @@
     [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_nyc.plist"];
     [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_philly.plist"];
     
+    // TODO - people per level
+    
     /********************************************************************************
      * PHILLY LEVEL SETTINGS
      *******************************************************************************/
@@ -90,8 +92,6 @@
     lp->spritesheet = [NSString stringWithString:@"sprites_nyc"];
     
     dd = new spcDogData();
-    // TODO - audio per level
-    // TODO - collection audio from emails
     dd->riseSprite = [NSString stringWithString:@"Bagel_Rise.png"];
     dd->fallSprite = [NSString stringWithString:@"Bagel_Fall.png"];
     dd->mainSprite = [NSString stringWithString:@"Bagel.png"];
@@ -130,26 +130,63 @@
 -(id) init{
     if ((self = [super init])){
         standardUserDefaults = [NSUserDefaults standardUserDefaults];
-        //CGSize size = [[CCDirector sharedDirector] winSize];
+        CGSize winSize = [[CCDirector sharedDirector] winSize];
         [[CCDirector sharedDirector] setDisplayFPS:NO];
         
         self.isTouchEnabled = true;
         
+        curLevelIndex = 0;
+        
         _color_pink = ccc3(255, 62, 166);
         
-        [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile: @"end_sprites_default.plist"];
-        spritesheet = [CCSpriteBatchNode batchNodeWithFile:@"end_sprites_default.png"];
+        [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile: @"sprites_levelselect.plist"];
+        spritesheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_levelselect.png"];
         [self addChild:spritesheet];
         
-        CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"GameEnd_BG"];
+        CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"LvlBG.png"];
         sprite.anchorPoint = CGPointZero;
         [self addChild:sprite z:-1];
         
-        NSMutableArray *lStructs = [LevelSelectLayer buildLevels];
-        levelProps *level;
+        CCLabelTTF *label = [CCLabelTTF labelWithString:@"SELECT LEVEL" fontName:@"LostPet.TTF" fontSize:50.0];
+        [[label texture] setAliasTexParameters];
+        label.color = _color_pink;
+        label.position = ccp(winSize.width/2, winSize.height-(label.contentSize.height/2)-9);
+        [self addChild:label];
+        
+        sprite = [CCSprite spriteWithSpriteFrameName:@"Lvl_TextBox.png"];
+        sprite.position = ccp(winSize.width/2, (sprite.contentSize.height/2)+40);
+        [self addChild:sprite];
+        
+        label = [CCLabelTTF labelWithString:@"philadelphia" fontName:@"LostPet.TTF" fontSize:20.0];
+        [[label texture] setAliasTexParameters];
+        label.color = _color_pink;
+        label.position = ccp(winSize.width/2, sprite.position.y+(label.contentSize.height/2)-2);
+        [self addChild:label];
+        
+        label = [CCLabelTTF labelWithString:@"high score: ######" fontName:@"LostPet.TTF" fontSize:20.0];
+        [[label texture] setAliasTexParameters];
+        label.color = _color_pink;
+        label.position = ccp(winSize.width/2, sprite.position.y+(label.contentSize.height/2)-18);
+        [self addChild:label];
+        
+        //left
+        sprite = [CCSprite spriteWithSpriteFrameName:@"LvlArrow.png"];
+        sprite.position = ccp(52, winSize.height/2);
+        [self addChild:sprite];
+        //right
+        sprite = [CCSprite spriteWithSpriteFrameName:@"LvlArrow.png"];
+        sprite.position = ccp(winSize.width-52, winSize.height/2);
+        sprite.flipX = true;
+        [self addChild:sprite];
+        
+        sprite = [CCSprite spriteWithSpriteFrameName:@"Philly_Thumb.png"];
+        sprite.position = ccp(winSize.width/2, winSize.height/2+20);
+        [self addChild:sprite];
+        
+        lStructs = [LevelSelectLayer buildLevels];
         CCMenuItem *button;
         CCMenu *menu;
-        CCLOG(@"levelStructs count: %d", [lStructs count]);
+        
         for(int i = 0; i < [lStructs count]; i++){
             level = (levelProps *)[[lStructs objectAtIndex:i] pointerValue];
             
@@ -195,6 +232,7 @@
 }
 
 -(void) dealloc{
+    free(lStructs);
     [super dealloc];
 }
 

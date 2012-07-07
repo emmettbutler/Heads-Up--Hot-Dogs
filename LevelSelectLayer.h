@@ -12,11 +12,6 @@
 static NSMutableArray *levelStructs;
 
 @interface LevelSelectLayer : CCLayer {
-    NSUserDefaults *standardUserDefaults;
-    int time;
-    ccColor3B _color_pink;
-    CCSpriteBatchNode *spritesheet;
-    
     struct spcDogData{
         NSString *riseSprite;
         NSString *fallSprite;
@@ -38,6 +33,14 @@ static NSMutableArray *levelStructs;
         spcDogData *specialDog;
         NSString *spritesheet;
     };
+    
+    NSUserDefaults *standardUserDefaults;
+    int time;
+    ccColor3B _color_pink;
+    NSMutableArray *lStructs;
+    CCSpriteBatchNode *spritesheet;
+    int curLevelIndex;
+    levelProps *level;
 }
 
 +(NSMutableArray *)buildLevels;
