@@ -82,6 +82,7 @@
         int stopTime; // time into walk at which person should pause
         int stopTimeDelta; // how long the pause should last
         int timeWalking; // how long has this person been walking
+        int pointValue; // how many points is a dog contact on this head worth?
         BOOL aiming;
         BOOL aimedAt;
         BOOL grabbed;

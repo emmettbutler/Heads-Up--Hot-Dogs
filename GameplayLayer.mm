@@ -211,6 +211,15 @@
     
     switch(points.intValue){
         default:  seq = [CCSequence actions:ud->_not_dogContact, removeAction, nil];
+            sound = [NSString stringWithString:@"10pts.wav"];
+            break;
+        case 10:  seq = [CCSequence actions:ud->_not_dogContact, removeAction, nil];
+            sound = [NSString stringWithString:@"10pts.wav"];
+            break;
+        case 15:  seq = [CCSequence actions:ud->_not_dogContact, removeAction, nil];
+            sound = [NSString stringWithString:@"15pts.wav"];
+            break;
+        case 25:  seq = [CCSequence actions:ud->_not_dogContact, removeAction, nil];
             sound = [NSString stringWithString:@"25pts.wav"];
             break;
         case 100: seq = [CCSequence actions:ud->_not_spcContact, removeAction, nil];
@@ -465,6 +474,7 @@
     NSMutableArray *wienerAppearAnimFrames = [[NSMutableArray alloc] init];
     
     switch(type.intValue){
+            // TODO - move attributes of special dog to level structure
         case S_SPCDOG:
             riseSprite = [NSString stringWithString:@"Steak_Rise.png"];
             fallSprite = [NSString stringWithString:@"Steak_Fall.png"];
@@ -637,7 +647,7 @@
 }
 
 -(void)walkIn:(id)sender data:(void *)params {
-    int zIndex, fTag, armBodyXOffset, armBodyYOffset, yPos;
+    int zIndex, fTag, armBodyXOffset, armBodyYOffset, yPos, pointValue;
     int armJointXOffset, armJointYOffset, contactActionIndex;
     float hitboxHeight, hitboxWidth, hitboxCenterX, hitboxCenterY, density, restitution, friction, heightOffset, sensorHeight, sensorWidth, framerate, moveDelta;
     NSString *ogHeadSprite;
@@ -711,8 +721,8 @@
             framerate = .07f;
             friction = 0.3f;
             fTag = F_BUSHED;
+            pointValue = 10;
             heightOffset = 2.9f;
-            contactActionIndex = 0;
             for(int i = 1; i <= 6; i++){
                 [walkAnimFrames addObject:
                     [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -758,7 +768,7 @@
             friction = 4.0f;
             fTag = F_COPHED;
             heightOffset = 2.9f;
-            contactActionIndex = 0;
+            pointValue = 15;
             lowerArmAngle = 0;
             upperArmAngle = 55;
             framerate = .07f;
@@ -811,7 +821,7 @@
             restitution = .87f; //bounce
             friction = 0.15f;
             framerate = .06f;
-            contactActionIndex = 2;
+            pointValue = 15;
             fTag = F_PNKHED;
             heightOffset = 2.4f;
             for(int i = 1; i <= 8; i++){
@@ -854,7 +864,7 @@
             friction = 0.15f;
             framerate = .07f;
             fTag = F_JOGHED;
-            contactActionIndex = 2;
+            pointValue = 25;
             heightOffset = 2.55f;
             for(int i = 1; i <= 8; i++){
                 [walkAnimFrames addObject:
@@ -896,7 +906,7 @@
             friction = 0.15f;
             framerate = .06f;
             fTag = F_JOGHED;
-            contactActionIndex = 2;
+           pointValue = 15;
             heightOffset = 2.9f;
             for(int i = 1; i <= 8; i++){
                 [walkAnimFrames addObject:
@@ -1004,6 +1014,17 @@
             _policeArm.flipX = YES;
         }
     }
+    
+    switch (pointValue){
+        case 10: contactActionIndex = 0;
+            break;
+        case 15: contactActionIndex = 1;
+            break;
+        case 25: contactActionIndex = 2;
+            break;
+        default: contactActionIndex = 1;
+            break;
+    }
 
     //set up userdata structs
     bodyUserData *ud = new bodyUserData();
@@ -1021,6 +1042,7 @@
     ud->aiming = false;
     ud->hasLeftScreen = false;
     ud->_person_hasTouchedDog = false;
+    ud->pointValue = pointValue;
     // point notifiers
     ud->_not_dogContact = (CCFiniteTimeAction *)[(NSValue *)[notifiers objectAtIndex:contactActionIndex] pointerValue];
     ud->_not_dogOnHead = (CCFiniteTimeAction *)[(NSValue *)[notifiers objectAtIndex:3] pointerValue];
@@ -1537,19 +1559,10 @@
                     [plusPointsParams addObject:[NSNumber numberWithInt:pBody->GetPosition().x*PTM_RATIO]];
                     [plusPointsParams addObject:[NSNumber numberWithInt:(pBody->GetPosition().y+4.7)*PTM_RATIO]];
                     int p;
-                    if(ud->sprite1.tag == S_SPCDOG){
+                    if(ud->sprite1.tag == S_SPCDOG)
                         p = 100;
-                    }
-                    else {
-                        switch(pUd->sprite1.tag){
-                            // TODO - store these in bodyuserdata
-                            case S_CRPUNK: p = 10; break;
-                            case S_JOGGER: p = 25; break;
-                            case S_BUSMAN: p = 10; break;
-                            default: p = 15; break;
-                        }
-                    }
-                    // TODO - add new point notifier sprites for special dog
+                    else 
+                        p = pUd->pointValue;
                     [plusPointsParams addObject:[NSNumber numberWithInt:p]];
                     [plusPointsParams addObject:[NSValue valueWithPointer:pUd]];
                     _points += p;
