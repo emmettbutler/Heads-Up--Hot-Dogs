@@ -32,7 +32,7 @@
 #define WIENER_SPAWN_START 5
 #else
 #define SPAWN_LIMIT_DECREMENT_DELAY 2
-#define SPECIAL_DOG_PROBABILITY .02
+#define SPECIAL_DOG_PROBABILITY .05
 #define DROPPED_MAX 5
 #define WIENER_SPAWN_START 5
 #endif
@@ -473,38 +473,20 @@
     NSMutableArray *wienerShotAnimFrames = [[NSMutableArray alloc] init];
     NSMutableArray *wienerAppearAnimFrames = [[NSMutableArray alloc] init];
     
+    spcDogData *dd = (spcDogData *)level->specialDog;
+    
     switch(type.intValue){
             // TODO - move attributes of special dog to level structure
         case S_SPCDOG:
-            riseSprite = [NSString stringWithString:@"Steak_Rise.png"];
-            fallSprite = [NSString stringWithString:@"Steak_Fall.png"];
-            mainSprite = [NSString stringWithString:@"Steak.png"];
-            grabSprite = [NSString stringWithString:@"Steak_Grabbed.png"];
+            riseSprite = dd->riseSprite;
+            fallSprite = dd->fallSprite;
+            mainSprite = dd->mainSprite;
+            grabSprite = dd->grabSprite;
             deathDelay = .1;
             tag = S_SPCDOG;
-            for(int i = 0; i < 1; i++){
-                [wienerDeathAnimFrames addObject:
-                 [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                  [NSString stringWithFormat:@"Steak_Die_1.png"]]];
-                [wienerDeathAnimFrames addObject:
-                 [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                  [NSString stringWithFormat:@"Steak_Die_2.png"]]];
-            }
-            for(int i = 1; i <= 7; i++){
-                [wienerDeathAnimFrames addObject:
-                 [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                  [NSString stringWithFormat:@"Steak_Die_%d.png", i]]];
-            }
-            for(int i = 1; i <= 9; i++){
-                [wienerShotAnimFrames addObject:
-                 [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                  [NSString stringWithFormat:@"Steak_Shot_%d.png", i]]];
-            }
-            for(int i = 1; i <= 6; i++){
-                [wienerAppearAnimFrames addObject:
-                 [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                  [NSString stringWithFormat:@"BonusAppear%d.png", i]]];
-            }
+            wienerDeathAnimFrames = dd->deathAnimFrames;
+            wienerShotAnimFrames = dd->shotAnimFrames;
+            wienerAppearAnimFrames = dd->appearAnimFrames;
             break;
         default:
             riseSprite = [NSString stringWithString:@"Dog_Rise.png"];
@@ -552,10 +534,6 @@
     
     dogShotAnim = [CCAnimation animationWithFrames:wienerShotAnimFrames delay:.1f ];
     _shotAction = [[CCAnimate alloc] initWithAnimation:dogShotAnim restoreOriginalFrame:NO];
-    
-    [wienerShotAnimFrames release];
-    [wienerDeathAnimFrames release];
-    [wienerAppearAnimFrames release];
     
     _id_counter++;
 
@@ -1169,8 +1147,8 @@
 -(void)wienerCallback:(id)sender data:(void *)params {
     CCLOG(@"_wienerSpawnDelayTime: %f", _wienerSpawnDelayTime);
     CGSize winSize = [CCDirector sharedDirector].winSize;
-    NSNumber *dogType = [NSNumber numberWithInt:arc4random() % (int)(1/SPECIAL_DOG_PROBABILITY)];
-    //NSNumber *dogType = [NSNumber numberWithInt:2];
+    //NSNumber *dogType = [NSNumber numberWithInt:arc4random() % (int)(1/SPECIAL_DOG_PROBABILITY)];
+    NSNumber *dogType = [NSNumber numberWithInt:2];
     
     CCLOG(@"Dogs onscreen: %d", _dogsOnscreen);
     
@@ -1236,7 +1214,6 @@
         self.isTouchEnabled = YES;
         
         NSMutableArray *levelStructs = [LevelSelectLayer buildLevels];
-        levelProps *level;
         for(int i = 0; i < [levelStructs count]; i++){
             level = (levelProps *)[[levelStructs objectAtIndex:i] pointerValue];
             if(level->slug == levelSlug){

@@ -17,6 +17,16 @@ static NSMutableArray *levelStructs;
     ccColor3B _color_pink;
     CCSpriteBatchNode *spritesheet;
     
+    struct spcDogData{
+        NSString *riseSprite;
+        NSString *fallSprite;
+        NSString *mainSprite;
+        NSString *grabSprite;
+        NSMutableArray *deathAnimFrames;
+        NSMutableArray *appearAnimFrames;
+        NSMutableArray *shotAnimFrames;
+    };
+    
     struct levelProps{
         NSString *bg;
         NSString *bgm;
@@ -26,6 +36,7 @@ static NSMutableArray *levelStructs;
         int highScore;
         NSString *highScoreSaveKey;
         NSString *func;
+        spcDogData *specialDog;
     };
 }
 

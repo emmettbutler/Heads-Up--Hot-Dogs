@@ -16,10 +16,12 @@
 #import <SimpleAudioEngine.h>
 #import "GLES-Render.h"
 #import "PersonDogContactListener.h"
+#import "LevelSelectLayer.h"
 
 @interface GameplayLayer : CCLayer
 {
     b2World *_world;
+    levelProps *level;
     GLESDraw *m_debugDraw;
     b2Body *_wallsBody, *_groundBody, *wienerBody, *targetBody, *_personBody, *_policeArmBody;
     b2Fixture *_bottomFixture, *_wallsFixture, *_wienerFixture, *_targetFixture, *_personFixture, *_policeArmFixture;
