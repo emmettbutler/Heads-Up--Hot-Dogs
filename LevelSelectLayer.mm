@@ -46,6 +46,8 @@
     lp->highScoreSaveKey = [NSString stringWithString:@"highScorePhilly"];
     lp->func = [NSString stringWithString:@"switchScreenPhilly"];
     lp->spritesheet = [NSString stringWithString:@"sprites_philly"];
+    lp->thumbnail = [NSString stringWithString:@"Philly_Thumb.png"];
+    lp->highScore = [standardUserDefaults integerForKey:lp->highScoreSaveKey];
     
     dd = new spcDogData();
     dd->riseSprite = [NSString stringWithString:@"Steak_Rise.png"];
@@ -90,6 +92,8 @@
     lp->highScoreSaveKey = [NSString stringWithString:@"highScoreNYC"];
     lp->func = [NSString stringWithString:@"switchScreenNYC"];
     lp->spritesheet = [NSString stringWithString:@"sprites_nyc"];
+    lp->thumbnail = [NSString stringWithString:@"NYC_Thumb.png"];
+    lp->highScore = [standardUserDefaults integerForKey:lp->highScoreSaveKey];
     
     dd = new spcDogData();
     dd->riseSprite = [NSString stringWithString:@"Bagel_Rise.png"];
@@ -157,17 +161,17 @@
         sprite.position = ccp(winSize.width/2, (sprite.contentSize.height/2)+40);
         [self addChild:sprite];
         
-        label = [CCLabelTTF labelWithString:@"philadelphia" fontName:@"LostPet.TTF" fontSize:20.0];
-        [[label texture] setAliasTexParameters];
-        label.color = _color_pink;
-        label.position = ccp(winSize.width/2, sprite.position.y+(label.contentSize.height/2)-2);
-        [self addChild:label];
+        nameLabel = [CCLabelTTF labelWithString:@"philadelphia" fontName:@"LostPet.TTF" fontSize:20.0];
+        [[nameLabel texture] setAliasTexParameters];
+        nameLabel.color = _color_pink;
+        nameLabel.position = ccp(winSize.width/2, sprite.position.y+(label.contentSize.height/2)-17);
+        [self addChild:nameLabel];
         
-        label = [CCLabelTTF labelWithString:@"high score: ######" fontName:@"LostPet.TTF" fontSize:20.0];
-        [[label texture] setAliasTexParameters];
-        label.color = _color_pink;
-        label.position = ccp(winSize.width/2, sprite.position.y+(label.contentSize.height/2)-18);
-        [self addChild:label];
+        scoreLabel = [CCLabelTTF labelWithString:@"high score: ######" fontName:@"LostPet.TTF" fontSize:20.0];
+        [[scoreLabel texture] setAliasTexParameters];
+        scoreLabel.color = _color_pink;
+        scoreLabel.position = ccp(winSize.width/2, sprite.position.y+(label.contentSize.height/2)-35);
+        [self addChild:scoreLabel];
         
         //left
         sprite = [CCSprite spriteWithSpriteFrameName:@"LvlArrow.png"];
@@ -184,29 +188,15 @@
         
         rightArrowRect = CGRectMake((sprite.position.x-(sprite.contentSize.width)/2), (sprite.position.y-(sprite.contentSize.height)/2), (sprite.contentSize.width+10), (sprite.contentSize.height+10));
         
-        sprite = [CCSprite spriteWithSpriteFrameName:@"Philly_Thumb.png"];
-        sprite.position = ccp(winSize.width/2, winSize.height/2+20);
-        [self addChild:sprite];
+        thumb = [CCSprite spriteWithSpriteFrameName:@"Philly_Thumb.png"];
+        thumb.position = ccp(winSize.width/2, winSize.height/2+20);
+        [self addChild:thumb];
         
-        thumbnailRect = CGRectMake((sprite.position.x-(sprite.contentSize.width)/2), (sprite.position.y-(sprite.contentSize.height)/2), (sprite.contentSize.width+10), (sprite.contentSize.height+10));
+        thumbnailRect = CGRectMake((thumb.position.x-(thumb.contentSize.width)/2), (thumb.position.y-(thumb.contentSize.height)/2), (thumb.contentSize.width+10), (thumb.contentSize.height+10));
         
         lStructs = [LevelSelectLayer buildLevels];
-        CCMenuItem *button;
-        CCMenu *menu;
-        
-        for(int i = 0; i < [lStructs count]; i++){
-            level = (levelProps *)[[lStructs objectAtIndex:i] pointerValue];
             
-            CCLabelTTF *label = [CCLabelTTF labelWithString:level->name fontName:@"LostPet.TTF" fontSize:25.0];
-            [[label texture] setAliasTexParameters];
-            label.color = _color_pink;
-            button = [CCMenuItemLabel itemWithLabel:label target:self selector:NSSelectorFromString(level->func)];
-            
-            menu = [CCMenu menuWithItems:button, nil];
-            //[menu alignItemsVertically];
-            [menu setPosition:ccp(110, 200-(i*20))];
-            [self addChild:menu z:11];
-        }
+        [self schedule: @selector(tick:)];
     }
     return self;
     // TODO - store high score per level
@@ -215,6 +205,11 @@
 -(void) tick: (ccTime) dt {
     //CGSize size = [[CCDirector sharedDirector] winSize];
     time++;
+    level = (levelProps *)[(NSValue *)[lStructs objectAtIndex:curLevelIndex] pointerValue];
+    
+    [thumb setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:level->thumbnail]];
+    [nameLabel setString:[NSString stringWithFormat:@"%@", level->name]];
+    [scoreLabel setString:[NSString stringWithFormat:@"high score: %06d", level->highScore]];
 }
 
 - (void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -223,13 +218,18 @@
     location = [[CCDirector sharedDirector] convertToGL:location];
     
     if(CGRectContainsPoint(rightArrowRect, location)){
-        CCLOG(@"Right");
+        if(curLevelIndex < [lStructs count] - 1)
+            curLevelIndex++;
+        else curLevelIndex = 0;
     }
     else if(CGRectContainsPoint(leftArrowRect, location)){
-        CCLOG(@"Left");
+        if(curLevelIndex > 0)
+            curLevelIndex--;
+        else curLevelIndex = [lStructs count] - 1;
     }
     else if(CGRectContainsPoint(thumbnailRect, location)){
-        CCLOG(@"Thumbnail");
+        SEL levelMethod = NSSelectorFromString(level->func);
+        [self performSelector:levelMethod];
     }
 }
 

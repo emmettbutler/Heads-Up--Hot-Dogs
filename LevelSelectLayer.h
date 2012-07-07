@@ -10,6 +10,7 @@
 #import "cocos2d.h"
 
 static NSMutableArray *levelStructs;
+static NSUserDefaults *standardUserDefaults;
 
 @interface LevelSelectLayer : CCLayer {
     struct spcDogData{
@@ -32,9 +33,9 @@ static NSMutableArray *levelStructs;
         NSString *func;
         spcDogData *specialDog;
         NSString *spritesheet;
+        NSString *thumbnail;
     };
-    
-    NSUserDefaults *standardUserDefaults;
+
     int time;
     ccColor3B _color_pink;
     NSMutableArray *lStructs;
@@ -44,6 +45,9 @@ static NSMutableArray *levelStructs;
     CGRect rightArrowRect;
     CGRect leftArrowRect;
     CGRect thumbnailRect;
+    CCSprite *thumb;
+    CCLabelTTF *scoreLabel;
+    CCLabelTTF *nameLabel;
 }
 
 +(NSMutableArray *)buildLevels;

@@ -8,6 +8,7 @@
 
 #import "cocos2d.h"
 #import <CocosDenshion/SimpleAudioEngine.h>
+#import "LevelSelectLayer.h"
 
 @interface LoseLayer : CCLayer
 {
@@ -19,6 +20,7 @@
     ALuint sting;
     NSString *slug;
     ccColor3B _color_pink, _color_blue, _color_darkblue;
+    levelProps *level;
 }
 
 +(CCScene *) sceneWithData:(void*)data;

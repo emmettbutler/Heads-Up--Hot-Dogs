@@ -66,12 +66,13 @@
 
 - (void)loseScene{
     [TestFlight passCheckpoint:@"Game Over"];
-    NSMutableArray *loseParams = [[NSMutableArray alloc] initWithCapacity:5];
+    NSMutableArray *loseParams = [[NSMutableArray alloc] initWithCapacity:6];
     [loseParams addObject:[NSNumber numberWithInteger:_points]];
     [loseParams addObject:[NSNumber numberWithInteger:time]];
     [loseParams addObject:[NSNumber numberWithInteger:_peopleGrumped]];
     [loseParams addObject:[NSNumber numberWithInteger:_dogsSaved]];
     [loseParams addObject:slug];
+    [loseParams addObject:[NSValue valueWithPointer:level]];
     [[CCDirector sharedDirector] replaceScene:[LoseLayer sceneWithData:loseParams]];
 }
 
@@ -1286,9 +1287,6 @@
         
         // color definitions
         _color_pink = ccc3(255, 62, 166);
-
-        //[standardUserDefaults setInteger:0 forKey:@"overallTime"];
-        //[standardUserDefaults setInteger:0 forKey:@"highScore"];
             
         [standardUserDefaults synchronize];
         
@@ -1321,7 +1319,7 @@
         scoreLabel.position = ccp(winSize.width-80, DOG_COUNTER_HT-3);
         [self addChild: scoreLabel z:72];
 
-        NSInteger highScore = [standardUserDefaults integerForKey:@"highScore"];
+        NSInteger highScore = [standardUserDefaults integerForKey:level->highScoreSaveKey];
         CCLabelTTF *highScoreLabel = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"HI: %d", highScore] fontName:@"LostPet.TTF" fontSize:18.0];
         highScoreLabel.color = _color_pink;
         [[highScoreLabel texture] setAliasTexParameters];

@@ -26,12 +26,16 @@
     NSInteger *timePlayed = (NSInteger *)[(NSValue *)[(NSMutableArray *) data objectAtIndex:1] pointerValue]; 
     NSInteger *peopleGrumped = (NSInteger *)[(NSValue *)[(NSMutableArray *) data objectAtIndex:2] pointerValue]; 
     NSInteger *dogsSaved = (NSInteger *)[(NSValue *)[(NSMutableArray *) data objectAtIndex:3] pointerValue]; 
-    NSString *slug = (NSString *)[(NSMutableArray *) data objectAtIndex:4]; 
+    NSString *slug = (NSString *)[(NSMutableArray *) data objectAtIndex:4];
+    NSValue *lV = (NSValue *)[(NSMutableArray *) data objectAtIndex:5];
+    levelProps *l = (levelProps *)[lV pointerValue];
+    
     layer->_score = (int)score;
     layer->_timePlayed = (int)timePlayed;
     layer->_peopleGrumped = (int)peopleGrumped;
     layer->_dogsSaved = (int)dogsSaved;
     layer->slug = slug;
+    layer->level = l;
     CCLOG(@"In sceneWithData: score = %d, time = %d, peopleGrumped = %d, dogsSaved = %d", layer->_score, layer->_timePlayed, layer->_peopleGrumped, layer->_dogsSaved);
     
 	[scene addChild:layer];
@@ -118,7 +122,7 @@
 -(void) tick: (ccTime) dt {
     if(!_lock){
         NSUserDefaults *standardUserDefaults = [NSUserDefaults standardUserDefaults];
-        highScore = [standardUserDefaults integerForKey:@"highScore"];
+        highScore = [standardUserDefaults integerForKey:level->highScoreSaveKey];
         NSInteger bestTime = [standardUserDefaults integerForKey:@"bestTime"];
         NSInteger overallTime = [standardUserDefaults integerForKey:@"overallTime"];
         _lock = 1;
@@ -128,7 +132,7 @@
         sting = [[SimpleAudioEngine sharedEngine] playEffect:@"game over sting.wav"];
 #endif
         if(_score > highScore){
-            [standardUserDefaults setInteger:_score forKey:@"highScore"];
+            [standardUserDefaults setInteger:_score forKey:level->highScoreSaveKey];
             highScore = _score;
         
             scoreNotify = [CCLabelTTF labelWithString:@"*" fontName:@"LostPet.TTF" fontSize:26.0];
