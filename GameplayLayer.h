@@ -25,10 +25,9 @@
     b2Fixture *_bottomFixture, *_wallsFixture, *_wienerFixture, *_targetFixture, *_personFixture, *_policeArmFixture;
     CCSprite *_wiener, *_personLower, *_personUpper, *_personUpperOverlay, *_target, *_pauseButton, *background;
     CCAction *_walkAction, *_walkFaceAction;
-    CCFiniteTimeAction *_idleAction, *_appearAction, *_hitAction, *_shotAction, *_shootAction, *_armShootAction, *_shootFaceAction, *_plusTenAction, *_plus25Action, *_bonusVaporTrailAction;
-    CCFiniteTimeAction *_plus100Action, *_plus15Action, *_plus25BigAction, *_bonusPlus250Action, *_bonusPlus1000Action, *_bonusPlus100Action;
+    CCFiniteTimeAction *_idleAction, *_appearAction, *_hitAction, *_shotAction, *_shootAction, *_armShootAction, *_shootFaceAction;
     CCAnimation *walkAnim, *idleAnim, *hitAnim, *dogDeathAnim, *dogAppearAnim, *walkFaceAnim, *walkDogFaceAnim;
-    CCAnimation *dogShotAnim, *shootAnim, *armShootAnim, *shootFaceAnim, *plusTenAnim, *plus25Anim, *plus100Anim, *plus15Anim, *plus25BigAnim, *bonusVaporTrailAnim, *bonusPlus250Anim, *bonusPlus1000Anim, *bonusPlus100Anim;
+    CCAnimation *dogShotAnim, *shootAnim, *armShootAnim, *shootFaceAnim;
     CCSpriteBatchNode *spriteSheet;
     CCLabelTTF *scoreLabel, *droppedLabel;
     b2Vec2 policeRayPoint1, policeRayPoint2;
@@ -68,6 +67,15 @@
         CCAction *defaultAction;
         CCAnimation *altAnimation;
         CCAction *altWalkAction;
+        // point notifier actions
+        CCFiniteTimeAction *_not_dogContact;
+        CCFiniteTimeAction *_not_dogOnHead;
+        CCFiniteTimeAction *_not_leaveScreen;
+        CCFiniteTimeAction *_not_leaveScreenFlash;
+        CCFiniteTimeAction *_not_spcContact;
+        CCFiniteTimeAction *_not_spcOnHead;
+        CCFiniteTimeAction *_not_spcLeaveScreen;
+        // end point notifiers
         float armSpeed;
         float deathDelay; // how long a hot dog sits on the ground before dying, in seconds
         float moveDelta; // the linear velocity of the person
@@ -87,6 +95,8 @@
         BOOL _dog_isOnHead;
         BOOL _person_hasTouchedDog;
     };
+    
+    // TODO - separate bodyuserdata into two structs, one for dogs and one for people - will probably reduce memory use slightly?
 
     struct fixtureUserData {
         int tag;
@@ -158,18 +168,8 @@
 @property (nonatomic, retain) CCSprite *policeArm;
 @property (nonatomic, retain) CCSprite *wiener;
 @property (nonatomic, retain) CCSprite *target;
-@property (nonatomic, retain) CCFiniteTimeAction *plusTenAction;
-@property (nonatomic, retain) CCFiniteTimeAction *plus15Action;
-@property (nonatomic, retain) CCFiniteTimeAction *plus25Action;
-@property (nonatomic, retain) CCFiniteTimeAction *plus25BigAction;
-@property (nonatomic, retain) CCFiniteTimeAction *plus100Action;
-@property (nonatomic, retain) CCFiniteTimeAction *bonusVaporTrailAction;
-@property (nonatomic, retain) CCFiniteTimeAction *bonusPlus100Action;
-@property (nonatomic, retain) CCFiniteTimeAction *bonusPlus250Action;
-@property (nonatomic, retain) CCFiniteTimeAction *bonusPlus1000Action;
 
 // returns a CCScene that contains the HelloWorldLayer as the only child
 +(CCScene *) sceneWithData:(void *)data;
-+(id) initWithSlug:(NSString *)levelSlug;
 
 @end

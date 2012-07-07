@@ -11,6 +11,7 @@
 #import "TestFlight.h"
 #import "LoseScene.h"
 #import "LevelSelectLayer.h"
+#import "PointNotify.h"
 
 #define PTM_RATIO 32
 #define DEGTORAD 0.0174532
@@ -44,15 +45,6 @@
 @synthesize policeArm = _policeArm;
 @synthesize wiener = _wiener;
 @synthesize target = _target;
-@synthesize plusTenAction = _plusTenAction;
-@synthesize plus25Action = _plus25Action;
-@synthesize plus25BigAction = _plus25BigAction;
-@synthesize plus15Action = _plus15Action;
-@synthesize plus100Action = _plus100Action;
-@synthesize bonusVaporTrailAction = _bonusVaporTrailAction;
-@synthesize bonusPlus100Action = _bonusPlus100Action;
-@synthesize bonusPlus1000Action = _bonusPlus1000Action;
-@synthesize bonusPlus250Action = _bonusPlus250Action;
 
 +(CCScene *) sceneWithData:(void *)data {
     
@@ -203,6 +195,8 @@
     NSNumber *xPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:0];
     NSNumber *yPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:1];
     NSNumber *points = (NSNumber *)[(NSMutableArray *) params objectAtIndex:2];
+    NSValue *userdata = (NSValue *)[(NSMutableArray *) params objectAtIndex:3];
+    bodyUserData *ud = (bodyUserData *)[userdata pointerValue];
 
     CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"plusTen1.png"];
     sprite.position = ccp(xPos.intValue, yPos.intValue);
@@ -214,18 +208,12 @@
     
     id seq;
     NSString *sound;
-
+    
     switch(points.intValue){
-        default: seq = [CCSequence actions:_plusTenAction, removeAction, nil];
+        default:  seq = [CCSequence actions:ud->_not_dogContact, removeAction, nil];
             sound = [NSString stringWithString:@"25pts.wav"];
             break;
-        case 15: seq = [CCSequence actions:_plus15Action, removeAction, nil];
-            sound = [NSString stringWithString:@"50pts.wav"];
-            break;
-        case 25: seq = [CCSequence actions:_plus25BigAction, removeAction, nil];
-            sound = [NSString stringWithString:@"100pts.wav"];
-            break;
-        case 100: seq = [CCSequence actions:_bonusPlus100Action, removeAction, nil];
+        case 100: seq = [CCSequence actions:ud->_not_spcContact, removeAction, nil];
             sound = [NSString stringWithString:@"100pts.wav"];
             break;
     }
@@ -240,6 +228,8 @@
     NSNumber *xPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:0];
     NSNumber *yPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:1];
     NSNumber *spec = (NSNumber *)[(NSMutableArray *) params objectAtIndex:2];
+    NSValue *userdata = (NSValue *)[(NSMutableArray *) params objectAtIndex:3];
+    bodyUserData *ud = (bodyUserData *)[userdata pointerValue];
 
     CCSprite *twentyFive = [CCSprite spriteWithSpriteFrameName:@"Plus_25_sm_1.png"];
     twentyFive.position = ccp(xPos.intValue, yPos.intValue);
@@ -251,9 +241,9 @@
 
     id seq;
     if(spec.intValue == 1)
-        seq = [CCSequence actions:_bonusPlus250Action, removeAction, nil];
+        seq = [CCSequence actions:ud->_not_spcOnHead, removeAction, nil];
     else if(spec.intValue == 0)
-        seq = [CCSequence actions:_plus25Action, removeAction, nil];
+        seq = [CCSequence actions:ud->_not_dogOnHead, removeAction, nil];
     [twentyFive runAction:seq];
 }
 
@@ -262,6 +252,8 @@
     NSNumber *xPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:0];
     NSNumber *yPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:1];
     NSNumber *spec = (NSNumber *)[(NSMutableArray *) params objectAtIndex:2]; // 1 means a special dog
+    NSValue *userdata = (NSValue *)[(NSMutableArray *) params objectAtIndex:3];
+    bodyUserData *ud = (bodyUserData *)[userdata pointerValue];
     
     CCSprite *oneHundred = [CCSprite spriteWithSpriteFrameName:@"Plus_100_1.png"];
     oneHundred.position = ccp(xPos.intValue, yPos.intValue);
@@ -283,15 +275,15 @@
 #endif
     id seq;
     if (spec.intValue == 1)
-        seq = [CCSequence actions:_bonusPlus1000Action, removeAction, nil];
+        seq = [CCSequence actions:ud->_not_spcLeaveScreen, removeAction, nil];
     else
-        seq = [CCSequence actions:_plus100Action, removeAction, nil];
+        seq = [CCSequence actions:ud->_not_leaveScreen, removeAction, nil];
     [oneHundred runAction:seq];
     
     NSMutableArray *removeParams2 = [[NSMutableArray alloc] initWithCapacity:1];
     [removeParams2 addObject:[NSValue valueWithPointer:blast]];
     CCAction *removeAction2 = [CCCallFuncND actionWithTarget:self selector:@selector(removeSprite:data:) data:removeParams2];
-    id seq2 = [CCSequence actions:_bonusVaporTrailAction, removeAction2, nil];
+    id seq2 = [CCSequence actions:ud->_not_leaveScreenFlash, removeAction2, nil];
     [blast runAction:seq2];
 }
 
@@ -646,7 +638,7 @@
 
 -(void)walkIn:(id)sender data:(void *)params {
     int zIndex, fTag, armBodyXOffset, armBodyYOffset, yPos;
-    int armJointXOffset, armJointYOffset;
+    int armJointXOffset, armJointYOffset, contactActionIndex;
     float hitboxHeight, hitboxWidth, hitboxCenterX, hitboxCenterY, density, restitution, friction, heightOffset, sensorHeight, sensorWidth, framerate, moveDelta;
     NSString *ogHeadSprite;
     BOOL spawn;
@@ -720,6 +712,7 @@
             friction = 0.3f;
             fTag = F_BUSHED;
             heightOffset = 2.9f;
+            contactActionIndex = 0;
             for(int i = 1; i <= 6; i++){
                 [walkAnimFrames addObject:
                     [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -765,6 +758,7 @@
             friction = 4.0f;
             fTag = F_COPHED;
             heightOffset = 2.9f;
+            contactActionIndex = 0;
             lowerArmAngle = 0;
             upperArmAngle = 55;
             framerate = .07f;
@@ -817,6 +811,7 @@
             restitution = .87f; //bounce
             friction = 0.15f;
             framerate = .06f;
+            contactActionIndex = 2;
             fTag = F_PNKHED;
             heightOffset = 2.4f;
             for(int i = 1; i <= 8; i++){
@@ -859,6 +854,7 @@
             friction = 0.15f;
             framerate = .07f;
             fTag = F_JOGHED;
+            contactActionIndex = 2;
             heightOffset = 2.55f;
             for(int i = 1; i <= 8; i++){
                 [walkAnimFrames addObject:
@@ -900,6 +896,7 @@
             friction = 0.15f;
             framerate = .06f;
             fTag = F_JOGHED;
+            contactActionIndex = 2;
             heightOffset = 2.9f;
             for(int i = 1; i <= 8; i++){
                 [walkAnimFrames addObject:
@@ -942,6 +939,8 @@
         
     }
 
+    NSMutableArray *notifiers = [PointNotify buildNotifiers];
+    
     //create animations for walk, idle, and bobbing head
     walkAnim = [CCAnimation animationWithFrames:walkAnimFrames delay:framerate];
     _walkAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:walkAnim restoreOriginalFrame:NO]] retain];
@@ -1022,6 +1021,14 @@
     ud->aiming = false;
     ud->hasLeftScreen = false;
     ud->_person_hasTouchedDog = false;
+    // point notifiers
+    ud->_not_dogContact = (CCFiniteTimeAction *)[(NSValue *)[notifiers objectAtIndex:contactActionIndex] pointerValue];
+    ud->_not_dogOnHead = (CCFiniteTimeAction *)[(NSValue *)[notifiers objectAtIndex:3] pointerValue];
+    ud->_not_leaveScreen = (CCFiniteTimeAction *)[(NSValue *)[notifiers objectAtIndex:4] pointerValue];
+    ud->_not_leaveScreenFlash = (CCFiniteTimeAction *)[(NSValue *)[notifiers objectAtIndex:5] pointerValue];
+    ud->_not_spcContact = (CCFiniteTimeAction *)[(NSValue *)[notifiers objectAtIndex:6] pointerValue];
+    ud->_not_spcOnHead = (CCFiniteTimeAction *)[(NSValue *)[notifiers objectAtIndex:7] pointerValue];
+    ud->_not_spcLeaveScreen = (CCFiniteTimeAction *)[(NSValue *)[notifiers objectAtIndex:8] pointerValue];
     if(character.intValue == S_BUSMAN){
         ud->stopTime = 100 + (arc4random() % 80);
         ud->stopTimeDelta = 100 + (arc4random() % 80);
@@ -1388,97 +1395,6 @@
         _wallsBody->CreateFixture(&wallsBoxDef);
 
         //TODO - preload as many assets as possible
-        
-        // set up point notifiers
-        NSMutableArray *plusTenAnimFrames = [[NSMutableArray alloc] initWithCapacity:11];
-        for(int i = 1; i <= 11; i++){
-            [plusTenAnimFrames addObject:
-             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-              [NSString stringWithFormat:@"plusTen%d.png", i]]];
-        }
-        plusTenAnim = [CCAnimation animationWithFrames:plusTenAnimFrames delay:.04f];
-        self.plusTenAction = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:plusTenAnim restoreOriginalFrame:NO] times:1];
-        [plusTenAnimFrames release];
-
-        NSMutableArray *plus15AnimFrames = [[NSMutableArray alloc] initWithCapacity:13];
-        for(int i = 1; i <= 11; i++){
-            [plus15AnimFrames addObject:
-             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-              [NSString stringWithFormat:@"PlusFifteen%d.png", i]]];
-        }
-        plus15Anim = [CCAnimation animationWithFrames:plus15AnimFrames delay:.04f];
-        self.plus15Action = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:plus15Anim restoreOriginalFrame:NO] times:1];
-        [plus15AnimFrames release];
-        
-        NSMutableArray *plus25BigAnimFrames = [[NSMutableArray alloc] initWithCapacity:13];
-        for(int i = 1; i <= 12; i++){
-            [plus25BigAnimFrames addObject:
-             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-              [NSString stringWithFormat:@"plusTwentyFive%d.png", i]]];
-        }
-        plus25BigAnim = [CCAnimation animationWithFrames:plus25BigAnimFrames delay:.04f];
-        self.plus25BigAction = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:plus25BigAnim restoreOriginalFrame:NO] times:1];
-        [plus25BigAnimFrames release];
-        
-        NSMutableArray *plus25AnimFrames = [[NSMutableArray alloc] initWithCapacity:13];
-        for(int i = 1; i <= 13; i++){
-            [plus25AnimFrames addObject:
-             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-              [NSString stringWithFormat:@"Plus_25_sm_%d.png", i]]];
-        }
-        plus25Anim = [CCAnimation animationWithFrames:plus25AnimFrames delay:.04f];
-        self.plus25Action = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:plus25Anim restoreOriginalFrame:NO] times:1];
-        [plus25AnimFrames release];
-        
-        NSMutableArray *plus100AnimFrames = [[NSMutableArray alloc] initWithCapacity:18];
-        for(int i = 1; i <= 17; i++){
-            [plus100AnimFrames addObject:
-             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-              [NSString stringWithFormat:@"Plus_100_%d.png", i]]];
-        }
-        plus100Anim = [CCAnimation animationWithFrames:plus100AnimFrames delay:.06f];
-        self.plus100Action = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:plus100Anim restoreOriginalFrame:NO] times:1];
-        [plus100AnimFrames release];
-        
-        NSMutableArray *bonusVaporTrailAnimFrames = [[NSMutableArray alloc] initWithCapacity:18];
-        for(int i = 1; i <= 13; i++){
-            [bonusVaporTrailAnimFrames addObject:
-             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-              [NSString stringWithFormat:@"CarryOff_Blast_%d.png", i]]];
-        }
-        bonusVaporTrailAnim = [CCAnimation animationWithFrames:bonusVaporTrailAnimFrames delay:.07f];
-        self.bonusVaporTrailAction = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:bonusVaporTrailAnim restoreOriginalFrame:NO] times:1];
-        [bonusVaporTrailAnimFrames release];
-        
-        NSMutableArray *bonusPlus250AnimFrames = [[NSMutableArray alloc] initWithCapacity:11];
-        for(int i = 1; i <= 11; i++){
-            [bonusPlus250AnimFrames addObject:
-             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-              [NSString stringWithFormat:@"Bonus_Plus250_sm_%d.png", i]]];
-        }
-        bonusPlus250Anim = [CCAnimation animationWithFrames:bonusPlus250AnimFrames delay:.04f];
-        self.bonusPlus250Action = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:bonusPlus250Anim restoreOriginalFrame:NO] times:1];
-        [bonusPlus250AnimFrames release];
-        
-        NSMutableArray *bonusPlus100AnimFrames = [[NSMutableArray alloc] initWithCapacity:11];
-        for(int i = 1; i <= 11; i++){
-            [bonusPlus100AnimFrames addObject:
-             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-              [NSString stringWithFormat:@"Bonus_Plus_Hundred_%d.png", i]]];
-        }
-        bonusPlus100Anim = [CCAnimation animationWithFrames:bonusPlus100AnimFrames delay:.07f];
-        self.bonusPlus100Action = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:bonusPlus100Anim restoreOriginalFrame:NO] times:1];
-        [bonusPlus100AnimFrames release];
-        
-        NSMutableArray *bonusPlus1000AnimFrames = [[NSMutableArray alloc] initWithCapacity:13];
-        for(int i = 1; i <= 13; i++){
-            [bonusPlus1000AnimFrames addObject:
-             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-              [NSString stringWithFormat:@"Bonus_Plus_1000_%d.png", i]]];
-        }
-        bonusPlus1000Anim = [CCAnimation animationWithFrames:bonusPlus1000AnimFrames delay:.07f];
-        self.bonusPlus1000Action = [CCRepeat actionWithAction:[CCAnimate actionWithAnimation:bonusPlus1000Anim restoreOriginalFrame:NO] times:1];
-        [bonusPlus1000AnimFrames release];
 
         [TestFlight passCheckpoint:@"Game Started"];
 
@@ -1617,7 +1533,7 @@
                 heartParticles.duration = 0.1f;
                 [self addChild:heartParticles z:60];
                 if(!ud->hasTouchedHead){
-                    NSMutableArray *plusPointsParams = [[NSMutableArray alloc] initWithCapacity:3];
+                    NSMutableArray *plusPointsParams = [[NSMutableArray alloc] initWithCapacity:4];
                     [plusPointsParams addObject:[NSNumber numberWithInt:pBody->GetPosition().x*PTM_RATIO]];
                     [plusPointsParams addObject:[NSNumber numberWithInt:(pBody->GetPosition().y+4.7)*PTM_RATIO]];
                     int p;
@@ -1626,6 +1542,7 @@
                     }
                     else {
                         switch(pUd->sprite1.tag){
+                            // TODO - store these in bodyuserdata
                             case S_CRPUNK: p = 10; break;
                             case S_JOGGER: p = 25; break;
                             case S_BUSMAN: p = 10; break;
@@ -1634,6 +1551,7 @@
                     }
                     // TODO - add new point notifier sprites for special dog
                     [plusPointsParams addObject:[NSNumber numberWithInt:p]];
+                    [plusPointsParams addObject:[NSValue valueWithPointer:pUd]];
                     _points += p;
                     [self runAction:[CCCallFuncND actionWithTarget:self selector:@selector(plusPoints:data:) data:plusPointsParams]];
                 }
@@ -1703,7 +1621,7 @@
                 _points += ud->spcDogsOnHead * 1000;
                 if(ud->dogsOnHead != 0){
                     CCSprite *oneHundred = [CCSprite spriteWithSpriteFrameName:@"Plus_100_1.png"];
-                    NSMutableArray *plus100Params = [[NSMutableArray alloc] initWithCapacity:3];
+                    NSMutableArray *plus100Params = [[NSMutableArray alloc] initWithCapacity:4];
                     if(ud->sprite1.flipX){
                         [plus100Params addObject:[NSNumber numberWithInt:winSize.width-(oneHundred.contentSize.width/2)-10]];
                         [plus100Params addObject:[NSNumber numberWithInt:(b->GetPosition().y+4.7)*PTM_RATIO]];
@@ -1716,6 +1634,7 @@
                         [plus100Params addObject:[NSNumber numberWithInt:1]];
                     else
                         [plus100Params addObject:[NSNumber numberWithInt:0]];
+                    [plus100Params addObject:[NSValue valueWithPointer:ud]];
                     [self runAction:[CCCallFuncND actionWithTarget:self selector:@selector(plusOneHundred:data:) data:plus100Params]];
                 }
             }
@@ -1955,13 +1874,14 @@
                     }
                     if(!(time % 45) && ud->dogsOnHead != 0){
                         _points += ud->dogsOnHead * 25;
-                        NSMutableArray *plus25Params = [[NSMutableArray alloc] initWithCapacity:3];
+                        NSMutableArray *plus25Params = [[NSMutableArray alloc] initWithCapacity:4];
                         [plus25Params addObject:[NSNumber numberWithInt:b->GetPosition().x*PTM_RATIO]];
                         [plus25Params addObject:[NSNumber numberWithInt:(b->GetPosition().y+4.7)*PTM_RATIO]];
                         if(ud->spcDogsOnHead > 0)
                             [plus25Params addObject:[NSNumber numberWithInt:1]];
                         else
                             [plus25Params addObject:[NSNumber numberWithInt:0]];
+                        [plus25Params addObject:[NSValue valueWithPointer:ud]];
                         [self runAction:[CCCallFuncND actionWithTarget:self selector:@selector(plusTwentyFive:data:) data:plus25Params]];
                     }
                     if(ud->sprite1.tag == S_POLICE){

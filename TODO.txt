@@ -1,6 +1,8 @@
 // TODO - implement new pause screen layout from mockup
         //TODO - preload as many assets as possible
                         // TODO - it's possible to throw dogs offscreen of they pass by a head first. stop that. 
+                            // TODO - store these in bodyuserdata
                     // TODO - add new point notifier sprites for special dog
                                         // TODO - this only works for forward-facing cops, do the math and make it work for both
                     //TODO - make all global components of cop raycasting into instance variables to allow maybe multiple cops onscreen
+    // TODO - separate bodyuserdata into two structs, one for dogs and one for people - will probably reduce memory use slightly?
