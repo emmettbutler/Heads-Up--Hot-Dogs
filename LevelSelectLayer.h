@@ -41,6 +41,9 @@ static NSMutableArray *levelStructs;
     CCSpriteBatchNode *spritesheet;
     int curLevelIndex;
     levelProps *level;
+    CGRect rightArrowRect;
+    CGRect leftArrowRect;
+    CGRect thumbnailRect;
 }
 
 +(NSMutableArray *)buildLevels;

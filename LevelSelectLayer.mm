@@ -173,15 +173,22 @@
         sprite = [CCSprite spriteWithSpriteFrameName:@"LvlArrow.png"];
         sprite.position = ccp(52, winSize.height/2);
         [self addChild:sprite];
+        
+        leftArrowRect = CGRectMake((sprite.position.x-(sprite.contentSize.width)/2), (sprite.position.y-(sprite.contentSize.height)/2), (sprite.contentSize.width+10), (sprite.contentSize.height+10));
+        
         //right
         sprite = [CCSprite spriteWithSpriteFrameName:@"LvlArrow.png"];
         sprite.position = ccp(winSize.width-52, winSize.height/2);
         sprite.flipX = true;
         [self addChild:sprite];
         
+        rightArrowRect = CGRectMake((sprite.position.x-(sprite.contentSize.width)/2), (sprite.position.y-(sprite.contentSize.height)/2), (sprite.contentSize.width+10), (sprite.contentSize.height+10));
+        
         sprite = [CCSprite spriteWithSpriteFrameName:@"Philly_Thumb.png"];
         sprite.position = ccp(winSize.width/2, winSize.height/2+20);
         [self addChild:sprite];
+        
+        thumbnailRect = CGRectMake((sprite.position.x-(sprite.contentSize.width)/2), (sprite.position.y-(sprite.contentSize.height)/2), (sprite.contentSize.width+10), (sprite.contentSize.height+10));
         
         lStructs = [LevelSelectLayer buildLevels];
         CCMenuItem *button;
@@ -201,9 +208,8 @@
             [self addChild:menu z:11];
         }
     }
-    
-    // TODO - level select screen design implementation
     return self;
+    // TODO - store high score per level
 }
 
 -(void) tick: (ccTime) dt {
@@ -215,6 +221,16 @@
     UITouch *myTouch = [touches anyObject];
     CGPoint location = [myTouch locationInView:[myTouch view]];
     location = [[CCDirector sharedDirector] convertToGL:location];
+    
+    if(CGRectContainsPoint(rightArrowRect, location)){
+        CCLOG(@"Right");
+    }
+    else if(CGRectContainsPoint(leftArrowRect, location)){
+        CCLOG(@"Left");
+    }
+    else if(CGRectContainsPoint(thumbnailRect, location)){
+        CCLOG(@"Thumbnail");
+    }
 }
 
 -(void)switchScreenPhilly{
