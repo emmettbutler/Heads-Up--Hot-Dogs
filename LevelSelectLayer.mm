@@ -27,7 +27,7 @@
     spcDogData *dd;
     [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile: @"sprites_default.plist"];
     
-    // TODO - spritesheet per level
+    // TODO - spritesheet per level, divide into "common" and "per level" sheets
     
     /******************************************
     * PHILLY LEVEL SETTINGS
@@ -48,7 +48,6 @@
     dd->mainSprite = [NSString stringWithString:@"Steak.png"];
     dd->grabSprite = [NSString stringWithString:@"Steak_Grabbed.png"];
     dd->deathAnimFrames = [[NSMutableArray alloc] init];
-    dd->appearAnimFrames = [[NSMutableArray alloc] init];
     dd->shotAnimFrames = [[NSMutableArray alloc] init];
     for(int i = 0; i < 1; i++){
         [dd->deathAnimFrames addObject:
@@ -67,11 +66,6 @@
         [dd->shotAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
           [NSString stringWithFormat:@"Steak_Shot_%d.png", i]]];
-    }
-    for(int i = 1; i <= 6; i++){
-        [dd->appearAnimFrames addObject:
-         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-          [NSString stringWithFormat:@"BonusAppear%d.png", i]]];
     }
     lp->specialDog = dd;
     [levelStructs addObject:[NSValue valueWithPointer:lp]];
@@ -92,37 +86,33 @@
     lp->func = [NSString stringWithString:@"switchScreenNYC"];
     
     dd = new spcDogData();
-    // TODO - bagel for NYC
-    dd->riseSprite = [NSString stringWithString:@"Steak_Rise.png"];
-    dd->fallSprite = [NSString stringWithString:@"Steak_Fall.png"];
-    dd->mainSprite = [NSString stringWithString:@"Steak.png"];
+    // TODO - audio per level
+    // TODO - collection audio from emails
+    dd->riseSprite = [NSString stringWithString:@"Bagel_Rise.png"];
+    dd->fallSprite = [NSString stringWithString:@"Bagel_Fall.png"];
+    dd->mainSprite = [NSString stringWithString:@"Bagel.png"];
     dd->grabSprite = [NSString stringWithString:@"Steak_Grabbed.png"];
     dd->deathAnimFrames = [[NSMutableArray alloc] init];
-    dd->appearAnimFrames = [[NSMutableArray alloc] init];
     dd->shotAnimFrames = [[NSMutableArray alloc] init];
     for(int i = 0; i < 1; i++){
         [dd->deathAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-          [NSString stringWithFormat:@"Steak_Die_1.png"]]];
+          [NSString stringWithFormat:@"Bagel_Die_1.png"]]];
         [dd->deathAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-          [NSString stringWithFormat:@"Steak_Die_2.png"]]];
+          [NSString stringWithFormat:@"Bagel_Die_2.png"]]];
     }
-    for(int i = 1; i <= 7; i++){
+    for(int i = 1; i <= 8; i++){
         [dd->deathAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-          [NSString stringWithFormat:@"Steak_Die_%d.png", i]]];
-    }
-    for(int i = 1; i <= 9; i++){
-        [dd->shotAnimFrames addObject:
-         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-          [NSString stringWithFormat:@"Steak_Shot_%d.png", i]]];
+          [NSString stringWithFormat:@"Bagel_Die_%d.png", i]]];
     }
     for(int i = 1; i <= 6; i++){
-        [dd->appearAnimFrames addObject:
+        [dd->shotAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-          [NSString stringWithFormat:@"BonusAppear%d.png", i]]];
+          [NSString stringWithFormat:@"Bagel_Shot_%d.png", i]]];
     }
+    
     lp->specialDog = dd;
     [levelStructs addObject:[NSValue valueWithPointer:lp]];
     

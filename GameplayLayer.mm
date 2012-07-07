@@ -486,7 +486,11 @@
             tag = S_SPCDOG;
             wienerDeathAnimFrames = dd->deathAnimFrames;
             wienerShotAnimFrames = dd->shotAnimFrames;
-            wienerAppearAnimFrames = dd->appearAnimFrames;
+            for(int i = 1; i <= 6; i++){
+                [wienerAppearAnimFrames addObject:
+                 [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                  [NSString stringWithFormat:@"BonusAppear%d.png", i]]];
+            }
             break;
         default:
             riseSprite = [NSString stringWithString:@"Dog_Rise.png"];

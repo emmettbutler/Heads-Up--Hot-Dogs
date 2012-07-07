@@ -23,7 +23,6 @@ static NSMutableArray *levelStructs;
         NSString *mainSprite;
         NSString *grabSprite;
         NSMutableArray *deathAnimFrames;
-        NSMutableArray *appearAnimFrames;
         NSMutableArray *shotAnimFrames;
     };
     
