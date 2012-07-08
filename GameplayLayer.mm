@@ -23,7 +23,6 @@
 #define COP_RANGE 4
 #define DOG_COUNTER_HT 295
 #define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
-#define GAME_AUTOROTATION kGameAutorotationCCDirector
 
 #ifdef DEBUG
 #define SPAWN_LIMIT_DECREMENT_DELAY 6
