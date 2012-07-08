@@ -99,7 +99,7 @@
         BOOL _person_hasTouchedDog;
     };
     
-    // TODO - separate bodyuserdata into two structs, one for dogs and one for people - will probably reduce memory use slightly?
+    // TODO - separate bodyuserdata into two structs(?), one for dogs and one for people - will probably reduce memory use slightly?
 
     struct fixtureUserData {
         int tag;

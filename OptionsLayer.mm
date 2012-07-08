@@ -26,15 +26,18 @@
 
 -(id) init{
     if ((self = [super init])){
-        //CGSize size = [[CCDirector sharedDirector] winSize];
+        CGSize winSize = [[CCDirector sharedDirector] winSize];
         
-        [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile: @"end_sprites_default.plist"];
-        spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"end_sprites_default.png"];
+        spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_menus.png"];
         [self addChild:spriteSheet];
         
-        CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"GameEnd_BG"];
+        CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"blank_bg.png"];
         sprite.anchorPoint = CGPointZero;
         [self addChild:sprite z:-1];
+        
+        sprite = [CCSprite spriteWithSpriteFrameName:@"Lvl_TextBox.png"];
+        sprite.position = ccp(winSize.width/2, (sprite.contentSize.height/2)+40);
+        [self addChild:sprite];
         
         CCSprite *restartButton = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
         restartButton.position = ccp(110, 27);
@@ -79,7 +82,6 @@
 }
 
 -(void) dealloc{
-    [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile: @"end_sprites_default.plist"];
     [super dealloc];
 }
 

@@ -50,8 +50,7 @@
         _color_blue = ccc3(6, 110, 163);
         _color_darkblue = ccc3(14, 168, 248);
         
-        [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile: @"end_sprites_default.plist"];
-        spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"end_sprites_default.png"];
+        spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_menus.png"];
         [self addChild:spriteSheet];
         
         CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"GameEnd_BG"];
@@ -184,7 +183,6 @@
 }
 
 -(void) dealloc{
-    [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile: @"end_sprites_default.plist"];
     [[SimpleAudioEngine sharedEngine] stopEffect:sting];
     [super dealloc];
 }

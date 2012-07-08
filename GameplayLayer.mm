@@ -1402,8 +1402,6 @@
         wallsBox.Set(upperRightCorner, lowerRightCorner);
         _wallsBody->CreateFixture(&wallsBoxDef);
 
-        //TODO - preload as many assets as possible
-
         [TestFlight passCheckpoint:@"Game Started"];
 
         //schedule callbacks for dogs, people, and game value decrements

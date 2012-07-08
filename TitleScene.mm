@@ -42,8 +42,7 @@
         CGSize size = [[CCDirector sharedDirector] winSize];
         [[CCDirector sharedDirector] setDisplayFPS:NO];
         
-        [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile: @"title_sprites_default.plist"];
-        spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"title_sprites_default.png"];
+        spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_menus.png"];
         [self addChild:spriteSheet];
         
         CCLabelTTF *label = [CCLabelTTF labelWithString:@"BETA v0.2" fontName:@"LostPet.TTF" fontSize:30.0];
@@ -74,12 +73,15 @@
         [otherMenu setPosition:ccp(370, 26)];
         [self addChild:otherMenu z:11];
         
-        background = [CCSprite spriteWithSpriteFrameName:@"TitleAnim_1.png"];
+        background = [CCSprite spriteWithSpriteFrameName:@"blank_bg.png"];
         background.anchorPoint = CGPointZero;
         [self addChild:background z:-10];
         
         NSMutableArray *titleAnimFrames = [[NSMutableArray alloc] initWithCapacity:13];
-        for(int i = 1; i <= 13; i++){
+        [titleAnimFrames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithString:@"blank_bg.png"]]];
+        for(int i = 2; i <= 13; i++){
             [titleAnimFrames addObject:
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
               [NSString stringWithFormat:@"TitleAnim_%d.png", i]]];
@@ -127,7 +129,6 @@
 }
 
 -(void) dealloc{
-    [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile: @"title_sprites_default.plist"];
     [super dealloc];
 }
 

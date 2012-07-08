@@ -142,9 +142,8 @@
         curLevelIndex = 0;
         
         _color_pink = ccc3(255, 62, 166);
-        
-        [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile: @"sprites_levelselect.plist"];
-        spritesheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_levelselect.png"];
+
+        spritesheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_menus.png"];
         [self addChild:spritesheet];
         
         CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"LvlBG.png"];
@@ -199,7 +198,6 @@
         [self schedule: @selector(tick:)];
     }
     return self;
-    // TODO - store high score per level
 }
 
 -(void) tick: (ccTime) dt {
