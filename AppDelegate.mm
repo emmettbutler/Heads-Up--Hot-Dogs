@@ -123,15 +123,15 @@
     [standardUserDefaults setInteger:0 forKey:@"introDone"];
     [standardUserDefaults synchronize];
 #else
-    [[SimpleAudioEngine sharedEngine] preloadEffect:@"menu intro.wav"];
-    [[SimpleAudioEngine sharedEngine] preloadEffect:@"pause 3.wav"];
-    [[SimpleAudioEngine sharedEngine] preloadEffect:@"hot dog appear 1.wav"];
-    [[SimpleAudioEngine sharedEngine] preloadEffect:@"hot dog disappear.wav"];
-    [[SimpleAudioEngine sharedEngine] preloadEffect:@"25pts.wav"];
-    [[SimpleAudioEngine sharedEngine] preloadEffect:@"50pts.wav"];
-    [[SimpleAudioEngine sharedEngine] preloadEffect:@"100pts.wav"];
-    [[SimpleAudioEngine sharedEngine] preloadEffect:@"hot dog on head.wav"];
-    [[SimpleAudioEngine sharedEngine] preloadEffect:@"game over sting.wav"];
+    [[SimpleAudioEngine sharedEngine] preloadEffect:@"menu intro.mp3"];
+    [[SimpleAudioEngine sharedEngine] preloadEffect:@"pause 3.mp3"];
+    [[SimpleAudioEngine sharedEngine] preloadEffect:@"hot dog appear 1.mp3"];
+    [[SimpleAudioEngine sharedEngine] preloadEffect:@"hot dog disappear.mp3"];
+    [[SimpleAudioEngine sharedEngine] preloadEffect:@"25pts.mp3"];
+    [[SimpleAudioEngine sharedEngine] preloadEffect:@"50pts.mp3"];
+    [[SimpleAudioEngine sharedEngine] preloadEffect:@"100pts.mp3"];
+    [[SimpleAudioEngine sharedEngine] preloadEffect:@"hot dog on head.mp3"];
+    [[SimpleAudioEngine sharedEngine] preloadEffect:@"game over sting.mp3"];
 #endif
     
     [CCTexture2D setDefaultAlphaPixelFormat:kTexture2DPixelFormat_RGBA4444];

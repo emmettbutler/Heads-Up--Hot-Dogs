@@ -45,11 +45,17 @@
         [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile: @"title_sprites_default.plist"];
         spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"title_sprites_default.png"];
         [self addChild:spriteSheet];
+        
+        CCLabelTTF *label = [CCLabelTTF labelWithString:@"BETA v0.2" fontName:@"LostPet.TTF" fontSize:30.0];
+        [[label texture] setAliasTexParameters];
+        label.color = _color_pink;
+        label.position = ccp((label.contentSize.width/2)+6, size.height-(label.contentSize.height/2)-5);
+        [self addChild:label];
 
         CCSprite *startButton = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
         startButton.position = ccp(110, 27);
         [self addChild:startButton z:10];
-        CCLabelTTF *label = [CCLabelTTF labelWithString:@"     Start     " fontName:@"LostPet.TTF" fontSize:22.0];
+        label = [CCLabelTTF labelWithString:@"     Start     " fontName:@"LostPet.TTF" fontSize:22.0];
         [[label texture] setAliasTexParameters];
         label.color = _color_pink;
         CCMenuItem *button = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(switchSceneStart)];
