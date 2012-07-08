@@ -212,19 +212,19 @@
     
     switch(points.intValue){
         default:  seq = [CCSequence actions:ud->_not_dogContact, removeAction, nil];
-            sound = [NSString stringWithString:@"10pts.wav"];
+            sound = [NSString stringWithString:@"10pts.mp3"];
             break;
         case 10:  seq = [CCSequence actions:ud->_not_dogContact, removeAction, nil];
-            sound = [NSString stringWithString:@"10pts.wav"];
+            sound = [NSString stringWithString:@"10pts.mp3"];
             break;
         case 15:  seq = [CCSequence actions:ud->_not_dogContact, removeAction, nil];
-            sound = [NSString stringWithString:@"15pts.wav"];
+            sound = [NSString stringWithString:@"15pts.mp3"];
             break;
         case 25:  seq = [CCSequence actions:ud->_not_dogContact, removeAction, nil];
-            sound = [NSString stringWithString:@"25pts.wav"];
+            sound = [NSString stringWithString:@"25pts.mp3"];
             break;
         case 100: seq = [CCSequence actions:ud->_not_spcContact, removeAction, nil];
-            sound = [NSString stringWithString:@"100pts.wav"];
+            sound = [NSString stringWithString:@"100pts.mp3"];
             break;
     }
 #ifdef DEBUG
@@ -281,7 +281,7 @@
     CCAction *removeAction = [CCCallFuncND actionWithTarget:self selector:@selector(removeSprite:data:) data:removeParams];
 #ifdef DEBUG
 #else
-    [[SimpleAudioEngine sharedEngine] playEffect:@"100pts.wav"];
+    [[SimpleAudioEngine sharedEngine] playEffect:@"100pts.mp3"];
 #endif
     id seq;
     if (spec.intValue == 1)
@@ -436,7 +436,7 @@
         }
 #ifdef DEBUG
 #else
-        [[SimpleAudioEngine sharedEngine] playEffect:@"hot dog disappear.wav"];
+        [[SimpleAudioEngine sharedEngine] playEffect:@"hot dog disappear.mp3"];
 #endif
     }
 }
@@ -626,7 +626,7 @@
     [_wiener runAction:seq];
 #ifdef DEBUG
 #else
-    [[SimpleAudioEngine sharedEngine] playEffect:@"hot dog appear 1.wav"];
+    [[SimpleAudioEngine sharedEngine] playEffect:@"hot dog appear 1.mp3"];
 #endif
     CCLOG(@"Spawned wiener with maskBits: %d", wienerShapeDef.filter.maskBits);
 }
@@ -1502,7 +1502,7 @@
             if(fBUd->tag >= F_BUSHED && fBUd->tag <= F_TOPHED){
 #ifdef DEBUG
 #else
-                [[SimpleAudioEngine sharedEngine] playEffect:@"hot dog on head.wav" pitch:1 pan:0 gain:.3];
+                [[SimpleAudioEngine sharedEngine] playEffect:@"hot dog on head.mp3" pitch:1 pan:0 gain:.3];
 #endif
                 // a dog is definitely on a head when it collides with that head
                 ud->_dog_isOnHead = true;
@@ -1990,7 +1990,7 @@
                 [self pauseButton];
 #ifdef DEBUG
 #else
-                [[SimpleAudioEngine sharedEngine] playEffect:@"pause 3.wav"];
+                [[SimpleAudioEngine sharedEngine] playEffect:@"pause 3.mp3"];
 #endif
             }
             else{

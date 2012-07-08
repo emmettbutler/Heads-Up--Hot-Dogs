@@ -41,7 +41,7 @@
     lp->slug = [NSString stringWithString:@"philly"];
     lp->name = [NSString stringWithString:@"Philly"];
     lp->bg = [NSString stringWithString:@"bg_philly.png"];
-    lp->bgm = [NSString stringWithString:@"gameplay 1.wav"];
+    lp->bgm = [NSString stringWithString:@"gameplay 1.mp3"];
     lp->gravity = -30.0f;
     lp->highScoreSaveKey = [NSString stringWithString:@"highScorePhilly"];
     lp->func = [NSString stringWithString:@"switchScreenPhilly"];
@@ -87,7 +87,7 @@
     lp->slug = [NSString stringWithString:@"nyc"];
     lp->name = [NSString stringWithString:@"Big Apple"];
     lp->bg = [NSString stringWithString:@"BG_NYC.png"];
-    lp->bgm = [NSString stringWithString:@"gameplay 3.wav"];
+    lp->bgm = [NSString stringWithString:@"gameplay 3.mp3"];
     lp->gravity = -30.0f;
     lp->highScoreSaveKey = [NSString stringWithString:@"highScoreNYC"];
     lp->func = [NSString stringWithString:@"switchScreenNYC"];

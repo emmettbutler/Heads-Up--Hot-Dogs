@@ -32,6 +32,8 @@
         standardUserDefaults = [NSUserDefaults standardUserDefaults];
 #ifdef DEBUG
         NSLog(@"DEBUG MODE ON");
+#else
+        [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"menu 2.mp3" loop:YES];
 #endif
         
         // color definitions
@@ -96,12 +98,6 @@
 -(void) tick: (ccTime) dt {
     //CGSize size = [[CCDirector sharedDirector] winSize];
     time++;
-#ifdef DEBUG
-#else
-    if(abs((time/60)-1.6) < .01){
-        [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"menu 2.wav" loop:YES];
-    }
-#endif
 }
 
 - (void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
