@@ -60,11 +60,13 @@
     if(_pause){
         [self resumeGame];
     }
+    [[SimpleAudioEngine sharedEngine] stopBackgroundMusic];
     [[CCDirector sharedDirector] replaceScene:[TitleLayer scene]];
 }
 
 - (void)loseScene{
     [TestFlight passCheckpoint:@"Game Over"];
+    [[SimpleAudioEngine sharedEngine] stopBackgroundMusic];
     NSMutableArray *loseParams = [[NSMutableArray alloc] initWithCapacity:6];
     [loseParams addObject:[NSNumber numberWithInteger:_points]];
     [loseParams addObject:[NSNumber numberWithInteger:time]];
@@ -1180,8 +1182,8 @@
 -(void)wienerCallback:(id)sender data:(void *)params {
     CCLOG(@"_wienerSpawnDelayTime: %f", _wienerSpawnDelayTime);
     CGSize winSize = [CCDirector sharedDirector].winSize;
-    //NSNumber *dogType = [NSNumber numberWithInt:arc4random() % (int)(1/SPECIAL_DOG_PROBABILITY)];
-    NSNumber *dogType = [NSNumber numberWithInt:2];
+    NSNumber *dogType = [NSNumber numberWithInt:arc4random() % (int)(1/SPECIAL_DOG_PROBABILITY)];
+    //NSNumber *dogType = [NSNumber numberWithInt:2];
     
     CCLOG(@"Dogs onscreen: %d", _dogsOnscreen);
     
@@ -1721,7 +1723,14 @@
                 ud->angryFace.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
             }
             if(ud->sprite1 != NULL){
-                if(ud->sprite1.tag >= S_BUSMAN && ud->sprite1.tag <= S_TOPPSN){
+                if(ud->sprite1.tag == S_COPARM){
+                    //things for cop's arm and raycasting
+                    policeRayPoint1 = b->GetPosition();
+                    policeRayPoint2 = policeRayPoint1 + rayLength * b2Vec2(cosf(b->GetAngle()), sinf(b->GetAngle()));
+                    input.p1 = policeRayPoint1;
+                    input.p2 = policeRayPoint2;
+                    input.maxFraction = 1;
+                } else if(ud->sprite1.tag >= S_BUSMAN && ud->sprite1.tag <= S_TOPPSN){
                     ud->dogsOnHead = 0;
                     ud->spcDogsOnHead = 0;
                     ud->timeWalking++;
@@ -1994,14 +2003,6 @@
                             }
                         }
                     }
-                }
-                else if(ud->sprite1.tag == S_COPARM){
-                    //things for cop's arm and raycasting
-                    policeRayPoint1 = b->GetPosition();
-                    policeRayPoint2 = policeRayPoint1 + rayLength * b2Vec2(cosf(b->GetAngle()), sinf(b->GetAngle()));
-                    input.p1 = policeRayPoint1;
-                    input.p2 = policeRayPoint2;
-                    input.maxFraction = 1;
                 }
             }
         }
@@ -2290,6 +2291,7 @@
     [[CCTextureCache sharedTextureCache] removeUnusedTextures];
     [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_common.plist"];
     [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:[NSString stringWithFormat:@"%@.plist", level->spritesheet]];
+    [[SimpleAudioEngine sharedEngine] stopBackgroundMusic];
 
     self.personLower = nil;
     self.personUpper = nil;

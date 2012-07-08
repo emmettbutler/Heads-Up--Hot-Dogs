@@ -33,7 +33,8 @@
 #ifdef DEBUG
         NSLog(@"DEBUG MODE ON");
 #else
-        [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"menu 2.mp3" loop:YES];
+        if(![[SimpleAudioEngine sharedEngine] isBackgroundMusicPlaying])
+            [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"menu 2.mp3" loop:YES];
 #endif
         
         // color definitions
