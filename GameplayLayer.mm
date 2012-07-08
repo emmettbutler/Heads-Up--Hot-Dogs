@@ -212,16 +212,16 @@
     
     switch(points.intValue){
         default:  seq = [CCSequence actions:ud->_not_dogContact, removeAction, nil];
-            sound = [NSString stringWithString:@"10pts.mp3"];
+            sound = [NSString stringWithString:@"25pts.mp3"];
             break;
         case 10:  seq = [CCSequence actions:ud->_not_dogContact, removeAction, nil];
-            sound = [NSString stringWithString:@"10pts.mp3"];
+            sound = [NSString stringWithString:@"25pts.mp3"];
             break;
         case 15:  seq = [CCSequence actions:ud->_not_dogContact, removeAction, nil];
-            sound = [NSString stringWithString:@"15pts.mp3"];
+            sound = [NSString stringWithString:@"50pts.mp3"];
             break;
         case 25:  seq = [CCSequence actions:ud->_not_dogContact, removeAction, nil];
-            sound = [NSString stringWithString:@"25pts.mp3"];
+            sound = [NSString stringWithString:@"100pts.mp3"];
             break;
         case 100: seq = [CCSequence actions:ud->_not_spcContact, removeAction, nil];
             sound = [NSString stringWithString:@"100pts.mp3"];
