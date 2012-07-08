@@ -80,7 +80,7 @@
     CCAction *bonusPlus250Action = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:[CCAnimation animationWithFrames:bonusPlus250AnimFrames delay:.04f] restoreOriginalFrame:NO] times:1] retain];
     [bonusPlus250AnimFrames release];
 
-    NSMutableArray *bonusPlus100AnimFrames = [[NSMutableArray alloc] initWithCapacity:11];
+    NSMutableArray *bonusPlus100AnimFrames = [[NSMutableArray alloc] initWithCapacity:12];
     for(int i = 1; i <= 11; i++){
         [bonusPlus100AnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:

@@ -99,7 +99,7 @@
     dd->riseSprite = [NSString stringWithString:@"Bagel_Rise.png"];
     dd->fallSprite = [NSString stringWithString:@"Bagel_Fall.png"];
     dd->mainSprite = [NSString stringWithString:@"Bagel.png"];
-    dd->grabSprite = [NSString stringWithString:@"Steak_Grabbed.png"];
+    dd->grabSprite = [NSString stringWithString:@"Bagel_Grab.png"];
     dd->deathAnimFrames = [[NSMutableArray alloc] init];
     dd->shotAnimFrames = [[NSMutableArray alloc] init];
     for(int i = 0; i < 1; i++){

@@ -60,6 +60,7 @@
         NSString *_dog_grabSprite;
         NSString *_dog_mainSprite;
         NSString *ogSprite2;
+        NSString *aimFace;
         CCSprite *angryFace;
         CCSprite *overlaySprite;
         CCAction *altAction;
@@ -69,6 +70,7 @@
         CCAction *defaultAction;
         CCAnimation *altAnimation;
         CCAction *altWalkAction;
+        CCAction *deathSeq;
         // point notifier actions
         CCFiniteTimeAction *_not_dogContact;
         CCFiniteTimeAction *_not_dogOnHead;
