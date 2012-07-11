@@ -100,8 +100,6 @@
     _shootLock = lockBool.intValue;
 }
 
-// TODO - implement new pause screen layout from mockup
-
 -(void) pauseButton{
     if(!_pause){
         _pause = true;
@@ -1286,6 +1284,7 @@
         _pause = false;
         _dogHasHitGround = false;
         _lastTouchTime = 0;
+        _numWorldTouches = 0;
         _curPersonMaskBits = 0x1000;
         _spawnLimiter = [characterTags count] - ([characterTags count]-1);
         _wienerSpawnDelayTime = WIENER_SPAWN_START;
@@ -1366,7 +1365,7 @@
         
         // allocate array to hold mouse joints for mutliple touches
         mouseJoints = [[NSMutableArray alloc] init];
-
+        
         fixtureUserData *fUd = new fixtureUserData();
         fUd->tag = F_GROUND;
 
@@ -1532,8 +1531,7 @@
                     if(fUd->tag == F_DOGCLD){
                         dogFilter = fixture->GetFilterData();
                         // only allow the dog to collide with the person it's on
-                        // by setting its mask bits to the person's category bits
-                        // TODO - it's possible to throw dogs offscreen of they pass by a head first. stop that. 
+                        // by setting its mask bits to the person's category bits 
                         dogFilter.maskBits = pUd->collideFilter;
                         fixture->SetFilterData(dogFilter);
                         ud->collideFilter = dogFilter.maskBits;
@@ -1780,6 +1778,7 @@
                     }
                     if(!(time % 45) && ud->dogsOnHead != 0){
                         _points += ud->dogsOnHead * 25;
+                        _points += ud->spcDogsOnHead * 250;
                         NSMutableArray *plus25Params = [[NSMutableArray alloc] initWithCapacity:4];
                         [plus25Params addObject:[NSNumber numberWithInt:b->GetPosition().x*PTM_RATIO]];
                         [plus25Params addObject:[NSNumber numberWithInt:(b->GetPosition().y+4.7)*PTM_RATIO]];
@@ -1840,6 +1839,8 @@
                 else if(ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG){
                     if(ud->sprite1.position.x > 0 && ud->sprite1.position.x < winSize.width)
                         _dogsOnscreen++;
+                    if(ud->grabbed && !_numWorldTouches) // don't mark any dog as held if there are no touches
+                        ud->grabbed = false;
                     //things for hot dogs
                     if(b->IsAwake()){
                         if(!ud->grabbed){
@@ -1900,37 +1901,42 @@
                                     _rayTouchingDog = false;
                                     continue;
                                 }
+                                b2Body *copBody = NULL, *copArmBody = NULL;
+                                bodyUserData *copUd = NULL, *armUd = NULL, *dogUd = (bodyUserData *)b->GetUserData();
+                                b2Body *dogBody = b;
+                                for(b2Body* body = _world->GetBodyList(); body; body = body->GetNext()){
+                                    if(body->GetUserData() && body->GetUserData() != (void*)100){
+                                        if(body->GetPosition().x < winSize.width && body->GetPosition().x > 0 &&
+                                           body->GetPosition().y < winSize.height && body->GetPosition().y > 0){
+                                            copUd = (bodyUserData*)body->GetUserData();
+                                            if(copUd->sprite1 != NULL && copUd->sprite1.tag == S_POLICE){
+                                                copBody = body;
+                                                copUd = (bodyUserData *)copBody->GetUserData();
+                                            }
+                                            if(copUd->sprite1 != NULL && copUd->sprite1.tag == S_COPARM){
+                                                copArmBody = body;
+                                            }
+                                        }
+                                        
+                                    }
+                                }
+                                /*if((copUd->sprite1.flipX && dogBody->GetPosition().x < copBody->GetPosition().x) ||
+                                   (!copUd->sprite1.flipX && dogBody->GetPosition().x > copBody->GetPosition().x)) {
+                                    dogUd->aimedAt = false; // don't let the cop aim at dogs behind him
+                                    [dogUd->sprite1 stopAllActions];
+                                    copUd->aiming = false;
+                                    _shootLock = false;
+                                   }*/
                                 if(output.fraction < closestFraction && output.fraction > .1){
-                                    if(!_shootLock && !((bodyUserData *)b->GetUserData())->grabbed){
+                                    if(!_shootLock && !dogUd->grabbed && dogBody->GetPosition().x < winSize.width/PTM_RATIO && dogBody->GetPosition().x > 0){
                                         CCLOG(@"Ray touched dog fixture with fraction %0.2f", output.fraction);
 
                                         _shootLock = YES;
-
-                                        b2Body *copBody = NULL, *copArmBody = NULL;
-                                        bodyUserData *copUd = NULL, *armUd = NULL;
-                                        b2Body *dogBody = b;
 
                                         closestFraction = output.fraction;
                                         _rayTouchingDog = true;
                                         intersectionNormal = output.normal;
                                         intersectionPoint = policeRayPoint1 + closestFraction * (policeRayPoint2 - policeRayPoint1);
-
-                                        for(b2Body* body = _world->GetBodyList(); body; body = body->GetNext()){
-                                            if(body->GetUserData() && body->GetUserData() != (void*)100){
-                                                if(body->GetPosition().x < winSize.width && body->GetPosition().x > 0 &&
-                                                body->GetPosition().y < winSize.height && body->GetPosition().y > 0){
-                                                    copUd = (bodyUserData*)body->GetUserData();
-                                                    if(copUd->sprite1 != NULL && copUd->sprite1.tag == S_POLICE){
-                                                        copBody = body;
-                                                        copUd = (bodyUserData *)copBody->GetUserData();
-                                                    }
-                                                    if(copUd->sprite1 != NULL && copUd->sprite1.tag == S_COPARM){
-                                                        copArmBody = body;
-                                                    }
-                                                }
-
-                                            }
-                                        }
 
                                         if(copBody && copBody->GetUserData() && copArmBody && copArmBody->GetUserData()){
                                             copUd = (bodyUserData *)copBody->GetUserData();
@@ -2024,6 +2030,7 @@
         locations[1] = locationWorld2;
     }
     
+    _numWorldTouches = count;
     _touchedDog = NO;
     int dogsTouched = 0;
     BOOL touched1 = false, touched2 = false;
@@ -2174,6 +2181,8 @@
     location = [[CCDirector sharedDirector] convertToGL:location];
     b2Vec2 locationWorld = b2Vec2(location.x/PTM_RATIO, location.y/PTM_RATIO);
     
+    _numWorldTouches--;
+    
     for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
         if (body->GetUserData() != NULL && body->GetUserData() != (void*)100) {
             bodyUserData *ud = (bodyUserData *)body->GetUserData();
@@ -2226,61 +2235,7 @@
 }
 
 - (void)ccTouchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
-    b2Filter filter;
-    
-    UITouch *myTouch = [touches anyObject];
-    CGPoint location = [myTouch locationInView:[myTouch view]];
-    location = [[CCDirector sharedDirector] convertToGL:location];
-    b2Vec2 locationWorld = b2Vec2(location.x/PTM_RATIO, location.y/PTM_RATIO);
-    
-    for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
-        if (body->GetUserData() != NULL && body->GetUserData() != (void*)100) {
-            bodyUserData *ud = (bodyUserData *)body->GetUserData();
-            if((ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG) && ud->grabbed){
-                // if there is not a finger on the dog
-                b2JointEdge *j = body->GetJointList();
-                b2Vec2 target;
-                if(j && j->joint->GetType() == e_mouseJoint){
-                    b2MouseJoint *mj = (b2MouseJoint *)j->joint;
-                    target = mj->GetTarget();
-                }
-                if((abs(locationWorld.x - target.x) < 1.5 && abs(locationWorld.y - target.y) < 1.5) || [[event allTouches] count] == 1){
-                    // drop the dog
-                    // find the corresponding mouse joint
-                    for(int i = 0; i < [mouseJoints count]; i++){
-                        b2MouseJoint *mj = (b2MouseJoint *)[(NSValue *)[mouseJoints objectAtIndex:i] pointerValue];
-                        if(mj->GetBodyB() == body){
-                            [mouseJoints removeObject:[mouseJoints objectAtIndex:i]];
-                            _world->DestroyJoint(mj);
-                            break;
-                        }
-                    }
-                    
-                    ud->grabbed = false;
-                    body->SetLinearVelocity(b2Vec2(0, 0));
-                    
-                    if(body->GetPosition().y < .8 && body->GetPosition().x < .5)
-                        body->SetTransform(b2Vec2(body->GetPosition().x, 1.8), 0);
-                    if(body->GetPosition().x < 1)
-                        body->SetTransform(b2Vec2(1.5, body->GetPosition().y), 0);
-                    
-                    for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
-                        fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
-                        if(fUd->tag == F_DOGCLD){
-                            // here, we restore the fixture's original collision filter from that saved in
-                            // its ogCollideFilter field
-                            filter = fixture->GetFilterData();
-                            filter.maskBits = fUd->ogCollideFilters;
-                            filter.maskBits = filter.maskBits | FLOOR1;
-                            fixture->SetFilterData(filter);
-                            ud->collideFilter = filter.maskBits;
-                        }
-                    }
-                    break;
-                }
-            }
-        }
-    }
+    [self ccTouchesEnded:touches withEvent:event];
 }
 
 - (void) dealloc {

@@ -1,5 +1,3 @@
-// TODO - implement new pause screen layout from mockup
-                        // TODO - it's possible to throw dogs offscreen of they pass by a head first. stop that. 
     // TODO - importing all of these defeats part of the purpose of using different sprite sheets
     // TODO - people per level
     // TODO - separate bodyuserdata into two structs(?), one for dogs and one for people - will probably reduce memory use slightly?
