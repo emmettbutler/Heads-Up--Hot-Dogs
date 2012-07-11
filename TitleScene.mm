@@ -29,9 +29,14 @@
 
 -(id) init{
     if ((self = [super init])){
+        CGSize size = [[CCDirector sharedDirector] winSize];
         standardUserDefaults = [NSUserDefaults standardUserDefaults];
 #ifdef DEBUG
         NSLog(@"DEBUG MODE ON");
+        CCLabelTTF *dlabel = [CCLabelTTF labelWithString:@"DEBUG" fontName:@"LostPet.TTF" fontSize:30.0];
+        [[dlabel texture] setAliasTexParameters];
+        dlabel.position = ccp(size.width-(dlabel.contentSize.width/2)-6, size.height-(dlabel.contentSize.height/2)-5);
+        [self addChild:dlabel];
 #else
         if(![[SimpleAudioEngine sharedEngine] isBackgroundMusicPlaying])
             [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"menu 2.mp3" loop:YES];
@@ -40,7 +45,6 @@
         // color definitions
         _color_pink = ccc3(255, 62, 166);
         
-        CGSize size = [[CCDirector sharedDirector] winSize];
         [[CCDirector sharedDirector] setDisplayFPS:NO];
         
         spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_menus.png"];

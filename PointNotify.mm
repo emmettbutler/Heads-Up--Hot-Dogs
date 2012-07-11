@@ -104,8 +104,8 @@
     [notifiers addObject:[NSValue valueWithPointer:plus25Action]];
     [notifiers addObject:[NSValue valueWithPointer:plus100Action]];
     [notifiers addObject:[NSValue valueWithPointer:bonusVaporTrailAction]];
-    [notifiers addObject:[NSValue valueWithPointer:bonusPlus250Action]];
     [notifiers addObject:[NSValue valueWithPointer:bonusPlus100Action]];
+    [notifiers addObject:[NSValue valueWithPointer:bonusPlus250Action]];
     [notifiers addObject:[NSValue valueWithPointer:bonusPlus1000Action]];
 
     return notifiers;

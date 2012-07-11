@@ -277,7 +277,7 @@
     
     if(spec.intValue == 0)
         twentyFive = [CCSprite spriteWithSpriteFrameName:@"Plus_25_sm_1.png"];
-    else twentyFive = [CCSprite spriteWithSpriteFrameName:@"Bonus_Plus_Hundred_1.png"];
+    else twentyFive = [CCSprite spriteWithSpriteFrameName:@"Bonus_plus250_sm_1.png"];
     twentyFive.position = ccp(xPos.intValue, yPos.intValue);
     [spriteSheetCommon addChild:twentyFive z:100];
 
@@ -448,7 +448,7 @@
     CCLOG(@"Destroying dog (tag %d)...", dogSprite.tag);
 
     if(dogSprite.tag == S_HOTDOG || dogSprite.tag == S_SPCDOG){
-        if(dogBody->GetPosition().x > winSize.width || dogBody->GetPosition().x < 0)
+        if(dogBody->GetPosition().x > winSize.width/PTM_RATIO || dogBody->GetPosition().x < 0)
             return;
         
         dogBody->SetAwake(false);
@@ -1265,10 +1265,6 @@
 
         background = [CCSprite spriteWithSpriteFrameName:level->bg];
         background.anchorPoint = CGPointZero;
-//#ifdef DEBUG
-//#else
-        [spriteSheetLevel addChild:background z:-10];
-//#endif
         
 #ifdef DEBUG
         //debug labels
@@ -1280,6 +1276,7 @@
         [self addChild:menu z:1000];
 #else
         [[SimpleAudioEngine sharedEngine] playBackgroundMusic:level->bgm loop:YES];
+        [spriteSheetLevel addChild:background z:-10];
 #endif
 
         _overallTime = [standardUserDefaults integerForKey:@"overallTime"];
