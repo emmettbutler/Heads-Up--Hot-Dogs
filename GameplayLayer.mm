@@ -662,14 +662,12 @@
     int armJointXOffset, armJointYOffset, contactActionIndex;
     float hitboxHeight, hitboxWidth, hitboxCenterX, hitboxCenterY, density, restitution, friction, heightOffset, sensorHeight, sensorWidth, framerate, moveDelta;
     NSString *ogHeadSprite;
-    BOOL spawn;
 
-    spawn = YES;
     NSNumber *floorBit = [floorBits objectAtIndex:arc4random() % [floorBits count]];
     NSNumber *character = (NSNumber *)[(NSMutableArray *) params objectAtIndex:1];
     //first, see if a person should spawn
     if(_policeOnScreen && character.intValue == 4){
-        spawn = NO;
+        return;
     } else {
         for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
             if (body->GetUserData() != NULL && body->GetUserData() != (void*)100) {
@@ -677,17 +675,13 @@
                 for(b2Fixture* f = body->GetFixtureList(); f; f = f->GetNext()){
                     if(f->GetFilterData().maskBits == floorBit.intValue){
                         if(ud->sprite1.flipX != _personLower.flipX){
-                            spawn = NO;
-                            break;
+                            return;
                         }
                     }
                 }
             }
         }
     }
-    
-    if(!spawn)
-        return;
 
     CGSize winSize = [CCDirector sharedDirector].winSize;
     // cycle through a set of several possible mask/category bits for dog/person collision
@@ -1669,7 +1663,7 @@
             
             //destroy any sprite/body pair that's offscreen
             if(ud->sprite1.position.x > winSize.width + 130 || ud->sprite1.position.x < -130 ||
-               ud->sprite1.position.y > winSize.height + 40 || ud->sprite1.position.y < -40){
+               ud->sprite1.position.y > winSize.height + 4000 || ud->sprite1.position.y < -40){
                 // points for dogs that leave the screen on a person's head
                 if(ud->sprite1.tag >= S_BUSMAN && ud->sprite1.tag <= S_TOPPSN){
                     if(ud->sprite1.tag == S_POLICE){
@@ -1878,6 +1872,10 @@
                                     // we set the filters to their original value (all people, floor, and walls)
                                     b2Filter dogFilter = fixture->GetFilterData();
                                     dogFilter.maskBits = fUd->ogCollideFilters;
+                                    if(b->GetPosition().y > winSize.height/PTM_RATIO)
+                                        dogFilter.maskBits = 0xfffff000;
+                                    else if(b->GetPosition().y < winSize.height/PTM_RATIO)
+                                        dogFilter.maskBits = dogFilter.maskBits | WALLS;
                                     fixture->SetFilterData(dogFilter);
                                     ud->collideFilter = dogFilter.maskBits;
                                     break;
@@ -2173,6 +2171,7 @@
 - (void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
     b2Filter filter;
     
+    CGSize winSize = [[CCDirector sharedDirector] winSize];
     UITouch *myTouch = [touches anyObject];
     CGPoint location = [myTouch locationInView:[myTouch view]];
     location = [[CCDirector sharedDirector] convertToGL:location];
