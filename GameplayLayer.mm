@@ -210,6 +210,13 @@
     }
 }
 
+-(void)playGunshot{
+#ifdef DEBUG
+#else
+    [[SimpleAudioEngine sharedEngine] playEffect:@"gunshot 1.mp3" pitch:1 pan:0 gain:.4];
+#endif
+}
+
 -(void)flipShootLock{
     if(_shootLock == true)
         _shootLock = false;
@@ -1973,7 +1980,8 @@
                                             
                                             armUd = (bodyUserData *)copArmBody->GetUserData();
                                             CCFiniteTimeAction *armShootAnimAction = (CCFiniteTimeAction *)armUd->altAction;
-                                            id armSeq = [CCSequence actions:delay, armShootAnimAction, nil];
+                                            CCCallFunc *shot = [CCCallFunc actionWithTarget:self selector:@selector(playGunshot)];
+                                            id armSeq = [CCSequence actions:delay, shot, armShootAnimAction, nil];
                                             if([armUd->sprite1 numberOfRunningActions] == 0)
                                                 [armUd->sprite1 runAction:armSeq];
                                             
