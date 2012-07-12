@@ -11,6 +11,7 @@
 @interface OptionsLayer : CCLayer
 {
     CCSpriteBatchNode *spriteSheet;
+    ccColor3B _color_pink;
 }
 
 +(CCScene *)scene;

@@ -20,6 +20,7 @@
     NSUserDefaults *standardUserDefaults;
     CCSprite *s;
     int count;
+    ccColor3B _color_pink;
 }
 
 +(CCScene *)scene;

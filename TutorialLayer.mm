@@ -34,17 +34,13 @@
     
     
     NSString *text = (NSString *)[(NSValue *)[(NSMutableArray *) params objectAtIndex:0] pointerValue];
-    tutorialLabel = [CCLabelTTF labelWithString:text fontName:@"LostPet.TTF" fontSize:16.0];
+    tutorialLabel = [CCLabelTTF labelWithString:text fontName:@"LostPet.TTF" fontSize:19.0];
     
     _introLayer = [CCLayerColor layerWithColor:ccc4(0, 0, 255, 125) width:(tutorialLabel.contentSize.width+20) height:50];
     _introLayer.position = ccp(boxX, boxY);
     [spritesLayer addChild:_introLayer z:80];
     
-    [tutorialLabel setPosition:ccp((_introLayer.contentSize.width/2), (_introLayer.contentSize.height/2)+7)];
-    [_introLayer addChild:tutorialLabel z:81];
-    
-    tutorialLabel = [CCLabelTTF labelWithString:@"tap" fontName:@"LostPet.TTF" fontSize:14.0];
-    [tutorialLabel setPosition:ccp((_introLayer.contentSize.width/2), (_introLayer.contentSize.height/2)-15)];
+    [tutorialLabel setPosition:ccp((_introLayer.contentSize.width/2), (_introLayer.contentSize.height/2))];
     [_introLayer addChild:tutorialLabel z:81];
 }
 
@@ -60,6 +56,7 @@
         tutorialSprite *tSprite;
         
         standardUserDefaults = [NSUserDefaults standardUserDefaults];
+        _color_pink = ccc3(255, 62, 166);
         
         [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile: @"tutorial_sprites_default.plist"];
         spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"tutorial_sprites_default.png"];
@@ -91,7 +88,7 @@
         page = new tutorialPage();
         tSprite = new tutorialSprite();
         page->sprites = [[NSMutableArray alloc] init];
-        page->caption = [NSString stringWithString:@"It hates sitting still."];
+        page->caption = [NSString stringWithString:@"It hates sitting still. Lose 5 and you're out."];
         for(int i = 1; i < 8; i++){
             [animFrames addObject:
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -320,13 +317,18 @@
         sprite.anchorPoint = CGPointZero;
         [self addChild:sprite z:-1];
         
+        sprite = [CCSprite spriteWithSpriteFrameName:@"LvlArrow.png"];
+        sprite.position = ccp(winSize.width-52, winSize.height/2);
+        sprite.flipX = true;
+        [self addChild:sprite];
+        
         spritesLayer = [CCLayerColor layerWithColor:ccc4(0, 0, 0, 0) width:winSize.width height:winSize.height];
         [self addChild:spritesLayer z:100];
         
         CCSprite *restartButton = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
         restartButton.position = ccp(110, 27);
         [self addChild:restartButton z:10];
-        CCLabelTTF *label = [CCLabelTTF labelWithString:@"     Start     " fontName:@"LostPet.TTF" fontSize:22.0];
+        CCLabelTTF *label = [CCLabelTTF labelWithString:@"     Skip     " fontName:@"LostPet.TTF" fontSize:22.0];
         [[label texture] setAliasTexParameters];
         label.color = ccc3(255, 62, 166);
         CCMenuItem *button = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(switchSceneStart)];
@@ -337,13 +339,19 @@
         CCSprite *quitButton = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
         quitButton.position = ccp(370, 27);
         [self addChild:quitButton z:10];
-        label = [CCLabelTTF labelWithString:@"     Title Screen     " fontName:@"LostPet.TTF" fontSize:22.0];
+        label = [CCLabelTTF labelWithString:@"     Title     " fontName:@"LostPet.TTF" fontSize:22.0];
         [[label texture] setAliasTexParameters];
         label.color = ccc3(255, 62, 166);
         button = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(switchSceneTitleScreen)];
         menu = [CCMenu menuWithItems:button, nil];
         [menu setPosition:ccp(370, 26)];
         [self addChild:menu z:11];
+        
+        label = [CCLabelTTF labelWithString:@"How to play" fontName:@"LostPet.TTF" fontSize:25.0];
+        [[label texture] setAliasTexParameters];
+        label.color = _color_pink;
+        label.position = ccp((label.contentSize.width/2)+6, winSize.height-(label.contentSize.height/2)-5);
+        [self addChild:label];
         
         count = 0;
         
@@ -382,7 +390,7 @@
         [standardUserDefaults setInteger:1 forKey:@"introDone"];
         [standardUserDefaults synchronize];
         NSMutableArray *params = [[NSMutableArray alloc] initWithCapacity:1];
-        [params addObject:[NSString stringWithString:@"phlly"]];
+        [params addObject:[NSString stringWithString:@"philly"]];
         [[CCDirector sharedDirector] replaceScene:[GameplayLayer sceneWithData:params]];
         return;
     }
@@ -405,7 +413,7 @@
 
 - (void)switchSceneStart{
     NSMutableArray *params = [[NSMutableArray alloc] initWithCapacity:1];
-    [params addObject:[NSString stringWithString:@"phily"]];
+    [params addObject:[NSString stringWithString:@"philly"]];
     [[CCDirector sharedDirector] replaceScene:[GameplayLayer sceneWithData:params]];
 }
 

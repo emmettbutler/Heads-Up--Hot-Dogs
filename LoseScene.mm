@@ -133,17 +133,9 @@
         if(_score > highScore){
             [standardUserDefaults setInteger:_score forKey:level->highScoreSaveKey];
             highScore = _score;
-        
-            scoreNotify = [CCLabelTTF labelWithString:@"*" fontName:@"LostPet.TTF" fontSize:26.0];
-            [scoreNotify setPosition:ccp(190, 67)];
-            [self addChild:scoreNotify];
         }
         if(_timePlayed > bestTime){
             [standardUserDefaults setInteger:_timePlayed forKey:@"bestTime"];
-            
-            timeNotify = [CCLabelTTF labelWithString:@"*" fontName:@"LostPet.TTF" fontSize:26.0];
-            [timeNotify setPosition:ccp(230, 195)];
-            [self addChild:timeNotify];
         }
         CCLOG(@"OverallTime + _timePlayed/60 --> %d + %d = %d", overallTime, _timePlayed/60, overallTime+(_timePlayed/60));
         [standardUserDefaults setInteger:overallTime+(_timePlayed/60) forKey:@"overallTime"];

@@ -151,7 +151,7 @@
         CCSprite *otherButton = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
         otherButton.position = ccp((winSize.width-otherButton.contentSize.width+33), 208);
         [_pauseLayer addChild:otherButton z:81];
-        label = [CCLabelTTF labelWithString:@"     TITLE     " fontName:@"LostPet.TTF" fontSize:24.0];
+        label = [CCLabelTTF labelWithString:@"     TITLE     " fontName:@"LostPet.TTF" fontSize:23.0];
         [[label texture] setAliasTexParameters];
         label.color = _color_pink;
         CCMenuItem *title = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(titleScene)];
@@ -159,7 +159,7 @@
         otherButton = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
         otherButton.position = ccp((winSize.width-otherButton.contentSize.width+33), 162);
         [_pauseLayer addChild:otherButton z:81];
-        label = [CCLabelTTF labelWithString:@"     CONTINUE     " fontName:@"LostPet.TTF" fontSize:24.0];
+        label = [CCLabelTTF labelWithString:@"     CONTINUE     " fontName:@"LostPet.TTF" fontSize:23.0];
         [[label texture] setAliasTexParameters];
         label.color = _color_pink;
         CCMenuItem *cont = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(resumeGame)];
@@ -167,14 +167,14 @@
         otherButton = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
         otherButton.position = ccp((winSize.width-otherButton.contentSize.width+33), 116);
         [_pauseLayer addChild:otherButton z:81];
-        label = [CCLabelTTF labelWithString:@"   FEEDBACK   " fontName:@"LostPet.TTF" fontSize:24.0];
+        label = [CCLabelTTF labelWithString:@"   FEEDBACK   " fontName:@"LostPet.TTF" fontSize:23.0];
         [[label texture] setAliasTexParameters];
         label.color = _color_pink;
         CCMenuItem *feedback = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(launchFeedback)];
         
         CCMenu *quitButton = [CCMenu menuWithItems:cont, title, feedback, nil];
         [quitButton alignItemsVerticallyWithPadding:22];
-        quitButton.position = ccp((winSize.width-label.contentSize.width+57), winSize.height/2);
+        quitButton.position = ccp((winSize.width-label.contentSize.width+53), winSize.height/2);
         [_pauseLayer addChild:quitButton z:82];
 
         _pauseMenu = [CCMenu menuWithItems: score, timeItem, peopleItem, savedItem, totalTimeItem, nil];
@@ -450,17 +450,17 @@
 
     CCSprite *dogSprite = (CCSprite *)sender;
 
+    if(dogBody->GetPosition().x > winSize.width/PTM_RATIO || dogBody->GetPosition().x < 0)
+        return;
+    
     CCLOG(@"Destroying dog (tag %d)...", dogSprite.tag);
 
     if(dogSprite.tag == S_HOTDOG || dogSprite.tag == S_SPCDOG){
-        if(dogBody->GetPosition().x > winSize.width/PTM_RATIO || dogBody->GetPosition().x < 0)
-            return;
-        
         dogBody->SetAwake(false);
-        _world->DestroyBody(dogBody);
         [dogSprite stopAllActions];
         [dogSprite removeFromParentAndCleanup:YES];
         [ud->overlaySprite removeFromParentAndCleanup:YES];
+        _world->DestroyBody(dogBody);
         
         free(ud);
         ud = NULL;
@@ -528,7 +528,7 @@
             fallSprite = [NSString stringWithString:@"Dog_Fall.png"];
             mainSprite = [NSString stringWithString:@"dog54x12.png"];
             grabSprite = [NSString stringWithString:@"Dog_Grabbed.png"];
-            deathDelay = 3.0;
+            deathDelay = 2.7;
             tag = S_HOTDOG;
             for(int i = 0; i < 8; i++){
                 [wienerDeathAnimFrames addObject:
@@ -1644,7 +1644,7 @@
                 _points += ud->dogsOnHead * 100;
                 _points += ud->spcDogsOnHead * 1000;
                 if(ud->dogsOnHead != 0){
-                    CCSprite *oneHundred = [CCSprite spriteWithSpriteFrameName:@"Plus_100_1.png"];
+                    CCSprite *oneHundred = [CCSprite spriteWithSpriteFrameName:@"Bonus_Plus_1000_8.png"];
                     NSMutableArray *plus100Params = [[NSMutableArray alloc] initWithCapacity:4];
                     if(ud->sprite1.flipX){
                         [plus100Params addObject:[NSNumber numberWithInt:winSize.width-(oneHundred.contentSize.width/2)-10]];
@@ -1846,7 +1846,7 @@
                 else if(ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG){
                     if(ud->sprite1.position.x > 0 && ud->sprite1.position.x < winSize.width)
                         _dogsOnscreen++;
-                    if(!_numWorldTouches){
+                    if(_numWorldTouches <= 0){
                         if(ud->grabbed) // don't mark any dog as held if there are no touches
                             ud->grabbed = false;
                         for(int i = 0; i < [mouseJoints count]; i++){
