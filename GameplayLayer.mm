@@ -275,7 +275,7 @@
     
     if(spec.intValue == 0)
         twentyFive = [CCSprite spriteWithSpriteFrameName:@"Plus_25_sm_1.png"];
-    else twentyFive = [CCSprite spriteWithSpriteFrameName:@"Bonus_plus250_sm_1.png"];
+    else twentyFive = [CCSprite spriteWithSpriteFrameName:@"Bonus_Plus250_sm_1.png"];
     twentyFive.position = ccp(xPos.intValue, yPos.intValue);
     [spriteSheetCommon addChild:twentyFive z:100];
 
@@ -1293,7 +1293,7 @@
         _id_counter = 0;
         _dogsOnscreen = 0;
         _dogsSaved = 0;
-        _maxDogsOnScreen = 4;
+        _maxDogsOnScreen = 3;
         _shootLock = NO;
         _droppedSpacing = 200;
         _droppedCount = 0;
@@ -1452,15 +1452,15 @@
     
     if(_points > 19000 && _wienerSpawnDelayTime != .6){
         _wienerSpawnDelayTime = .6;
-        _maxDogsOnScreen = 8;
     } else if(_points > 14000 && _wienerSpawnDelayTime != .7){
-        _maxDogsOnScreen = 7;
+        _maxDogsOnScreen = 6;
         _wienerSpawnDelayTime = .7;
     } else if(_points > 12000 && _wienerSpawnDelayTime != .9) {
         _wienerSpawnDelayTime = .9;
+        _maxDogsOnScreen = 5;
     } else if(_points > 7000 && _wienerSpawnDelayTime != 1) {
         _wienerSpawnDelayTime = 1;
-        _maxDogsOnScreen = 5;
+        _maxDogsOnScreen = 4;
     } else if(_points > 5000 && _wienerSpawnDelayTime != 2) {
         _wienerSpawnDelayTime = 2;
     } else if(_points > 2000 && _wienerSpawnDelayTime != 3) {
@@ -1839,8 +1839,15 @@
                 else if(ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG){
                     if(ud->sprite1.position.x > 0 && ud->sprite1.position.x < winSize.width)
                         _dogsOnscreen++;
-                    if(ud->grabbed && !_numWorldTouches) // don't mark any dog as held if there are no touches
-                        ud->grabbed = false;
+                    if(!_numWorldTouches){
+                        if(ud->grabbed) // don't mark any dog as held if there are no touches
+                            ud->grabbed = false;
+                        for(int i = 0; i < [mouseJoints count]; i++){
+                            b2MouseJoint *mj = (b2MouseJoint *)[(NSValue *)[mouseJoints objectAtIndex:i] pointerValue];
+                            [mouseJoints removeObject:[mouseJoints objectAtIndex:i]];
+                            _world->DestroyJoint(mj);
+                        }
+                    }
                     //things for hot dogs
                     if(b->IsAwake()){
                         if(!ud->grabbed){
@@ -1901,32 +1908,8 @@
                                     _rayTouchingDog = false;
                                     continue;
                                 }
-                                b2Body *copBody = NULL, *copArmBody = NULL;
-                                bodyUserData *copUd = NULL, *armUd = NULL, *dogUd = (bodyUserData *)b->GetUserData();
+                                bodyUserData *dogUd = (bodyUserData *)b->GetUserData();
                                 b2Body *dogBody = b;
-                                for(b2Body* body = _world->GetBodyList(); body; body = body->GetNext()){
-                                    if(body->GetUserData() && body->GetUserData() != (void*)100){
-                                        if(body->GetPosition().x < winSize.width && body->GetPosition().x > 0 &&
-                                           body->GetPosition().y < winSize.height && body->GetPosition().y > 0){
-                                            copUd = (bodyUserData*)body->GetUserData();
-                                            if(copUd->sprite1 != NULL && copUd->sprite1.tag == S_POLICE){
-                                                copBody = body;
-                                                copUd = (bodyUserData *)copBody->GetUserData();
-                                            }
-                                            if(copUd->sprite1 != NULL && copUd->sprite1.tag == S_COPARM){
-                                                copArmBody = body;
-                                            }
-                                        }
-                                        
-                                    }
-                                }
-                                /*if((copUd->sprite1.flipX && dogBody->GetPosition().x < copBody->GetPosition().x) ||
-                                   (!copUd->sprite1.flipX && dogBody->GetPosition().x > copBody->GetPosition().x)) {
-                                    dogUd->aimedAt = false; // don't let the cop aim at dogs behind him
-                                    [dogUd->sprite1 stopAllActions];
-                                    copUd->aiming = false;
-                                    _shootLock = false;
-                                   }*/
                                 if(output.fraction < closestFraction && output.fraction > .1){
                                     if(!_shootLock && !dogUd->grabbed && dogBody->GetPosition().x < winSize.width/PTM_RATIO && dogBody->GetPosition().x > 0){
                                         CCLOG(@"Ray touched dog fixture with fraction %0.2f", output.fraction);
@@ -1937,6 +1920,26 @@
                                         _rayTouchingDog = true;
                                         intersectionNormal = output.normal;
                                         intersectionPoint = policeRayPoint1 + closestFraction * (policeRayPoint2 - policeRayPoint1);
+                                        
+                                        b2Body *copBody = NULL, *copArmBody = NULL;
+                                        bodyUserData *copUd = NULL, *armUd = NULL;
+                                        
+                                        for(b2Body* body = _world->GetBodyList(); body; body = body->GetNext()){
+                                            if(body->GetUserData() && body->GetUserData() != (void*)100){
+                                                if(body->GetPosition().x < winSize.width && body->GetPosition().x > 0 &&
+                                                   body->GetPosition().y < winSize.height && body->GetPosition().y > 0){
+                                                    copUd = (bodyUserData*)body->GetUserData();
+                                                    if(copUd->sprite1 != NULL && copUd->sprite1.tag == S_POLICE){
+                                                        copBody = body;
+                                                        copUd = (bodyUserData *)copBody->GetUserData();
+                                                    }
+                                                    if(copUd->sprite1 != NULL && copUd->sprite1.tag == S_COPARM){
+                                                        copArmBody = body;
+                                                    }
+                                                }
+                                                
+                                            }
+                                        }
 
                                         if(copBody && copBody->GetUserData() && copArmBody && copArmBody->GetUserData()){
                                             copUd = (bodyUserData *)copBody->GetUserData();
@@ -2181,7 +2184,7 @@
     location = [[CCDirector sharedDirector] convertToGL:location];
     b2Vec2 locationWorld = b2Vec2(location.x/PTM_RATIO, location.y/PTM_RATIO);
     
-    _numWorldTouches--;
+    _numWorldTouches -= [touches count];
     
     for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
         if (body->GetUserData() != NULL && body->GetUserData() != (void*)100) {
