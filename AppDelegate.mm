@@ -140,8 +140,6 @@
     if( ! [CCDirector setDirectorType:kCCDirectorTypeDisplayLink] )
         [CCDirector setDirectorType:kCCDirectorTypeMainLoop];
     
-    [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_menus.plist"];
-    
 	// Run the intro Scene
 	[[CCDirector sharedDirector] runWithScene: [TitleLayer scene]];
 }

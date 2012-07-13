@@ -39,6 +39,7 @@ static NSUserDefaults *standardUserDefaults;
     int time;
     ccColor3B _color_pink;
     NSMutableArray *lStructs;
+    CGPoint firstTouch, lastTouch;
     CCSpriteBatchNode *spritesheet;
     int curLevelIndex;
     levelProps *level;

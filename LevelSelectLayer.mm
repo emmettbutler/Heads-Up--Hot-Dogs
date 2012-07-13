@@ -215,12 +215,29 @@
     CGPoint location = [myTouch locationInView:[myTouch view]];
     location = [[CCDirector sharedDirector] convertToGL:location];
     
-    if(CGRectContainsPoint(rightArrowRect, location)){
+    firstTouch = location;
+    
+    
+}
+
+-(void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{
+    NSSet *allTouches = [event allTouches];
+    UITouch * touch = [[allTouches allObjects] objectAtIndex:0];
+    CGPoint location = [touch locationInView: [touch view]];
+    location = [[CCDirector sharedDirector] convertToGL:location];
+    
+    //Swipe Detection Part 2
+    lastTouch = location;
+    
+    //Minimum length of the swipe
+    float swipeLength = ccpDistance(firstTouch, lastTouch);
+    
+    if(CGRectContainsPoint(rightArrowRect, location) || (firstTouch.x < lastTouch.x && swipeLength > 60)){
         if(curLevelIndex < [lStructs count] - 1)
             curLevelIndex++;
         else curLevelIndex = 0;
     }
-    else if(CGRectContainsPoint(leftArrowRect, location)){
+    else if(CGRectContainsPoint(leftArrowRect, location) || (firstTouch.x > lastTouch.x && swipeLength > 60)){
         if(curLevelIndex > 0)
             curLevelIndex--;
         else curLevelIndex = [lStructs count] - 1;
