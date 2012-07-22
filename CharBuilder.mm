@@ -52,6 +52,22 @@
     return levelArray;
 }
 
++(NSMutableArray *)space{
+    NSMutableArray *levelArray = [[[NSMutableArray alloc] init] retain];;
+    personStruct *s;
+    
+    s = [self crustPunk];
+    [levelArray addObject:[NSValue valueWithPointer:s]];
+    s = [self youngPro];
+    [levelArray addObject:[NSValue valueWithPointer:s]];
+    s = [self jogger];
+    [levelArray addObject:[NSValue valueWithPointer:s]];
+    s = [self police];
+    [levelArray addObject:[NSValue valueWithPointer:s]];
+    
+    return levelArray;
+}
+
 +(personStruct *)businessman{
     personStruct *c = new personStruct();
     

@@ -9,7 +9,7 @@
 #import "LevelSelectLayer.h"
 #import "GameplayLayer.h"
 
-#define NUM_LEVELS 2
+#define NUM_LEVELS 3
 
 @implementation LevelSelectLayer
 
@@ -30,6 +30,7 @@
     [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_common.plist"];
     [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_nyc.plist"];
     [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_philly.plist"];
+    [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_space.plist"];
     
     // TODO - people per level
     
@@ -128,11 +129,61 @@
     lp->characters = [CharBuilder buildCharacters:lp->slug];
     [levelStructs addObject:[NSValue valueWithPointer:lp]];
     
+    
+    
+    /********************************************************************************
+     * SPACE LEVEL SETTINGS
+     *******************************************************************************/
+    
+    lp = new levelProps();
+    lp->slug = [NSString stringWithString:@"space"];
+    lp->name = [NSString stringWithString:@"Space Station"];
+    lp->bg = [NSString stringWithString:@"SpaceBG.png"];
+    lp->bgm = [NSString stringWithString:@"gameplay 3.mp3"];
+    lp->gravity = -5.0f;
+    lp->highScoreSaveKey = [NSString stringWithString:@"highScoreSpace"];
+    lp->func = [NSString stringWithString:@"switchScreenSpace"];
+    lp->spritesheet = [NSString stringWithString:@"sprites_space"];
+    lp->thumbnail = [NSString stringWithString:@"NYC_Thumb.png"];
+    lp->highScore = [standardUserDefaults integerForKey:lp->highScoreSaveKey];
+    
+    dd = new spcDogData();
+    dd->riseSprite = [NSString stringWithString:@"Bagel_Rise.png"];
+    dd->fallSprite = [NSString stringWithString:@"Bagel_Fall.png"];
+    dd->mainSprite = [NSString stringWithString:@"Bagel.png"];
+    dd->grabSprite = [NSString stringWithString:@"Bagel_Grab.png"];
+    dd->deathAnimFrames = [[NSMutableArray alloc] init];
+    dd->shotAnimFrames = [[NSMutableArray alloc] init];
+    for(int i = 0; i < 1; i++){
+        [dd->deathAnimFrames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithFormat:@"Bagel_Die_1.png"]]];
+        [dd->deathAnimFrames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithFormat:@"Bagel_Die_2.png"]]];
+    }
+    for(int i = 1; i <= 8; i++){
+        [dd->deathAnimFrames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithFormat:@"Bagel_Die_%d.png", i]]];
+    }
+    for(int i = 1; i <= 6; i++){
+        [dd->shotAnimFrames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithFormat:@"Bagel_Shot_%d.png", i]]];
+    }
+    
+    lp->specialDog = dd;
+    
+    lp->characters = [CharBuilder buildCharacters:lp->slug];
+    [levelStructs addObject:[NSValue valueWithPointer:lp]];
+    
     /////////////////////////////////////////////////////////////////////////////
     
     [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_common.plist"];
     [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_nyc.plist"];
     [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_philly.plist"];
+    [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_space.plist"];
     
     return levelStructs;
 }
@@ -222,8 +273,6 @@
     location = [[CCDirector sharedDirector] convertToGL:location];
     
     firstTouch = location;
-    
-    
 }
 
 -(void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{
