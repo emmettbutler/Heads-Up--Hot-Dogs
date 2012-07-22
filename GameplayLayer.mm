@@ -60,7 +60,10 @@
     if(_pause){
         [self resumeGame];
     }
+#ifdef DEBUG
+#else
     [[SimpleAudioEngine sharedEngine] stopBackgroundMusic];
+#endif    
     [[CCDirector sharedDirector] replaceScene:[TitleLayer scene]];
 }
 
@@ -663,15 +666,15 @@
 }
 
 -(void)walkIn:(id)sender data:(void *)params {
-    int zIndex, fTag, armBodyXOffset, armBodyYOffset, yPos, pointValue;
-    int armJointXOffset, armJointYOffset, contactActionIndex;
-    float hitboxHeight, hitboxWidth, hitboxCenterX, hitboxCenterY, density, restitution, friction, heightOffset, sensorHeight, sensorWidth, framerate, moveDelta;
-    NSString *ogHeadSprite;
+    int zIndex, armBodyXOffset, armBodyYOffset, yPos;
+    int armJointYOffset, contactActionIndex;
+    float density;
 
     NSNumber *floorBit = [floorBits objectAtIndex:arc4random() % [floorBits count]];
-    NSNumber *character = (NSNumber *)[(NSMutableArray *) params objectAtIndex:1];
+    personStruct *person = (personStruct *)[(NSValue *)[level->characters objectAtIndex:arc4random() % [level->characters count]] pointerValue];
+    
     //first, see if a person should spawn
-    if(_policeOnScreen && character.intValue == 4){
+    if(_policeOnScreen && person->tag == 4){
         return;
     } else {
         for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
@@ -700,246 +703,22 @@
     
     //if we're not supposed to spawn , just skip all this
     NSNumber *xPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:0];
-    NSMutableArray *walkAnimFrames = [NSMutableArray array];
-    NSMutableArray *idleAnimFrames = [NSMutableArray array];
-    NSMutableArray *faceWalkAnimFrames = [NSMutableArray array];
-    NSMutableArray *faceDogWalkAnimFrames = [NSMutableArray array];
-    NSMutableArray *shootAnimFrames;
-    NSMutableArray *shootFaceAnimFrames;
-    NSMutableArray *armShootAnimFrames;
     CCSprite *target;
+    NSMutableArray *armShootAnimFrames;
 
     density = 10;
     
-    switch(character.intValue){
-        case S_BUSMAN: //businessman
-            self.personLower = [CCSprite spriteWithSpriteFrameName:@"BusinessMan_Walk_1.png"];
-            self.personUpper = [CCSprite spriteWithSpriteFrameName:@"BusinessHead_NoDog_1.png"];
-            self.personUpperOverlay = [CCSprite spriteWithSpriteFrameName:@"BusinessHead_Dog_1.png"];
-            ogHeadSprite = [NSString stringWithString:@"BusinessHead_NoDog_1.png"];
-            _personLower.tag = S_BUSMAN;
-            _personUpper.tag = S_BUSMAN;
-            _personUpperOverlay.tag = S_BUSMAN;
-            hitboxWidth = 21.0;
-            hitboxHeight = .0001;
-            hitboxCenterX = 0;
-            hitboxCenterY = 4;
-            moveDelta = 3.6;
-            sensorHeight = 2.5f;
-            sensorWidth = 1.5f;
-            restitution = .8f; //bounce
-            framerate = .07f;
-            friction = 0.3f;
-            fTag = F_BUSHED;
-            pointValue = 10;
-            heightOffset = 2.9f;
-            for(int i = 1; i <= 6; i++){
-                [walkAnimFrames addObject:
-                    [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                    [NSString stringWithFormat:@"BusinessMan_Walk_%d.png", i]]];
-            }
-            for(int i = 1; i <= 2; i++){
-                [idleAnimFrames addObject:
-                    [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                    [NSString stringWithFormat:@"BusinessMan_Idle_%d.png", i]]];
-            }
-            for(int i = 1; i <= 3; i++){
-                [faceWalkAnimFrames addObject:
-                    [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                    [NSString stringWithFormat:@"BusinessHead_NoDog_%d.png", i]]];
-            }
-            for(int i = 1; i <= 3; i++){
-                [faceDogWalkAnimFrames addObject:
-                    [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                    [NSString stringWithFormat:@"BusinessHead_Dog_%d.png", i]]];
-            }
-            break;
-        case S_POLICE: //police
-            shootAnimFrames = [NSMutableArray array];
-            shootFaceAnimFrames = [NSMutableArray array];
-            armShootAnimFrames = [NSMutableArray array];
-            self.personLower = [CCSprite spriteWithSpriteFrameName:@"Cop_Run_1.png"];
-            self.personUpper = [CCSprite spriteWithSpriteFrameName:@"Cop_Head_NoDog_1.png"];
-            self.personUpperOverlay = [CCSprite spriteWithSpriteFrameName:@"Cop_Head_Dog_1.png"];
-            self.policeArm = [CCSprite spriteWithSpriteFrameName:@"cop_arm.png"];
-            ogHeadSprite = [NSString stringWithString:@"Cop_Head_NoDog_1.png"];
-            _policeArm.tag = S_COPARM;
-            _personLower.tag = S_POLICE;
-            _personUpper.tag = S_POLICE;
-            _personUpperOverlay.tag = S_POLICE;
-            hitboxWidth = 21.5;
-            hitboxHeight = .0001;
-            hitboxCenterX = 0;
-            hitboxCenterY = 4.1;
-            moveDelta = 5;
-            sensorHeight = 2.0f;
-            sensorWidth = 1.5f;
-            restitution = .5f; //bounce
-            friction = 4.0f;
-            fTag = F_COPHED;
-            heightOffset = 2.9f;
-            pointValue = 15;
-            lowerArmAngle = 0;
-            upperArmAngle = 55;
-            framerate = .07f;
-            armJointXOffset = 15;
-            target = [CCSprite spriteWithSpriteFrameName:@"Target_NoDog.png"];
-            for(int i = 1; i <= 8; i++){
-                [walkAnimFrames addObject:
-                    [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                    [NSString stringWithFormat:@"Cop_Run_%d.png", i]]];
-            }
-            [idleAnimFrames addObject:
-                [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                [NSString stringWithString:@"Cop_Idle.png"]]];
-            for(int i = 1; i <= 4; i++){
-                [faceWalkAnimFrames addObject:
-                    [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                    [NSString stringWithFormat:@"Cop_Head_NoDog_%d.png", i]]];
-            }
-            for(int i = 1; i <= 4; i++){
-                [faceDogWalkAnimFrames addObject:
-                    [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                    [NSString stringWithFormat:@"Cop_Head_Dog_%d.png", i]]];
-            }
-            for(int i = 1; i <= 2; i++){
-                [shootAnimFrames addObject:
-                    [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                    [NSString stringWithFormat:@"Cop_Shoot_%d.png", i]]];
-            }
-            [shootFaceAnimFrames addObject:
-                [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                    [NSString stringWithFormat:@"Cop_Head_Shoot_1.png"]]];
-            [shootFaceAnimFrames addObject:
-             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-              [NSString stringWithFormat:@"Cop_Head_Shoot_2.png"]]];
-            break;
-        case S_CRPUNK: //crust punk
-            self.personLower = [CCSprite spriteWithSpriteFrameName:@"CrustPunk_Walk_1.png"];
-            self.personUpper = [CCSprite spriteWithSpriteFrameName:@"CrustPunk_Head_NoDog_1.png"];
-            self.personUpperOverlay = [CCSprite spriteWithSpriteFrameName:@"CrustPunk_Head_Dog_1.png"];
-            ogHeadSprite = [NSString stringWithString:@"CrustPunk_Head_NoDog_1.png"];
-            _personLower.tag = S_CRPUNK;
-            _personUpper.tag = S_CRPUNK;
-            _personUpperOverlay.tag = S_CRPUNK;
-            hitboxWidth = 16.0;
-            hitboxHeight = .0001;
-            hitboxCenterX = 0;
-            hitboxCenterY = 3.2;
-            moveDelta = 3;
-            sensorHeight = 2.0f;
-            sensorWidth = 1.5f;
-            restitution = .87f; //bounce
-            friction = 0.15f;
-            framerate = .06f;
-            pointValue = 15;
-            fTag = F_PNKHED;
-            heightOffset = 2.4f;
-            for(int i = 1; i <= 8; i++){
-                [walkAnimFrames addObject:
-                    [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                    [NSString stringWithFormat:@"CrustPunk_Walk_%d.png", i]]];
-            }
-            for(int i = 1; i <= 1; i++){
-                [idleAnimFrames addObject:
-                    [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                    [NSString stringWithFormat:@"CrustPunk_Walk_%d.png", i]]];
-            }
-            for(int i = 1; i <= 4; i++){
-                [faceWalkAnimFrames addObject:
-                    [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                    [NSString stringWithFormat:@"CrustPunk_Head_NoDog_%d.png", i]]];
-            }
-            for(int i = 1; i <= 4; i++){
-                [faceDogWalkAnimFrames addObject:
-                    [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                    [NSString stringWithFormat:@"CrustPunk_Head_Dog_%d.png", i]]];
-            }
-            break;
-        case S_JOGGER: //jogger
-            self.personLower = [CCSprite spriteWithSpriteFrameName:@"Jogger_Run_1.png"];
-            self.personUpper = [CCSprite spriteWithSpriteFrameName:@"Jogger_Head_NoDog_1.png"];
-            self.personUpperOverlay = [CCSprite spriteWithSpriteFrameName:@"Jogger_Head_Dog_1.png"];
-            ogHeadSprite = [NSString stringWithString:@"Jogger_Head_NoDog_1.png"];
-            _personLower.tag = S_JOGGER;
-            _personUpper.tag = S_JOGGER;
-            _personUpperOverlay.tag = S_JOGGER;
-            hitboxWidth = 22.0;
-            hitboxHeight = .0001;
-            hitboxCenterX = 0;
-            hitboxCenterY = 3.7;
-            moveDelta = 6;
-            sensorHeight = 1.3f;
-            sensorWidth = 1.5f;
-            restitution = .4f; //bounce
-            friction = 0.15f;
-            framerate = .07f;
-            fTag = F_JOGHED;
-            pointValue = 25;
-            heightOffset = 2.55f;
-            for(int i = 1; i <= 8; i++){
-                [walkAnimFrames addObject:
-                    [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                    [NSString stringWithFormat:@"Jogger_Run_%d.png", i]]];
-            }
-            for(int i = 1; i <= 1; i++){
-                [idleAnimFrames addObject:
-                    [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                    [NSString stringWithFormat:@"Jogger_Run_%d.png", i]]];
-            }
-            for(int i = 1; i <= 8; i++){
-                [faceWalkAnimFrames addObject:
-                    [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                    [NSString stringWithFormat:@"Jogger_Head_NoDog_%d.png", i]]];
-            }
-            for(int i = 1; i <= 4; i++){
-                [faceDogWalkAnimFrames addObject:
-                    [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                    [NSString stringWithFormat:@"Jogger_Head_Dog_%d.png", i]]];
-            }
-            break;
-        case S_YNGPRO: //young professional
-            self.personLower = [CCSprite spriteWithSpriteFrameName:@"YoungProfesh_Walk_1.png"];
-            self.personUpper = [CCSprite spriteWithSpriteFrameName:@"YoungProfesh_Head_NoDog_1.png"];
-            self.personUpperOverlay = [CCSprite spriteWithSpriteFrameName:@"YoungProfesh_Head_Dog_1.png"];
-            ogHeadSprite = [NSString stringWithString:@"YoungProfesh_Head_NoDog_1.png"];
-            _personLower.tag = S_YNGPRO;
-            _personUpper.tag = S_YNGPRO;
-            _personUpperOverlay.tag = S_YNGPRO;
-            hitboxWidth = 24.0;
-            hitboxHeight = .0001;
-            hitboxCenterX = 0;
-            hitboxCenterY = 4.0;
-            moveDelta = 3.7;
-            sensorHeight = 1.3f;
-            sensorWidth = 1.5f;
-            restitution = .4f; //bounce
-            friction = 0.15f;
-            framerate = .06f;
-            fTag = F_JOGHED;
-           pointValue = 15;
-            heightOffset = 2.9f;
-            for(int i = 1; i <= 8; i++){
-                [walkAnimFrames addObject:
-                    [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                    [NSString stringWithFormat:@"YoungProfesh_Walk_%d.png", i]]];
-            }
-            for(int i = 1; i <= 1; i++){
-                [idleAnimFrames addObject:
-                    [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                    [NSString stringWithFormat:@"YoungProfesh_Walk_%d.png", i]]];
-            }
-            for(int i = 1; i <= 4; i++){
-                [faceWalkAnimFrames addObject:
-                    [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                    [NSString stringWithFormat:@"YoungProfesh_Head_NoDog_%d.png", i]]];
-            }
-            for(int i = 1; i <= 4; i++){
-                [faceDogWalkAnimFrames addObject:
-                    [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                    [NSString stringWithFormat:@"YoungProfesh_Head_Dog_%d.png", i]]];
-            }
-            break;
+    CCLOG(@"lowerSprite; %@", person->lowerSprite);
+    self.personLower = [CCSprite spriteWithSpriteFrameName:person->lowerSprite];
+    self.personUpper = [CCSprite spriteWithSpriteFrameName:person->upperSprite];
+    self.personUpperOverlay = [CCSprite spriteWithSpriteFrameName:person->upperOverlaySprite];
+    _personLower.tag = person->tag;
+    _personUpper.tag = person->tag;
+    _personUpperOverlay.tag = person->tag;
+    if(person->tag == 4){
+        self.policeArm = [CCSprite spriteWithSpriteFrameName:person->armSprite];
+        _policeArm.tag = person->armTag;
+        armShootAnimFrames = [[NSMutableArray alloc] init];
     }
     
     if(floorBit.intValue == 1){
@@ -957,34 +736,34 @@
     else{
         zIndex = 12;
         yPos = 115;
-        
     }
 
     NSMutableArray *notifiers = [PointNotify buildNotifiers];
     
     //create animations for walk, idle, and bobbing head
-    walkAnim = [CCAnimation animationWithFrames:walkAnimFrames delay:framerate];
+    walkAnim = [CCAnimation animationWithFrames:person->walkAnimFrames delay:person->framerate];
     _walkAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:walkAnim restoreOriginalFrame:NO]] retain];
     [_personLower runAction:_walkAction];
 
-    idleAnim = [CCAnimation animationWithFrames:idleAnimFrames delay:.2f];
+    idleAnim = [CCAnimation animationWithFrames:person->idleAnimFrames delay:.2f];
     _idleAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:idleAnim restoreOriginalFrame:NO]] retain];
 
-    walkFaceAnim = [CCAnimation animationWithFrames:faceWalkAnimFrames delay:framerate];
+    walkFaceAnim = [CCAnimation animationWithFrames:person->faceWalkAnimFrames delay:person->framerate];
     _walkFaceAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:walkFaceAnim restoreOriginalFrame:NO]] retain];
     [_personUpper runAction:_walkFaceAction];
 
-    walkDogFaceAnim = [CCAnimation animationWithFrames:faceDogWalkAnimFrames delay:framerate];
+    walkDogFaceAnim = [CCAnimation animationWithFrames:person->faceDogWalkAnimFrames delay:person->framerate];
     CCAction *_walkDogFaceAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:walkDogFaceAnim restoreOriginalFrame:NO]] retain];
     [_personUpperOverlay runAction:_walkDogFaceAction];
 
-    if(character.intValue == 4){
-        shootAnim = [CCAnimation animationWithFrames:shootAnimFrames delay:.08f];
+    if(person->tag == 4){
+        shootAnim = [CCAnimation animationWithFrames:person->shootAnimFrames delay:.08f];
         _shootAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:shootAnim restoreOriginalFrame:NO] times:1] retain];
 
-        shootFaceAnim = [CCAnimation animationWithFrames:shootFaceAnimFrames delay:.1f];
+        shootFaceAnim = [CCAnimation animationWithFrames:person->shootFaceAnimFrames delay:.1f];
         _shootFaceAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:shootFaceAnim restoreOriginalFrame:NO] times:1] retain];
 
+        target = [CCSprite spriteWithSpriteFrameName:person->targetSprite];
         target.tag = S_CRSHRS;
         [spriteSheetLevel addChild:target z:100];
     }
@@ -996,15 +775,15 @@
     [spriteSheetLevel addChild:_personLower z:zIndex];
     [spriteSheetLevel addChild:_personUpper z:zIndex+2];
     [spriteSheetLevel addChild:_personUpperOverlay z:zIndex+2];
-    if(character.intValue == 4){
+    if(person->tag == 4){
         _policeArm.position = ccp(xPos.intValue, yPos);
         [spriteSheetLevel addChild:_policeArm z:zIndex-2];
     }
     
     //set secondary values based on the direction of the walk
     if(xPos.intValue > winSize.width/2){
-        moveDelta = -1*moveDelta;
-        if(character.intValue == 4){
+        person->moveDelta = -1*person->moveDelta;
+        if(person->tag == 4){
             lowerArmAngle = 132;
             upperArmAngle = 175;
             armBodyXOffset = 8;
@@ -1018,7 +797,7 @@
         _personLower.flipX = YES;
         _personUpper.flipX = YES;
         _personUpperOverlay.flipX = YES;
-        if(character.intValue == 4){
+        if(person->tag == 4){
             armBodyXOffset = 8;
             armBodyYOffset = 39;
             armJointYOffset = 44;
@@ -1026,7 +805,7 @@
         }
     }
     
-    switch (pointValue){
+    switch (person->pointValue){
         case 10: contactActionIndex = 0;
             break;
         case 15: contactActionIndex = 1;
@@ -1044,16 +823,16 @@
     ud->angryFace = _personUpperOverlay;
     ud->defaultAction = _walkAction;
     ud->altWalkAction = _walkDogFaceAction;
-    ud->heightOffset2 = heightOffset;
+    ud->heightOffset2 = person->heightOffset;
     ud->altAction = _walkFaceAction;
     ud->idleAction = _idleAction;
     ud->altAnimation = walkFaceAnim;
     ud->collideFilter = _curPersonMaskBits;
-    ud->moveDelta = moveDelta;
+    ud->moveDelta = person->moveDelta;
     ud->aiming = false;
     ud->hasLeftScreen = false;
     ud->_person_hasTouchedDog = false;
-    ud->pointValue = pointValue;
+    ud->pointValue = person->pointValue;
     // point notifiers
     ud->_not_dogContact = (CCFiniteTimeAction *)[(NSValue *)[notifiers objectAtIndex:contactActionIndex] pointerValue];
     ud->_not_dogOnHead = (CCFiniteTimeAction *)[(NSValue *)[notifiers objectAtIndex:3] pointerValue];
@@ -1062,11 +841,11 @@
     ud->_not_spcContact = (CCFiniteTimeAction *)[(NSValue *)[notifiers objectAtIndex:6] pointerValue];
     ud->_not_spcOnHead = (CCFiniteTimeAction *)[(NSValue *)[notifiers objectAtIndex:7] pointerValue];
     ud->_not_spcLeaveScreen = (CCFiniteTimeAction *)[(NSValue *)[notifiers objectAtIndex:8] pointerValue];
-    if(character.intValue == S_BUSMAN){
+    if(person->tag == S_BUSMAN){
         ud->stopTime = 100 + (arc4random() % 80);
         ud->stopTimeDelta = 100 + (arc4random() % 80);
     }
-    else if(character.intValue == S_POLICE){
+    else if(person->tag == S_POLICE){
         ud->altAction2 = _shootAction;
         ud->altAction3 = _shootFaceAction;
         ud->overlaySprite = target;
@@ -1075,6 +854,8 @@
         ud->stopTime = 9999; // huge number init so that cops don't freeze on enter
     }
 
+    int fTag = person->fTag;
+    
     fixtureUserData *fUd1 = new fixtureUserData();
     fUd1->tag = fTag;
 
@@ -1094,12 +875,12 @@
 
     //fixture for head hitbox
     b2PolygonShape personShape;
-    personShape.SetAsBox(hitboxWidth/PTM_RATIO, hitboxHeight/PTM_RATIO, b2Vec2(hitboxCenterX, hitboxCenterY), 0);
+    personShape.SetAsBox(person->hitboxWidth/PTM_RATIO, person->hitboxHeight/PTM_RATIO, b2Vec2(person->hitboxCenterX, person->hitboxCenterY), 0);
     b2FixtureDef personShapeDef;
     personShapeDef.shape = &personShape;
     personShapeDef.density = 0;
-    personShapeDef.friction = friction;
-    personShapeDef.restitution = restitution;
+    personShapeDef.friction = person->friction;
+    personShapeDef.restitution = person->restitution;
     personShapeDef.userData = fUd1;
     personShapeDef.filter.categoryBits = _curPersonMaskBits;
     personShapeDef.filter.maskBits = WIENER;
@@ -1120,7 +901,7 @@
 
     //sensor above heads for point gathering
     b2PolygonShape personHeadSensorShape;
-    personHeadSensorShape.SetAsBox(sensorWidth,sensorHeight,b2Vec2(hitboxCenterX, hitboxCenterY+(sensorHeight/2)), 0);
+    personHeadSensorShape.SetAsBox(person->sensorWidth,person->sensorHeight,b2Vec2(person->hitboxCenterX, person->hitboxCenterY+(person->sensorHeight/2)), 0);
     b2FixtureDef personHeadSensorShapeDef;
     personHeadSensorShapeDef.shape = &personHeadSensorShape;
     personHeadSensorShapeDef.userData = fUd3;
@@ -1129,7 +910,7 @@
     personHeadSensorShapeDef.filter.maskBits = WIENER;
     _personFixture = _personBody->CreateFixture(&personHeadSensorShapeDef);
 
-    if(character.intValue == 4){
+    if(person->tag == 4){
         //create the cop's arm body if we need to
         for(int i = 1; i <= 2; i++){
             [armShootAnimFrames addObject:
@@ -1219,18 +1000,14 @@
 
 -(void)spawnCallback:(id)sender data:(void *)params {
     NSNumber *xPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:0];
-    NSNumber *characterTag = (NSNumber *)[(NSMutableArray *) params objectAtIndex:1];
 
     NSNumber *xPosition = [xPositions objectAtIndex:arc4random() % [xPositions count]];
     xPos = [NSNumber numberWithInt:xPosition.intValue];
 
-    characterTag = [characterTags objectAtIndex:arc4random() % [characterTags count]];
-
     [self walkIn:self data:params];
 
-    personParameters = [[NSMutableArray alloc] initWithCapacity:3];
+    personParameters = [[NSMutableArray alloc] initWithCapacity:2];
     [personParameters addObject:xPos];
-    [personParameters addObject:characterTag];
 
     id delay = [CCDelayTime actionWithDuration:1];
     id callBackAction = [CCCallFuncND actionWithTarget: self selector: @selector(spawnCallback:data:) data:personParameters];
@@ -1293,7 +1070,6 @@
         _lastTouchTime = 0;
         _numWorldTouches = 0;
         _curPersonMaskBits = 0x1000;
-        _spawnLimiter = [characterTags count] - ([characterTags count]-1);
         _wienerSpawnDelayTime = WIENER_SPAWN_START;
         _points = 0;
         _peopleGrumped = 0;
@@ -1364,10 +1140,6 @@
         xPositions = [[NSMutableArray alloc] initWithCapacity:2];
         [xPositions addObject:[NSNumber numberWithInt:winSize.width+30]];
         [xPositions addObject:[NSNumber numberWithInt:-30]];
-        characterTags = [[NSMutableArray alloc] initWithCapacity:2];
-        for(int i = S_BUSMAN; i <= S_YNGPRO; i++){ // to allow for more characters, pick a value > S_POLICE && < S_TOPPSN
-            [characterTags addObject:[NSNumber numberWithInt:i]];
-        }
         movementParameters = [[NSMutableArray alloc] initWithCapacity:2];
         
         // allocate array to hold mouse joints for mutliple touches
@@ -1432,9 +1204,7 @@
         //schedule callbacks for dogs, people, and game value decrements
         personParameters = [[NSMutableArray alloc] initWithCapacity:2];
         NSNumber *xPos = [NSNumber numberWithInt:winSize.width];
-        NSNumber *character = [NSNumber numberWithInt:3];
         [personParameters addObject:xPos];
-        [personParameters addObject:character];
         [self spawnCallback:self data:personParameters];
 
         NSMutableArray *wienerParams = [[NSMutableArray alloc] initWithCapacity:2];
@@ -2265,7 +2035,6 @@
     [droppedText release];
     [floorBits release];
     [xPositions release];
-    [characterTags release];
     [wienerParameters release];
     [personParameters release];
     [movementPatterns release];

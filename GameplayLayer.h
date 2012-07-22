@@ -35,7 +35,7 @@
     b2Vec2 policeRayPoint1, policeRayPoint2;
     CCLayerColor *_pauseLayer, *_flashLayer;
     CCMenu *_pauseMenu;
-    NSMutableArray *floorBits, *xPositions, *characterTags, *wienerParameters, *headParams, *mouseJoints;
+    NSMutableArray *floorBits, *xPositions, *wienerParameters, *headParams, *mouseJoints;
     NSMutableArray *personParameters, *wakeParameters, *movementPatterns, *movementParameters, *_touchLocations, *dogIcons, *allTouchHashes;
     NSString *scoreText, *droppedText;
     int _points, _droppedCount, _spawnLimiter, time, _curPersonMaskBits, _droppedSpacing, _lastTouchTime, _firstDeathTime, lowerArmAngle, upperArmAngle;

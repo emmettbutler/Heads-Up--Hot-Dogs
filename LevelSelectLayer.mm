@@ -75,6 +75,8 @@
           [NSString stringWithFormat:@"Steak_Shot_%d.png", i]]];
     }
     lp->specialDog = dd;
+    
+    lp->characters = [CharBuilder buildCharacters:lp->slug];
     [levelStructs addObject:[NSValue valueWithPointer:lp]];
     
     
@@ -122,7 +124,11 @@
     }
     
     lp->specialDog = dd;
+    
+    lp->characters = [CharBuilder buildCharacters:lp->slug];
     [levelStructs addObject:[NSValue valueWithPointer:lp]];
+    
+    /////////////////////////////////////////////////////////////////////////////
     
     [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_common.plist"];
     [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_nyc.plist"];
@@ -254,6 +260,10 @@
 
 -(void)switchScreenNYC{
     [self switchScreenStartWithSlug:[NSString stringWithString:@"nyc"]];
+}
+
+-(void)switchScreenSpace{
+    [self switchScreenStartWithSlug:[NSString stringWithString:@"space"]];
 }
 
 -(void)switchScreenStartWithSlug:(NSString *)slug{

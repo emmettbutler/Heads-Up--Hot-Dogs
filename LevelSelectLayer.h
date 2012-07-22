@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 #import "cocos2d.h"
+#import "CharBuilder.h"
+
 
 static NSMutableArray *levelStructs;
 static NSUserDefaults *standardUserDefaults;
@@ -34,6 +36,7 @@ static NSUserDefaults *standardUserDefaults;
         spcDogData *specialDog;
         NSString *spritesheet;
         NSString *thumbnail;
+        NSMutableArray *characters;
     };
 
     int time;
