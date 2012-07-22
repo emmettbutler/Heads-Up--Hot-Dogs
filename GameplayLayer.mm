@@ -96,8 +96,6 @@
     [TestFlight openFeedbackView];
 }
 
-
-
 -(void)setShootLock:(id)sender data:(void*)params{
     NSNumber *lockBool = (NSNumber *)[(NSMutableArray *) params objectAtIndex:0];
     _shootLock = lockBool.intValue;
@@ -780,9 +778,11 @@
         [spriteSheetLevel addChild:_policeArm z:zIndex-2];
     }
     
+    int moveDelta;
+    
     //set secondary values based on the direction of the walk
     if(xPos.intValue > winSize.width/2){
-        person->moveDelta = -1*person->moveDelta;
+        moveDelta = -1*person->moveDelta;
         if(person->tag == 4){
             lowerArmAngle = 132;
             upperArmAngle = 175;
@@ -794,10 +794,13 @@
         }
     }
     else {
+        moveDelta = person->moveDelta;
         _personLower.flipX = YES;
         _personUpper.flipX = YES;
         _personUpperOverlay.flipX = YES;
         if(person->tag == 4){
+            lowerArmAngle = 0;
+            upperArmAngle = 55;
             armBodyXOffset = 8;
             armBodyYOffset = 39;
             armJointYOffset = 44;
@@ -828,7 +831,7 @@
     ud->idleAction = _idleAction;
     ud->altAnimation = walkFaceAnim;
     ud->collideFilter = _curPersonMaskBits;
-    ud->moveDelta = person->moveDelta;
+    ud->moveDelta = moveDelta;
     ud->aiming = false;
     ud->hasLeftScreen = false;
     ud->_person_hasTouchedDog = false;
