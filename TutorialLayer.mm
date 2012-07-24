@@ -58,7 +58,7 @@
         standardUserDefaults = [NSUserDefaults standardUserDefaults];
         _color_pink = ccc3(255, 62, 166);
         
-        [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile: @"tutorial_sprites_default.plist"];
+        //[[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile: @"tutorial_sprites_default.plist"];
         spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"tutorial_sprites_default.png"];
         [self addChild:spriteSheet];
         

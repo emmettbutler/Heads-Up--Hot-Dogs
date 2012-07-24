@@ -641,7 +641,7 @@
     wienerShapeDef.friction = 1.0f;
     wienerShapeDef.userData = fUd2;
     wienerShapeDef.filter.maskBits = f;
-    wienerShapeDef.restitution = 0.2f;
+    wienerShapeDef.restitution = 0.2f*level->restitutionMul;
     wienerShapeDef.filter.categoryBits = WIENER;
     _wienerFixture = wienerBody->CreateFixture(&wienerShapeDef);
 
@@ -739,18 +739,18 @@
     NSMutableArray *notifiers = [PointNotify buildNotifiers];
     
     //create animations for walk, idle, and bobbing head
-    walkAnim = [CCAnimation animationWithFrames:person->walkAnimFrames delay:person->framerate];
+    walkAnim = [CCAnimation animationWithFrames:person->walkAnimFrames delay:person->framerate/level->personSpeedMul];
     _walkAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:walkAnim restoreOriginalFrame:NO]] retain];
     [_personLower runAction:_walkAction];
 
     idleAnim = [CCAnimation animationWithFrames:person->idleAnimFrames delay:.2f];
     _idleAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:idleAnim restoreOriginalFrame:NO]] retain];
 
-    walkFaceAnim = [CCAnimation animationWithFrames:person->faceWalkAnimFrames delay:person->framerate];
+    walkFaceAnim = [CCAnimation animationWithFrames:person->faceWalkAnimFrames delay:person->framerate/level->personSpeedMul];
     _walkFaceAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:walkFaceAnim restoreOriginalFrame:NO]] retain];
     [_personUpper runAction:_walkFaceAction];
 
-    walkDogFaceAnim = [CCAnimation animationWithFrames:person->faceDogWalkAnimFrames delay:person->framerate];
+    walkDogFaceAnim = [CCAnimation animationWithFrames:person->faceDogWalkAnimFrames delay:person->framerate/level->personSpeedMul];
     CCAction *_walkDogFaceAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:walkDogFaceAnim restoreOriginalFrame:NO]] retain];
     [_personUpperOverlay runAction:_walkDogFaceAction];
 
@@ -831,7 +831,7 @@
     ud->idleAction = _idleAction;
     ud->altAnimation = walkFaceAnim;
     ud->collideFilter = _curPersonMaskBits;
-    ud->moveDelta = moveDelta;
+    ud->moveDelta = moveDelta*level->personSpeedMul;
     ud->aiming = false;
     ud->hasLeftScreen = false;
     ud->_person_hasTouchedDog = false;

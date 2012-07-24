@@ -37,6 +37,8 @@ static NSUserDefaults *standardUserDefaults;
         NSString *spritesheet;
         NSString *thumbnail;
         NSMutableArray *characters;
+        float personSpeedMul;
+        float restitutionMul;
     };
 
     int time;

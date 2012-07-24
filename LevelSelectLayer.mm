@@ -49,6 +49,8 @@
     lp->spritesheet = [NSString stringWithString:@"sprites_philly"];
     lp->thumbnail = [NSString stringWithString:@"Philly_Thumb.png"];
     lp->highScore = [standardUserDefaults integerForKey:lp->highScoreSaveKey];
+    lp->personSpeedMul = 1;
+    lp->restitutionMul = 1;
     
     dd = new spcDogData();
     dd->riseSprite = [NSString stringWithString:@"Steak_Rise.png"];
@@ -97,6 +99,8 @@
     lp->spritesheet = [NSString stringWithString:@"sprites_nyc"];
     lp->thumbnail = [NSString stringWithString:@"NYC_Thumb.png"];
     lp->highScore = [standardUserDefaults integerForKey:lp->highScoreSaveKey];
+    lp->personSpeedMul = 1;
+    lp->restitutionMul = 1;
     
     dd = new spcDogData();
     dd->riseSprite = [NSString stringWithString:@"Bagel_Rise.png"];
@@ -140,12 +144,14 @@
     lp->name = [NSString stringWithString:@"Space Station"];
     lp->bg = [NSString stringWithString:@"SpaceBG.png"];
     lp->bgm = [NSString stringWithString:@"gameplay 3.mp3"];
-    lp->gravity = -5.0f;
+    lp->gravity = -10.0f;
     lp->highScoreSaveKey = [NSString stringWithString:@"highScoreSpace"];
     lp->func = [NSString stringWithString:@"switchScreenSpace"];
     lp->spritesheet = [NSString stringWithString:@"sprites_space"];
     lp->thumbnail = [NSString stringWithString:@"NYC_Thumb.png"];
     lp->highScore = [standardUserDefaults integerForKey:lp->highScoreSaveKey];
+    lp->personSpeedMul = .6;
+    lp->restitutionMul = 1.5;
     
     dd = new spcDogData();
     dd->riseSprite = [NSString stringWithString:@"Bagel_Rise.png"];
