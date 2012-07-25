@@ -121,7 +121,7 @@
 
 - (void)switchSceneStart{
     NSInteger introDone = [standardUserDefaults integerForKey:@"introDone"];
-    CCLOG(@"introDone: %d", introDone);
+    NSLog(@"introDone: %d", introDone);
     if(introDone == 1)
         [[CCDirector sharedDirector] replaceScene:[LevelSelectLayer scene]];
     else if(introDone == 0){

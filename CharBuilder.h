@@ -12,6 +12,7 @@
 @interface CharBuilder : NSObject {
     struct personStruct {
         NSString *slug;
+        NSString *spritesheet;
         int tag;
         int armTag;
         NSString *upperSprite;

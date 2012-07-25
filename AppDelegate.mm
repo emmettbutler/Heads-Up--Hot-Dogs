@@ -120,7 +120,7 @@
     
     standardUserDefaults = [NSUserDefaults standardUserDefaults];
 #ifdef DEBUG
-    [standardUserDefaults setInteger:1 forKey:@"introDone"]; //should be 0, is 1 for debugging
+    [standardUserDefaults setInteger:0 forKey:@"introDone"]; //should be 0, is 1 for debugging
     [standardUserDefaults synchronize];
 #else
     [[SimpleAudioEngine sharedEngine] preloadEffect:@"menu intro.mp3"];

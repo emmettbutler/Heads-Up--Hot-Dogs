@@ -30,7 +30,7 @@
     CCFiniteTimeAction *_idleAction, *_appearAction, *_hitAction, *_shotAction, *_shootAction, *_armShootAction, *_shootFaceAction;
     CCAnimation *walkAnim, *idleAnim, *hitAnim, *dogDeathAnim, *dogAppearAnim, *walkFaceAnim, *walkDogFaceAnim;
     CCAnimation *dogShotAnim, *shootAnim, *armShootAnim, *shootFaceAnim;
-    CCSpriteBatchNode *spriteSheetCommon, *spriteSheetLevel;
+    CCSpriteBatchNode *spriteSheetCommon, *spriteSheetLevel, *spriteSheetCharacter;
     CCLabelTTF *scoreLabel, *droppedLabel;
     b2Vec2 policeRayPoint1, policeRayPoint2;
     CCLayerColor *_pauseLayer, *_flashLayer;

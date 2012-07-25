@@ -69,7 +69,10 @@
 
 - (void)loseScene{
     [TestFlight passCheckpoint:@"Game Over"];
+#ifdef DEBUG
+#else
     [[SimpleAudioEngine sharedEngine] stopBackgroundMusic];
+#endif
     NSMutableArray *loseParams = [[NSMutableArray alloc] initWithCapacity:6];
     [loseParams addObject:[NSNumber numberWithInteger:_points]];
     [loseParams addObject:[NSNumber numberWithInteger:time]];
@@ -556,14 +559,12 @@
             }
             break;
     }
+    CCSprite *spcAppear;
     //add base sprite to scene
     self.wiener = [CCSprite spriteWithSpriteFrameName:mainSprite];
     _wiener.position = ccp(location.x, location.y);
     _wiener.tag = tag;
-    if(_wiener.tag == S_HOTDOG)
-        [spriteSheetCommon addChild:_wiener z:50];
-    else if(_wiener.tag == S_SPCDOG)
-        [spriteSheetLevel addChild:_wiener z:50];
+    [spriteSheetCommon addChild:_wiener z:50];
     
     dogDeathAnim = [CCAnimation animationWithFrames:wienerDeathAnimFrames delay:.1f];
     CCAction *_deathAction = [[CCAnimate alloc] initWithAnimation:dogDeathAnim];
@@ -654,7 +655,8 @@
     [wakeParameters addObject:v];
     [wakeParameters addObject:wake];
     CCCallFuncND *wakeAction = [CCCallFuncND actionWithTarget:self selector:@selector(setAwake:data:) data:wakeParameters];
-    CCSequence *seq = [CCSequence actions:_appearAction, wakeAction, nil];
+    CCSequence *seq;
+    seq = [CCSequence actions:_appearAction, wakeAction, nil];
     [_wiener runAction:seq];
 #ifdef DEBUG
 #else
@@ -763,19 +765,19 @@
 
         target = [CCSprite spriteWithSpriteFrameName:person->targetSprite];
         target.tag = S_CRSHRS;
-        [spriteSheetLevel addChild:target z:100];
+        [spriteSheetCharacter addChild:target z:100];
     }
 
     //put the sprites in place
     _personLower.position = ccp(xPos.intValue, yPos);
     _personUpper.position = ccp(xPos.intValue, yPos);
     _personUpperOverlay.position = ccp(xPos.intValue, yPos);
-    [spriteSheetLevel addChild:_personLower z:zIndex];
-    [spriteSheetLevel addChild:_personUpper z:zIndex+2];
-    [spriteSheetLevel addChild:_personUpperOverlay z:zIndex+2];
+    [spriteSheetCharacter addChild:_personLower z:zIndex];
+    [spriteSheetCharacter addChild:_personUpper z:zIndex+2];
+    [spriteSheetCharacter addChild:_personUpperOverlay z:zIndex+2];
     if(person->tag == 4){
         _policeArm.position = ccp(xPos.intValue, yPos);
-        [spriteSheetLevel addChild:_policeArm z:zIndex-2];
+        [spriteSheetCharacter addChild:_policeArm z:zIndex-2];
     }
     
     int moveDelta;
@@ -1043,9 +1045,11 @@
         [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:[NSString stringWithFormat:@"%@.plist", level->spritesheet]];
         
         spriteSheetCommon = [CCSpriteBatchNode batchNodeWithFile:@"sprites_common.png"];
+        spriteSheetCharacter = [CCSpriteBatchNode batchNodeWithFile:@"sprites_characters.png"];
         spriteSheetLevel = [CCSpriteBatchNode batchNodeWithFile:[NSString stringWithFormat:@"%@.png", level->spritesheet]];
         
         [self addChild:spriteSheetLevel];
+        [self addChild:spriteSheetCharacter];
         [self addChild:spriteSheetCommon];
 
         background = [CCSprite spriteWithSpriteFrameName:level->bg];

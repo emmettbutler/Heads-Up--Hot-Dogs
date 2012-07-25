@@ -14,6 +14,7 @@
 +(NSMutableArray *)buildCharacters:(NSString *)levelSlug{
     SEL levelMethod = NSSelectorFromString(levelSlug);
     CCLOG(@"levelSlug: %@", levelSlug);
+    [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_characters.plist"];
     NSMutableArray *characters = [[self performSelector:levelMethod] retain];
     return characters;
 }

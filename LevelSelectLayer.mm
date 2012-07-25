@@ -144,14 +144,14 @@
     lp->name = [NSString stringWithString:@"Space Station"];
     lp->bg = [NSString stringWithString:@"SpaceBG.png"];
     lp->bgm = [NSString stringWithString:@"gameplay 3.mp3"];
-    lp->gravity = -10.0f;
+    lp->gravity = -4.0f;
     lp->highScoreSaveKey = [NSString stringWithString:@"highScoreSpace"];
     lp->func = [NSString stringWithString:@"switchScreenSpace"];
     lp->spritesheet = [NSString stringWithString:@"sprites_space"];
     lp->thumbnail = [NSString stringWithString:@"NYC_Thumb.png"];
     lp->highScore = [standardUserDefaults integerForKey:lp->highScoreSaveKey];
-    lp->personSpeedMul = .6;
-    lp->restitutionMul = 1.5;
+    lp->personSpeedMul = .8;
+    lp->restitutionMul = 1.7;
     
     dd = new spcDogData();
     dd->riseSprite = [NSString stringWithString:@"Bagel_Rise.png"];
@@ -294,13 +294,13 @@
     float swipeLength = ccpDistance(firstTouch, lastTouch);
     
     if(CGRectContainsPoint(rightArrowRect, location) || (firstTouch.x < lastTouch.x && swipeLength > 60)){
-        if(curLevelIndex < [lStructs count] - 1)
-            curLevelIndex++;
+        if(curLevelIndex > [lStructs count] - 1)
+            curLevelIndex--;
         else curLevelIndex = 0;
     }
     else if(CGRectContainsPoint(leftArrowRect, location) || (firstTouch.x > lastTouch.x && swipeLength > 60)){
-        if(curLevelIndex > 0)
-            curLevelIndex--;
+        if(curLevelIndex < 0)
+            curLevelIndex++;
         else curLevelIndex = [lStructs count] - 1;
     }
     else if(CGRectContainsPoint(thumbnailRect, location)){
