@@ -121,7 +121,7 @@
 -(void) tick: (ccTime) dt {
     if(!_lock){
         NSUserDefaults *standardUserDefaults = [NSUserDefaults standardUserDefaults];
-        highScore = [standardUserDefaults integerForKey:level->highScoreSaveKey];
+        highScore = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"highScore%@", level->slug]];
         NSInteger bestTime = [standardUserDefaults integerForKey:@"bestTime"];
         NSInteger overallTime = [standardUserDefaults integerForKey:@"overallTime"];
         _lock = 1;
@@ -131,7 +131,7 @@
         sting = [[SimpleAudioEngine sharedEngine] playEffect:@"game over sting.mp3"];
 #endif
         if(_score > highScore){
-            [standardUserDefaults setInteger:_score forKey:level->highScoreSaveKey];
+            [standardUserDefaults setInteger:_score forKey:[NSString stringWithFormat:@"highScore%@", level->slug]];
             highScore = _score;
         }
         if(_timePlayed > bestTime){

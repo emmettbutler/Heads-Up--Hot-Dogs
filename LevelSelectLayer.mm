@@ -38,17 +38,19 @@
      * PHILLY LEVEL SETTINGS
      *******************************************************************************/
     
+    // TODO - tell people when they unlock a new level
     lp = new levelProps();
     lp->slug = [NSString stringWithString:@"philly"];
+    lp->prevSlug = [NSString stringWithString:@"philly"];
     lp->name = [NSString stringWithString:@"Philly"];
+    lp->unlockThreshold = -1;
     lp->bg = [NSString stringWithString:@"bg_philly.png"];
     lp->bgm = [NSString stringWithString:@"gameplay 1.mp3"];
     lp->gravity = -30.0f;
-    lp->highScoreSaveKey = [NSString stringWithString:@"highScorePhilly"];
     lp->func = [NSString stringWithString:@"switchScreenPhilly"];
     lp->spritesheet = [NSString stringWithString:@"sprites_philly"];
     lp->thumbnail = [NSString stringWithString:@"Philly_Thumb.png"];
-    lp->highScore = [standardUserDefaults integerForKey:lp->highScoreSaveKey];
+    lp->highScore = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"highScore%@", lp->slug]];
     lp->personSpeedMul = 1;
     lp->restitutionMul = 1;
     
@@ -90,15 +92,15 @@
     
     lp = new levelProps();
     lp->slug = [NSString stringWithString:@"nyc"];
+    lp->prevSlug = [NSString stringWithString:@"philly"];
     lp->name = [NSString stringWithString:@"Big Apple"];
+    lp->unlockThreshold = 10000;
     lp->bg = [NSString stringWithString:@"BG_NYC.png"];
     lp->bgm = [NSString stringWithString:@"gameplay 3.mp3"];
     lp->gravity = -30.0f;
-    lp->highScoreSaveKey = [NSString stringWithString:@"highScoreNYC"];
     lp->func = [NSString stringWithString:@"switchScreenNYC"];
     lp->spritesheet = [NSString stringWithString:@"sprites_nyc"];
     lp->thumbnail = [NSString stringWithString:@"NYC_Thumb.png"];
-    lp->highScore = [standardUserDefaults integerForKey:lp->highScoreSaveKey];
     lp->personSpeedMul = 1;
     lp->restitutionMul = 1;
     
@@ -141,15 +143,15 @@
     
     lp = new levelProps();
     lp->slug = [NSString stringWithString:@"space"];
+    lp->prevSlug = [NSString stringWithString:@"nyc"];
     lp->name = [NSString stringWithString:@"Space Station"];
+    lp->unlockThreshold = 10000;
     lp->bg = [NSString stringWithString:@"SpaceBG.png"];
     lp->bgm = [NSString stringWithString:@"gameplay 3.mp3"];
     lp->gravity = -4.0f;
-    lp->highScoreSaveKey = [NSString stringWithString:@"highScoreSpace"];
     lp->func = [NSString stringWithString:@"switchScreenSpace"];
     lp->spritesheet = [NSString stringWithString:@"sprites_space"];
     lp->thumbnail = [NSString stringWithString:@"NYC_Thumb.png"];
-    lp->highScore = [standardUserDefaults integerForKey:lp->highScoreSaveKey];
     lp->personSpeedMul = .8;
     lp->restitutionMul = 1.7;
     
@@ -190,6 +192,14 @@
     [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_nyc.plist"];
     [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_philly.plist"];
     [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_space.plist"];
+    
+    for(NSValue *v in levelStructs){
+        levelProps *l = (levelProps *)[v pointerValue];
+        l->highScore = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"highScore%@", l->slug]];
+        int prevHighScore = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"highScore%@", l->prevSlug]];
+        if(prevHighScore > l->unlockThreshold) l->unlocked = true;
+        else l->unlocked = false;
+    }
     
     return levelStructs;
 }
@@ -268,9 +278,15 @@
     time++;
     level = (levelProps *)[(NSValue *)[lStructs objectAtIndex:curLevelIndex] pointerValue];
     
-    [thumb setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:level->thumbnail]];
-    [nameLabel setString:[NSString stringWithFormat:@"%@", level->name]];
-    [scoreLabel setString:[NSString stringWithFormat:@"high score: %06d", level->highScore]];
+    if(level->unlocked){
+        [thumb setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:level->thumbnail]];
+        [nameLabel setString:[NSString stringWithFormat:@"%@", level->name]];
+        [scoreLabel setString:[NSString stringWithFormat:@"high score: %06d", level->highScore]];
+    } else {
+        [thumb setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:level->thumbnail]];
+        [nameLabel setString:@"??????"];
+        [scoreLabel setString:@"high score: ######"];
+    }
 }
 
 - (void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {

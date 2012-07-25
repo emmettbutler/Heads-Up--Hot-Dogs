@@ -1127,7 +1127,7 @@
         scoreLabel.position = ccp(winSize.width-80, DOG_COUNTER_HT-3);
         [self addChild: scoreLabel z:72];
 
-        NSInteger highScore = [standardUserDefaults integerForKey:level->highScoreSaveKey];
+        NSInteger highScore = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"highScore%@", level->slug]];
         CCLabelTTF *highScoreLabel = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"HI: %d", highScore] fontName:@"LostPet.TTF" fontSize:18.0];
         highScoreLabel.color = _color_pink;
         [[highScoreLabel texture] setAliasTexParameters];

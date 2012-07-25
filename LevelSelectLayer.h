@@ -27,11 +27,13 @@ static NSUserDefaults *standardUserDefaults;
     struct levelProps{
         NSString *bg;
         NSString *bgm;
+        NSString *prevSlug;
         float gravity;
+        BOOL unlocked;
+        int unlockThreshold;
         NSString *name;
         NSString *slug;
         int highScore;
-        NSString *highScoreSaveKey;
         NSString *func;
         spcDogData *specialDog;
         NSString *spritesheet;
