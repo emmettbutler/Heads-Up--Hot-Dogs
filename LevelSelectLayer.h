@@ -35,6 +35,7 @@ static NSUserDefaults *standardUserDefaults;
         NSString *slug;
         int highScore;
         NSString *func;
+        float frictionMul;
         spcDogData *specialDog;
         NSString *spritesheet;
         NSString *thumbnail;

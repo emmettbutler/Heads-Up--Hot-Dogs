@@ -53,6 +53,7 @@
     lp->highScore = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"highScore%@", lp->slug]];
     lp->personSpeedMul = 1;
     lp->restitutionMul = 1;
+    lp->frictionMul = 1;
     
     dd = new spcDogData();
     dd->riseSprite = [NSString stringWithString:@"Steak_Rise.png"];
@@ -81,7 +82,6 @@
     }
     lp->specialDog = dd;
     
-    lp->characters = [CharBuilder buildCharacters:lp->slug];
     [levelStructs addObject:[NSValue valueWithPointer:lp]];
     
     
@@ -103,6 +103,7 @@
     lp->thumbnail = [NSString stringWithString:@"NYC_Thumb.png"];
     lp->personSpeedMul = 1;
     lp->restitutionMul = 1;
+    lp->frictionMul = 1;
     
     dd = new spcDogData();
     dd->riseSprite = [NSString stringWithString:@"Bagel_Rise.png"];
@@ -132,7 +133,6 @@
     
     lp->specialDog = dd;
     
-    lp->characters = [CharBuilder buildCharacters:lp->slug];
     [levelStructs addObject:[NSValue valueWithPointer:lp]];
     
     
@@ -148,12 +148,13 @@
     lp->unlockThreshold = 20000;
     lp->bg = [NSString stringWithString:@"SpaceBG.png"];
     lp->bgm = [NSString stringWithString:@"gameplay 3.mp3"];
-    lp->gravity = -4.0f;
+    lp->gravity = -1.0f;
     lp->func = [NSString stringWithString:@"switchScreenSpace"];
     lp->spritesheet = [NSString stringWithString:@"sprites_space"];
     lp->thumbnail = [NSString stringWithString:@"NYC_Thumb.png"];
     lp->personSpeedMul = .8;
     lp->restitutionMul = 1.7;
+    lp->frictionMul = 100;
     
     dd = new spcDogData();
     dd->riseSprite = [NSString stringWithString:@"Bagel_Rise.png"];
@@ -183,7 +184,7 @@
     
     lp->specialDog = dd;
     
-    lp->characters = [CharBuilder buildCharacters:lp->slug];
+    
     [levelStructs addObject:[NSValue valueWithPointer:lp]];
     
     /////////////////////////////////////////////////////////////////////////////
@@ -196,6 +197,7 @@
     for(NSValue *v in levelStructs){
         levelProps *l = (levelProps *)[v pointerValue];
         l->highScore = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"highScore%@", l->slug]];
+        l->characters = [CharBuilder buildCharacters:l->slug];
         int prevHighScore = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"highScore%@", l->prevSlug]];
         if(prevHighScore > l->unlockThreshold) l->unlocked = true;
         else l->unlocked = false;

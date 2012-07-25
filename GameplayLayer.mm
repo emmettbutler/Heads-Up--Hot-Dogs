@@ -639,7 +639,7 @@
     b2FixtureDef wienerShapeDef;
     wienerShapeDef.shape = &wienerShape;
     wienerShapeDef.density = 0.5f;
-    wienerShapeDef.friction = 1.0f;
+    wienerShapeDef.friction = 1.0f*level->frictionMul;
     wienerShapeDef.userData = fUd2;
     wienerShapeDef.filter.maskBits = f;
     wienerShapeDef.restitution = 0.2f*level->restitutionMul;
@@ -884,7 +884,7 @@
     b2FixtureDef personShapeDef;
     personShapeDef.shape = &personShape;
     personShapeDef.density = 0;
-    personShapeDef.friction = person->friction;
+    personShapeDef.friction = person->friction*level->frictionMul;
     personShapeDef.restitution = person->restitution;
     personShapeDef.userData = fUd1;
     personShapeDef.filter.categoryBits = _curPersonMaskBits;
