@@ -145,7 +145,7 @@
     lp->slug = [NSString stringWithString:@"space"];
     lp->prevSlug = [NSString stringWithString:@"nyc"];
     lp->name = [NSString stringWithString:@"Space Station"];
-    lp->unlockThreshold = 10000;
+    lp->unlockThreshold = 20000;
     lp->bg = [NSString stringWithString:@"SpaceBG.png"];
     lp->bgm = [NSString stringWithString:@"gameplay 3.mp3"];
     lp->gravity = -4.0f;
@@ -285,7 +285,7 @@
     } else {
         [thumb setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:level->thumbnail]];
         [nameLabel setString:@"??????"];
-        [scoreLabel setString:@"high score: ######"];
+        [scoreLabel setString:[NSString stringWithFormat:@"Unlock with %d points", level->unlockThreshold]];
     }
 }
 
@@ -321,7 +321,10 @@
     }
     else if(CGRectContainsPoint(thumbnailRect, location)){
         SEL levelMethod = NSSelectorFromString(level->func);
-        [self performSelector:levelMethod];
+#ifdef DEBUG // will eventually have this happen in deployment too
+        if(level->unlocked)
+#endif
+            [self performSelector:levelMethod];
     }
 }
 
