@@ -294,14 +294,14 @@
     float swipeLength = ccpDistance(firstTouch, lastTouch);
     
     if(CGRectContainsPoint(rightArrowRect, location) || (firstTouch.x < lastTouch.x && swipeLength > 60)){
-        if(curLevelIndex > [lStructs count] - 1)
+        if(curLevelIndex > 0)
             curLevelIndex--;
-        else curLevelIndex = 0;
+        else curLevelIndex = [lStructs count] - 1;
     }
     else if(CGRectContainsPoint(leftArrowRect, location) || (firstTouch.x > lastTouch.x && swipeLength > 60)){
-        if(curLevelIndex < 0)
+        if(curLevelIndex < [lStructs count] - 1)
             curLevelIndex++;
-        else curLevelIndex = [lStructs count] - 1;
+        else curLevelIndex = 0;
     }
     else if(CGRectContainsPoint(thumbnailRect, location)){
         SEL levelMethod = NSSelectorFromString(level->func);

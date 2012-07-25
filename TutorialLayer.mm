@@ -422,7 +422,7 @@
 }
 
 -(void) dealloc{
-    // this causes a crash in gameplaylayer?
+    // this causes a crash in gameplaylayer due to sprite frame namespace collisions
     //[[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile: @"tutorial_sprites_default.plist"];
     [super dealloc];
 }
