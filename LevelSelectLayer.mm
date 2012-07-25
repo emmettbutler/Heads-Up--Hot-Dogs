@@ -26,14 +26,11 @@
     levelProps *lp;
     spcDogData *dd;
     
-    // TODO - importing all of these defeats part of the purpose of using different sprite sheets
     [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_common.plist"];
     [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_nyc.plist"];
     [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_philly.plist"];
     [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_space.plist"];
-    
-    // TODO - people per level
-    
+
     /********************************************************************************
      * PHILLY LEVEL SETTINGS
      *******************************************************************************/
@@ -183,8 +180,6 @@
     }
     
     lp->specialDog = dd;
-    
-    
     [levelStructs addObject:[NSValue valueWithPointer:lp]];
     
     /////////////////////////////////////////////////////////////////////////////

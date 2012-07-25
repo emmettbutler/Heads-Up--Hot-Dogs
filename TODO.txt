@@ -1,4 +1,1 @@
-    // TODO - importing all of these defeats part of the purpose of using different sprite sheets
-    // TODO - people per level
     // TODO - tell people when they unlock a new level
-    // TODO - separate bodyuserdata into two structs(?), one for dogs and one for people - will probably reduce memory use slightly?
