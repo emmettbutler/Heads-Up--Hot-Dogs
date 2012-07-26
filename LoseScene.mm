@@ -44,6 +44,7 @@
 
 -(id) init{
     if ((self = [super init])){
+        touchLock = false;
         self.isTouchEnabled = YES;
         // color definitions
         _color_pink = ccc3(255, 62, 166);
@@ -119,6 +120,8 @@
 }
 
 -(void) tick: (ccTime) dt {
+    CGSize winSize = [[CCDirector sharedDirector] winSize];
+    
     if(!_lock){
         NSUserDefaults *standardUserDefaults = [NSUserDefaults standardUserDefaults];
         highScore = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"highScore%@", level->slug]];
@@ -134,9 +137,27 @@
             [standardUserDefaults setInteger:_score forKey:[NSString stringWithFormat:@"highScore%@", level->slug]];
             highScore = _score;
         }
-        if(_timePlayed > bestTime){
+        if(_timePlayed > bestTime)
             [standardUserDefaults setInteger:_timePlayed forKey:@"bestTime"];
+        
+        if(_score > level->nextUnlockThreshold){
+            levelBox = [CCSprite spriteWithSpriteFrameName:@"Lvl_TextBox.png"];
+            levelBox.position = ccp(winSize.width/2, (winSize.height/2));
+            [self addChild:levelBox];
+        
+            levelLabel1 = [CCLabelTTF labelWithString:@"New Level Unlocked" fontName:@"LostPet.TTF" fontSize:20.0];
+            [[levelLabel1 texture] setAliasTexParameters];
+            levelLabel1.color = _color_pink;
+            levelLabel1.position = ccp(winSize.width/2, winSize.height/2+10);
+            [self addChild:levelLabel1];
+        
+            levelLabel2 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"%@", level->nextName] fontName:@"LostPet.TTF" fontSize:20.0];
+            [[levelLabel2 texture] setAliasTexParameters];
+            levelLabel2.color = _color_pink;
+            levelLabel2.position = ccp(winSize.width/2, winSize.height/2-10);
+            [self addChild:levelLabel2];
         }
+            
         CCLOG(@"OverallTime + _timePlayed/60 --> %d + %d = %d", overallTime, _timePlayed/60, overallTime+(_timePlayed/60));
         [standardUserDefaults setInteger:overallTime+(_timePlayed/60) forKey:@"overallTime"];
         [standardUserDefaults synchronize];
@@ -172,6 +193,14 @@
     UITouch *myTouch = [touches anyObject];
     CGPoint location = [myTouch locationInView:[myTouch view]];
     location = [[CCDirector sharedDirector] convertToGL:location];  
+    if(_score > level->nextUnlockThreshold){
+        if(!touchLock){
+            touchLock = true;
+            [levelLabel1 removeFromParentAndCleanup:YES];
+            [levelLabel2 removeFromParentAndCleanup:YES];
+            [levelBox removeFromParentAndCleanup:YES];
+        }
+    }
 }
 
 -(void) dealloc{

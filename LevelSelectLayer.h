@@ -31,6 +31,8 @@ static NSUserDefaults *standardUserDefaults;
         float gravity;
         BOOL unlocked;
         int unlockThreshold;
+        int nextUnlockThreshold;
+        NSString *nextName;
         NSString *name;
         NSString *slug;
         int highScore;

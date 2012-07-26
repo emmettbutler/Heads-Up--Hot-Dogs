@@ -98,9 +98,9 @@
     lp->func = [NSString stringWithString:@"switchScreenNYC"];
     lp->spritesheet = [NSString stringWithString:@"sprites_nyc"];
     lp->thumbnail = [NSString stringWithString:@"NYC_Thumb.png"];
-    lp->personSpeedMul = 1;
-    lp->restitutionMul = 1;
-    lp->frictionMul = 1;
+    lp->personSpeedMul = 1.2;
+    lp->restitutionMul = 1.2;
+    lp->frictionMul = .9;
     
     dd = new spcDogData();
     dd->riseSprite = [NSString stringWithString:@"Bagel_Rise.png"];
@@ -133,7 +133,6 @@
     [levelStructs addObject:[NSValue valueWithPointer:lp]];
     
     
-    
     /********************************************************************************
      * SPACE LEVEL SETTINGS
      *******************************************************************************/
@@ -149,7 +148,7 @@
     lp->func = [NSString stringWithString:@"switchScreenSpace"];
     lp->spritesheet = [NSString stringWithString:@"sprites_space"];
     lp->thumbnail = [NSString stringWithString:@"NYC_Thumb.png"];
-    lp->personSpeedMul = .8;
+    lp->personSpeedMul = .7;
     lp->restitutionMul = 1.7;
     lp->frictionMul = 100;
     
@@ -192,6 +191,12 @@
     for(NSValue *v in levelStructs){
         levelProps *l = (levelProps *)[v pointerValue];
         l->highScore = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"highScore%@", l->slug]];
+        int nextIndex = [levelStructs indexOfObject:v] + 1;
+        if(nextIndex == [levelStructs count])
+            nextIndex--;
+        levelProps *nextLevel = (levelProps *)[(NSValue *)[levelStructs objectAtIndex:nextIndex] pointerValue];
+        l->nextUnlockThreshold = nextLevel->unlockThreshold;
+        l->nextName = nextLevel->name;
         l->characters = [CharBuilder buildCharacters:l->slug];
         int prevHighScore = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"highScore%@", l->prevSlug]];
         if(prevHighScore > l->unlockThreshold) l->unlocked = true;

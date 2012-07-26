@@ -16,8 +16,11 @@
     CCLabelTTF *scoreLine, *timeLine, *dogsLine, *peopleLine, *highScoreLine;
     CCLabelTTF *scoreNotify, *timeNotify;
     CCSpriteBatchNode *spriteSheet;
+    CCSprite *levelBox;
+    CCLabelTTF *levelLabel1, *levelLabel2;
     NSInteger highScore;
     ALuint sting;
+    BOOL touchLock;
     NSString *slug;
     ccColor3B _color_pink, _color_blue, _color_darkblue;
     levelProps *level;
