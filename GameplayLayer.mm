@@ -783,8 +783,13 @@
     int moveDelta;
     
     //set secondary values based on the direction of the walk
-    if(xPos.intValue > winSize.width/2){
+    if((xPos.intValue > winSize.width/2)){
         moveDelta = -1*person->moveDelta;
+        if(person->flipSprites){
+            _personLower.flipX = YES;
+            _personUpper.flipX = YES;
+            _personUpperOverlay.flipX = YES;
+        }
         if(person->tag == 4){
             lowerArmAngle = 132;
             upperArmAngle = 175;
@@ -797,9 +802,11 @@
     }
     else {
         moveDelta = person->moveDelta;
-        _personLower.flipX = YES;
-        _personUpper.flipX = YES;
-        _personUpperOverlay.flipX = YES;
+        if(!person->flipSprites){
+            _personLower.flipX = YES;
+            _personUpper.flipX = YES;
+            _personUpperOverlay.flipX = YES;
+        }
         if(person->tag == 4){
             lowerArmAngle = 0;
             upperArmAngle = 55;

@@ -49,6 +49,8 @@
     [levelArray addObject:[NSValue valueWithPointer:s]];
     s = [self police];
     [levelArray addObject:[NSValue valueWithPointer:s]];
+    s = [self dogMuncher];
+    [levelArray addObject:[NSValue valueWithPointer:s]];
     
     return levelArray;
 }
@@ -327,6 +329,56 @@
         [c->faceDogWalkAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
           [NSString stringWithFormat:@"CrustPunk_Head_Dog_%d.png", i]]];
+    }
+    
+    return c;
+}
+
++(personStruct *)dogMuncher{
+    personStruct *c = new personStruct();
+    
+    c->slug = [NSString stringWithString:@"muncher"];
+    c->lowerSprite = [NSString stringWithString:@"DogEater_Walk_1.png"];
+    c->upperSprite = [NSString stringWithString:@"DogEater_Head_NoDog_1.png"];
+    c->upperOverlaySprite = [NSString stringWithString:@"DogEater_Head_Dog_1.png"];
+    c->tag = S_MUNCHR;
+    c->flipSprites = true;
+    c->hitboxWidth = 20.0;
+    c->hitboxHeight = .0001;
+    c->hitboxCenterX = 0;
+    c->hitboxCenterY = 4.0;
+    c->moveDelta = 2;
+    c->sensorHeight = 2.0f;
+    c->sensorWidth = 1.5f;
+    c->restitution = .5f;
+    c->friction = 0.15f;
+    c->framerate = .06f;
+    c->pointValue = 15;
+    c->fTag = F_PNKHED;
+    c->heightOffset = 2.9f;
+    c->walkAnimFrames = [[NSMutableArray alloc] init];
+    c->idleAnimFrames = [[NSMutableArray alloc] init];
+    c->faceWalkAnimFrames = [[NSMutableArray alloc] init];
+    c->faceDogWalkAnimFrames = [[NSMutableArray alloc] init];
+    for(int i = 1; i <= 8; i++){
+        [c->walkAnimFrames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithFormat:@"DogEater_Walk_%d.png", i]]];
+    }
+    for(int i = 1; i <= 1; i++){
+        [c->idleAnimFrames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithFormat:@"DogEater_Walk_%d.png", i]]];
+    }
+    for(int i = 1; i <= 4; i++){
+        [c->faceWalkAnimFrames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithFormat:@"DogEater_Head_NoDog_%d.png", i]]];
+    }
+    for(int i = 1; i <= 4; i++){
+        [c->faceDogWalkAnimFrames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithFormat:@"DogEater_Head_NoDog_%d.png", i]]];
     }
     
     return c;

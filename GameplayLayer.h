@@ -132,6 +132,7 @@
         S_CRPUNK    =   5,
         S_JOGGER    =   6,
         S_YNGPRO    =   7,
+        S_MUNCHR    =   8,
         S_TOPPSN    =   10, // top person sprite tag, this must be TOPPSN > POLICE > BUSMAN with only person tags between
         S_COPARM    =   11,
         S_CRSHRS    =   20, // crosshairs

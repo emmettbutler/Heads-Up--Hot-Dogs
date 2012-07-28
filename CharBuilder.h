@@ -36,6 +36,7 @@
         float armJointXOffset;
         int fTag;
         int pointValue;
+        BOOL flipSprites;
         NSMutableArray *walkAnimFrames;
         NSMutableArray *idleAnimFrames; 
         NSMutableArray *faceWalkAnimFrames;
