@@ -27,9 +27,9 @@
     b2Fixture *_bottomFixture, *_wallsFixture, *_wienerFixture, *_targetFixture, *_personFixture, *_policeArmFixture;
     CCSprite *_wiener, *_personLower, *_personUpper, *_personUpperOverlay, *_target, *_pauseButton, *background;
     CCAction *_walkAction, *_walkFaceAction;
-    CCFiniteTimeAction *_idleAction, *_appearAction, *_hitAction, *_shotAction, *_shootAction, *_armShootAction, *_shootFaceAction;
+    CCFiniteTimeAction *_idleAction, *_appearAction, *_hitAction, *_shotAction, *_specialAction, *_armShootAction, *_specialFaceAction;
     CCAnimation *walkAnim, *idleAnim, *hitAnim, *dogDeathAnim, *dogAppearAnim, *walkFaceAnim, *walkDogFaceAnim;
-    CCAnimation *dogShotAnim, *shootAnim, *armShootAnim, *shootFaceAnim;
+    CCAnimation *dogShotAnim, *specialAnim, *armShootAnim, *specialFaceAnim;
     CCSpriteBatchNode *spriteSheetCommon, *spriteSheetLevel, *spriteSheetCharacter;
     CCLabelTTF *scoreLabel, *droppedLabel;
     b2Vec2 policeRayPoint1, policeRayPoint2;
@@ -79,6 +79,7 @@
         CCFiniteTimeAction *_not_spcContact;
         CCFiniteTimeAction *_not_spcOnHead;
         CCFiniteTimeAction *_not_spcLeaveScreen;
+        CGRect boundingBox;
         // end point notifiers
         float armSpeed;
         float deathDelay; // how long a hot dog sits on the ground before dying, in seconds
@@ -86,8 +87,11 @@
         int stopTime; // time into walk at which person should pause
         int stopTimeDelta; // how long the pause should last
         int timeWalking; // how long has this person been walking
+        int restartTime;
         int pointValue; // how many points is a dog contact on this head worth?
         BOOL aiming;
+        BOOL touched;
+        BOOL touchLock;
         BOOL aimedAt;
         BOOL grabbed;
         BOOL hasLeftScreen;

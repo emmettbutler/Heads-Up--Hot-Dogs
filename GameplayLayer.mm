@@ -27,7 +27,7 @@
 #ifdef DEBUG
 #define SPAWN_LIMIT_DECREMENT_DELAY 6
 #define SPECIAL_DOG_PROBABILITY .2
-#define DROPPED_MAX 49
+#define DROPPED_MAX 20
 #define WIENER_SPAWN_START 5
 #else
 #define SPAWN_LIMIT_DECREMENT_DELAY 2
@@ -756,16 +756,23 @@
     CCAction *_walkDogFaceAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:walkDogFaceAnim restoreOriginalFrame:NO]] retain];
     [_personUpperOverlay runAction:_walkDogFaceAction];
 
-    if(person->tag == 4){
-        shootAnim = [CCAnimation animationWithFrames:person->shootAnimFrames delay:.08f];
-        _shootAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:shootAnim restoreOriginalFrame:NO] times:1] retain];
+    if(person->tag == S_POLICE){
+        specialAnim = [CCAnimation animationWithFrames:person->specialAnimFrames delay:.08f];
+        _specialAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:specialAnim restoreOriginalFrame:NO] times:1] retain];
 
-        shootFaceAnim = [CCAnimation animationWithFrames:person->shootFaceAnimFrames delay:.1f];
-        _shootFaceAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:shootFaceAnim restoreOriginalFrame:NO] times:1] retain];
+        specialFaceAnim = [CCAnimation animationWithFrames:person->specialFaceAnimFrames delay:.1f];
+        _specialFaceAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:specialFaceAnim restoreOriginalFrame:NO] times:1] retain];
 
         target = [CCSprite spriteWithSpriteFrameName:person->targetSprite];
         target.tag = S_CRSHRS;
         [spriteSheetCharacter addChild:target z:100];
+    }
+    else if(person->tag == S_MUNCHR){
+        specialAnim = [CCAnimation animationWithFrames:person->specialAnimFrames delay:.4f];
+        _specialAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:specialAnim restoreOriginalFrame:NO] times:4] retain];
+        
+        specialFaceAnim = [CCAnimation animationWithFrames:person->specialFaceAnimFrames delay:.4f];
+        _specialFaceAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:specialFaceAnim restoreOriginalFrame:NO] times:4] retain];
     }
 
     //put the sprites in place
@@ -775,7 +782,7 @@
     [spriteSheetCharacter addChild:_personLower z:zIndex];
     [spriteSheetCharacter addChild:_personUpper z:zIndex+2];
     [spriteSheetCharacter addChild:_personUpperOverlay z:zIndex+2];
-    if(person->tag == 4){
+    if(person->tag == S_POLICE){
         _policeArm.position = ccp(xPos.intValue, yPos);
         [spriteSheetCharacter addChild:_policeArm z:zIndex-2];
     }
@@ -790,7 +797,7 @@
             _personUpper.flipX = YES;
             _personUpperOverlay.flipX = YES;
         }
-        if(person->tag == 4){
+        if(person->tag == S_POLICE){
             lowerArmAngle = 132;
             upperArmAngle = 175;
             armBodyXOffset = 8;
@@ -807,7 +814,7 @@
             _personUpper.flipX = YES;
             _personUpperOverlay.flipX = YES;
         }
-        if(person->tag == 4){
+        if(person->tag == S_POLICE){
             lowerArmAngle = 0;
             upperArmAngle = 55;
             armBodyXOffset = 8;
@@ -857,14 +864,19 @@
         ud->stopTime = 100 + (arc4random() % 80);
         ud->stopTimeDelta = 100 + (arc4random() % 80);
     }
-    else if(person->tag == S_POLICE){
-        ud->altAction2 = _shootAction;
-        ud->altAction3 = _shootFaceAction;
-        ud->overlaySprite = target;
-        ud->aimFace = [NSString stringWithString:@"Cop_Head_Aiming_1.png"];
-        ud->stopTimeDelta = 60; // frames
+    else if(person->tag == S_POLICE || person->tag == S_MUNCHR){
+        ud->altAction2 = _specialAction;
+        ud->altAction3 = _specialFaceAction;
         ud->stopTime = 9999; // huge number init so that cops don't freeze on enter
+        if(person->tag == S_POLICE){
+            ud->overlaySprite = target;
+            ud->stopTimeDelta = 60; // frames
+            ud->aimFace = [NSString stringWithString:@"Cop_Head_Aiming_1.png"];
+        } else if (person->tag == S_MUNCHR){
+            ud->stopTimeDelta = 400; // frames
+        }
     }
+    ud->restartTime = ud->stopTime + ud->stopTimeDelta;
 
     int fTag = person->fTag;
     
@@ -922,7 +934,7 @@
     personHeadSensorShapeDef.filter.maskBits = WIENER;
     _personFixture = _personBody->CreateFixture(&personHeadSensorShapeDef);
 
-    if(person->tag == 4){
+    if(person->tag == S_POLICE){
         //create the cop's arm body if we need to
         for(int i = 1; i <= 2; i++){
             [armShootAnimFrames addObject:
@@ -1515,10 +1527,10 @@
                     ud->spcDogsOnHead = 0;
                     ud->timeWalking++;
                     // move person across screen at the appropriate speed
-                    if((ud->timeWalking <= ud->stopTime || ud->timeWalking >= ud->stopTime + ud->stopTimeDelta)){
+                    if((ud->timeWalking <= ud->stopTime || ud->timeWalking >= ud->stopTime + ud->stopTimeDelta || ud->timeWalking == ud->restartTime)){
                         if(b->GetLinearVelocity().x != ud->moveDelta){ b->SetLinearVelocity(b2Vec2(ud->moveDelta, 0)); }
                         if(ud->timeWalking == ud->stopTime){
-                            if(ud->sprite1.tag != S_POLICE){
+                            if(ud->sprite1.tag != S_POLICE && ud->sprite1.tag != S_MUNCHR){
                                 [ud->sprite2 stopAllActions];
                                 [ud->sprite1 stopAllActions];
                                 [ud->angryFace stopAllActions];
@@ -1529,7 +1541,7 @@
                             [ud->sprite1 stopAllActions];
                             [ud->sprite1 runAction:ud->defaultAction];
                             if(ud->altAction)
-                                if(ud->sprite1.tag != S_POLICE){
+                                if(ud->sprite1.tag != S_POLICE && ud->sprite1.tag != S_MUNCHR){
                                     if([ud->sprite2 numberOfRunningActions] == 0)
                                         [ud->sprite2 runAction:ud->altAction];
                                 } else [ud->sprite2 runAction:ud->altAction];
@@ -1624,6 +1636,13 @@
                                         r->SetMotorSpeed(-.5);
                                 }
                             }
+                        }
+                    } else if(ud->sprite1.tag == S_MUNCHR){
+                        if(!ud->touched && !ud->touchLock){
+                            ud->touchLock = true;
+                            //[ud->sprite1 stopAllActions];
+                            //[ud->sprite2 stopAllActions];
+                            ud->restartTime = ud->timeWalking;
                         }
                     }
                 }
@@ -1849,7 +1868,29 @@
             for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
                 if (body->GetUserData() != NULL && body->GetUserData() != (void*)100) {
                     bodyUserData *ud = (bodyUserData *)body->GetUserData();
-                    if(ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG){ // loop over all hot dogs
+                    if(ud->sprite1.tag == S_MUNCHR){
+                        for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
+                            if(fixture->TestPoint(locationWorld1)){
+                                CCLOG(@"Touching muncher!");
+                                ud->touched = true;
+                                ud->touchLock = false;
+                                ud->stopTime = ud->timeWalking + 1;
+                                
+                                [ud->sprite1 stopAllActions];
+                                CCFiniteTimeAction *bodyRubAnimAction = (CCFiniteTimeAction *)ud->altAction2;
+                                if([ud->sprite1 numberOfRunningActions] == 0)
+                                    [ud->sprite1 runAction:bodyRubAnimAction];
+                                
+                                [ud->sprite2 stopAllActions];
+                                CCFiniteTimeAction *faceRubAnimAction = (CCFiniteTimeAction *)ud->altAction3;
+                                if([ud->sprite2 numberOfRunningActions] == 0)
+                                    [ud->sprite2 runAction:faceRubAnimAction];
+                            } else {
+                                ud->touched = false;
+                            }
+                        }
+                    }
+                    else if(ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG){ // loop over all hot dogs
                         for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
                             // if the dog is not already grabbed and one of the touches is on it, make the joint
                             if (!ud->grabbed && ((fixture->TestPoint(locationWorld1) && !touched1) || (fixture->TestPoint(locationWorld2) && !touched2))){

@@ -41,8 +41,8 @@
         NSMutableArray *idleAnimFrames; 
         NSMutableArray *faceWalkAnimFrames;
         NSMutableArray *faceDogWalkAnimFrames;
-        NSMutableArray *shootAnimFrames;
-        NSMutableArray *shootFaceAnimFrames;
+        NSMutableArray *specialAnimFrames;
+        NSMutableArray *specialFaceAnimFrames;
         NSMutableArray *armShootAnimFrames;
     };
 }
