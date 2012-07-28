@@ -13,6 +13,9 @@
 #import "TitleScene.h"
 #import "TestFlight.h" 
 #import "RootViewController.h"
+#import <GameKit/GameKit.h>
+#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
 @implementation AppDelegate
 
@@ -117,6 +120,17 @@
     [TestFlight takeOff:@"f6bf5ec07ee6b2acb2f1e80502d54baa_NzUyODcyMDEyLTAzLTI2IDIyOjE3OjM4LjMxMjg1OQ"];
     [TestFlight setDeviceIdentifier:[[UIDevice currentDevice] uniqueIdentifier]];
     //---------------------------------------------------------------------------------
+    
+    // game center
+    GKLocalPlayer *localPlayer = [GKLocalPlayer localPlayer];
+    [localPlayer authenticateWithCompletionHandler:^(NSError *error) {
+        if (localPlayer.isAuthenticated)
+        {
+            NSLog(@"Player %@ recognized", localPlayer.alias);
+        } else {
+            NSLog(@"Player not authenticated");
+        }
+    }];
     
     standardUserDefaults = [NSUserDefaults standardUserDefaults];
 #ifdef DEBUG

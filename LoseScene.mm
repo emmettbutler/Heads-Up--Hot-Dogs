@@ -10,10 +10,26 @@
 #import "GameplayLayer.h"
 #import "TitleScene.h"
 #import "TestFlight.h"
+#import <GameKit/GameKit.h>
+#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
 #define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 
 @implementation LoseLayer
+
+- (void) reportScore: (int64_t) score forCategory: (NSString*) category
+{
+    GKScore *scoreReporter = [[[GKScore alloc] initWithCategory:category] autorelease];
+    scoreReporter.value = score;
+    
+    [scoreReporter reportScoreWithCompletionHandler:^(NSError *error) {
+        if (error != nil)
+        {
+            NSLog(@"Error submitting high score to leaderboard");
+        }
+    }];
+}
 
 +(CCScene *) sceneWithData:(void*)data
 {
@@ -136,6 +152,7 @@
         if(_score > highScore){
             [standardUserDefaults setInteger:_score forKey:[NSString stringWithFormat:@"highScore%@", level->slug]];
             highScore = _score;
+            [self reportScore:highScore forCategory:[NSString stringWithFormat:@"com.Heads-Up-Hot-Dogs.%@", level->slug]];
         }
         if(_timePlayed > bestTime)
             [standardUserDefaults setInteger:_timePlayed forKey:@"bestTime"];
@@ -145,6 +162,7 @@
             levelBox.position = ccp(winSize.width/2, (winSize.height/2));
             [self addChild:levelBox];
         
+            // TODO - only show this the first time it's unlocked
             levelLabel1 = [CCLabelTTF labelWithString:@"New Level Unlocked" fontName:@"LostPet.TTF" fontSize:20.0];
             [[levelLabel1 texture] setAliasTexParameters];
             levelLabel1.color = _color_pink;
