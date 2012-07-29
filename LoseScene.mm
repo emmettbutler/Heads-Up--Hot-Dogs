@@ -152,7 +152,7 @@
         if(_score > highScore){
             [standardUserDefaults setInteger:_score forKey:[NSString stringWithFormat:@"highScore%@", level->slug]];
             highScore = _score;
-            [self reportScore:highScore forCategory:[NSString stringWithFormat:@"com.Heads-Up-Hot-Dogs.%@", level->slug]];
+            [self reportScore:highScore forCategory:level->slug];
         }
         if(_timePlayed > bestTime)
             [standardUserDefaults setInteger:_timePlayed forKey:@"bestTime"];
