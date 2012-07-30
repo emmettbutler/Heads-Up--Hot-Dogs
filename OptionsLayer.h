@@ -10,8 +10,11 @@
 
 @interface OptionsLayer : CCLayer
 {
-    CCSpriteBatchNode *spriteSheet;
+    CCSpriteBatchNode *spriteSheet, *spriteSheetCommon;
     ccColor3B _color_pink;
+    CGRect _siteRect, _creditsRect, _tutRect;
+    BOOL credits;
+    CCLayerColor *creditsLayer;
 }
 
 +(CCScene *)scene;

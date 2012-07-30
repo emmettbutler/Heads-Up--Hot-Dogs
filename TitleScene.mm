@@ -125,7 +125,7 @@
     if(introDone == 1)
         [[CCDirector sharedDirector] replaceScene:[LevelSelectLayer scene]];
     else if(introDone == 0){
-        [[CCDirector sharedDirector] replaceScene:[TutorialLayer scene]];
+        [[CCDirector sharedDirector] replaceScene:[TutorialLayer sceneWithFrom:@"title"]];
     }
 }
 

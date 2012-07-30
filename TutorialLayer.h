@@ -20,10 +20,11 @@
     NSUserDefaults *standardUserDefaults;
     CCSprite *s;
     int count;
+    NSString *_from;
     ccColor3B _color_pink;
 }
 
-+(CCScene *)scene;
++(CCScene *)sceneWithFrom:(NSString *)from;
 
 struct tutorialSprite {
     NSMutableArray *animFrames;

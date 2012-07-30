@@ -9,14 +9,16 @@
 #import "GameplayLayer.h"
 #import "TitleScene.h"
 #import "TutorialLayer.h"
+#import "OptionsLayer.h"
 
 @implementation TutorialLayer
 
-+(CCScene *) scene{
++(CCScene *)sceneWithFrom:(NSString *)from{
 	CCScene *scene = [CCScene node];
     CCLOG(@"in scenewithData");
 	TutorialLayer *layer;
     layer = [TutorialLayer node];
+    layer->_from = from;
 	[scene addChild:layer];
 	return scene;
 }
@@ -391,7 +393,10 @@
         [standardUserDefaults synchronize];
         NSMutableArray *params = [[NSMutableArray alloc] initWithCapacity:1];
         [params addObject:[NSString stringWithString:@"philly"]];
-        [[CCDirector sharedDirector] replaceScene:[GameplayLayer sceneWithData:params]];
+        if(_from == @"options")
+            [[CCDirector sharedDirector] replaceScene:[OptionsLayer scene]];
+        else
+            [[CCDirector sharedDirector] replaceScene:[GameplayLayer sceneWithData:params]];
         return;
     }
     

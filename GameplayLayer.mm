@@ -1303,7 +1303,10 @@
 
     time++;
     
-    if(level->slug == @"nyc"){
+    // level-specific repetitive actions
+    if(level->slug == @"philly"){
+        
+    } else if(level->slug == @"nyc"){
         for(NSValue *v in bgSprites){
             CCSprite *sprite = (CCSprite *)[v pointerValue];
             [sprite setOpacity:255.00 * cosf(.01 * time)];
