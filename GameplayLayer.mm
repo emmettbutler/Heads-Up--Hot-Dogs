@@ -1581,9 +1581,10 @@
                                     if([ud->sprite2 numberOfRunningActions] == 0)
                                         [ud->sprite2 runAction:ud->altAction];
                                 } else {
-                                    [ud->sprite2 runAction:ud->altAction];
+                                    //[ud->sprite2 runAction:ud->altAction];
                                     if(ud->sprite1.tag == S_MUNCHR && ud->timeWalking == ud->stopTime + ud->stopTimeDelta){
-                                        [self regainWiener];
+                                        if(_droppedCount > 0)
+                                            _droppedCount--;
                                     }
                                 }
                             if([ud->angryFace numberOfRunningActions] == 0)
