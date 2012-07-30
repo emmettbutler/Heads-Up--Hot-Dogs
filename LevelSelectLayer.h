@@ -35,6 +35,7 @@ static NSUserDefaults *standardUserDefaults;
         NSString *nextName;
         NSString *name;
         NSString *slug;
+        BOOL enabled;
         int highScore;
         NSString *func;
         float frictionMul;

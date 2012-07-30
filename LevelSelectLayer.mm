@@ -37,6 +37,7 @@
     
     // TODO - tell people when they unlock a new level
     lp = new levelProps();
+    lp->enabled = true;
     lp->slug = [NSString stringWithString:@"philly"];
     lp->prevSlug = [NSString stringWithString:@"philly"];
     lp->name = [NSString stringWithString:@"Philly"];
@@ -88,6 +89,7 @@
      *******************************************************************************/
     
     lp = new levelProps();
+    lp->enabled = true;
     lp->slug = [NSString stringWithString:@"nyc"];
     lp->prevSlug = [NSString stringWithString:@"philly"];
     lp->name = [NSString stringWithString:@"Big Apple"];
@@ -138,6 +140,7 @@
      *******************************************************************************/
     
     lp = new levelProps();
+    lp->enabled = false;
     lp->slug = [NSString stringWithString:@"space"];
     lp->prevSlug = [NSString stringWithString:@"nyc"];
     lp->name = [NSString stringWithString:@"Space Station"];
@@ -179,7 +182,8 @@
     }
     
     lp->specialDog = dd;
-    [levelStructs addObject:[NSValue valueWithPointer:lp]];
+    // don't add now, for beta push
+    //[levelStructs addObject:[NSValue valueWithPointer:lp]];
     
     /////////////////////////////////////////////////////////////////////////////
     
@@ -324,6 +328,7 @@
     else if(CGRectContainsPoint(thumbnailRect, location)){
         SEL levelMethod = NSSelectorFromString(level->func);
 #ifdef DEBUG // will eventually have this happen in deployment too
+//#else        
         if(level->unlocked)
 #endif
             [self performSelector:levelMethod];

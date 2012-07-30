@@ -674,7 +674,7 @@
     personStruct *person = (personStruct *)[(NSValue *)[level->characters objectAtIndex:arc4random() % [level->characters count]] pointerValue];
     
     //first, see if a person should spawn
-    if(_policeOnScreen && person->tag == 4){
+    if(_policeOnScreen && person->tag == S_POLICE){
         return;
     } else {
         for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
@@ -769,10 +769,10 @@
     }
     else if(person->tag == S_MUNCHR){
         specialAnim = [CCAnimation animationWithFrames:person->specialAnimFrames delay:.4f];
-        _specialAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:specialAnim restoreOriginalFrame:NO] times:4] retain];
+        _specialAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:specialAnim restoreOriginalFrame:NO]] retain];
         
         specialFaceAnim = [CCAnimation animationWithFrames:person->specialFaceAnimFrames delay:.4f];
-        _specialFaceAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:specialFaceAnim restoreOriginalFrame:NO] times:4] retain];
+        _specialFaceAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:specialFaceAnim restoreOriginalFrame:NO]] retain];
     }
 
     //put the sprites in place
@@ -873,7 +873,7 @@
             ud->stopTimeDelta = 60; // frames
             ud->aimFace = [NSString stringWithString:@"Cop_Head_Aiming_1.png"];
         } else if (person->tag == S_MUNCHR){
-            ud->stopTimeDelta = 400; // frames
+            ud->stopTimeDelta = 9999; // frames
         }
     }
     ud->restartTime = ud->stopTime + ud->stopTimeDelta;
@@ -1527,7 +1527,7 @@
                     ud->spcDogsOnHead = 0;
                     ud->timeWalking++;
                     // move person across screen at the appropriate speed
-                    if((ud->timeWalking <= ud->stopTime || ud->timeWalking >= ud->stopTime + ud->stopTimeDelta || ud->timeWalking == ud->restartTime)){
+                    if((ud->timeWalking <= ud->stopTime || ud->timeWalking >= ud->stopTime + ud->stopTimeDelta)){
                         if(b->GetLinearVelocity().x != ud->moveDelta){ b->SetLinearVelocity(b2Vec2(ud->moveDelta, 0)); }
                         if(ud->timeWalking == ud->stopTime){
                             if(ud->sprite1.tag != S_POLICE && ud->sprite1.tag != S_MUNCHR){
@@ -1537,7 +1537,7 @@
                                 [ud->sprite1 runAction:ud->idleAction];
                             }
                         }
-                        else if(ud->stopTime && ud->timeWalking == ud->stopTime + ud->stopTimeDelta){
+                        else if((ud->stopTime && ud->timeWalking == ud->stopTime + ud->stopTimeDelta) || ud->timeWalking == ud->restartTime){
                             [ud->sprite1 stopAllActions];
                             [ud->sprite1 runAction:ud->defaultAction];
                             if(ud->altAction)
@@ -1636,13 +1636,6 @@
                                         r->SetMotorSpeed(-.5);
                                 }
                             }
-                        }
-                    } else if(ud->sprite1.tag == S_MUNCHR){
-                        if(!ud->touched && !ud->touchLock){
-                            ud->touchLock = true;
-                            //[ud->sprite1 stopAllActions];
-                            //[ud->sprite2 stopAllActions];
-                            ud->restartTime = ud->timeWalking;
                         }
                     }
                 }
@@ -1873,20 +1866,22 @@
                             if(fixture->TestPoint(locationWorld1)){
                                 CCLOG(@"Touching muncher!");
                                 ud->touched = true;
-                                ud->touchLock = false;
                                 ud->stopTime = ud->timeWalking + 1;
+                                ud->stopTimeDelta = 9999;
                                 
                                 [ud->sprite1 stopAllActions];
-                                CCFiniteTimeAction *bodyRubAnimAction = (CCFiniteTimeAction *)ud->altAction2;
                                 if([ud->sprite1 numberOfRunningActions] == 0)
-                                    [ud->sprite1 runAction:bodyRubAnimAction];
+                                    [ud->sprite1 runAction:ud->altAction2];
                                 
                                 [ud->sprite2 stopAllActions];
-                                CCFiniteTimeAction *faceRubAnimAction = (CCFiniteTimeAction *)ud->altAction3;
                                 if([ud->sprite2 numberOfRunningActions] == 0)
-                                    [ud->sprite2 runAction:faceRubAnimAction];
+                                    [ud->sprite2 runAction:ud->altAction3];
+                                
+                                //[ud->angryFace stopAllActions];
+                                //if([ud->angryFace numberOfRunningActions] == 0)
+                                //    [ud->angryFace runAction:ud->altAction3];
                             } else {
-                                ud->touched = false;
+                                //ud->touched = false;
                             }
                         }
                     }
@@ -1946,6 +1941,7 @@
     NSSet *allTouches = [event allTouches];
     int count = [allTouches count];
     b2Vec2 *locations = new b2Vec2[count];
+    b2Vec2 locationWorld2;
     
     UITouch *touch = [[allTouches allObjects] objectAtIndex:0];
     CGPoint touchLocation1 = [touch locationInView: [touch view]];
@@ -1957,7 +1953,7 @@
         touch = [[allTouches allObjects] objectAtIndex:1];
         CGPoint touchLocation2 = [touch locationInView: [touch view]];
         touchLocation2 = [[CCDirector sharedDirector] convertToGL: touchLocation2];
-        b2Vec2 locationWorld2 = b2Vec2(touchLocation2.x/PTM_RATIO, touchLocation2.y/PTM_RATIO);
+        locationWorld2 = b2Vec2(touchLocation2.x/PTM_RATIO, touchLocation2.y/PTM_RATIO);
         locations[1] = locationWorld2;
     }
     
@@ -1971,7 +1967,22 @@
         if (body->GetUserData() != NULL && body->GetUserData() != (void*)100) {
             bodyUserData *ud = (bodyUserData *)body->GetUserData();
             CCSprite *sprite = ud->sprite1;
-            if((ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG) && ud->grabbed){
+            if(ud->sprite1.tag == S_MUNCHR && ud->touched){
+                BOOL touched = false;
+                for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
+                    for(int i = 0; i < count; i++){
+                        if(fixture->TestPoint(locations[i])){
+                            touched = true;
+                        }
+                    }
+                }
+                if(!touched){
+                    ud->restartTime = ud->timeWalking + 1;
+                    ud->stopTimeDelta = 0;
+                    ud->touched = false;
+                    break;
+                }
+            } else if((ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG) && ud->grabbed){
                 for(int i = 0; i < [mouseJoints count]; i++){
                     b2MouseJoint *mj = (b2MouseJoint *)[(NSValue *)[mouseJoints objectAtIndex:i] pointerValue];
                     mouseJointUserData *jUd = (mouseJointUserData *)mj->GetUserData();
@@ -2022,7 +2033,16 @@
     for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
         if (body->GetUserData() != NULL && body->GetUserData() != (void*)100) {
             bodyUserData *ud = (bodyUserData *)body->GetUserData();
-            if((ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG) && ud->grabbed){
+            if(ud->sprite1.tag == S_MUNCHR && ud->touched){
+                CCLOG(@"Muncher touch released");
+                [ud->sprite1 stopAllActions];
+                [ud->sprite2 stopAllActions];
+                [ud->angryFace stopAllActions];
+                ud->restartTime = ud->timeWalking + 1;
+                ud->stopTimeDelta = 0;
+                ud->touched = false;
+            }
+            else if((ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG) && ud->grabbed){
                 // if there is not a finger on the dog
                 b2JointEdge *j = body->GetJointList();
                 b2Vec2 target;
