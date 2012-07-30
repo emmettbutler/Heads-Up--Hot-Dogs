@@ -25,7 +25,7 @@
     
     s = [self businessman];
     [levelArray addObject:[NSValue valueWithPointer:s]];
-    s = [self crustPunk];
+    s = [self dogMuncher];
     [levelArray addObject:[NSValue valueWithPointer:s]];
     s = [self youngPro];
     [levelArray addObject:[NSValue valueWithPointer:s]];
@@ -59,7 +59,7 @@
     NSMutableArray *levelArray = [[[NSMutableArray alloc] init] retain];;
     personStruct *s;
     
-    s = [self crustPunk];
+    s = [self dogMuncher];
     [levelArray addObject:[NSValue valueWithPointer:s]];
     s = [self youngPro];
     [levelArray addObject:[NSValue valueWithPointer:s]];

@@ -765,10 +765,10 @@
         [spriteSheetCharacter addChild:target z:100];
     }
     else if(person->tag == S_MUNCHR){
-        specialAnim = [CCAnimation animationWithFrames:person->specialAnimFrames delay:.4f];
+        specialAnim = [CCAnimation animationWithFrames:person->specialAnimFrames delay:.1f];
         _specialAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:specialAnim restoreOriginalFrame:NO]] retain];
         
-        specialFaceAnim = [CCAnimation animationWithFrames:person->specialFaceAnimFrames delay:.4f];
+        specialFaceAnim = [CCAnimation animationWithFrames:person->specialFaceAnimFrames delay:.1f];
         _specialFaceAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:specialFaceAnim restoreOriginalFrame:NO]] retain];
     }
 
@@ -871,6 +871,7 @@
             ud->aimFace = [NSString stringWithString:@"Cop_Head_Aiming_1.png"];
         } else if (person->tag == S_MUNCHR){
             ud->stopTimeDelta = 100; // frames
+            ud->_muncher_hasDroppedDog = false;
         }
     }
     ud->restartTime = ud->stopTime + ud->stopTimeDelta;
@@ -1581,10 +1582,13 @@
                                     if([ud->sprite2 numberOfRunningActions] == 0)
                                         [ud->sprite2 runAction:ud->altAction];
                                 } else {
-                                    //[ud->sprite2 runAction:ud->altAction];
+                                    [ud->sprite2 stopAllActions];
+                                    [ud->sprite2 runAction:ud->altAction];
                                     if(ud->sprite1.tag == S_MUNCHR && ud->timeWalking == ud->stopTime + ud->stopTimeDelta){
-                                        if(_droppedCount > 0)
+                                        if(_droppedCount > 0){
+                                            ud->_muncher_hasDroppedDog = true;
                                             _droppedCount--;
+                                        }
                                     }
                                 }
                             if([ud->angryFace numberOfRunningActions] == 0)
@@ -1831,9 +1835,10 @@
                                             NSMutableArray *destroyParameters = [[NSMutableArray alloc] initWithCapacity:1];
                                             [destroyParameters addObject:dBody];
                                             id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:destroyParameters];
+                                            id incAction = [CCCallFuncN actionWithTarget:self selector:@selector(incrementDroppedCount)];
                                             
                                             CCFiniteTimeAction *wienerExplodeAction = (CCFiniteTimeAction *)ud->altAction2;
-                                            ud->deathSeq = [[CCSequence actions:delay, wienerExplodeAction, destroyAction, nil] retain];
+                                            ud->deathSeq = [[CCSequence actions:delay, incAction, wienerExplodeAction, destroyAction, nil] retain];
                                             if([ud->sprite1 numberOfRunningActions] == 0) 
                                                 [ud->sprite1 runAction:ud->deathSeq];
 
@@ -1903,7 +1908,7 @@
             for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
                 if (body->GetUserData() != NULL && body->GetUserData() != (void*)100) {
                     bodyUserData *ud = (bodyUserData *)body->GetUserData();
-                    if(ud->sprite1.tag == S_MUNCHR){
+                    if(ud->sprite1.tag == S_MUNCHR && !ud->_muncher_hasDroppedDog){
                         for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
                             if(fixture->TestPoint(locationWorld1)){
                                 CCLOG(@"Touching muncher!");
@@ -1919,9 +1924,9 @@
                                 if([ud->sprite2 numberOfRunningActions] == 0)
                                     [ud->sprite2 runAction:ud->altAction3];
                                 
-                                //[ud->angryFace stopAllActions];
-                                //if([ud->angryFace numberOfRunningActions] == 0)
-                                //    [ud->angryFace runAction:ud->altAction3];
+                                [ud->angryFace stopAllActions];
+                                if([ud->angryFace numberOfRunningActions] == 0)
+                                    [ud->angryFace runAction:ud->altAction3];
                             } else {
                                 //ud->touched = false;
                             }

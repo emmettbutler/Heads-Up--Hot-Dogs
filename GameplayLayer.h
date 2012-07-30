@@ -104,6 +104,7 @@
         BOOL hasTouchedHead;
         BOOL _dog_isOnHead;
         BOOL _person_hasTouchedDog;
+        BOOL _muncher_hasDroppedDog;
     };
 
     struct fixtureUserData {
