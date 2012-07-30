@@ -295,6 +295,12 @@
         thumb.position = ccp(winSize.width/2, winSize.height/2+20);
         [self addChild:thumb];
         
+        CCLabelTTF *helpLabel = [CCLabelTTF labelWithString:@"Tap to start" fontName:@"LostPet.TTF" fontSize:22.0];
+        [[helpLabel texture] setAliasTexParameters];
+        helpLabel.color = _color_pink;
+        helpLabel.position = ccp(winSize.width/2, thumb.position.y-(thumb.contentSize.height/2)+6);
+        [self addChild:helpLabel];
+        
         thumbnailRect = CGRectMake((thumb.position.x-(thumb.contentSize.width)/2), (thumb.position.y-(thumb.contentSize.height)/2), (thumb.contentSize.width+10), (thumb.contentSize.height+10));
         
         lStructs = [LevelSelectLayer buildLevels];
