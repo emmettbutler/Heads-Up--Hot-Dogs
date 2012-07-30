@@ -1289,6 +1289,12 @@
     }
 
     time++;
+    
+    if(level->slug == @"space"){
+        float g = (3 * cosf(.09 * time)) - 3;
+        //NSLog(@"Gravity: %0.2f", g);
+        _world->SetGravity(b2Vec2(0, g));
+    }
 
     //the "LOSE CONDITION"
     if(_droppedCount >= DROPPED_MAX){

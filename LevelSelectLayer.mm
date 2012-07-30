@@ -182,8 +182,7 @@
     }
     
     lp->specialDog = dd;
-    // don't add now, for beta push
-    //[levelStructs addObject:[NSValue valueWithPointer:lp]];
+    [levelStructs addObject:[NSValue valueWithPointer:lp]];
     
     /////////////////////////////////////////////////////////////////////////////
     
