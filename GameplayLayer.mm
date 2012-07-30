@@ -1312,7 +1312,7 @@
             [sprite setOpacity:255.00 * cosf(.01 * time)];
         }
     } else if(level->slug == @"space" && !(time % 100)){
-        float g = -1.0*(arc4random() % 30);
+        float g = -1.0*(arc4random() % 40);
         [gravityLabel setString:[NSString stringWithFormat:@"%0.1f G", g]];
         _world->SetGravity(b2Vec2(0, g));
     }

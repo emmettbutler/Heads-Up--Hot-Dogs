@@ -42,6 +42,72 @@
     [[CCDirector sharedDirector] replaceScene:[TutorialLayer sceneWithFrom:@"options"]];
 }
 
+-(void)deleteScores{
+    CGSize winSize = [[CCDirector sharedDirector] winSize];
+    
+    NSMutableArray *lStructs = [LevelSelectLayer buildLevels];
+    for(NSValue *v in lStructs){
+        levelProps *lp = (levelProps *)[v pointerValue];
+        [[NSUserDefaults standardUserDefaults] setInteger:0 forKey:[NSString stringWithFormat:@"highScore%@", lp->slug]];
+    }
+    [standardUserDefaults synchronize];
+    
+    CCLabelTTF *label = [CCLabelTTF labelWithString:@"Scores cleared!" fontName:@"LostPet.TTF" fontSize:30.0];
+    label.color = _color_pink;
+    label.position = ccp(winSize.width/2, 70);
+    [scoresLayer addChild:label z:100];
+    lStructs = nil;
+}
+
+-(void)clearScoresWindow{
+    CGSize winSize = [[CCDirector sharedDirector] winSize];
+    
+    scores = true;
+    
+    scoresLayer = [CCLayerColor layerWithColor:ccc4(190, 190, 190, 0) width:winSize.width height:winSize.height];
+    scoresLayer.anchorPoint = CGPointZero;
+    [self addChild:scoresLayer z:80];
+    
+    CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"Pause_BG.png"];
+    sprite.position = ccp(winSize.width/2, winSize.height/2);
+    sprite.scale = 1.4;
+    [scoresLayer addChild:sprite z:81];
+    
+    CCLabelTTF *label = [CCLabelTTF labelWithString:@"Clear Scores" fontName:@"LostPet.TTF" fontSize:25.0];
+    label.color = _color_pink;
+    CCMenuItem *pauseTitle = [CCMenuItemLabel itemWithLabel:label];
+    pauseTitle.position = ccp((sprite.position.x+3), (sprite.position.y+sprite.contentSize.height/2)+6);
+    [scoresLayer addChild:pauseTitle z:81];
+    
+    label = [CCLabelTTF labelWithString:@"WARNING" fontName:@"LostPet.TTF" fontSize:30.0];
+    label.color = _color_pink;
+    CCMenuItem *warnItem = [CCMenuItemLabel itemWithLabel:label];
+    
+    label = [CCLabelTTF labelWithString:@"This will clear all saved scores" fontName:@"LostPet.TTF" fontSize:25.0];
+    label.color = _color_pink;
+    CCMenuItem *warnItem2 = [CCMenuItemLabel itemWithLabel:label];
+    
+    label = [CCLabelTTF labelWithString:@"on this device. Are you sure?" fontName:@"LostPet.TTF" fontSize:25.0];
+    label.color = _color_pink;
+    CCMenuItem *warnItem3 = [CCMenuItemLabel itemWithLabel:label];
+    
+    label = [CCLabelTTF labelWithString:@"YES!" fontName:@"LostPet.TTF" fontSize:33.0];
+    label.color = _color_pink;
+    CCMenuItem *confirm = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(deleteScores)];
+    
+    CCSprite *bSprite = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
+    bSprite.position = ccp(winSize.width/2, 105);
+    bSprite.scaleY = 1.5;
+    bSprite.scaleX = .7;
+    [[bSprite texture] setAliasTexParameters];
+    [scoresLayer addChild:bSprite z:81];
+    
+    CCMenu *scoresMenu = [CCMenu menuWithItems: warnItem, warnItem2, warnItem3, confirm, nil];
+    [scoresMenu setPosition:ccp(sprite.position.x, winSize.height/2-10)];
+    [scoresMenu alignItemsVerticallyWithPadding:5];
+    [scoresLayer addChild:scoresMenu z:81];
+}
+
 -(void)showCredits{
     CGSize winSize = [[CCDirector sharedDirector] winSize];
     
@@ -59,7 +125,7 @@
     CCLabelTTF *label = [CCLabelTTF labelWithString:@"Credits" fontName:@"LostPet.TTF" fontSize:27.0];
     label.color = _color_pink;
     CCMenuItem *pauseTitle = [CCMenuItemLabel itemWithLabel:label];
-    pauseTitle.position = ccp((sprite.position.x+3), (sprite.position.y+sprite.contentSize.height/2)-4);
+    pauseTitle.position = ccp((sprite.position.x+3), (sprite.position.y+sprite.contentSize.height/2)+6);
     [creditsLayer addChild:pauseTitle z:81];
     
     label = [CCLabelTTF labelWithString:@"Sugoi Papa Interactive:" fontName:@"LostPet.TTF" fontSize:27.0];
@@ -103,8 +169,7 @@
         
         _color_pink = ccc3(255, 62, 166);
         
-        spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_menus.png"];
-        [self addChild:spriteSheet];
+        float imgScale = 1.8;
         
         [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_common.plist"];
         spriteSheetCommon = [CCSpriteBatchNode batchNodeWithFile:@"sprites_common.png"];
@@ -117,12 +182,13 @@
         CCLabelTTF *label = [CCLabelTTF labelWithString:@"OPTIONS" fontName:@"LostPet.TTF" fontSize:50.0];
         [[label texture] setAliasTexParameters];
         label.color = _color_pink;
-        label.position = ccp(winSize.width/2, winSize.height-(label.contentSize.height/2)+10);
+        label.position = ccp(winSize.width/2, winSize.height-(label.contentSize.height/2)-5);
         [self addChild:label];
         
         CCSprite *siteButton = [CCSprite spriteWithSpriteFrameName:@"Steak.png"];
-        siteButton.position = ccp(90, 230);
-        siteButton.scale = 1.5;
+        siteButton.position = ccp(170, 230);
+        siteButton.scale = imgScale;
+        [[siteButton texture] setAliasTexParameters];
         [self addChild:siteButton z:10];
         _siteRect = CGRectMake((siteButton.position.x-(siteButton.contentSize.width)/2), (siteButton.position.y-(siteButton.contentSize.height)/2), (siteButton.contentSize.width+10), (siteButton.contentSize.height+10));
         label = [CCLabelTTF labelWithString:@"Official Site" fontName:@"LostPet.TTF" fontSize:22.0];
@@ -130,12 +196,13 @@
         label.color = _color_pink;
         CCMenuItem *b = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(openHomepage)];
         CCMenu *m = [CCMenu menuWithItems:b, nil];
-        [m setPosition:ccp(90, 200)];
+        [m setPosition:ccp(170, 190)];
         [self addChild:m z:11];
         
         CCSprite *creditsButton = [CCSprite spriteWithSpriteFrameName:@"Bagel.png"];
-        creditsButton.position = ccp(190, 230);
-        creditsButton.scale = 1.5;
+        creditsButton.position = ccp(320, 230);
+        creditsButton.scale = imgScale;
+        [[creditsButton texture] setAliasTexParameters];
         [self addChild:creditsButton z:10];
         _creditsRect = CGRectMake((creditsButton.position.x-(creditsButton.contentSize.width)/2), (creditsButton.position.y-(creditsButton.contentSize.height)/2), (creditsButton.contentSize.width+10), (creditsButton.contentSize.height+10));
         label = [CCLabelTTF labelWithString:@"Credits" fontName:@"LostPet.TTF" fontSize:22.0];
@@ -143,12 +210,13 @@
         label.color = _color_pink;
         b = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(showCredits)];
         m = [CCMenu menuWithItems:b, nil];
-        [m setPosition:ccp(190, 200)];
+        [m setPosition:ccp(320, 190)];
         [self addChild:m z:11];
         
         CCSprite *tutorialButton = [CCSprite spriteWithSpriteFrameName:@"YakisobaPan.png"];
-        tutorialButton.position = ccp(290, 230);
-        tutorialButton.scale = 1.5;
+        tutorialButton.position = ccp(170, 130);
+        tutorialButton.scale = imgScale;
+        [[tutorialButton texture] setAliasTexParameters];
         [self addChild:tutorialButton z:10];
         _tutRect = CGRectMake((tutorialButton.position.x-(tutorialButton.contentSize.width)/2), (tutorialButton.position.y-(tutorialButton.contentSize.height)/2), (tutorialButton.contentSize.width+10), (tutorialButton.contentSize.height+10));
         label = [CCLabelTTF labelWithString:@"Tutorial" fontName:@"LostPet.TTF" fontSize:22.0];
@@ -156,7 +224,21 @@
         label.color = _color_pink;
         b = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(playTutorial)];
         m = [CCMenu menuWithItems:b, nil];
-        [m setPosition:ccp(290, 200)];
+        [m setPosition:ccp(170, 90)];
+        [self addChild:m z:11];
+        
+        CCSprite *scoresButton = [CCSprite spriteWithSpriteFrameName:@"Taco.png"];
+        scoresButton.position = ccp(320, 130);
+        scoresButton.scale = imgScale;
+        [[scoresButton texture] setAliasTexParameters];
+        [self addChild:scoresButton z:10];
+        _scoresRect = CGRectMake((scoresButton.position.x-(scoresButton.contentSize.width)/2), (scoresButton.position.y-(scoresButton.contentSize.height)/2), (scoresButton.contentSize.width+10), (scoresButton.contentSize.height+10));
+        label = [CCLabelTTF labelWithString:@"Clear Scores" fontName:@"LostPet.TTF" fontSize:22.0];
+        [[label texture] setAliasTexParameters];
+        label.color = _color_pink;
+        b = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(clearScoresWindow)];
+        m = [CCMenu menuWithItems:b, nil];
+        [m setPosition:ccp(320, 90)];
         [self addChild:m z:11];
         
         CCSprite *restartButton = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
@@ -192,7 +274,7 @@
 }
 
 - (void)switchSceneStart{
-    NSInteger introDone = [standardUserDefaults integerForKey:@"introDone"];
+    NSInteger introDone = [[NSUserDefaults standardUserDefaults] integerForKey:@"introDone"];
     CCLOG(@"introDone: %d", introDone);
     if(introDone == 1)
         [[CCDirector sharedDirector] replaceScene:[LevelSelectLayer scene]];
@@ -210,6 +292,10 @@
         credits = false;
         [self removeChild:creditsLayer cleanup:YES];
         return;
+    } else if(scores){
+        scores = false;
+        [self removeChild:scoresLayer cleanup:YES];
+        return;
     }
     
     if(CGRectContainsPoint(_siteRect, touchLocation1)){
@@ -218,6 +304,8 @@
         [self showCredits];
     } else if(CGRectContainsPoint(_tutRect, touchLocation1)){
         [self playTutorial];
+    } else if(CGRectContainsPoint(_scoresRect, touchLocation1)){
+        [self clearScoresWindow];
     }
 }
 
