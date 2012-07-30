@@ -447,6 +447,11 @@
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
+-(void)incrementDroppedCount{
+    if(_droppedCount <= DROPPED_MAX)
+        _droppedCount++;
+}
+
 -(void)destroyWiener:(id)sender data:(void*)params {
     CGSize winSize = [CCDirector sharedDirector].winSize;
     b2Body *dogBody = (b2Body *)[(NSValue *)[(NSMutableArray *) params objectAtIndex:0] pointerValue];
@@ -472,14 +477,6 @@
         
         dogBody = nil;
         
-        if(_droppedCount <= DROPPED_MAX){
-            CCSprite *dogDroppedIcon = [CCSprite spriteWithSpriteFrameName:@"WienerCount_X.png"];
-            dogDroppedIcon.position = ccp(winSize.width-_droppedSpacing, DOG_COUNTER_HT);
-            [spriteSheetCommon addChild:dogDroppedIcon z:72];
-            [spriteSheetCommon removeChild:(CCSprite*)[(NSValue *)[dogIcons objectAtIndex:_droppedCount] pointerValue] cleanup:YES];
-            _droppedCount++;
-            _droppedSpacing += 23;
-        }
 #ifdef DEBUG
 #else
         [[SimpleAudioEngine sharedEngine] playEffect:@"hot dog disappear.mp3"];
@@ -873,7 +870,7 @@
             ud->stopTimeDelta = 60; // frames
             ud->aimFace = [NSString stringWithString:@"Cop_Head_Aiming_1.png"];
         } else if (person->tag == S_MUNCHR){
-            ud->stopTimeDelta = 9999; // frames
+            ud->stopTimeDelta = 100; // frames
         }
     }
     ud->restartTime = ud->stopTime + ud->stopTimeDelta;
@@ -1284,6 +1281,17 @@
     } else if(_points > 1000 && _wienerSpawnDelayTime != 4) {
         _wienerSpawnDelayTime = 4;
     }
+    
+    if(_droppedCount <= DROPPED_MAX && _droppedCount >= 0){
+        for(NSValue *v in dogIcons){
+            CCSprite *icon = (CCSprite *)[v pointerValue];
+            if([dogIcons indexOfObject:v] < _droppedCount){
+                [icon setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"WienerCount_X.png"]]];
+            } else {
+                [icon setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"WienerCount_Wiener.png"]]];
+            }
+        }
+    }
 
     if(_pause){
         CCLabelTTF *label = [CCLabelTTF labelWithString:@"Pause" fontName:@"LostPet.TTF" fontSize:18.0];
@@ -1412,6 +1420,7 @@
                     // dog is definitely not on a head if it's touching the floor
                     CCAction *wienerDeathAction = (CCAction *)ud->altAction;
                     id delay = [CCDelayTime actionWithDuration:ud->deathDelay];
+                    id incAction = [CCCallFuncN actionWithTarget:self selector:@selector(incrementDroppedCount)];
                     wienerParameters = [[NSMutableArray alloc] initWithCapacity:2];
                     [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
                     [wienerParameters addObject:[NSNumber numberWithInt:0]];
@@ -1420,7 +1429,7 @@
                     wienerParameters = [[NSMutableArray alloc] initWithCapacity:1];
                     [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
                     id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:wienerParameters];
-                    id sequence = [CCSequence actions: delay, sleepAction, angleAction, wienerDeathAction, destroyAction, nil];
+                    id sequence = [CCSequence actions: delay, sleepAction, angleAction, wienerDeathAction, incAction, destroyAction, nil];
                     [ud->sprite1 runAction:sequence];
                     CCLOG(@"Run death action");
                 } else if(ud->deathSeq){
@@ -1571,7 +1580,12 @@
                                 if(ud->sprite1.tag != S_POLICE && ud->sprite1.tag != S_MUNCHR){
                                     if([ud->sprite2 numberOfRunningActions] == 0)
                                         [ud->sprite2 runAction:ud->altAction];
-                                } else [ud->sprite2 runAction:ud->altAction];
+                                } else {
+                                    [ud->sprite2 runAction:ud->altAction];
+                                    if(ud->sprite1.tag == S_MUNCHR && ud->timeWalking == ud->stopTime + ud->stopTimeDelta){
+                                        [self regainWiener];
+                                    }
+                                }
                             if([ud->angryFace numberOfRunningActions] == 0)
                                 [ud->angryFace runAction:ud->altWalkAction];
                         }
@@ -1894,7 +1908,7 @@
                                 CCLOG(@"Touching muncher!");
                                 ud->touched = true;
                                 ud->stopTime = ud->timeWalking + 1;
-                                ud->stopTimeDelta = 9999;
+                                ud->stopTimeDelta = 100;
                                 
                                 [ud->sprite1 stopAllActions];
                                 if([ud->sprite1 numberOfRunningActions] == 0)

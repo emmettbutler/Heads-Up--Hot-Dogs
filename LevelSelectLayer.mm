@@ -359,8 +359,8 @@
     else if(CGRectContainsPoint(thumbnailRect, location)){
         SEL levelMethod = NSSelectorFromString(level->func);
 #ifdef DEBUG // will eventually have this happen in deployment too
-//#else        
-        if(level->unlocked)
+#else        
+//        if(level->unlocked)
 #endif
             [self performSelector:levelMethod];
     }
