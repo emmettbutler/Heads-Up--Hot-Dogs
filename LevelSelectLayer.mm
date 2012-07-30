@@ -181,6 +181,13 @@
           [NSString stringWithFormat:@"Bagel_Shot_%d.png", i]]];
     }
     
+    bgComponent *bgc = new bgComponent();
+    bgc->label = [CCLabelTTF labelWithString:@"-0.00 G" fontName:@"segmental.ttf" fontSize:35.0];
+    bgc->label.color = ccc3(255, 0, 0);
+    bgc->label.position = CGPointMake(360, 200);
+    lp->bgComponents = [[NSMutableArray alloc] init];
+    [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
+    
     lp->specialDog = dd;
     [levelStructs addObject:[NSValue valueWithPointer:lp]];
     

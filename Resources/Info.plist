@@ -48,6 +48,7 @@
 	<true/>
 	<key>UIAppFonts</key>
 	<array>
+		<string>segmental.ttf</string>
 		<string>LostPet.TTF</string>
 	</array>
 	<key>UIApplicationExitsOnSuspend</key>

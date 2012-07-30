@@ -24,10 +24,17 @@ static NSUserDefaults *standardUserDefaults;
         NSMutableArray *shotAnimFrames;
     };
     
+    struct bgComponent{
+        CCLabelTTF *label; // one or the other
+        CCSprite *sprite;
+        CGPoint position;
+    };
+    
     struct levelProps{
         NSString *bg;
         NSString *bgm;
         NSString *prevSlug;
+        NSMutableArray *bgComponents;
         float gravity;
         BOOL unlocked;
         int unlockThreshold;

@@ -31,7 +31,7 @@
     CCAnimation *walkAnim, *idleAnim, *hitAnim, *dogDeathAnim, *dogAppearAnim, *walkFaceAnim, *walkDogFaceAnim;
     CCAnimation *dogShotAnim, *specialAnim, *armShootAnim, *specialFaceAnim;
     CCSpriteBatchNode *spriteSheetCommon, *spriteSheetLevel, *spriteSheetCharacter;
-    CCLabelTTF *scoreLabel, *droppedLabel;
+    CCLabelTTF *scoreLabel, *droppedLabel, *gravityLabel;
     b2Vec2 policeRayPoint1, policeRayPoint2;
     CCLayerColor *_pauseLayer, *_flashLayer;
     CCMenu *_pauseMenu;
