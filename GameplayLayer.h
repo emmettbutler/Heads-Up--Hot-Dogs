@@ -34,6 +34,7 @@
     CCLabelTTF *scoreLabel, *droppedLabel, *gravityLabel;
     b2Vec2 policeRayPoint1, policeRayPoint2;
     CCLayerColor *_pauseLayer, *_flashLayer;
+    NSMutableArray *bgSprites;
     CCMenu *_pauseMenu;
     NSMutableArray *floorBits, *xPositions, *wienerParameters, *headParams, *mouseJoints;
     NSMutableArray *personParameters, *wakeParameters, *movementPatterns, *movementParameters, *_touchLocations, *dogIcons, *allTouchHashes;

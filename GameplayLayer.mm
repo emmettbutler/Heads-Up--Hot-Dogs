@@ -1067,11 +1067,15 @@
         spriteSheetCharacter = [CCSpriteBatchNode batchNodeWithFile:@"sprites_characters.png"];
         spriteSheetLevel = [CCSpriteBatchNode batchNodeWithFile:[NSString stringWithFormat:@"%@.png", level->spritesheet]];
         
+        bgSprites = [[NSMutableArray alloc] init];
+        
         [self addChild:spriteSheetLevel];
         for(NSValue *v in level->bgComponents){
             bgComponent *bgc = (bgComponent *)[v pointerValue];
-            if(bgc->sprite)
+            if(bgc->sprite){
+                [bgSprites addObject:[NSValue valueWithPointer:bgc->sprite]];
                 [self addChild:bgc->sprite];
+            }
             else if(bgc->label){
                 gravityLabel = bgc->label;
                 [self addChild:gravityLabel z:0];
@@ -1299,7 +1303,12 @@
 
     time++;
     
-    if(level->slug == @"space" && !(time % 100)){
+    if(level->slug == @"nyc"){
+        for(NSValue *v in bgSprites){
+            CCSprite *sprite = (CCSprite *)[v pointerValue];
+            [sprite setOpacity:255.00 * cosf(.01 * time)];
+        }
+    } else if(level->slug == @"space" && !(time % 100)){
         float g = -1.0*(arc4random() % 30);
         [gravityLabel setString:[NSString stringWithFormat:@"%0.1f G", g]];
         _world->SetGravity(b2Vec2(0, g));

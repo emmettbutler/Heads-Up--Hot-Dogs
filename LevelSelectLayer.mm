@@ -25,6 +25,7 @@
     levelStructs = [[NSMutableArray alloc] initWithCapacity:NUM_LEVELS];
     levelProps *lp;
     spcDogData *dd;
+    bgComponent *bgc;
     
     [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_common.plist"];
     [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_nyc.plist"];
@@ -132,6 +133,24 @@
     
     lp->specialDog = dd;
     
+    lp->bgComponents = [[NSMutableArray alloc] init];
+    bgc = new bgComponent();
+    bgc->sprite = [CCSprite spriteWithSpriteFrameName:@"Light_One.png"];
+    bgc->sprite.position = CGPointMake(238, 262);
+    [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
+    bgc = new bgComponent();
+    bgc->sprite = [CCSprite spriteWithSpriteFrameName:@"Light_Two.png"];
+    bgc->sprite.position = CGPointMake(352, 262);
+    [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
+    bgc = new bgComponent();
+    bgc->sprite = [CCSprite spriteWithSpriteFrameName:@"Light_Three.png"];
+    bgc->sprite.position = CGPointMake(380, 156);
+    [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
+    bgc = new bgComponent();
+    bgc->sprite = [CCSprite spriteWithSpriteFrameName:@"Light_Three.png"];
+    bgc->sprite.position = CGPointMake(86, 156);
+    [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
+    
     [levelStructs addObject:[NSValue valueWithPointer:lp]];
     
     
@@ -181,7 +200,7 @@
           [NSString stringWithFormat:@"Bagel_Shot_%d.png", i]]];
     }
     
-    bgComponent *bgc = new bgComponent();
+    bgc = new bgComponent();
     bgc->label = [CCLabelTTF labelWithString:@"-0.00 G" fontName:@"segmental.ttf" fontSize:35.0];
     bgc->label.color = ccc3(255, 0, 0);
     bgc->label.position = CGPointMake(360, 200);
