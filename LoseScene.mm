@@ -157,7 +157,7 @@
         if(_timePlayed > bestTime)
             [standardUserDefaults setInteger:_timePlayed forKey:@"bestTime"];
         
-        if(_score > level->nextUnlockThreshold && !level->next->unlocked){
+        if(_score > level->next->unlockThreshold && !level->next->unlocked){
             levelBox = [CCSprite spriteWithSpriteFrameName:@"Lvl_TextBox.png"];
             levelBox.position = ccp(winSize.width/2, (winSize.height/2));
             [self addChild:levelBox];
@@ -211,7 +211,7 @@
     UITouch *myTouch = [touches anyObject];
     CGPoint location = [myTouch locationInView:[myTouch view]];
     location = [[CCDirector sharedDirector] convertToGL:location];  
-    if(_score > level->nextUnlockThreshold){
+    if(levelBox){
         if(!touchLock){
             touchLock = true;
             [levelLabel1 removeFromParentAndCleanup:YES];

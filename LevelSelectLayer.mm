@@ -303,7 +303,7 @@
         thumb.position = ccp(winSize.width/2, winSize.height/2+20);
         [self addChild:thumb];
         
-        CCLabelTTF *helpLabel = [CCLabelTTF labelWithString:@"Tap to start" fontName:@"LostPet.TTF" fontSize:22.0];
+        helpLabel = [CCLabelTTF labelWithString:@"Tap to start" fontName:@"LostPet.TTF" fontSize:22.0];
         [[helpLabel texture] setAliasTexParameters];
         helpLabel.color = _color_pink;
         helpLabel.position = ccp(winSize.width/2, thumb.position.y-(thumb.contentSize.height/2)+6);
@@ -327,10 +327,12 @@
         [thumb setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:level->thumbnail]];
         [nameLabel setString:[NSString stringWithFormat:@"%@", level->name]];
         [scoreLabel setString:[NSString stringWithFormat:@"high score: %06d", level->highScore]];
+        [helpLabel setVisible:true];
     } else {
         [thumb setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:level->thumbnail]];
         [nameLabel setString:@"??????"];
         [scoreLabel setString:[NSString stringWithFormat:@"Unlock with %d points", level->unlockThreshold]];
+        [helpLabel setVisible:false];
     }
 }
 

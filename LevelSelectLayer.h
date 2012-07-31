@@ -39,7 +39,6 @@ static NSUserDefaults *standardUserDefaults;
         float gravity;
         BOOL unlocked;
         int unlockThreshold;
-        int nextUnlockThreshold;
         NSString *name;
         NSString *slug;
         BOOL enabled;
@@ -66,7 +65,7 @@ static NSUserDefaults *standardUserDefaults;
     CGRect thumbnailRect;
     CCSprite *thumb;
     CCLabelTTF *scoreLabel;
-    CCLabelTTF *nameLabel;
+    CCLabelTTF *nameLabel, *helpLabel;
 }
 
 +(NSMutableArray *)buildLevels;
