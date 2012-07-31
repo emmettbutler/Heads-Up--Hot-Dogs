@@ -227,9 +227,16 @@
         l->nextUnlockThreshold = nextLevel->unlockThreshold;
         l->nextName = nextLevel->name;
         l->characters = [CharBuilder buildCharacters:l->slug];
-        int prevHighScore = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"highScore%@", l->prevSlug]];
-        if(prevHighScore > l->unlockThreshold) l->unlocked = true;
+
+        int unlocked = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"unlocked%@", l->slug]];
+        if(unlocked) l->unlocked = true;
         else l->unlocked = false;
+
+        int prevHighScore = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"highScore%@", l->prevSlug]];
+        if(prevHighScore > l->unlockThreshold){
+            [standardUserDefaults setInteger:1 forKey:[NSString stringWithFormat:@"unlocked%@", l->slug]];
+        }
+        [standardUserDefaults synchronize];
     }
     
     return levelStructs;
@@ -360,7 +367,7 @@
         SEL levelMethod = NSSelectorFromString(level->func);
 #ifdef DEBUG // will eventually have this happen in deployment too
 #else        
-//        if(level->unlocked)
+        if(level->unlocked)
 #endif
             [self performSelector:levelMethod];
     }
