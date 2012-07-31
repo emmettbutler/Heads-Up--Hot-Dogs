@@ -92,7 +92,7 @@
     lp->enabled = true;
     lp->slug = [NSString stringWithString:@"nyc"];
     lp->name = [NSString stringWithString:@"Big Apple"];
-    lp->unlockThreshold = 1000;
+    lp->unlockThreshold = 15000;
     lp->bg = [NSString stringWithString:@"BG_NYC.png"];
     lp->bgm = [NSString stringWithString:@"gameplay 3.mp3"];
     lp->gravity = -30.0f;
@@ -160,7 +160,7 @@
     lp->enabled = false;
     lp->slug = [NSString stringWithString:@"space"];
     lp->name = [NSString stringWithString:@"Space Station"];
-    lp->unlockThreshold = 20000;
+    lp->unlockThreshold = 25000;
     lp->bg = [NSString stringWithString:@"SpaceBG.png"];
     lp->bgm = [NSString stringWithString:@"gameplay 3.mp3"];
     lp->gravity = -1.0f;

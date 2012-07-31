@@ -27,9 +27,9 @@
     b2Fixture *_bottomFixture, *_wallsFixture, *_wienerFixture, *_targetFixture, *_personFixture, *_policeArmFixture;
     CCSprite *_wiener, *_personLower, *_personUpper, *_personUpperOverlay, *_target, *_pauseButton, *background;
     CCAction *_walkAction, *_walkFaceAction;
-    CCFiniteTimeAction *_idleAction, *_appearAction, *_hitAction, *_shotAction, *_specialAction, *_armShootAction, *_specialFaceAction;
+    CCFiniteTimeAction *_idleAction, *_appearAction, *_hitAction, *_shotAction, *_specialAction, *_armShootAction, *_specialFaceAction, *_specialAngryFaceAction;
     CCAnimation *walkAnim, *idleAnim, *hitAnim, *dogDeathAnim, *dogAppearAnim, *walkFaceAnim, *walkDogFaceAnim;
-    CCAnimation *dogShotAnim, *specialAnim, *armShootAnim, *specialFaceAnim;
+    CCAnimation *dogShotAnim, *specialAnim, *armShootAnim, *specialFaceAnim, *specialAngryFaceAnim;
     CCSpriteBatchNode *spriteSheetCommon, *spriteSheetLevel, *spriteSheetCharacter;
     CCLabelTTF *scoreLabel, *droppedLabel, *gravityLabel;
     b2Vec2 policeRayPoint1, policeRayPoint2;
@@ -71,6 +71,7 @@
         CCAction *defaultAction;
         CCAnimation *altAnimation;
         CCAction *altWalkAction;
+        CCAction *dogOnHeadTickleAction;
         CCAction *deathSeq;
         // point notifier actions
         CCFiniteTimeAction *_not_dogContact;

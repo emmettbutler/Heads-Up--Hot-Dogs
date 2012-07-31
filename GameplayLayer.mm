@@ -770,6 +770,9 @@
         
         specialFaceAnim = [CCAnimation animationWithFrames:person->specialFaceAnimFrames delay:.1f];
         _specialFaceAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:specialFaceAnim restoreOriginalFrame:NO]] retain];
+        
+        specialAngryFaceAnim = [CCAnimation animationWithFrames:person->specialFaceAnimFrames delay:.1f];
+        _specialAngryFaceAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:specialAngryFaceAnim restoreOriginalFrame:NO]] retain];
     }
 
     //put the sprites in place
@@ -872,6 +875,7 @@
         } else if (person->tag == S_MUNCHR){
             ud->stopTimeDelta = 100; // frames
             ud->_muncher_hasDroppedDog = false;
+            ud->dogOnHeadTickleAction = _specialAngryFaceAction;
         }
     }
     ud->restartTime = ud->stopTime + ud->stopTimeDelta;
@@ -1479,7 +1483,7 @@
                 if(ud->dogsOnHead != 0){
                     CCSprite *oneHundred = [CCSprite spriteWithSpriteFrameName:@"Bonus_Plus_1000_8.png"];
                     NSMutableArray *plus100Params = [[NSMutableArray alloc] initWithCapacity:4];
-                    if(ud->sprite1.flipX){
+                    if(ud->sprite1.position.x > winSize.width/2){
                         [plus100Params addObject:[NSNumber numberWithInt:winSize.width-(oneHundred.contentSize.width/2)-10]];
                         [plus100Params addObject:[NSNumber numberWithInt:(b->GetPosition().y+4.7)*PTM_RATIO]];
                     }
@@ -1925,8 +1929,9 @@
                                     [ud->sprite2 runAction:ud->altAction3];
                                 
                                 [ud->angryFace stopAllActions];
-                                if([ud->angryFace numberOfRunningActions] == 0)
-                                    [ud->angryFace runAction:ud->altAction3];
+                                if([ud->angryFace numberOfRunningActions] == 0){
+                                    [ud->angryFace runAction:ud->dogOnHeadTickleAction];
+                                }
                             } else {
                                 //ud->touched = false;
                             }
@@ -2024,6 +2029,9 @@
                     }
                 }
                 if(!touched){
+                    [ud->sprite1 stopAllActions];
+                    [ud->sprite2 stopAllActions];
+                    [ud->angryFace stopAllActions];
                     ud->restartTime = ud->timeWalking + 1;
                     ud->stopTimeDelta = 0;
                     ud->touched = false;
