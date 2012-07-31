@@ -40,7 +40,6 @@
     lp = new levelProps();
     lp->enabled = true;
     lp->slug = [NSString stringWithString:@"philly"];
-    lp->prevSlug = [NSString stringWithString:@"philly"];
     lp->name = [NSString stringWithString:@"Philly"];
     lp->unlockThreshold = -1;
     lp->bg = [NSString stringWithString:@"bg_philly.png"];
@@ -92,9 +91,8 @@
     lp = new levelProps();
     lp->enabled = true;
     lp->slug = [NSString stringWithString:@"nyc"];
-    lp->prevSlug = [NSString stringWithString:@"philly"];
     lp->name = [NSString stringWithString:@"Big Apple"];
-    lp->unlockThreshold = 10000;
+    lp->unlockThreshold = 1000;
     lp->bg = [NSString stringWithString:@"BG_NYC.png"];
     lp->bgm = [NSString stringWithString:@"gameplay 3.mp3"];
     lp->gravity = -30.0f;
@@ -161,7 +159,6 @@
     lp = new levelProps();
     lp->enabled = false;
     lp->slug = [NSString stringWithString:@"space"];
-    lp->prevSlug = [NSString stringWithString:@"nyc"];
     lp->name = [NSString stringWithString:@"Space Station"];
     lp->unlockThreshold = 20000;
     lp->bg = [NSString stringWithString:@"SpaceBG.png"];
@@ -223,20 +220,24 @@
         int nextIndex = [levelStructs indexOfObject:v] + 1;
         if(nextIndex == [levelStructs count])
             nextIndex--;
+        int prevIndex = [levelStructs indexOfObject:v] - 1;
+        if(prevIndex == -1)
+            prevIndex++;
         levelProps *nextLevel = (levelProps *)[(NSValue *)[levelStructs objectAtIndex:nextIndex] pointerValue];
-        l->nextUnlockThreshold = nextLevel->unlockThreshold;
-        l->nextName = nextLevel->name;
+        l->next = nextLevel;
+        levelProps *prevLevel = (levelProps *)[(NSValue *)[levelStructs objectAtIndex:prevIndex] pointerValue];
+        l->prev = prevLevel;
         l->characters = [CharBuilder buildCharacters:l->slug];
 
-        int unlocked = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"unlocked%@", l->slug]];
-        if(unlocked) l->unlocked = true;
-        else l->unlocked = false;
-
-        int prevHighScore = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"highScore%@", l->prevSlug]];
+        int prevHighScore = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"highScore%@", l->prev->slug]];
         if(prevHighScore > l->unlockThreshold){
             [standardUserDefaults setInteger:1 forKey:[NSString stringWithFormat:@"unlocked%@", l->slug]];
         }
         [standardUserDefaults synchronize];
+        
+        int unlocked = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"unlocked%@", l->slug]];
+        if(unlocked) l->unlocked = true;
+        else l->unlocked = false;
     }
     
     return levelStructs;
@@ -322,7 +323,7 @@
     time++;
     level = (levelProps *)[(NSValue *)[lStructs objectAtIndex:curLevelIndex] pointerValue];
     
-    if(level->unlocked){
+    if(level->unlocked || level->unlockThreshold < 0){
         [thumb setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:level->thumbnail]];
         [nameLabel setString:[NSString stringWithFormat:@"%@", level->name]];
         [scoreLabel setString:[NSString stringWithFormat:@"high score: %06d", level->highScore]];

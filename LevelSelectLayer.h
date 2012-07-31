@@ -33,13 +33,13 @@ static NSUserDefaults *standardUserDefaults;
     struct levelProps{
         NSString *bg;
         NSString *bgm;
-        NSString *prevSlug;
         NSMutableArray *bgComponents;
+        levelProps *next;
+        levelProps *prev;
         float gravity;
         BOOL unlocked;
         int unlockThreshold;
         int nextUnlockThreshold;
-        NSString *nextName;
         NSString *name;
         NSString *slug;
         BOOL enabled;

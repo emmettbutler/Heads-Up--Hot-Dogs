@@ -157,7 +157,7 @@
         if(_timePlayed > bestTime)
             [standardUserDefaults setInteger:_timePlayed forKey:@"bestTime"];
         
-        if(_score > level->nextUnlockThreshold){
+        if(_score > level->nextUnlockThreshold && !level->next->unlocked){
             levelBox = [CCSprite spriteWithSpriteFrameName:@"Lvl_TextBox.png"];
             levelBox.position = ccp(winSize.width/2, (winSize.height/2));
             [self addChild:levelBox];
@@ -169,7 +169,7 @@
             levelLabel1.position = ccp(winSize.width/2, winSize.height/2+10);
             [self addChild:levelLabel1];
         
-            levelLabel2 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"%@", level->nextName] fontName:@"LostPet.TTF" fontSize:20.0];
+            levelLabel2 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"%@", level->next->name] fontName:@"LostPet.TTF" fontSize:20.0];
             [[levelLabel2 texture] setAliasTexParameters];
             levelLabel2.color = _color_pink;
             levelLabel2.position = ccp(winSize.width/2, winSize.height/2-10);
