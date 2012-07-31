@@ -73,10 +73,10 @@
     sprite.scale = 1.4;
     [scoresLayer addChild:sprite z:81];
     
-    CCLabelTTF *label = [CCLabelTTF labelWithString:@"Clear Scores" fontName:@"LostPet.TTF" fontSize:25.0];
+    CCLabelTTF *label = [CCLabelTTF labelWithString:@"Clear Scores" fontName:@"LostPet.TTF" fontSize:23.0];
     label.color = _color_pink;
     CCMenuItem *pauseTitle = [CCMenuItemLabel itemWithLabel:label];
-    pauseTitle.position = ccp((sprite.position.x+3), (sprite.position.y+sprite.contentSize.height/2)+6);
+    pauseTitle.position = ccp((sprite.position.x+3), (sprite.position.y+sprite.contentSize.height/2)+11);
     [scoresLayer addChild:pauseTitle z:81];
     
     label = [CCLabelTTF labelWithString:@"WARNING" fontName:@"LostPet.TTF" fontSize:30.0];
@@ -125,7 +125,7 @@
     CCLabelTTF *label = [CCLabelTTF labelWithString:@"Credits" fontName:@"LostPet.TTF" fontSize:27.0];
     label.color = _color_pink;
     CCMenuItem *pauseTitle = [CCMenuItemLabel itemWithLabel:label];
-    pauseTitle.position = ccp((sprite.position.x+3), (sprite.position.y+sprite.contentSize.height/2)+6);
+    pauseTitle.position = ccp((sprite.position.x+3), (sprite.position.y+sprite.contentSize.height/2)+8);
     [creditsLayer addChild:pauseTitle z:81];
     
     label = [CCLabelTTF labelWithString:@"Sugoi Papa Interactive:" fontName:@"LostPet.TTF" fontSize:27.0];
@@ -148,11 +148,11 @@
     label.color = _color_pink;
     CCMenuItem *emmettItem2 = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(emmettSocial)];
     
-    label = [CCLabelTTF labelWithString:@"Music:" fontName:@"LostPet.TTF" fontSize:24.0];
+    label = [CCLabelTTF labelWithString:@"Music:" fontName:@"LostPet.TTF" fontSize:27.0];
     label.color = _color_pink;
     CCMenuItem *musicItem = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(emmettSocial)];
     
-    label = [CCLabelTTF labelWithString:@"Luke Silas/Ben Carignan" fontName:@"LostPet.TTF" fontSize:21.0];
+    label = [CCLabelTTF labelWithString:@"Luke Silas/Ben Carignan" fontName:@"LostPet.TTF" fontSize:24.0];
     label.color = _color_pink;
     CCMenuItem *musicItem2 = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(emmettSocial)];
     
