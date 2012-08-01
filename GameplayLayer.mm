@@ -556,7 +556,6 @@
             }
             break;
     }
-    CCSprite *spcAppear;
     //add base sprite to scene
     self.wiener = [CCSprite spriteWithSpriteFrameName:mainSprite];
     _wiener.position = ccp(location.x, location.y);
@@ -1914,26 +1913,29 @@
                     bodyUserData *ud = (bodyUserData *)body->GetUserData();
                     if(ud->sprite1.tag == S_MUNCHR && !ud->_muncher_hasDroppedDog){
                         for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
-                            if(fixture->TestPoint(locationWorld1)){
-                                CCLOG(@"Touching muncher!");
-                                ud->touched = true;
-                                ud->stopTime = ud->timeWalking + 1;
-                                ud->stopTimeDelta = 100;
+                            fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
+                            if(fUd->tag < F_BUSSEN){
+                                if(fixture->TestPoint(locationWorld1)){
+                                    CCLOG(@"Touching muncher!");
+                                    ud->touched = true;
+                                    ud->stopTime = ud->timeWalking + 1;
+                                    ud->stopTimeDelta = 100;
                                 
-                                [ud->sprite1 stopAllActions];
-                                if([ud->sprite1 numberOfRunningActions] == 0)
-                                    [ud->sprite1 runAction:ud->altAction2];
+                                    [ud->sprite1 stopAllActions];
+                                    if([ud->sprite1 numberOfRunningActions] == 0)
+                                        [ud->sprite1 runAction:ud->altAction2];
                                 
-                                [ud->sprite2 stopAllActions];
-                                if([ud->sprite2 numberOfRunningActions] == 0)
-                                    [ud->sprite2 runAction:ud->altAction3];
+                                    [ud->sprite2 stopAllActions];
+                                    if([ud->sprite2 numberOfRunningActions] == 0)
+                                        [ud->sprite2 runAction:ud->altAction3];
                                 
-                                [ud->angryFace stopAllActions];
-                                if([ud->angryFace numberOfRunningActions] == 0){
-                                    [ud->angryFace runAction:ud->dogOnHeadTickleAction];
+                                    [ud->angryFace stopAllActions];
+                                    if([ud->angryFace numberOfRunningActions] == 0){
+                                        [ud->angryFace runAction:ud->dogOnHeadTickleAction];
+                                    }
+                                } else {
+                                    //ud->touched = false;
                                 }
-                            } else {
-                                //ud->touched = false;
                             }
                         }
                     }
@@ -2023,7 +2025,8 @@
                 BOOL touched = false;
                 for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
                     for(int i = 0; i < count; i++){
-                        if(fixture->TestPoint(locations[i])){
+                        fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
+                        if(fixture->TestPoint(locations[i]) && fUd->tag < F_BUSSEN){
                             touched = true;
                         }
                     }
@@ -2077,7 +2080,7 @@
 - (void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
     b2Filter filter;
     
-    CGSize winSize = [[CCDirector sharedDirector] winSize];
+    //CGSize winSize = [[CCDirector sharedDirector] winSize];
     UITouch *myTouch = [touches anyObject];
     CGPoint location = [myTouch locationInView:[myTouch view]];
     location = [[CCDirector sharedDirector] convertToGL:location];
