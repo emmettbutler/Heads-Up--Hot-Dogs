@@ -389,8 +389,6 @@
     CCLOG(@"Touch registered, count %d", count);
     
     if(count > 5){
-        [standardUserDefaults setInteger:1 forKey:@"introDone"];
-        [standardUserDefaults synchronize];
         NSMutableArray *params = [[NSMutableArray alloc] initWithCapacity:1];
         [params addObject:[NSString stringWithString:@"philly"]];
         if(_from == @"options")

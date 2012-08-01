@@ -1049,6 +1049,8 @@
         [CCTexture2D setDefaultAlphaPixelFormat:kCCTexture2DPixelFormat_RGBA4444];
         self.isTouchEnabled = YES;
         
+        [standardUserDefaults setInteger:1 forKey:@"introDone"];
+        
         NSMutableArray *levelStructs = [LevelSelectLayer buildLevels];
         for(int i = 0; i < [levelStructs count]; i++){
             level = (levelProps *)[[levelStructs objectAtIndex:i] pointerValue];
