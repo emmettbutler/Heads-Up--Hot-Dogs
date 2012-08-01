@@ -434,8 +434,8 @@
 }
 
 -(void)incrementDroppedCount{
-    if(_droppedCount <= DROPPED_MAX)
-        _droppedCount++;
+    if(_gameOver) return;
+    if(_droppedCount <= DROPPED_MAX) _droppedCount++;
 }
 
 -(void)destroyWiener:(id)sender data:(NSValue *)db {
@@ -445,8 +445,7 @@
 
     CCSprite *dogSprite = (CCSprite *)sender;
 
-    if(dogBody->GetPosition().x > winSize.width/PTM_RATIO || dogBody->GetPosition().x < 0)
-        return;
+    if(dogBody->GetPosition().x > winSize.width/PTM_RATIO || dogBody->GetPosition().x < 0) return;
     
     CCLOG(@"Destroying dog (tag %d)...", dogSprite.tag);
 
@@ -981,7 +980,7 @@
 -(void)wienerCallback:(id)sender data:(NSNumber *)thisType {
     CCLOG(@"Dogs onscreen: %d", _dogsOnscreen);
     
-    if(_dogsOnscreen <= _maxDogsOnScreen){
+    if(_dogsOnscreen <= _maxDogsOnScreen && !_gameOver){
         if(thisType.intValue == S_SPCDOG){
             id screenLightenAction = [CCCallFuncND actionWithTarget:self selector:@selector(screenFlash:data:) data:[[NSNumber numberWithInt:1] retain]];
             id darkenFGAction = [CCCallFuncND actionWithTarget:self selector:@selector(colorFG:data:) data:[[NSNumber numberWithInt:1] retain]];
@@ -1087,6 +1086,7 @@
         _id_counter = 0;
         _dogsOnscreen = 0;
         _dogsSaved = 0;
+        _gameOver = false;
         _maxDogsOnScreen = 3;
         _shootLock = NO;
         _droppedSpacing = 200;
@@ -1294,7 +1294,31 @@
 
     //the "LOSE CONDITION"
     if(_droppedCount >= DROPPED_MAX){
-        [self loseScene];
+        _gameOver = true;
+        
+#ifdef DEBUG
+#else
+        [[SimpleAudioEngine sharedEngine] stopBackgroundMusic];
+        [[SimpleAudioEngine sharedEngine] playEffect:@"game over sting.mp3"];
+#endif
+        
+        CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"Lvl_TextBox.png"];
+        sprite.position = ccp(winSize.width/2, winSize.height/2);
+        [self addChild:sprite];
+        
+        CCLabelTTF *gameOverLabel = [CCLabelTTF labelWithString:@"You lost five franks!" fontName:@"LostPet.TTF" fontSize:23.0];
+        gameOverLabel.color = _color_pink;
+        [[gameOverLabel texture] setAliasTexParameters];
+        gameOverLabel.position = ccp(winSize.width/2, winSize.height/2+10);
+        [self addChild:gameOverLabel];
+        
+        gameOverLabel = [CCLabelTTF labelWithString:@"Better luck next time..." fontName:@"LostPet.TTF" fontSize:23.0];
+        gameOverLabel.color = _color_pink;
+        [[gameOverLabel texture] setAliasTexParameters];
+        gameOverLabel.position = ccp(winSize.width/2, winSize.height/2-10);
+        [self addChild:gameOverLabel];
+        
+        [self runAction:[CCSequence actions:[CCDelayTime actionWithDuration:3], [CCCallFunc actionWithTarget:self selector:@selector(loseScene)], nil]];
     }
     
     _world->Step(dt, velocityIterations, positionIterations);
@@ -1826,6 +1850,8 @@
 }
 
 - (void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+    if(_gameOver) return;
+    
     b2Vec2 locationWorld1, locationWorld2;
     NSSet *allTouches = [event allTouches];
     int count = [allTouches count];
@@ -1950,6 +1976,8 @@
 }
 
 -(void)ccTouchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
+    if(_gameOver) return;
+    
     NSSet *allTouches = [event allTouches];
     int count = [allTouches count];
     b2Vec2 *locations = new b2Vec2[count];
@@ -2036,6 +2064,8 @@
 
 
 - (void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+    if(_gameOver) return;
+    
     b2Filter filter;
     
     //CGSize winSize = [[CCDirector sharedDirector] winSize];

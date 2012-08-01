@@ -146,11 +146,7 @@
         NSInteger bestTime = [standardUserDefaults integerForKey:@"bestTime"];
         NSInteger overallTime = [standardUserDefaults integerForKey:@"overallTime"];
         _lock = 1;
-#ifdef DEBUG
-#else
-        [[SimpleAudioEngine sharedEngine] stopBackgroundMusic];
-        sting = [[SimpleAudioEngine sharedEngine] playEffect:@"game over sting.mp3"];
-#endif
+
         if(_score > highScore){
             [standardUserDefaults setInteger:_score forKey:[NSString stringWithFormat:@"highScore%@", level->slug]];
             highScore = _score;
