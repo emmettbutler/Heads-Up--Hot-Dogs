@@ -30,12 +30,10 @@
     }
 }
 
--(void)introTutorialTextBox:(void*)params {
+-(void)introTutorialTextBox:(NSString *)text {
     int boxY = 50;
     int boxX = 80;
     
-    
-    NSString *text = (NSString *)[(NSValue *)[(NSMutableArray *) params objectAtIndex:0] pointerValue];
     tutorialLabel = [CCLabelTTF labelWithString:text fontName:@"LostPet.TTF" fontSize:19.0];
     
     _introLayer = [CCLayerColor layerWithColor:ccc4(0, 0, 255, 125) width:(tutorialLabel.contentSize.width+20) height:50];
@@ -361,9 +359,7 @@
         
         tutorialPage *page1 = (tutorialPage *)[(NSValue *)[tutPages objectAtIndex:0] pointerValue];
         
-        NSMutableArray *boxParams = [[NSMutableArray alloc] init];
-        [boxParams addObject:[NSValue valueWithPointer:page1->caption]];
-        [self introTutorialTextBox:boxParams];
+        [self introTutorialTextBox:page1->caption];
         
         CCLOG(@"Page1 sprites count: %d", [page1->sprites count]);
         
@@ -395,10 +391,8 @@
     }
     
     tutorialPage *page = (tutorialPage *)[(NSValue *)[tutPages objectAtIndex:count] pointerValue];
-    
-    NSMutableArray *boxParams = [[NSMutableArray alloc] init];
-    [boxParams addObject:[NSValue valueWithPointer:page->caption]];
-    [self introTutorialTextBox:boxParams];
+
+    [self introTutorialTextBox:page->caption];
     
     CCLOG(@"Page sprites count: %d", [page->sprites count]);
     for(int i = 0; i < [page->sprites count]; i++){
