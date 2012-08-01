@@ -233,6 +233,11 @@
     [sprite removeFromParentAndCleanup:YES];
 }
 
+-(void)lockWiener:(id)sender data:(void*)params {
+    bodyUserData *ud = (bodyUserData *)[(NSValue *)[(NSMutableArray *) params objectAtIndex:0] pointerValue];
+    ud->touchLock = true;
+}
+
 -(void)plusPoints:(id)sender data:(void*)params {
     NSNumber *xPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:0];
     NSNumber *yPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:1];
@@ -503,6 +508,7 @@
     NSNumber *type = (NSNumber *)[(NSMutableArray *) params objectAtIndex: 1];
     
     NSMutableArray *wienerDeathAnimFrames = [[NSMutableArray alloc] init];
+    NSMutableArray *wienerFlashAnimFrames = [[NSMutableArray alloc] init];
     NSMutableArray *wienerShotAnimFrames = [[NSMutableArray alloc] init];
     NSMutableArray *wienerAppearAnimFrames = [[NSMutableArray alloc] init];
     
@@ -518,6 +524,7 @@
             tag = S_SPCDOG;
             wienerDeathAnimFrames = dd->deathAnimFrames;
             wienerShotAnimFrames = dd->shotAnimFrames;
+            wienerFlashAnimFrames = dd->flashAnimFrames;
             for(int i = 1; i <= 6; i++){
                 [wienerAppearAnimFrames addObject:
                  [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -532,10 +539,10 @@
             deathDelay = 2.7;
             tag = S_HOTDOG;
             for(int i = 0; i < 8; i++){
-                [wienerDeathAnimFrames addObject:
+                [wienerFlashAnimFrames addObject:
                  [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
                   [NSString stringWithFormat:@"Dog_Die_1.png"]]];
-                [wienerDeathAnimFrames addObject:
+                [wienerFlashAnimFrames addObject:
                  [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
                   [NSString stringWithFormat:@"Dog_Die_2.png"]]];
             }
@@ -562,6 +569,9 @@
     _wiener.tag = tag;
     [spriteSheetCommon addChild:_wiener z:50];
     
+    CCAnimation *dogFlashAnim = [CCAnimation animationWithFrames:wienerFlashAnimFrames delay:.1f];
+    CCAction *_flashAction = [[CCAnimate alloc] initWithAnimation:dogFlashAnim];
+    
     dogDeathAnim = [CCAnimation animationWithFrames:wienerDeathAnimFrames delay:.1f];
     CCAction *_deathAction = [[CCAnimate alloc] initWithAnimation:dogDeathAnim];
     
@@ -582,11 +592,13 @@
     ud->_dog_grabSprite = grabSprite;
     ud->altAction = _deathAction;
     ud->altAction2 = _shotAction;
+    ud->altAction3 = _flashAction;
     ud->unique_id = _id_counter;
     ud->deathDelay = deathDelay;
     ud->aimedAt = false;
     ud->hasTouchedHead = false;
     ud->hasLeftScreen = false;
+    ud->touchLock = false;
     ud->_dog_isOnHead = false;
 
     fixtureUserData *fUd1 = new fixtureUserData();
@@ -1424,8 +1436,10 @@
                 ud->hasTouchedHead = false;
                 if([ud->sprite1 numberOfRunningActions] == 0){
                     // dog is definitely not on a head if it's touching the floor
-                    CCAction *wienerDeathAction = (CCAction *)ud->altAction;
                     id delay = [CCDelayTime actionWithDuration:ud->deathDelay];
+                    wienerParameters = [[NSMutableArray alloc] initWithCapacity:1];
+                    [wienerParameters addObject:[NSValue valueWithPointer:ud]];
+                    id lockAction = [CCCallFuncND actionWithTarget:self selector:@selector(lockWiener:data:) data:wienerParameters];
                     id incAction = [CCCallFuncN actionWithTarget:self selector:@selector(incrementDroppedCount)];
                     wienerParameters = [[NSMutableArray alloc] initWithCapacity:2];
                     [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
@@ -1435,7 +1449,7 @@
                     wienerParameters = [[NSMutableArray alloc] initWithCapacity:1];
                     [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
                     id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:wienerParameters];
-                    id sequence = [CCSequence actions: delay, sleepAction, angleAction, wienerDeathAction, incAction, destroyAction, nil];
+                    id sequence = [CCSequence actions: delay, sleepAction, angleAction, ud->altAction3, lockAction, incAction, ud->altAction, destroyAction, nil];
                     [ud->sprite1 runAction:sequence];
                     CCLOG(@"Run death action");
                 } else if(ud->deathSeq){
@@ -1590,8 +1604,8 @@
                                     [ud->sprite2 stopAllActions];
                                     [ud->sprite2 runAction:ud->altAction];
                                     if(ud->sprite1.tag == S_MUNCHR && ud->timeWalking == ud->stopTime + ud->stopTimeDelta){
+                                        ud->_muncher_hasDroppedDog = true;
                                         if(_droppedCount > 0){
-                                            ud->_muncher_hasDroppedDog = true;
                                             _droppedCount--;
                                         }
                                     }
@@ -1941,7 +1955,7 @@
                             }
                         }
                     }
-                    else if(ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG){ // loop over all hot dogs
+                    else if((ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG) && !ud->touchLock){ // loop over all hot dogs
                         for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
                             // if the dog is not already grabbed and one of the touches is on it, make the joint
                             if (!ud->grabbed && ((fixture->TestPoint(locationWorld1) && !touched1) || (fixture->TestPoint(locationWorld2) && !touched2))){

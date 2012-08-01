@@ -22,6 +22,7 @@ static NSUserDefaults *standardUserDefaults;
         NSString *grabSprite;
         NSMutableArray *deathAnimFrames;
         NSMutableArray *shotAnimFrames;
+        NSMutableArray *flashAnimFrames;
     };
     
     struct bgComponent{

@@ -59,12 +59,13 @@
     dd->mainSprite = [NSString stringWithString:@"Steak.png"];
     dd->grabSprite = [NSString stringWithString:@"Steak_Grabbed.png"];
     dd->deathAnimFrames = [[NSMutableArray alloc] init];
+    dd->flashAnimFrames = [[NSMutableArray alloc] init];
     dd->shotAnimFrames = [[NSMutableArray alloc] init];
     for(int i = 0; i < 1; i++){
-        [dd->deathAnimFrames addObject:
+        [dd->flashAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
           [NSString stringWithFormat:@"Steak_Die_1.png"]]];
-        [dd->deathAnimFrames addObject:
+        [dd->flashAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
           [NSString stringWithFormat:@"Steak_Die_2.png"]]];
     }
@@ -110,11 +111,12 @@
     dd->grabSprite = [NSString stringWithString:@"Bagel_Grab.png"];
     dd->deathAnimFrames = [[NSMutableArray alloc] init];
     dd->shotAnimFrames = [[NSMutableArray alloc] init];
+    dd->flashAnimFrames = [[NSMutableArray alloc] init];
     for(int i = 0; i < 1; i++){
-        [dd->deathAnimFrames addObject:
+        [dd->flashAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
           [NSString stringWithFormat:@"Bagel_Die_1.png"]]];
-        [dd->deathAnimFrames addObject:
+        [dd->flashAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
           [NSString stringWithFormat:@"Bagel_Die_2.png"]]];
     }
@@ -178,11 +180,12 @@
     dd->grabSprite = [NSString stringWithString:@"Bagel_Grab.png"];
     dd->deathAnimFrames = [[NSMutableArray alloc] init];
     dd->shotAnimFrames = [[NSMutableArray alloc] init];
+    dd->flashAnimFrames = [[NSMutableArray alloc] init];
     for(int i = 0; i < 1; i++){
-        [dd->deathAnimFrames addObject:
+        [dd->flashAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
           [NSString stringWithFormat:@"Bagel_Die_1.png"]]];
-        [dd->deathAnimFrames addObject:
+        [dd->flashAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
           [NSString stringWithFormat:@"Bagel_Die_2.png"]]];
     }
