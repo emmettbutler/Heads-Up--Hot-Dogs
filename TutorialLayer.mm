@@ -389,12 +389,8 @@
     CCLOG(@"Touch registered, count %d", count);
     
     if(count > 5){
-        NSMutableArray *params = [[NSMutableArray alloc] initWithCapacity:1];
-        [params addObject:[NSString stringWithString:@"philly"]];
-        if(_from == @"options")
-            [[CCDirector sharedDirector] replaceScene:[OptionsLayer scene]];
-        else
-            [[CCDirector sharedDirector] replaceScene:[GameplayLayer sceneWithData:params]];
+        if(_from == @"options") [[CCDirector sharedDirector] replaceScene:[OptionsLayer scene]];
+        else [[CCDirector sharedDirector] replaceScene:[GameplayLayer sceneWithSlug:[[NSString stringWithString:@"philly"] retain]]];
         return;
     }
     
@@ -415,9 +411,7 @@
 }
 
 - (void)switchSceneStart{
-    NSMutableArray *params = [[NSMutableArray alloc] initWithCapacity:1];
-    [params addObject:[NSString stringWithString:@"philly"]];
-    [[CCDirector sharedDirector] replaceScene:[GameplayLayer sceneWithData:params]];
+    [[CCDirector sharedDirector] replaceScene:[GameplayLayer sceneWithSlug:[[NSString stringWithString:@"philly"] retain]]];
 }
 
 - (void)switchSceneTitleScreen{

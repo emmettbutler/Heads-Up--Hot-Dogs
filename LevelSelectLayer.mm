@@ -392,9 +392,7 @@
 }
 
 -(void)switchScreenStartWithSlug:(NSString *)slug{
-    NSMutableArray *params = [[NSMutableArray alloc] initWithCapacity:1];
-    [params addObject:slug];
-    [[CCDirector sharedDirector] replaceScene:[GameplayLayer sceneWithData:params]];
+    [[CCDirector sharedDirector] replaceScene:[GameplayLayer sceneWithSlug:slug]];
 }
 
 -(void) dealloc{

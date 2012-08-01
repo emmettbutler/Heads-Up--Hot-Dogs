@@ -45,10 +45,9 @@
 @synthesize wiener = _wiener;
 @synthesize target = _target;
 
-+(CCScene *) sceneWithData:(void *)data {
++(CCScene *) sceneWithSlug:(NSString *)levelSlug {
     
     CCScene *scene = [CCScene node];
-    NSString *levelSlug = (NSString *)[(NSMutableArray *) data objectAtIndex:0];
     CCLOG(@"sceneWithData slug: %@", levelSlug);
     GameplayLayer *layer = [[GameplayLayer alloc] initWithSlug:levelSlug];
     layer->slug = levelSlug;
@@ -487,6 +486,7 @@
     float deathDelay;
     NSString *fallSprite, *riseSprite, *mainSprite, *grabSprite;
     CGSize winSize = [CCDirector sharedDirector].winSize;
+    
     CGPoint location = CGPointMake(arc4random() % (int)winSize.width, DOG_SPAWN_MINHT+(arc4random() % (int)(winSize.height-DOG_SPAWN_MINHT)));
     
     NSMutableArray *wienerDeathAnimFrames = [[NSMutableArray alloc] init];

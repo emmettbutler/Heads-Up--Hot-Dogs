@@ -181,7 +181,7 @@
 @property (nonatomic, retain) CCSprite *target;
 
 // returns a CCScene that contains the HelloWorldLayer as the only child
-+(CCScene *) sceneWithData:(void *)data;
++(CCScene *) sceneWithSlug:(NSString *)slug;
 -(id) initWithSlug:(NSString *)levelSlug;
 
 @end
