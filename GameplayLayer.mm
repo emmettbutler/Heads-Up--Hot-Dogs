@@ -99,11 +99,6 @@
     [TestFlight openFeedbackView];
 }
 
--(void)setShootLock:(id)sender data:(void*)params{
-    NSNumber *lockBool = (NSNumber *)[(NSMutableArray *) params objectAtIndex:0];
-    _shootLock = lockBool.intValue;
-}
-
 -(void) pauseButton{
     if(!_pause){
         _pause = true;
@@ -228,13 +223,13 @@
         _shootLock = true;
 }
 
--(void)removeSprite:(id)sender data:(void*)params {
-    CCSprite *sprite = (CCSprite *)[(NSValue *)[(NSMutableArray *) params objectAtIndex:0] pointerValue];
+-(void)removeSprite:(id)sender data:(NSValue *)s {
+    CCSprite *sprite = (CCSprite *)[s pointerValue];
     [sprite removeFromParentAndCleanup:YES];
 }
 
--(void)lockWiener:(id)sender data:(void*)params {
-    bodyUserData *ud = (bodyUserData *)[(NSValue *)[(NSMutableArray *) params objectAtIndex:0] pointerValue];
+-(void)lockWiener:(id)sender data:(NSValue *)userData{
+    bodyUserData *ud = (bodyUserData *)[userData pointerValue];
     ud->touchLock = true;
 }
 
@@ -249,9 +244,7 @@
     sprite.position = ccp(xPos.intValue, yPos.intValue);
     [self addChild:sprite z:100];
 
-    NSMutableArray *removeParams = [[NSMutableArray alloc] initWithCapacity:1];
-    [removeParams addObject:[NSValue valueWithPointer:sprite]];
-    CCAction *removeAction = [CCCallFuncND actionWithTarget:self selector:@selector(removeSprite:data:) data:removeParams];
+    CCAction *removeAction = [CCCallFuncND actionWithTarget:self selector:@selector(removeSprite:data:) data:[[NSValue valueWithPointer:sprite] retain]];
     
     id seq;
     NSString *sound;
@@ -294,10 +287,7 @@
     else twentyFive = [CCSprite spriteWithSpriteFrameName:@"Bonus_Plus250_sm_1.png"];
     twentyFive.position = ccp(xPos.intValue, yPos.intValue);
     [spriteSheetCommon addChild:twentyFive z:100];
-
-    NSMutableArray *removeParams = [[NSMutableArray alloc] initWithCapacity:1];
-    [removeParams addObject:[NSValue valueWithPointer:twentyFive]];
-    CCAction *removeAction = [CCCallFuncND actionWithTarget:self selector:@selector(removeSprite:data:) data:removeParams];
+    CCAction *removeAction = [CCCallFuncND actionWithTarget:self selector:@selector(removeSprite:data:) data:[[NSValue valueWithPointer:twentyFive] retain]];
 
     id seq;
     if(spec.intValue == 1)
@@ -326,10 +316,7 @@
         blast.flipX = true;
     }
     [spriteSheetCommon addChild:blast z:95];
-    
-    NSMutableArray *removeParams = [[NSMutableArray alloc] initWithCapacity:1];
-    [removeParams addObject:[NSValue valueWithPointer:oneHundred]];
-    CCAction *removeAction = [CCCallFuncND actionWithTarget:self selector:@selector(removeSprite:data:) data:removeParams];
+    CCAction *removeAction = [CCCallFuncND actionWithTarget:self selector:@selector(removeSprite:data:) data:[[NSValue valueWithPointer:oneHundred] retain]];
 #ifdef DEBUG
 #else
     [[SimpleAudioEngine sharedEngine] playEffect:@"100pts.mp3"];
@@ -341,9 +328,7 @@
         seq = [CCSequence actions:ud->_not_leaveScreen, removeAction, nil];
     [oneHundred runAction:seq];
     
-    NSMutableArray *removeParams2 = [[NSMutableArray alloc] initWithCapacity:1];
-    [removeParams2 addObject:[NSValue valueWithPointer:blast]];
-    CCAction *removeAction2 = [CCCallFuncND actionWithTarget:self selector:@selector(removeSprite:data:) data:removeParams2];
+    CCAction *removeAction2 = [CCCallFuncND actionWithTarget:self selector:@selector(removeSprite:data:) data:[[NSValue valueWithPointer:blast] retain]];
     id seq2 = [CCSequence actions:ud->_not_leaveScreenFlash, removeAction2, nil];
     [blast runAction:seq2];
 }
@@ -370,9 +355,7 @@
     body->SetTransform(pos, angle.intValue);
 }
 
--(void)colorFG:(id)sender data:(void*)params{
-    NSNumber *dark = (NSNumber *)[(NSMutableArray *) params objectAtIndex:0];
-    
+-(void)colorFG:(id)sender data:(NSNumber *)dark{
     for(b2Body* b = _world->GetBodyList(); b; b = b->GetNext()){
         if(b->GetUserData() && b->GetUserData() != (void*)100){
             bodyUserData *ud = (bodyUserData*)b->GetUserData();
@@ -392,8 +375,7 @@
     }
 }
 
--(void)screenFlash:(id)sender data:(void*)params{
-    NSNumber *light = (NSNumber *)[(NSMutableArray *) params objectAtIndex:0];
+-(void)screenFlash:(id)sender data:(NSNumber *)light{
     CGSize winSize = [[CCDirector sharedDirector] winSize];
 
     if(light.intValue == 1){
@@ -457,9 +439,9 @@
         _droppedCount++;
 }
 
--(void)destroyWiener:(id)sender data:(void*)params {
+-(void)destroyWiener:(id)sender data:(NSValue *)db {
     CGSize winSize = [CCDirector sharedDirector].winSize;
-    b2Body *dogBody = (b2Body *)[(NSValue *)[(NSMutableArray *) params objectAtIndex:0] pointerValue];
+    b2Body *dogBody = (b2Body *)[db pointerValue];
     bodyUserData *ud = (bodyUserData *)dogBody->GetUserData();
 
     CCSprite *dogSprite = (CCSprite *)sender;
@@ -489,8 +471,8 @@
     }
 }
 
--(void)copFlipAim:(id)sender data:(void*)params {
-    b2Body *copBody = (b2Body *)[(NSValue *)[(NSMutableArray *) params objectAtIndex:0] pointerValue];
+-(void)copFlipAim:(id)sender data:(NSValue *)cb {
+    b2Body *copBody = (b2Body *)[cb pointerValue];
     bodyUserData *ud = (bodyUserData *)copBody->GetUserData();
 
     if(ud->aiming){
@@ -500,12 +482,12 @@
     }
 }
 
--(void)putDog:(id)sender data:(void*)params {
+-(void)putDog:(id)sender data:(NSNumber *)type {
     int floor, f, tag;
     float deathDelay;
     NSString *fallSprite, *riseSprite, *mainSprite, *grabSprite;
-    CGPoint location = [(NSValue *)[(NSMutableArray *) params objectAtIndex: 0] CGPointValue];
-    NSNumber *type = (NSNumber *)[(NSMutableArray *) params objectAtIndex: 1];
+    CGSize winSize = [CCDirector sharedDirector].winSize;
+    CGPoint location = CGPointMake(arc4random() % (int)winSize.width, DOG_SPAWN_MINHT+(arc4random() % (int)(winSize.height-DOG_SPAWN_MINHT)));
     
     NSMutableArray *wienerDeathAnimFrames = [[NSMutableArray alloc] init];
     NSMutableArray *wienerFlashAnimFrames = [[NSMutableArray alloc] init];
@@ -673,7 +655,7 @@
     CCLOG(@"Spawned wiener with maskBits: %d", wienerShapeDef.filter.maskBits);
 }
 
--(void)walkIn:(id)sender data:(void *)params {
+-(void)walkIn{
     int zIndex, armBodyXOffset, armBodyYOffset, yPos;
     int armJointYOffset, contactActionIndex;
     float density;
@@ -710,7 +692,7 @@
     }
     
     //if we're not supposed to spawn , just skip all this
-    NSNumber *xPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:0];
+    NSNumber *xPos = [xPositions objectAtIndex:arc4random() % [xPositions count]];
     CCSprite *target;
     NSMutableArray *armShootAnimFrames;
 
@@ -996,58 +978,33 @@
     CCLOG(@"Spawned person with tag %d", fTag);
 }
 
--(void)wienerCallback:(id)sender data:(void *)params {
-    CCLOG(@"_wienerSpawnDelayTime: %f", _wienerSpawnDelayTime);
-    CGSize winSize = [CCDirector sharedDirector].winSize;
-    NSNumber *dogType = [NSNumber numberWithInt:arc4random() % (int)(1/SPECIAL_DOG_PROBABILITY)];
-    //NSNumber *dogType = [NSNumber numberWithInt:2];
-    
+-(void)wienerCallback:(id)sender data:(NSNumber *)thisType {
     CCLOG(@"Dogs onscreen: %d", _dogsOnscreen);
     
     if(_dogsOnscreen <= _maxDogsOnScreen){
-    
-        NSNumber *thisType = (NSNumber *)[(NSMutableArray *) params objectAtIndex:1];
-    
         if(thisType.intValue == S_SPCDOG){
-            NSMutableArray *colorParams = [[NSMutableArray alloc] initWithCapacity:1];
-            
-            [colorParams addObject:[NSNumber numberWithInt:1]];
-            id screenLightenAction = [CCCallFuncND actionWithTarget:self selector:@selector(screenFlash:data:) data:colorParams];
-            id darkenFGAction = [CCCallFuncND actionWithTarget:self selector:@selector(colorFG:data:) data:colorParams];
-            colorParams = [[NSMutableArray alloc] initWithCapacity:1];
-            [colorParams addObject:[NSNumber numberWithInt:0]];
-            id lightenFGAction = [CCCallFuncND actionWithTarget:self selector:@selector(colorFG:data:) data:colorParams];
-            id screenDarkenAction = [CCCallFuncND actionWithTarget:self selector:@selector(screenFlash:data:) data:colorParams];
+            id screenLightenAction = [CCCallFuncND actionWithTarget:self selector:@selector(screenFlash:data:) data:[[NSNumber numberWithInt:1] retain]];
+            id darkenFGAction = [CCCallFuncND actionWithTarget:self selector:@selector(colorFG:data:) data:[[NSNumber numberWithInt:1] retain]];
+            id lightenFGAction = [CCCallFuncND actionWithTarget:self selector:@selector(colorFG:data:) data:[[NSNumber numberWithInt:0] retain]];
+            id screenDarkenAction = [CCCallFuncND actionWithTarget:self selector:@selector(screenFlash:data:) data:[[NSNumber numberWithInt:0] retain]];
             id delay2 = [CCDelayTime actionWithDuration:.2];
             id sequence2 = [CCSequence actions: screenLightenAction, darkenFGAction, delay2, lightenFGAction, screenDarkenAction, nil];
             [self runAction:sequence2];
         }
-        [self putDog:self data:params];
+        [self putDog:self data:thisType];
     }
 
-    wienerParameters = [[NSMutableArray alloc] initWithCapacity:2];
-    [wienerParameters addObject:[NSValue valueWithCGPoint:CGPointMake(arc4random() % (int)winSize.width, DOG_SPAWN_MINHT+(arc4random() % (int)(winSize.height-DOG_SPAWN_MINHT)))]];
-    [wienerParameters addObject:dogType];
-
     id delay = [CCDelayTime actionWithDuration:_wienerSpawnDelayTime];
-    id callBackAction = [CCCallFuncND actionWithTarget: self selector: @selector(wienerCallback:data:) data:wienerParameters];
+    id callBackAction = [CCCallFuncND actionWithTarget: self selector: @selector(wienerCallback:data:) data:[[NSNumber numberWithInt:arc4random() % (int)(1/SPECIAL_DOG_PROBABILITY)] retain]];
     id sequence = [CCSequence actions: delay, callBackAction, nil];
     [self runAction:sequence];
 }
 
--(void)spawnCallback:(id)sender data:(void *)params {
-    NSNumber *xPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:0];
-
-    NSNumber *xPosition = [xPositions objectAtIndex:arc4random() % [xPositions count]];
-    xPos = [NSNumber numberWithInt:xPosition.intValue];
-
-    [self walkIn:self data:params];
-
-    personParameters = [[NSMutableArray alloc] initWithCapacity:2];
-    [personParameters addObject:xPos];
+-(void)spawnCallback{
+    [self walkIn];
 
     id delay = [CCDelayTime actionWithDuration:1];
-    id callBackAction = [CCCallFuncND actionWithTarget: self selector: @selector(spawnCallback:data:) data:personParameters];
+    id callBackAction = [CCCallFunc actionWithTarget: self selector: @selector(spawnCallback)];
     id sequence = [CCSequence actions: delay, callBackAction, nil];
     [self runAction:sequence];
 }
@@ -1256,16 +1213,8 @@
         [TestFlight passCheckpoint:@"Game Started"];
 
         //schedule callbacks for dogs, people, and game value decrements
-        personParameters = [[NSMutableArray alloc] initWithCapacity:2];
-        NSNumber *xPos = [NSNumber numberWithInt:winSize.width];
-        [personParameters addObject:xPos];
-        [self spawnCallback:self data:personParameters];
-
-        NSMutableArray *wienerParams = [[NSMutableArray alloc] initWithCapacity:2];
-        [wienerParams addObject:[NSValue valueWithCGPoint:CGPointMake(200, 200)]];
-        [wienerParams addObject:[NSNumber numberWithInt:arc4random() % 10]];
-        [self wienerCallback:self data:wienerParams];
-
+        [self spawnCallback];
+        [self wienerCallback:self data:[[NSNumber numberWithInt:arc4random() % 10] retain]];
         [self schedule: @selector(tick:)];
     }
     return self;
@@ -1437,18 +1386,14 @@
                 if([ud->sprite1 numberOfRunningActions] == 0){
                     // dog is definitely not on a head if it's touching the floor
                     id delay = [CCDelayTime actionWithDuration:ud->deathDelay];
-                    wienerParameters = [[NSMutableArray alloc] initWithCapacity:1];
-                    [wienerParameters addObject:[NSValue valueWithPointer:ud]];
-                    id lockAction = [CCCallFuncND actionWithTarget:self selector:@selector(lockWiener:data:) data:wienerParameters];
+                    id lockAction = [CCCallFuncND actionWithTarget:self selector:@selector(lockWiener:data:) data:[[NSValue valueWithPointer:ud] retain]];
                     id incAction = [CCCallFuncN actionWithTarget:self selector:@selector(incrementDroppedCount)];
                     wienerParameters = [[NSMutableArray alloc] initWithCapacity:2];
                     [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
                     [wienerParameters addObject:[NSNumber numberWithInt:0]];
                     id sleepAction = [CCCallFuncND actionWithTarget:self selector:@selector(setAwake:data:) data:wienerParameters];
                     id angleAction = [CCCallFuncND actionWithTarget:self selector:@selector(setRotation:data:) data:wienerParameters];
-                    wienerParameters = [[NSMutableArray alloc] initWithCapacity:1];
-                    [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
-                    id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:wienerParameters];
+                    id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:[[NSValue valueWithPointer:dogBody] retain]];
                     id sequence = [CCSequence actions: delay, sleepAction, angleAction, ud->altAction3, lockAction, incAction, ud->altAction, destroyAction, nil];
                     [ud->sprite1 runAction:sequence];
                     CCLOG(@"Run death action");
@@ -1811,7 +1756,7 @@
 
                                         if(copBody && copBody->GetUserData() && copArmBody && copArmBody->GetUserData()){
                                             copUd = (bodyUserData *)copBody->GetUserData();
-                                            NSValue *dBody = [NSValue valueWithPointer:dogBody];
+                                            NSValue *dBody = [[NSValue valueWithPointer:dogBody] retain];
 
                                             CCDelayTime *delay = [CCDelayTime actionWithDuration:((float)copUd->stopTimeDelta-10)/60];
                                             copUd->stopTime = copUd->timeWalking + 1;
@@ -1851,13 +1796,9 @@
                                             
                                             ud->aimedAt = true;
 
-                                            NSMutableArray *destroyParameters = [[NSMutableArray alloc] initWithCapacity:1];
-                                            [destroyParameters addObject:dBody];
-                                            id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:destroyParameters];
+                                            id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:dBody];
                                             id incAction = [CCCallFuncN actionWithTarget:self selector:@selector(incrementDroppedCount)];
-                                            destroyParameters = [[NSMutableArray alloc] initWithCapacity:1];
-                                            [destroyParameters addObject:[NSValue valueWithPointer:dogBody->GetUserData()]];
-                                            id lockAction = [CCCallFuncND actionWithTarget:self selector:@selector(lockWiener:data:) data:destroyParameters];
+                                            id lockAction = [CCCallFuncND actionWithTarget:self selector:@selector(lockWiener:data:) data:[[NSValue valueWithPointer:dogBody->GetUserData()] retain]];
                                             
                                             CCFiniteTimeAction *wienerExplodeAction = (CCFiniteTimeAction *)ud->altAction2;
                                             ud->deathSeq = [[CCSequence actions:delay, incAction, lockAction, wienerExplodeAction, destroyAction, nil] retain];
@@ -1865,11 +1806,9 @@
                                                 [ud->sprite1 runAction:ud->deathSeq];
 
                                             
-                                            NSMutableArray *flipParams = [[NSMutableArray alloc] initWithCapacity:1];
-                                            [flipParams addObject:[NSValue valueWithPointer:copBody]];
                                             id lockSeq = [CCSequence actions:delay,
                                                           [CCCallFunc actionWithTarget:self selector:@selector(flipShootLock)],
-                                                          [CCCallFuncND actionWithTarget:self selector:@selector(copFlipAim:data:) data:flipParams],
+                                                          [CCCallFuncND actionWithTarget:self selector:@selector(copFlipAim:data:) data:[[NSValue valueWithPointer:copBody] retain]],
                                                           nil];
                                             [self runAction:lockSeq];
                                             
