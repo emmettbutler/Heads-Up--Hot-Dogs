@@ -1855,9 +1855,12 @@
                                             [destroyParameters addObject:dBody];
                                             id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:destroyParameters];
                                             id incAction = [CCCallFuncN actionWithTarget:self selector:@selector(incrementDroppedCount)];
+                                            destroyParameters = [[NSMutableArray alloc] initWithCapacity:1];
+                                            [destroyParameters addObject:[NSValue valueWithPointer:dogBody->GetUserData()]];
+                                            id lockAction = [CCCallFuncND actionWithTarget:self selector:@selector(lockWiener:data:) data:destroyParameters];
                                             
                                             CCFiniteTimeAction *wienerExplodeAction = (CCFiniteTimeAction *)ud->altAction2;
-                                            ud->deathSeq = [[CCSequence actions:delay, incAction, wienerExplodeAction, destroyAction, nil] retain];
+                                            ud->deathSeq = [[CCSequence actions:delay, incAction, lockAction, wienerExplodeAction, destroyAction, nil] retain];
                                             if([ud->sprite1 numberOfRunningActions] == 0) 
                                                 [ud->sprite1 runAction:ud->deathSeq];
 
