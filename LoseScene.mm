@@ -27,6 +27,8 @@
         if (error != nil)
         {
             NSLog(@"Error submitting high score to leaderboard");
+        } else {
+            [TestFlight passCheckpoint:@"Score reported to GC"];
         }
     }];
 }

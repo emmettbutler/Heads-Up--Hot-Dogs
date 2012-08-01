@@ -127,6 +127,7 @@
         if (localPlayer.isAuthenticated)
         {
             NSLog(@"Player %@ recognized", localPlayer.alias);
+            [TestFlight passCheckpoint:[NSString stringWithFormat:@"Player %@ recognized", localPlayer.alias]];
         } else {
             NSLog(@"Player not authenticated");
         }
