@@ -1030,6 +1030,10 @@
         b2Vec2 gravity = b2Vec2(0.0f, level->gravity);
         _world = new b2World(gravity);
         
+        for(int i = 1; i < 4; i++){
+            [[CCTextureCache sharedTextureCache] addImage:[NSString stringWithFormat:@"Heart_Particle_%d.png", i]];
+        }
+        
         // spritesheets setup
         [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_common.plist"];
         [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:[NSString stringWithFormat:@"%@.plist", level->spritesheet]];
@@ -1375,7 +1379,7 @@
                 ccColor4F endColor = {1, 1, 1, 0};
                 heartParticles.startColor = startColor;
                 heartParticles.endColor = endColor;
-                heartParticles.texture = [[CCTextureCache sharedTextureCache] addImage:[NSString stringWithFormat:@"Heart_Particle_%d.png", particle]];
+                heartParticles.texture = [[CCTextureCache sharedTextureCache] textureForKey:[NSString stringWithFormat:@"Heart_Particle_%d.png", particle]];
                 heartParticles.blendFunc = (ccBlendFunc) {GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA};
                 heartParticles.autoRemoveOnFinish = YES;
                 heartParticles.startSize = 1.0f;
