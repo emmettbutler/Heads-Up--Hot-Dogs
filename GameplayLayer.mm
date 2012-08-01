@@ -438,6 +438,24 @@
     if(_droppedCount <= DROPPED_MAX) _droppedCount++;
 }
 
+-(void)counterExplode{
+    CCSprite *sprite = (CCSprite *)[[dogIcons objectAtIndex:_droppedCount - 1] pointerValue];
+    
+    CCParticleSystem* particles = [CCParticleExplosion node];
+    particles.autoRemoveOnFinish = YES;
+    ccColor4F startColor = {1, 1, 1, 1};
+    ccColor4F endColor = {1, 1, 1, 0};
+    particles.startColor = startColor;
+    particles.endColor = endColor;
+    particles.startSize = .5f;
+    particles.speed = 250.0f;
+    particles.endSize = .3f;
+    particles.endRadius = 15;
+    particles.life = .003;
+    particles.position = sprite.position;
+    [self addChild:particles z:100];
+}
+
 -(void)destroyWiener:(id)sender data:(NSValue *)db {
     CGSize winSize = [CCDirector sharedDirector].winSize;
     b2Body *dogBody = (b2Body *)[db pointerValue];
@@ -1372,8 +1390,7 @@
                     }
                 }
                 int particle = (arc4random() % 3) + 1;
-                CCNode *contactNode = (CCNode *)ud->sprite1;
-                CGPoint position = contactNode.position;
+                CGPoint position = ud->sprite1.position;
                 CCParticleSystem* heartParticles = [CCParticleFire node];
                 ccColor4F startColor = {1, 1, 1, 1};
                 ccColor4F endColor = {1, 1, 1, 0};
@@ -1420,9 +1437,10 @@
                     [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
                     [wienerParameters addObject:[NSNumber numberWithInt:0]];
                     id sleepAction = [CCCallFuncND actionWithTarget:self selector:@selector(setAwake:data:) data:wienerParameters];
+                    id particleAction = [CCCallFunc actionWithTarget:self selector:@selector(counterExplode)];
                     id angleAction = [CCCallFuncND actionWithTarget:self selector:@selector(setRotation:data:) data:wienerParameters];
                     id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:[[NSValue valueWithPointer:dogBody] retain]];
-                    id sequence = [CCSequence actions: delay, sleepAction, angleAction, ud->altAction3, lockAction, incAction, ud->altAction, destroyAction, nil];
+                    id sequence = [CCSequence actions: delay, sleepAction, angleAction, ud->altAction3, lockAction, incAction, particleAction, ud->altAction, destroyAction, nil];
                     [ud->sprite1 runAction:sequence];
                     CCLOG(@"Run death action");
                 } else if(ud->deathSeq){
@@ -1824,12 +1842,13 @@
                                             
                                             ud->aimedAt = true;
 
+                                            id particleAction = [CCCallFunc actionWithTarget:self selector:@selector(counterExplode)];
                                             id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:dBody];
                                             id incAction = [CCCallFuncN actionWithTarget:self selector:@selector(incrementDroppedCount)];
                                             id lockAction = [CCCallFuncND actionWithTarget:self selector:@selector(lockWiener:data:) data:[[NSValue valueWithPointer:dogBody->GetUserData()] retain]];
                                             
                                             CCFiniteTimeAction *wienerExplodeAction = (CCFiniteTimeAction *)ud->altAction2;
-                                            ud->deathSeq = [[CCSequence actions:delay, incAction, lockAction, wienerExplodeAction, destroyAction, nil] retain];
+                                            ud->deathSeq = [[CCSequence actions:delay, incAction, particleAction, lockAction, wienerExplodeAction, destroyAction, nil] retain];
                                             if([ud->sprite1 numberOfRunningActions] == 0) 
                                                 [ud->sprite1 runAction:ud->deathSeq];
 
