@@ -231,6 +231,11 @@
         levelProps *prevLevel = (levelProps *)[(NSValue *)[levelStructs objectAtIndex:prevIndex] pointerValue];
         l->prev = prevLevel;
         l->characters = [CharBuilder buildCharacters:l->slug];
+        
+        for(NSValue *v in l->characters){
+            personStruct *p = (personStruct *)[v pointerValue];
+            l->characterProbSum += p->frequency;
+        }
 
         int prevHighScore = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"highScore%@", l->prev->slug]];
         if(prevHighScore > l->unlockThreshold){

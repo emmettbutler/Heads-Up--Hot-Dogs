@@ -37,6 +37,7 @@ static NSUserDefaults *standardUserDefaults;
         NSMutableArray *bgComponents;
         levelProps *next;
         levelProps *prev;
+        int characterProbSum;
         float gravity;
         BOOL unlocked;
         int unlockThreshold;

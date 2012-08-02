@@ -35,6 +35,7 @@
         float upperArmAngle;
         float armJointXOffset;
         int fTag;
+        int frequency;
         int pointValue;
         BOOL flipSprites;
         NSMutableArray *walkAnimFrames;
