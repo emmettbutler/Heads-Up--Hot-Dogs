@@ -435,7 +435,7 @@
 
 -(void)incrementDroppedCount{
     if(_gameOver) return;
-    if(_droppedCount <= DROPPED_MAX) _droppedCount++;
+    if(_droppedCount <= DROPPED_MAX && !_gameOver) _droppedCount++;
 }
 
 -(void)playParticles:(id)sender data:(NSValue *)particles{
@@ -1420,7 +1420,7 @@
                 heartParticles.position = position;
                 heartParticles.duration = 0.1f;
                 [self addChild:heartParticles z:60];
-                if(!ud->hasTouchedHead){
+                if(!ud->hasTouchedHead && !_gameOver){
                     NSMutableArray *plusPointsParams = [[NSMutableArray alloc] initWithCapacity:4];
                     [plusPointsParams addObject:[NSNumber numberWithInt:pBody->GetPosition().x*PTM_RATIO]];
                     [plusPointsParams addObject:[NSNumber numberWithInt:(pBody->GetPosition().y+4.7)*PTM_RATIO]];
@@ -1497,7 +1497,7 @@
             ud->sprite1.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
             
             if((ud->sprite1.position.x > winSize.width+(ud->sprite1.contentSize.width/2) || ud->sprite1.position.x < 0-(ud->sprite1.contentSize.width/2))
-               && ud->hasLeftScreen == false){
+               && !ud->hasLeftScreen && !_gameOver){
                 ud->hasLeftScreen = true;
                 _points += ud->dogsOnHead * 100;
                 _points += ud->spcDogsOnHead * 1000;
@@ -1629,7 +1629,7 @@
                                     [ud->sprite2 runAction:ud->altAction];
                                     if(ud->sprite1.tag == S_MUNCHR && ud->timeWalking == ud->stopTime + ud->stopTimeDelta){
                                         ud->_muncher_hasDroppedDog = true;
-                                        if(_droppedCount > 0){
+                                        if(_droppedCount > 0 && !_gameOver){
                                             _droppedCount--;
                                         }
                                     }
@@ -1668,7 +1668,7 @@
                             }
                         }
                     }
-                    if(!(time % 45) && ud->dogsOnHead != 0){
+                    if(!(time % 45) && ud->dogsOnHead && !_gameOver){
                         _points += ud->dogsOnHead * 25;
                         _points += ud->spcDogsOnHead * 250;
                         NSMutableArray *plus25Params = [[NSMutableArray alloc] initWithCapacity:4];

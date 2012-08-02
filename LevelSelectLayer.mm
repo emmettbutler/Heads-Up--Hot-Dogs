@@ -162,7 +162,7 @@
     lp->enabled = false;
     lp->slug = [NSString stringWithString:@"space"];
     lp->name = [NSString stringWithString:@"Space Station"];
-    lp->unlockThreshold = 20000;
+    lp->unlockThreshold = 16000;
     lp->bg = [NSString stringWithString:@"SpaceBG.png"];
     lp->bgm = [NSString stringWithString:@"gameplay 3.mp3"];
     lp->gravity = -1.0f;
