@@ -162,7 +162,7 @@
     lp->enabled = false;
     lp->slug = [NSString stringWithString:@"space"];
     lp->name = [NSString stringWithString:@"Space Station"];
-    lp->unlockThreshold = 25000;
+    lp->unlockThreshold = 20000;
     lp->bg = [NSString stringWithString:@"SpaceBG.png"];
     lp->bgm = [NSString stringWithString:@"gameplay 3.mp3"];
     lp->gravity = -1.0f;
@@ -373,7 +373,7 @@
         SEL levelMethod = NSSelectorFromString(level->func);
 #ifdef DEBUG // will eventually have this happen in deployment too
 #else        
-        if(level->unlocked)
+        //if(level->unlocked)
 #endif
             [self performSelector:levelMethod];
     }

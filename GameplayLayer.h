@@ -101,6 +101,7 @@
         int dogsOnHead;
         int spcDogsOnHead;
         int unique_id;
+        int tickleTimer;
         int collideFilter;
         BOOL hasTouchedHead;
         BOOL _dog_isOnHead;

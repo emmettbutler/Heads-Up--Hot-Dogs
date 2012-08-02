@@ -884,6 +884,7 @@
             ud->aimFace = [NSString stringWithString:@"Cop_Head_Aiming_1.png"];
         } else if (person->tag == S_MUNCHR){
             ud->stopTimeDelta = 100; // frames
+            ud->tickleTimer = 0;
             ud->_muncher_hasDroppedDog = false;
             ud->dogOnHeadTickleAction = _specialAngryFaceAction;
         }
@@ -924,7 +925,10 @@
     
     //fixture for body
     b2PolygonShape personBodyShape;
-    personBodyShape.SetAsBox(_personLower.contentSize.width/PTM_RATIO/2,(_personLower.contentSize.height)/PTM_RATIO/2);
+    if(person->tag != S_MUNCHR)
+        personBodyShape.SetAsBox(_personLower.contentSize.width/PTM_RATIO/2,(_personLower.contentSize.height)/PTM_RATIO/2);
+    else 
+        personBodyShape.SetAsBox((_personLower.contentSize.width+30)/PTM_RATIO/2,(_personLower.contentSize.height)/PTM_RATIO/2);
     b2FixtureDef personBodyShapeDef;
     personBodyShapeDef.shape = &personBodyShape;
     personBodyShapeDef.density = density;
@@ -1309,38 +1313,39 @@
             [sprite setOpacity:255.00 * cosf(.01 * time)];
         }
     } else if(level->slug == @"space" && !(time % 100)){
-        float g = -1.0*(arc4random() % 40);
+        float g = -1.0*(arc4random() % 39) - 1;
         [gravityLabel setString:[NSString stringWithFormat:@"%0.1f G", g]];
         _world->SetGravity(b2Vec2(0, g));
     }
 
     //the "LOSE CONDITION"
     if(_droppedCount >= DROPPED_MAX){
-        _gameOver = true;
-        
+        if(!_gameOver){
 #ifdef DEBUG
 #else
-        [[SimpleAudioEngine sharedEngine] stopBackgroundMusic];
-        [[SimpleAudioEngine sharedEngine] playEffect:@"game over sting.mp3"];
+            [[SimpleAudioEngine sharedEngine] stopBackgroundMusic];
+            [[SimpleAudioEngine sharedEngine] playEffect:@"game over sting.mp3"];
 #endif
+            CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"Lvl_TextBox.png"];
+            sprite.position = ccp(winSize.width/2, winSize.height/2);
+            [self addChild:sprite];
         
-        CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"Lvl_TextBox.png"];
-        sprite.position = ccp(winSize.width/2, winSize.height/2);
-        [self addChild:sprite];
+            CCLabelTTF *gameOverLabel = [CCLabelTTF labelWithString:@"You lost five franks!" fontName:@"LostPet.TTF" fontSize:23.0];
+            gameOverLabel.color = _color_pink;
+            [[gameOverLabel texture] setAliasTexParameters];
+            gameOverLabel.position = ccp(winSize.width/2, winSize.height/2+10);
+            [self addChild:gameOverLabel];
         
-        CCLabelTTF *gameOverLabel = [CCLabelTTF labelWithString:@"You lost five franks!" fontName:@"LostPet.TTF" fontSize:23.0];
-        gameOverLabel.color = _color_pink;
-        [[gameOverLabel texture] setAliasTexParameters];
-        gameOverLabel.position = ccp(winSize.width/2, winSize.height/2+10);
-        [self addChild:gameOverLabel];
+            gameOverLabel = [CCLabelTTF labelWithString:@"Better luck next time..." fontName:@"LostPet.TTF" fontSize:23.0];
+            gameOverLabel.color = _color_pink;
+            [[gameOverLabel texture] setAliasTexParameters];
+            gameOverLabel.position = ccp(winSize.width/2, winSize.height/2-10);
+            [self addChild:gameOverLabel];
         
-        gameOverLabel = [CCLabelTTF labelWithString:@"Better luck next time..." fontName:@"LostPet.TTF" fontSize:23.0];
-        gameOverLabel.color = _color_pink;
-        [[gameOverLabel texture] setAliasTexParameters];
-        gameOverLabel.position = ccp(winSize.width/2, winSize.height/2-10);
-        [self addChild:gameOverLabel];
+            [self runAction:[CCSequence actions:[CCDelayTime actionWithDuration:3], [CCCallFunc actionWithTarget:self selector:@selector(loseScene)], nil]];
         
-        [self runAction:[CCSequence actions:[CCDelayTime actionWithDuration:3], [CCCallFunc actionWithTarget:self selector:@selector(loseScene)], nil]];
+            _gameOver = true;
+        }
     }
     
     _world->Step(dt, velocityIterations, positionIterations);
@@ -1562,6 +1567,24 @@
                 ud->angryFace.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
             }
             if(ud->sprite1 != NULL){
+                if(ud->sprite1.tag == S_MUNCHR){
+                    if(ud->stopTime < 1000 && ud->stopTime > 0){
+                        BOOL touched = true;
+                        if(!((ud->timeWalking - ud->stopTime) % 20)){
+                            if(ud->tickleTimer < (ud->timeWalking - ud->stopTime)-30){
+                                touched = false;
+                            }
+                        }
+                        if(!touched){
+                            [ud->sprite1 stopAllActions];
+                            [ud->sprite2 stopAllActions];
+                            [ud->angryFace stopAllActions];
+                            ud->restartTime = ud->timeWalking + 1;
+                            ud->stopTimeDelta = 0;
+                            ud->touched = false;
+                        }
+                    }
+                }
                 if(ud->sprite1.tag == S_COPARM){
                     //things for cop's arm and raycasting
                     policeRayPoint1 = b->GetPosition();
@@ -2031,23 +2054,15 @@
             bodyUserData *ud = (bodyUserData *)body->GetUserData();
             CCSprite *sprite = ud->sprite1;
             if(ud->sprite1.tag == S_MUNCHR && ud->touched){
-                BOOL touched = false;
                 for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
                     for(int i = 0; i < count; i++){
                         fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
                         if(fixture->TestPoint(locations[i]) && fUd->tag < F_BUSSEN){
-                            touched = true;
+                            if(ud->tickleTimer < ud->stopTimeDelta)
+                                ud->tickleTimer++;
+                            else ud->tickleTimer = 0;
                         }
                     }
-                }
-                if(!touched){
-                    [ud->sprite1 stopAllActions];
-                    [ud->sprite2 stopAllActions];
-                    [ud->angryFace stopAllActions];
-                    ud->restartTime = ud->timeWalking + 1;
-                    ud->stopTimeDelta = 0;
-                    ud->touched = false;
-                    break;
                 }
             } else if((ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG) && ud->grabbed){
                 for(int i = 0; i < [mouseJoints count]; i++){
