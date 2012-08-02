@@ -380,7 +380,7 @@
     for(int i = 1; i <= 4; i++){
         [c->faceDogWalkAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-          [NSString stringWithFormat:@"DogEater_Head_NoDog_%d.png", i]]];
+          [NSString stringWithFormat:@"DogEater_Head_Dog_%d.png", i]]];
     }
     for(int i = 1; i <= 4; i++){
         [c->specialAnimFrames addObject:
