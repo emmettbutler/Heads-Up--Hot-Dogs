@@ -438,8 +438,20 @@
     if(_droppedCount <= DROPPED_MAX) _droppedCount++;
 }
 
+-(void)playParticles:(id)sender data:(NSValue *)particles{
+    [self addChild:(CCParticleSystem *)[particles pointerValue] z:100];
+}
+
 -(void)counterExplode{
     CCSprite *sprite = (CCSprite *)[[dogIcons objectAtIndex:_droppedCount - 1] pointerValue];
+    
+    NSMutableArray *xAnimFrames = [[NSMutableArray alloc] init];
+    for(int i = 1; i <= 6; i++){
+        [xAnimFrames addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                                [NSString stringWithFormat:@"DogHud_X_%d.png", i]]];
+    }
+    CCAnimation *xAnim = [CCAnimation animationWithFrames:xAnimFrames delay:.08f];
+    CCFiniteTimeAction *xAction = [CCAnimate actionWithAnimation:xAnim restoreOriginalFrame:NO];
     
     CCParticleSystem* particles = [CCParticleExplosion node];
     particles.autoRemoveOnFinish = YES;
@@ -453,7 +465,8 @@
     particles.endRadius = 15;
     particles.life = .003;
     particles.position = sprite.position;
-    [self addChild:particles z:100];
+    
+    [sprite runAction:[CCSequence actions:xAction, [CCCallFuncND actionWithTarget:self selector:@selector(playParticles:data:) data:[[NSValue valueWithPointer:particles] retain]], nil]];
 }
 
 -(void)destroyWiener:(id)sender data:(NSValue *)db {
@@ -1131,15 +1144,12 @@
         allTouchHashes = [[NSMutableArray alloc] init];
 
         //HUD objects
-        CCSprite *droppedLeftEnd = [CCSprite spriteWithSpriteFrameName:@"WienerCount_LeftEnd.png"];;
-        droppedLeftEnd.position = ccp(winSize.width-310, DOG_COUNTER_HT);
-        [spriteSheetCommon addChild:droppedLeftEnd z:70];
-        CCSprite *droppedRightEnd = [CCSprite spriteWithSpriteFrameName:@"WienerCount_RightEnd.png"];;
-        droppedRightEnd.position = ccp(winSize.width-182, DOG_COUNTER_HT);
-        [spriteSheetCommon addChild:droppedRightEnd z:70];
+        CCSprite *droppedBG = [CCSprite spriteWithSpriteFrameName:@"DogHud_BG.png"];;
+        droppedBG.position = ccp(winSize.width/2-5, DOG_COUNTER_HT);
+        [spriteSheetCommon addChild:droppedBG z:70];
         dogIcons = [[NSMutableArray alloc] initWithCapacity:DROPPED_MAX+1];
         for(int i = 200; i < 200+(23*DROPPED_MAX); i += 23){
-            CCSprite *dogIcon = [CCSprite spriteWithSpriteFrameName:@"WienerCount_Wiener.png"];
+            CCSprite *dogIcon = [CCSprite spriteWithSpriteFrameName:@"DogHud_Dog.png"];
             dogIcon.position = ccp(winSize.width-i, DOG_COUNTER_HT);
             [spriteSheetCommon addChild:dogIcon z:70];
             [dogIcons addObject:[NSValue valueWithPointer:dogIcon]];
@@ -1279,9 +1289,9 @@
         for(NSValue *v in dogIcons){
             CCSprite *icon = (CCSprite *)[v pointerValue];
             if([dogIcons indexOfObject:v] < _droppedCount){
-                [icon setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"WienerCount_X.png"]]];
+                //[icon setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"DogHud_X_1.png"]]];
             } else {
-                [icon setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"WienerCount_Wiener.png"]]];
+                [icon setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"DogHud_Dog.png"]]];
             }
         }
     }

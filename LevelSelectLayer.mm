@@ -168,7 +168,7 @@
     lp->gravity = -1.0f;
     lp->func = [NSString stringWithString:@"switchScreenSpace"];
     lp->spritesheet = [NSString stringWithString:@"sprites_space"];
-    lp->thumbnail = [NSString stringWithString:@"NYC_Thumb.png"];
+    lp->thumbnail = [NSString stringWithString:@"Space_Thumb.png"];
     lp->personSpeedMul = .7;
     lp->restitutionMul = 1.7;
     lp->frictionMul = 100;
@@ -332,7 +332,7 @@
         [scoreLabel setString:[NSString stringWithFormat:@"high score: %06d", level->highScore]];
         [helpLabel setVisible:true];
     } else {
-        [thumb setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:level->thumbnail]];
+        [thumb setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"NoLevel.png"]];
         [nameLabel setString:@"??????"];
         [scoreLabel setString:[NSString stringWithFormat:@"Unlock with %d points", level->unlockThreshold]];
         [helpLabel setVisible:false];
@@ -373,7 +373,7 @@
         SEL levelMethod = NSSelectorFromString(level->func);
 #ifdef DEBUG // will eventually have this happen in deployment too
 #else        
-        //if(level->unlocked)
+        if(level->unlocked)
 #endif
             [self performSelector:levelMethod];
     }
