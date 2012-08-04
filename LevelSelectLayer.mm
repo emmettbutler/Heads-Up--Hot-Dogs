@@ -9,7 +9,7 @@
 #import "LevelSelectLayer.h"
 #import "GameplayLayer.h"
 
-#define NUM_LEVELS 3
+#define NUM_LEVELS 4
 
 @implementation LevelSelectLayer
 
@@ -36,7 +36,6 @@
      * PHILLY LEVEL SETTINGS
      *******************************************************************************/
     
-    // TODO - tell people when they unlock a new level
     lp = new levelProps();
     lp->enabled = true;
     lp->slug = [NSString stringWithString:@"philly"];
@@ -84,7 +83,6 @@
     [levelStructs addObject:[NSValue valueWithPointer:lp]];
     
     
-    
     /********************************************************************************
      * NYC LEVEL SETTINGS
      *******************************************************************************/
@@ -96,13 +94,13 @@
     lp->unlockThreshold = 15000;
     lp->bg = [NSString stringWithString:@"BG_NYC.png"];
     lp->bgm = [NSString stringWithString:@"gameplay 3.mp3"];
-    lp->gravity = -30.0f;
+    lp->gravity = -32.0f;
     lp->func = [NSString stringWithString:@"switchScreenNYC"];
     lp->spritesheet = [NSString stringWithString:@"sprites_nyc"];
     lp->thumbnail = [NSString stringWithString:@"NYC_Thumb.png"];
     lp->personSpeedMul = 1.2;
     lp->restitutionMul = 1.2;
-    lp->frictionMul = .9;
+    lp->frictionMul = .95;
     
     dd = new spcDogData();
     dd->riseSprite = [NSString stringWithString:@"Bagel_Rise.png"];
@@ -150,6 +148,57 @@
     bgc->sprite = [CCSprite spriteWithSpriteFrameName:@"Light_Three.png"];
     bgc->sprite.position = CGPointMake(86, 156);
     [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
+    
+    [levelStructs addObject:[NSValue valueWithPointer:lp]];
+    
+    
+    /********************************************************************************
+     * CHICAGO LEVEL SETTINGS
+     *******************************************************************************/
+    
+    lp = new levelProps();
+    lp->enabled = true;
+    lp->slug = [NSString stringWithString:@"chicago"];
+    lp->name = [NSString stringWithString:@"Windy City"];
+    lp->unlockThreshold = 14000;
+    lp->bg = [NSString stringWithString:@"BG_NYC.png"];
+    lp->bgm = [NSString stringWithString:@"gameplay 1.mp3"];
+    lp->gravity = -30.0f;
+    lp->func = [NSString stringWithString:@"switchScreenChicago"];
+    lp->spritesheet = [NSString stringWithString:@"sprites_nyc"];
+    lp->thumbnail = [NSString stringWithString:@"NYC_Thumb.png"];
+    lp->personSpeedMul = 1;
+    lp->restitutionMul = 1.2;
+    lp->frictionMul = 1;
+    
+    dd = new spcDogData();
+    dd->riseSprite = [NSString stringWithString:@"Bagel_Rise.png"];
+    dd->fallSprite = [NSString stringWithString:@"Bagel_Fall.png"];
+    dd->mainSprite = [NSString stringWithString:@"Bagel.png"];
+    dd->grabSprite = [NSString stringWithString:@"Bagel_Grab.png"];
+    dd->deathAnimFrames = [[NSMutableArray alloc] init];
+    dd->shotAnimFrames = [[NSMutableArray alloc] init];
+    dd->flashAnimFrames = [[NSMutableArray alloc] init];
+    for(int i = 0; i < 1; i++){
+        [dd->flashAnimFrames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithFormat:@"Bagel_Die_1.png"]]];
+        [dd->flashAnimFrames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithFormat:@"Bagel_Die_2.png"]]];
+    }
+    for(int i = 1; i <= 8; i++){
+        [dd->deathAnimFrames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithFormat:@"Bagel_Die_%d.png", i]]];
+    }
+    for(int i = 1; i <= 6; i++){
+        [dd->shotAnimFrames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithFormat:@"Bagel_Shot_%d.png", i]]];
+    }
+    
+    lp->specialDog = dd;
     
     [levelStructs addObject:[NSValue valueWithPointer:lp]];
     
@@ -390,6 +439,10 @@
 
 -(void)switchScreenNYC{
     [self switchScreenStartWithSlug:[NSString stringWithString:@"nyc"]];
+}
+
+-(void)switchScreenChicago{
+    [self switchScreenStartWithSlug:[NSString stringWithString:@"chicago"]];
 }
 
 -(void)switchScreenSpace{
