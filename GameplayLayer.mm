@@ -1555,6 +1555,9 @@
             //destroy any sprite/body pair that's offscreen
             if(ud->sprite1.position.x > winSize.width + 130 || ud->sprite1.position.x < -130 ||
                ud->sprite1.position.y > winSize.height + 4000 || ud->sprite1.position.y < -40){
+                [ud->sprite1 stopAllActions];
+                [ud->sprite2 stopAllActions];
+                [ud->overlaySprite stopAllActions];
                 // points for dogs that leave the screen on a person's head
                 if(ud->sprite1.tag >= S_BUSMAN && ud->sprite1.tag <= S_TOPPSN){
                     if(ud->sprite1.tag == S_POLICE){
@@ -2062,7 +2065,6 @@
             }
         }
     }
-    
     return;
 }
 
