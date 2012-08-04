@@ -96,6 +96,7 @@
         BOOL touchLock;
         BOOL aimedAt;
         BOOL grabbed;
+        BOOL deathSeqLock;
         BOOL hasLeftScreen;
         double targetAngle;
         int dogsOnHead;

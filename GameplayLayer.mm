@@ -615,6 +615,8 @@
     ud->altAction3 = _flashAction;
     ud->unique_id = _id_counter;
     ud->deathDelay = deathDelay;
+    ud->deathSeq = NULL;
+    ud->deathSeqLock = false;
     ud->aimedAt = false;
     ud->hasTouchedHead = false;
     ud->hasLeftScreen = false;
@@ -1469,10 +1471,11 @@
                 }
             }
             else if (fBUd->tag == F_GROUND){
+                // dog is definitely not on a head if it's touching the floor
                 ud->_dog_isOnHead = false;
                 ud->hasTouchedHead = false;
-                if([ud->sprite1 numberOfRunningActions] == 0){
-                    // dog is definitely not on a head if it's touching the floor
+                if(!ud->deathSeqLock){
+                    ud->deathSeqLock = true;
                     id delay = [CCDelayTime actionWithDuration:ud->deathDelay];
                     id lockAction = [CCCallFuncND actionWithTarget:self selector:@selector(lockWiener:data:) data:[[NSValue valueWithPointer:ud] retain]];
                     id incAction = [CCCallFuncND actionWithTarget:self selector:@selector(incrementDroppedCount:data:) data:[[NSValue valueWithPointer:dogBody] retain]];
@@ -1483,11 +1486,11 @@
                     id particleAction = [CCCallFunc actionWithTarget:self selector:@selector(counterExplode)];
                     id angleAction = [CCCallFuncND actionWithTarget:self selector:@selector(setRotation:data:) data:wienerParameters];
                     id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:[[NSValue valueWithPointer:dogBody] retain]];
-                    id sequence = [CCSequence actions: delay, sleepAction, angleAction, ud->altAction3, lockAction, incAction, particleAction, ud->altAction, destroyAction, nil];
-                    [ud->sprite1 runAction:sequence];
+                    ud->deathSeq = [CCSequence actions: delay, sleepAction, angleAction, ud->altAction3, lockAction, incAction, particleAction, ud->altAction, destroyAction, nil];
+                    [ud->sprite1 runAction:ud->deathSeq];
                     CCLOG(@"Run death action");
                 } else if(ud->deathSeq){
-                    [ud->sprite1 stopAction:ud->deathSeq];
+                    //[ud->sprite1 stopAction:ud->deathSeq];
                 }
                 ud->aimedAt = false;
             }
@@ -2017,6 +2020,7 @@
                                 dogsTouched++;
                                 [ud->sprite1 stopAllActions];
                                 _lastTouchTime = time;
+                                ud->deathSeqLock = false;
                                 ud->grabbed = true;
                                 ud->aimedAt = false;
                                 ud->hasTouchedHead = false;
@@ -2111,6 +2115,7 @@
                     mouseJointUserData *jUd = (mouseJointUserData *)mj->GetUserData();
                     if(mj->GetBodyB() == body){
                         [sprite stopAllActions];
+                        ud->deathSeqLock = false;
                         for(int i = 0; i < 2; i++){
                             if((abs(locations[i].x - jUd->prevX) < 1.6 && abs(locations[i].y - jUd->prevY) < 1.6)){
                                 if(locations[i].x < 1.6 && locations[i].y < 1.6){
