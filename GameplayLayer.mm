@@ -433,7 +433,10 @@
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
--(void)incrementDroppedCount{
+-(void)incrementDroppedCount:(id)sender data:(NSValue *)body{
+    CGSize winSize = [CCDirector sharedDirector].winSize;
+    b2Body *b = (b2Body *)[body pointerValue];
+    if(b->GetPosition().x > winSize.width/PTM_RATIO || b->GetPosition().x < 0) return;
     if(_gameOver) return;
     if(_droppedCount <= DROPPED_MAX && !_gameOver) _droppedCount++;
 }
@@ -452,7 +455,8 @@
     }
     CCAnimation *xAnim = [CCAnimation animationWithFrames:xAnimFrames delay:.08f];
     CCFiniteTimeAction *xAction = [CCAnimate actionWithAnimation:xAnim restoreOriginalFrame:NO];
-    
+#ifdef DEBUG
+#else
     CCParticleSystem* particles = [CCParticleExplosion node];
     particles.autoRemoveOnFinish = YES;
     particles.position = sprite.position;
@@ -469,6 +473,7 @@
     particles.duration = .05;
     
     [sprite runAction:[CCSequence actions:xAction, [CCCallFuncND actionWithTarget:self selector:@selector(playParticles:data:) data:[[NSValue valueWithPointer:particles] retain]], nil]];
+#endif
 }
 
 -(void)destroyWiener:(id)sender data:(NSValue *)db {
@@ -1303,7 +1308,9 @@
         for(NSValue *v in dogIcons){
             CCSprite *icon = (CCSprite *)[v pointerValue];
             if([dogIcons indexOfObject:v] < _droppedCount){
-                //[icon setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"DogHud_X_1.png"]]];
+#ifdef DEBUG
+                [icon setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"DogHud_X_6.png"]]];
+#endif
             } else {
                 [icon setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"DogHud_Dog.png"]]];
             }
@@ -1468,7 +1475,7 @@
                     // dog is definitely not on a head if it's touching the floor
                     id delay = [CCDelayTime actionWithDuration:ud->deathDelay];
                     id lockAction = [CCCallFuncND actionWithTarget:self selector:@selector(lockWiener:data:) data:[[NSValue valueWithPointer:ud] retain]];
-                    id incAction = [CCCallFuncN actionWithTarget:self selector:@selector(incrementDroppedCount)];
+                    id incAction = [CCCallFuncND actionWithTarget:self selector:@selector(incrementDroppedCount:data:) data:[[NSValue valueWithPointer:dogBody] retain]];
                     wienerParameters = [[NSMutableArray alloc] initWithCapacity:2];
                     [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
                     [wienerParameters addObject:[NSNumber numberWithInt:0]];
@@ -1901,7 +1908,7 @@
 
                                             id particleAction = [CCCallFunc actionWithTarget:self selector:@selector(counterExplode)];
                                             id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:dBody];
-                                            id incAction = [CCCallFuncN actionWithTarget:self selector:@selector(incrementDroppedCount)];
+                                            id incAction = [CCCallFuncND actionWithTarget:self selector:@selector(incrementDroppedCount:data:) data:[[NSValue valueWithPointer:b] retain]];
                                             id lockAction = [CCCallFuncND actionWithTarget:self selector:@selector(lockWiener:data:) data:[[NSValue valueWithPointer:dogBody->GetUserData()] retain]];
                                             
                                             CCFiniteTimeAction *wienerExplodeAction = (CCFiniteTimeAction *)ud->altAction2;
