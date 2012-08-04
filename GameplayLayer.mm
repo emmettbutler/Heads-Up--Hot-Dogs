@@ -445,8 +445,17 @@
     [self addChild:(CCParticleSystem *)[particles pointerValue] z:100];
 }
 
--(void)counterExplode{
-    CCSprite *sprite = (CCSprite *)[[dogIcons objectAtIndex:_droppedCount - 1] pointerValue];
+-(void)counterExplode:(id)sender data:(NSNumber *)increment{
+    int inc = [increment intValue]; // 1 if dropped, 0 if regained
+    CCSprite *sprite;
+    int index;
+    if(inc){
+        index = _droppedCount - 1;
+    } else {
+        index = _droppedCount;
+    }
+        
+    sprite = (CCSprite *)[[dogIcons objectAtIndex:index] pointerValue];
     
     NSMutableArray *xAnimFrames = [[NSMutableArray alloc] init];
     for(int i = 1; i <= 6; i++){
@@ -1483,7 +1492,7 @@
                     [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
                     [wienerParameters addObject:[NSNumber numberWithInt:0]];
                     id sleepAction = [CCCallFuncND actionWithTarget:self selector:@selector(setAwake:data:) data:wienerParameters];
-                    id particleAction = [CCCallFunc actionWithTarget:self selector:@selector(counterExplode)];
+                    id particleAction = [CCCallFuncND actionWithTarget:self selector:@selector(counterExplode:data:) data:[NSNumber numberWithInt:1]];
                     id angleAction = [CCCallFuncND actionWithTarget:self selector:@selector(setRotation:data:) data:wienerParameters];
                     id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:[[NSValue valueWithPointer:dogBody] retain]];
                     ud->deathSeq = [CCSequence actions: delay, sleepAction, angleAction, ud->altAction3, lockAction, incAction, particleAction, ud->altAction, destroyAction, nil];
@@ -1668,6 +1677,7 @@
                                         ud->_muncher_hasDroppedDog = true;
                                         if(_droppedCount > 0 && !_gameOver){
                                             _droppedCount--;
+                                            [self counterExplode:self data:[NSNumber numberWithInt:0]];
                                         }
                                     }
                                 }
@@ -1912,7 +1922,7 @@
                                             
                                             ud->aimedAt = true;
 
-                                            id particleAction = [CCCallFunc actionWithTarget:self selector:@selector(counterExplode)];
+                                            id particleAction = [CCCallFuncND actionWithTarget:self selector:@selector(counterExplode:data:) data:[NSNumber numberWithInt:1]];
                                             id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:dBody];
                                             id incAction = [CCCallFuncND actionWithTarget:self selector:@selector(incrementDroppedCount:data:) data:[[NSValue valueWithPointer:b] retain]];
                                             id lockAction = [CCCallFuncND actionWithTarget:self selector:@selector(lockWiener:data:) data:[[NSValue valueWithPointer:dogBody->GetUserData()] retain]];
