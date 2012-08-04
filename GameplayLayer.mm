@@ -694,13 +694,15 @@
 
     NSNumber *floorBit = [floorBits objectAtIndex:arc4random() % [floorBits count]];
     int choice = arc4random() % level->characterProbSum;
+    personStruct *p;
     for(NSValue *v in level->characters){
-        personStruct *p = (personStruct *)[v pointerValue];
-        if(choice < p->frequency)
+        p = (personStruct *)[v pointerValue];
+        if(choice < p->frequency){
             break;
+        }
         choice -= p->frequency;
     }
-    personStruct *person = (personStruct *)[(NSValue *)[level->characters objectAtIndex:arc4random() % [level->characters count]] pointerValue];
+    personStruct *person = p;
     
     //first, see if a person should spawn
     if(_policeOnScreen && person->tag == S_POLICE){

@@ -109,7 +109,7 @@
     c->friction = 0.3f;
     c->fTag = F_BUSHED;
     c->pointValue = 10;
-    c->frequency = 1;
+    c->frequency = 50;
     c->heightOffset = 2.9f;
     c->walkAnimFrames = [[NSMutableArray alloc] init];
     c->idleAnimFrames = [[NSMutableArray alloc] init];
@@ -162,7 +162,7 @@
     c->fTag = F_COPHED;
     c->heightOffset = 2.9f;
     c->pointValue = 15;
-    c->frequency = 1;
+    c->frequency = 20;
     c->lowerArmAngle = 0;
     c->upperArmAngle = 55;
     c->framerate = .07f;
@@ -227,7 +227,7 @@
     c->framerate = .07f;
     c->fTag = F_JOGHED;
     c->pointValue = 25;
-    c->frequency = 1;
+    c->frequency = 40;
     c->heightOffset = 2.55f;
     c->walkAnimFrames = [[NSMutableArray alloc] init];
     c->idleAnimFrames = [[NSMutableArray alloc] init];
@@ -277,7 +277,7 @@
     c->framerate = .06f;
     c->fTag = F_JOGHED;
     c->pointValue = 15;
-    c->frequency = 1;
+    c->frequency = 50;
     c->heightOffset = 2.9f;
     c->walkAnimFrames = [[NSMutableArray alloc] init];
     c->idleAnimFrames = [[NSMutableArray alloc] init];
@@ -326,7 +326,7 @@
     c->friction = 0.15f;
     c->framerate = .06f;
     c->pointValue = 15;
-    c->frequency = 1;
+    c->frequency = 40;
     c->fTag = F_PNKHED;
     c->heightOffset = 2.4f;
     c->walkAnimFrames = [[NSMutableArray alloc] init];
@@ -377,7 +377,7 @@
     c->friction = 0.15f;
     c->framerate = .06f;
     c->pointValue = 15;
-    c->frequency = 1;
+    c->frequency = 20;
     c->fTag = F_PNKHED;
     c->heightOffset = 2.9f;
     c->walkAnimFrames = [[NSMutableArray alloc] init];

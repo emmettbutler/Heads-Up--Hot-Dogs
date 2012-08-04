@@ -283,6 +283,7 @@
         l->prev = prevLevel;
         l->characters = [CharBuilder buildCharacters:l->slug];
         
+        l->characterProbSum = 0;
         for(NSValue *v in l->characters){
             personStruct *p = (personStruct *)[v pointerValue];
             l->characterProbSum += p->frequency;
