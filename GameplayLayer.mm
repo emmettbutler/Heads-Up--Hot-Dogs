@@ -1485,7 +1485,7 @@
     
     for(int i = 0; i < [mouseJoints count]; i++){
         b2MouseJoint *j = (b2MouseJoint *)[(NSValue *)[mouseJoints objectAtIndex:i] pointerValue];
-        if((j->GetTarget().x == 0 && j->GetTarget().y == 0) || [mouseJoints count] > 2){
+        if((j->GetTarget().x == 0 && j->GetTarget().y == 0) || [mouseJoints count] > 2 || _gameOver){
             bodyUserData *ud = (bodyUserData *)((b2Body *)j->GetBodyB())->GetUserData();
             ud->grabbed = false;
             _world->DestroyJoint(j);
