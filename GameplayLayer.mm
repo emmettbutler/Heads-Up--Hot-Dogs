@@ -519,7 +519,8 @@
     NSString *fallSprite, *riseSprite, *mainSprite, *grabSprite;
     CGSize winSize = [CCDirector sharedDirector].winSize;
     
-    CGPoint location = CGPointMake(arc4random() % (int)winSize.width, DOG_SPAWN_MINHT+(arc4random() % (int)(winSize.height-DOG_SPAWN_MINHT)));
+    int sideBuffer = 10;
+    CGPoint location = CGPointMake(arc4random() % (int)(sideBuffer+(winSize.width-(2*sideBuffer))), DOG_SPAWN_MINHT+(arc4random() % (int)(winSize.height-DOG_SPAWN_MINHT)));
     
     NSMutableArray *wienerDeathAnimFrames = [[NSMutableArray alloc] init];
     NSMutableArray *wienerFlashAnimFrames = [[NSMutableArray alloc] init];
