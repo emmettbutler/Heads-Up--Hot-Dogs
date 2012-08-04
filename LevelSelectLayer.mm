@@ -248,15 +248,17 @@
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
           [NSString stringWithFormat:@"Bagel_Shot_%d.png", i]]];
     }
-    
-    bgc = new bgComponent();
-    bgc->label = [CCLabelTTF labelWithString:@"-0.00 G" fontName:@"segmental.ttf" fontSize:35.0];
-    bgc->label.color = ccc3(255, 0, 0);
-    bgc->label.position = CGPointMake(360, 200);
-    lp->bgComponents = [[NSMutableArray alloc] init];
-    [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
-    
     lp->specialDog = dd;
+    
+    lp->bgComponents = [[NSMutableArray alloc] init];
+    int y = 152;
+    for(int i = 2; i <= 10; i++){
+        bgc = new bgComponent();
+        bgc->sprite = [CCSprite spriteWithSpriteFrameName:[NSString stringWithFormat:@"Grav_%d.png", i]];
+        bgc->sprite.position = CGPointMake(329, y+(6*(i-1)));
+        [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
+    }
+    
     [levelStructs addObject:[NSValue valueWithPointer:lp]];
     
     /////////////////////////////////////////////////////////////////////////////

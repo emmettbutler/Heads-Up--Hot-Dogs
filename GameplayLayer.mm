@@ -1332,8 +1332,15 @@
             [sprite setOpacity:255.00 * cosf(.01 * time)];
         }
     } else if(level->slug == @"space" && !(time % 100)){
-        float g = -1.0*(arc4random() % 39) - 1;
-        [gravityLabel setString:[NSString stringWithFormat:@"%0.1f G", g]];
+        float maxGrav = 40.0f;
+        float g = -1.0*(arc4random() % (int)(maxGrav - 1)) - 1;
+        for(NSValue *v in bgSprites){
+            CCSprite *gravi = (CCSprite *)[v pointerValue];
+            if((g / (-1*maxGrav))*10 > [bgSprites indexOfObject:v])
+                [gravi setVisible:true];
+            else
+                [gravi setVisible:false];
+        }
         _world->SetGravity(b2Vec2(0, g));
     }
 
