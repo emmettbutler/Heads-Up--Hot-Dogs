@@ -705,6 +705,8 @@
     //first, see if a person should spawn
     if(_policeOnScreen && person->tag == S_POLICE){
         return;
+    } else if(_muncherOnScreen && person->tag == S_MUNCHR){
+        return;
     } else {
         for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
             if (body->GetUserData() != NULL && body->GetUserData() != (void*)100) {
@@ -1594,6 +1596,9 @@
             }
             if(ud->sprite1 != NULL){
                 if(ud->sprite1.tag == S_MUNCHR){
+                    _muncherOnScreen = YES;
+                    if(ud->hasLeftScreen)
+                        _muncherOnScreen = NO;
                     if(ud->stopTime < 1000 && ud->stopTime > 0){
                         BOOL touched = true;
                         if(!((ud->timeWalking - ud->stopTime) % 20)){
