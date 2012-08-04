@@ -447,31 +447,37 @@
 
 -(void)counterExplode:(id)sender data:(NSNumber *)increment{
     int inc = [increment intValue]; // 1 if dropped, 0 if regained
-    CCSprite *sprite;
+    NSMutableArray *counterAnimFrames = [[NSMutableArray alloc] init];
     int index;
+    ccColor4F startColorRed = {1, 0, 0, 1};
+    ccColor4F startColorGrn = {0, 1, 0, 1};
+    ccColor4F endColor = {1, 1, 1, 0};
     if(inc){
         index = _droppedCount - 1;
+        for(int i = 1; i <= 6; i++){
+            [counterAnimFrames addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                                          [NSString stringWithFormat:@"DogHud_X_%d.png", i]]];
+        }
     } else {
         index = _droppedCount;
+        for(int i = 1; i <= 6; i++){
+            [counterAnimFrames addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                                          [NSString stringWithFormat:@"DogHud_X_%d.png", i]]];
+        }
     }
         
-    sprite = (CCSprite *)[[dogIcons objectAtIndex:index] pointerValue];
-    
-    NSMutableArray *xAnimFrames = [[NSMutableArray alloc] init];
-    for(int i = 1; i <= 6; i++){
-        [xAnimFrames addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                                [NSString stringWithFormat:@"DogHud_X_%d.png", i]]];
-    }
-    CCAnimation *xAnim = [CCAnimation animationWithFrames:xAnimFrames delay:.08f];
+    CCSprite *sprite = (CCSprite *)[[dogIcons objectAtIndex:index] pointerValue];
+    CCAnimation *xAnim = [CCAnimation animationWithFrames:counterAnimFrames delay:.08f];
     CCFiniteTimeAction *xAction = [CCAnimate actionWithAnimation:xAnim restoreOriginalFrame:NO];
 #ifdef DEBUG
 #else
     CCParticleSystem* particles = [CCParticleExplosion node];
     particles.autoRemoveOnFinish = YES;
     particles.position = sprite.position;
-    ccColor4F startColor = {1, 1, 1, 1};
-    ccColor4F endColor = {1, 1, 1, 0};
-    particles.startColor = startColor;
+    if(inc)
+        particles.startColor = startColorRed;
+    else 
+        particles.startColor = startColorGrn;
     particles.endColor = endColor;
     particles.life = .0000000005;
     particles.startSize = .003;
