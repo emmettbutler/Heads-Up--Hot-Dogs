@@ -223,30 +223,30 @@
     lp->frictionMul = 100;
     
     dd = new spcDogData();
-    dd->riseSprite = [NSString stringWithString:@"Bagel_Rise.png"];
-    dd->fallSprite = [NSString stringWithString:@"Bagel_Fall.png"];
-    dd->mainSprite = [NSString stringWithString:@"Bagel.png"];
-    dd->grabSprite = [NSString stringWithString:@"Bagel_Grab.png"];
+    dd->riseSprite = [NSString stringWithString:@"Chips_Rise.png"];
+    dd->fallSprite = [NSString stringWithString:@"Chips_Fall.png"];
+    dd->mainSprite = [NSString stringWithString:@"Chips.png"];
+    dd->grabSprite = [NSString stringWithString:@"Chips_Grab.png"];
     dd->deathAnimFrames = [[NSMutableArray alloc] init];
     dd->shotAnimFrames = [[NSMutableArray alloc] init];
     dd->flashAnimFrames = [[NSMutableArray alloc] init];
     for(int i = 0; i < 1; i++){
         [dd->flashAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-          [NSString stringWithFormat:@"Bagel_Die_1.png"]]];
+          [NSString stringWithFormat:@"Chips_Die_1.png"]]];
         [dd->flashAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-          [NSString stringWithFormat:@"Bagel_Die_2.png"]]];
+          [NSString stringWithFormat:@"Chips_Die_2.png"]]];
     }
     for(int i = 1; i <= 8; i++){
         [dd->deathAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-          [NSString stringWithFormat:@"Bagel_Die_%d.png", i]]];
+          [NSString stringWithFormat:@"Chips_Die_%d.png", i]]];
     }
     for(int i = 1; i <= 6; i++){
         [dd->shotAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-          [NSString stringWithFormat:@"Bagel_Shot_%d.png", i]]];
+          [NSString stringWithFormat:@"Chips_Shoot%d.png", i]]];
     }
     lp->specialDog = dd;
     

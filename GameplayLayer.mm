@@ -26,12 +26,12 @@
 
 #ifdef DEBUG
 #define SPAWN_LIMIT_DECREMENT_DELAY 6
-#define SPECIAL_DOG_PROBABILITY .2
+#define SPECIAL_DOG_PROBABILITY 30
 #define DROPPED_MAX 20
 #define WIENER_SPAWN_START 5
 #else
 #define SPAWN_LIMIT_DECREMENT_DELAY 2
-#define SPECIAL_DOG_PROBABILITY .05
+#define SPECIAL_DOG_PROBABILITY 30
 #define DROPPED_MAX 5
 #define WIENER_SPAWN_START 5
 #endif
@@ -1050,7 +1050,7 @@
     }
 
     id delay = [CCDelayTime actionWithDuration:_wienerSpawnDelayTime];
-    id callBackAction = [CCCallFuncND actionWithTarget: self selector: @selector(wienerCallback:data:) data:[[NSNumber numberWithInt:arc4random() % (int)(1/SPECIAL_DOG_PROBABILITY)] retain]];
+    id callBackAction = [CCCallFuncND actionWithTarget: self selector: @selector(wienerCallback:data:) data:[[NSNumber numberWithInt:arc4random() % (int)SPECIAL_DOG_PROBABILITY] retain]];
     id sequence = [CCSequence actions: delay, callBackAction, nil];
     [self runAction:sequence];
 }
