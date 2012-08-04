@@ -1,2 +1,1 @@
-    // TODO - tell people when they unlock a new level
             // TODO - only show this the first time it's unlocked

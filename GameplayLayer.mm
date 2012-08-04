@@ -455,16 +455,18 @@
     
     CCParticleSystem* particles = [CCParticleExplosion node];
     particles.autoRemoveOnFinish = YES;
+    particles.position = sprite.position;
     ccColor4F startColor = {1, 1, 1, 1};
     ccColor4F endColor = {1, 1, 1, 0};
     particles.startColor = startColor;
     particles.endColor = endColor;
-    particles.startSize = .5f;
-    particles.speed = 250.0f;
-    particles.endSize = .3f;
-    particles.endRadius = 15;
-    particles.life = .003;
-    particles.position = sprite.position;
+    particles.life = .0000000005;
+    particles.startSize = .003;
+    particles.startRadius = .0005;
+    particles.endSize = .0005;
+    particles.endRadius = .0005;
+    particles.speed = 120;
+    particles.duration = .05;
     
     [sprite runAction:[CCSequence actions:xAction, [CCCallFuncND actionWithTarget:self selector:@selector(playParticles:data:) data:[[NSValue valueWithPointer:particles] retain]], nil]];
 }
