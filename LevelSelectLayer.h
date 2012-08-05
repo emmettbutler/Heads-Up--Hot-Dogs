@@ -70,7 +70,7 @@ static NSUserDefaults *standardUserDefaults;
     CCLabelTTF *nameLabel, *helpLabel;
 }
 
-+(NSMutableArray *)buildLevels;
++(NSMutableArray *)buildLevels:(NSNumber *)full;
 +(CCScene *) scene;
 
 @end

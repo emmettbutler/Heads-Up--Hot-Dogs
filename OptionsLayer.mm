@@ -45,7 +45,7 @@
 -(void)deleteScores{
     CGSize winSize = [[CCDirector sharedDirector] winSize];
     
-    NSMutableArray *lStructs = [LevelSelectLayer buildLevels];
+    NSMutableArray *lStructs = [LevelSelectLayer buildLevels:[NSNumber numberWithInt:0]];
     for(NSValue *v in lStructs){
         levelProps *lp = (levelProps *)[v pointerValue];
         [[NSUserDefaults standardUserDefaults] setInteger:0 forKey:[NSString stringWithFormat:@"highScore%@", lp->slug]];

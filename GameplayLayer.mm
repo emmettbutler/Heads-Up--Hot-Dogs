@@ -1101,7 +1101,7 @@
         
         [standardUserDefaults setInteger:1 forKey:@"introDone"];
         
-        NSMutableArray *levelStructs = [LevelSelectLayer buildLevels];
+        NSMutableArray *levelStructs = [LevelSelectLayer buildLevels:[NSNumber numberWithInt:1]];
         for(int i = 0; i < [levelStructs count]; i++){
             level = (levelProps *)[[levelStructs objectAtIndex:i] pointerValue];
             if(level->slug == levelSlug){
