@@ -56,6 +56,8 @@
         CCSprite *sprite2;
         float heightOffset2;
         float lengthOffset2;
+        float lowerXOffset;
+        float lowerYOffset;
         NSString *_dog_fallSprite;
         NSString *_dog_riseSprite;
         NSString *_dog_grabSprite;
@@ -101,6 +103,7 @@
         BOOL aimedAt;
         BOOL grabbed;
         BOOL deathSeqLock;
+        BOOL animLock;
         BOOL hasLeftScreen;
         double targetAngle;
         int dogsOnHead;

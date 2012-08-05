@@ -427,6 +427,7 @@
 -(void)incrementDroppedCount:(id)sender data:(NSValue *)body{
     CGSize winSize = [CCDirector sharedDirector].winSize;
     b2Body *b = (b2Body *)[body pointerValue];
+    if(!b) return;
     if(b->GetPosition().x > winSize.width/PTM_RATIO || b->GetPosition().x < 0) return;
     if(_gameOver) return;
     if(_droppedCount <= DROPPED_MAX && !_gameOver) _droppedCount++;
@@ -504,9 +505,7 @@
         free(ud);
         ud = NULL;
         dogBody->SetUserData(NULL);
-        
         dogBody = nil;
-        
 #ifdef DEBUG
 #else
         [[SimpleAudioEngine sharedEngine] playEffect:@"hot dog disappear.mp3"];
@@ -911,7 +910,10 @@
     ud->altAnimation = walkFaceAnim;
     ud->collideFilter = _curPersonMaskBits;
     ud->moveDelta = moveDelta*level->personSpeedMul;
+    ud->lowerXOffset = 0;
+    ud->lowerYOffset = 0;
     ud->aiming = false;
+    ud->animLock = false;
     ud->hasLeftScreen = false;
     ud->_person_hasTouchedDog = false;
     ud->pointValue = person->pointValue;
@@ -936,7 +938,6 @@
             ud->stopTimeDelta = 60; // frames
             ud->aimFace = [NSString stringWithString:@"Cop_Head_Aiming_1.png"];
         } else if (person->tag == S_MUNCHR){
-            ud->stopTimeDelta = 100; // frames
             ud->tickleTimer = 0;
             ud->_muncher_hasDroppedDog = false;
             ud->dogOnHeadTickleAction = _specialAngryFaceAction;
@@ -1545,7 +1546,7 @@
         if(b->GetUserData() && b->GetUserData() != (void*)100){
             bodyUserData *ud = (bodyUserData*)b->GetUserData();
             //boilerplate - update sprite positions to match their physics bodies
-            ud->sprite1.position = CGPointMake( b->GetPosition().x * PTM_RATIO, b->GetPosition().y * PTM_RATIO);
+            ud->sprite1.position = CGPointMake((b->GetPosition().x * PTM_RATIO)+ud->lowerXOffset, (b->GetPosition().y * PTM_RATIO)+ud->lowerYOffset);
             ud->sprite1.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
             
             if((ud->sprite1.position.x > winSize.width+(ud->sprite1.contentSize.width/2) || ud->sprite1.position.x < 0-(ud->sprite1.contentSize.width/2))
@@ -1588,7 +1589,6 @@
                 if(b->GetJointList()){
                     _world->DestroyJoint(b->GetJointList()->joint);
                 }
-                _world->DestroyBody(b);
                 if(ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG){
                     _dogsSaved++;
                 }
@@ -1603,7 +1603,7 @@
                 if(ud->overlaySprite != NULL){
                     [ud->overlaySprite removeFromParentAndCleanup:YES];
                 }
-                
+                _world->DestroyBody(b);
                 ud = NULL;
                 continue;
             }
@@ -1617,8 +1617,8 @@
                     }
                 }
                 else {
-                    ud->overlaySprite.position = CGPointMake((b->GetPosition().x)*PTM_RATIO,
-                                                            (b->GetPosition().y)*PTM_RATIO);
+                    ud->overlaySprite.position = CGPointMake(((b->GetPosition().x)*PTM_RATIO),
+                                                            ((b->GetPosition().y)*PTM_RATIO));
                 }
             }
             if(ud->sprite2 != NULL){
@@ -1639,19 +1639,29 @@
                     if(ud->stopTime < 1000 && ud->stopTime > 0){
                         BOOL touched = true;
                         if(!((ud->timeWalking - ud->stopTime) % 20)){
-                            if(ud->tickleTimer < (ud->timeWalking - ud->stopTime)-30){
+                            if(ud->tickleTimer < (ud->timeWalking - ud->stopTime)-30 && !ud->_muncher_hasDroppedDog){
                                 touched = false;
                             }
                         }
                         if(!touched){
-                            if(!ud->_muncher_hasDroppedDog){
-                                [ud->sprite1 stopAllActions];
-                                [ud->sprite2 stopAllActions];
-                                [ud->angryFace stopAllActions];
-                            }
                             ud->restartTime = ud->timeWalking + 1;
                             ud->stopTimeDelta = 0;
                             ud->touched = false;
+                        } else{
+                            if(ud->timeWalking == ud->stopTime + (ud->stopTimeDelta - 144)){
+                                ud->_muncher_hasDroppedDog = true;
+                                ud->lowerYOffset = 9;
+                                if(ud->sprite1.flipX)
+                                    ud->lowerXOffset = -11;
+                                else
+                                    ud->lowerXOffset = 11;
+                                NSMutableArray *animParams = [[NSMutableArray alloc] init];
+                                [animParams addObject:[NSValue valueWithPointer:ud->sprite1]];
+                                [animParams addObject:[NSValue valueWithPointer:ud->altWalk]];
+                                [ud->sprite1 runAction:[CCSequence actions:ud->postStopAction, [CCCallFuncND actionWithTarget:self selector:@selector(spriteRunAnim:data:) data:animParams], nil]];
+                                [ud->sprite2 runAction:ud->altWalkFace];
+                                [ud->angryFace runAction:ud->angryFaceWalkAction];
+                            }
                         }
                     }
                 }
@@ -1687,20 +1697,23 @@
                                 }
                             } else {
                                 if(ud->timeWalking == ud->stopTime + ud->stopTimeDelta){
-                                    ud->_muncher_hasDroppedDog = true;
-                                    NSMutableArray *animParams = [[NSMutableArray alloc] init];
-                                    [animParams addObject:[NSValue valueWithPointer:ud->sprite1]];
-                                    [animParams addObject:[NSValue valueWithPointer:ud->altWalk]];
-                                    [ud->sprite1 runAction:[CCSequence actions:ud->postStopAction, [CCCallFuncND actionWithTarget:self selector:@selector(spriteRunAnim:data:) data:animParams], nil]];
-                                    [ud->sprite2 runAction:ud->altWalkFace];
+                                    ud->lowerXOffset = 0;
+                                    ud->lowerYOffset = 0;
                                     if(_droppedCount > 0 && !_gameOver){
                                         _droppedCount--;
                                         [self counterExplode:self data:[NSNumber numberWithInt:0]];
                                     }
                                 } else if(!ud->_muncher_hasDroppedDog){
+                                    [ud->sprite1 stopAction:ud->altAction2];
+                                    [ud->sprite2 stopAction:ud->altAction3];
+                                    [ud->angryFace stopAction:ud->dogOnHeadTickleAction];
                                     CCLOG(@"muncher has not dropped dog");
-                                    [ud->sprite1 runAction:ud->defaultAction];
-                                    [ud->sprite2 runAction:ud->altAction];
+                                    if(!ud->animLock){
+                                        ud->animLock = true;
+                                        [ud->sprite1 runAction:ud->defaultAction];
+                                        [ud->sprite2 runAction:ud->altAction];
+                                        [ud->angryFace runAction:ud->angryFaceWalkAction];
+                                    }
                                 }
                             }
                             if([ud->angryFace numberOfRunningActions] == 0)
@@ -1946,7 +1959,7 @@
 
                                             id particleAction = [CCCallFuncND actionWithTarget:self selector:@selector(counterExplode:data:) data:[NSNumber numberWithInt:1]];
                                             id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:dBody];
-                                            id incAction = [CCCallFuncND actionWithTarget:self selector:@selector(incrementDroppedCount:data:) data:[[NSValue valueWithPointer:b] retain]];
+                                            id incAction = [CCCallFuncND actionWithTarget:self selector:@selector(incrementDroppedCount:data:) data:dBody];
                                             id lockAction = [CCCallFuncND actionWithTarget:self selector:@selector(lockWiener:data:) data:[[NSValue valueWithPointer:dogBody->GetUserData()] retain]];
                                             
                                             CCFiniteTimeAction *wienerExplodeAction = (CCFiniteTimeAction *)ud->altAction2;
@@ -2028,7 +2041,8 @@
                                     CCLOG(@"Touching muncher!");
                                     ud->touched = true;
                                     ud->stopTime = ud->timeWalking + 1;
-                                    ud->stopTimeDelta = 100;
+                                    ud->stopTimeDelta = 250;
+                                    ud->animLock = false;
                                 
                                     [ud->sprite1 stopAllActions];
                                     if([ud->sprite1 numberOfRunningActions] == 0)
@@ -2042,8 +2056,6 @@
                                     if([ud->angryFace numberOfRunningActions] == 0){
                                         [ud->angryFace runAction:ud->dogOnHeadTickleAction];
                                     }
-                                } else {
-                                    //ud->touched = false;
                                 }
                             }
                         }
@@ -2197,9 +2209,7 @@
     for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
         if (body->GetUserData() != NULL && body->GetUserData() != (void*)100) {
             bodyUserData *ud = (bodyUserData *)body->GetUserData();
-            if(ud->sprite1.tag == S_MUNCHR && ud->touched){
-                CCLOG(@"Muncher touch released");
-
+            if(ud->sprite1.tag == S_MUNCHR && ud->touched && !ud->_muncher_hasDroppedDog){
                 ud->restartTime = ud->timeWalking + 1;
                 ud->stopTimeDelta = 0;
                 ud->touched = false;
