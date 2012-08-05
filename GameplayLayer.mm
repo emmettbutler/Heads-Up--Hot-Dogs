@@ -431,6 +431,13 @@
     if(b->GetPosition().x > winSize.width/PTM_RATIO || b->GetPosition().x < 0) return;
     if(_gameOver) return;
     if(_droppedCount <= DROPPED_MAX && !_gameOver) _droppedCount++;
+    NSLog(@"Dropped count: %d", _droppedCount);
+}
+
+-(void)clearLowerOffsets:(id)sender data:(NSValue *)userdata{
+    bodyUserData *ud = (bodyUserData *)[userdata pointerValue];
+    ud->lowerXOffset = 0;
+    ud->lowerYOffset = 0;
 }
 
 -(void)playParticles:(id)sender data:(NSValue *)particles{
@@ -440,18 +447,15 @@
 -(void)counterExplode:(id)sender data:(NSNumber *)increment{
     int inc = [increment intValue]; // 1 if dropped, 0 if regained
     NSMutableArray *counterAnimFrames = [[NSMutableArray alloc] init];
-    int index;
     ccColor4F startColorRed = {1, 0, 0, 1};
     ccColor4F startColorGrn = {0, 1, 0, 1};
     ccColor4F endColor = {1, 1, 1, 0};
     if(inc){
-        index = _droppedCount - 1;
         for(int i = 1; i <= 6; i++){
             [counterAnimFrames addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
                                           [NSString stringWithFormat:@"DogHud_X_%d.png", i]]];
         }
     } else {
-        index = _droppedCount;
         for(int i = 1; i <= 21; i++){
             [counterAnimFrames addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
                                           [NSString stringWithFormat:@"DogBack_Anim_%d.png", i]]];
@@ -459,7 +463,7 @@
         [counterAnimFrames addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"DogHud_Dog.png"]];
     }
         
-    CCSprite *sprite = (CCSprite *)[[dogIcons objectAtIndex:index] pointerValue];
+    CCSprite *sprite = (CCSprite *)[[dogIcons objectAtIndex:_droppedCount-1] pointerValue];
     CCAnimation *xAnim = [CCAnimation animationWithFrames:counterAnimFrames delay:.08f];
     CCFiniteTimeAction *xAction = [CCAnimate actionWithAnimation:xAnim restoreOriginalFrame:NO];
 #ifdef DEBUG
@@ -1648,19 +1652,21 @@
                             ud->stopTimeDelta = 0;
                             ud->touched = false;
                         } else{
-                            if(ud->timeWalking == ud->stopTime + (ud->stopTimeDelta - 144)){
+                            if(ud->timeWalking == ud->stopTime + (ud->stopTimeDelta - 135)){
                                 ud->_muncher_hasDroppedDog = true;
                                 ud->lowerYOffset = 9;
                                 if(ud->sprite1.flipX)
-                                    ud->lowerXOffset = -11;
+                                    ud->lowerXOffset = -12;
                                 else
                                     ud->lowerXOffset = 11;
                                 NSMutableArray *animParams = [[NSMutableArray alloc] init];
                                 [animParams addObject:[NSValue valueWithPointer:ud->sprite1]];
                                 [animParams addObject:[NSValue valueWithPointer:ud->altWalk]];
-                                [ud->sprite1 runAction:[CCSequence actions:ud->postStopAction, [CCCallFuncND actionWithTarget:self selector:@selector(spriteRunAnim:data:) data:animParams], nil]];
-                                [ud->sprite2 runAction:ud->altWalkFace];
-                                [ud->angryFace runAction:ud->angryFaceWalkAction];
+                                [ud->sprite1 runAction:[CCSequence actions:ud->postStopAction, [CCCallFuncND actionWithTarget:self selector:@selector(spriteRunAnim:data:) data:animParams], [CCCallFuncND actionWithTarget:self selector:@selector(clearLowerOffsets:data:) data:[[NSValue valueWithPointer:ud] retain]], nil]];
+                                [ud->sprite2 stopAllActions];
+                                [ud->angryFace stopAllActions];
+                                [ud->sprite2 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"DogEater_DogGone_Head1.png"]];
+                                [ud->angryFace setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"DogEater_DogGone_Head1.png"]];
                             }
                         }
                     }
@@ -1697,11 +1703,12 @@
                                 }
                             } else {
                                 if(ud->timeWalking == ud->stopTime + ud->stopTimeDelta){
-                                    ud->lowerXOffset = 0;
-                                    ud->lowerYOffset = 0;
+                                    [ud->sprite2 runAction:ud->altWalkFace];
+                                    [ud->angryFace runAction:ud->angryFaceWalkAction];
                                     if(_droppedCount > 0 && !_gameOver){
-                                        _droppedCount--;
                                         [self counterExplode:self data:[NSNumber numberWithInt:0]];
+                                        _droppedCount--;
+                                        NSLog(@"Dropped count: %d", _droppedCount);
                                     }
                                 } else if(!ud->_muncher_hasDroppedDog){
                                     [ud->sprite1 stopAction:ud->altAction2];
