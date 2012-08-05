@@ -451,10 +451,11 @@
         }
     } else {
         index = _droppedCount;
-        for(int i = 1; i <= 6; i++){
+        for(int i = 1; i <= 21; i++){
             [counterAnimFrames addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                                          [NSString stringWithFormat:@"DogHud_X_%d.png", i]]];
+                                          [NSString stringWithFormat:@"DogBack_Anim_%d.png", i]]];
         }
+        [counterAnimFrames addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"DogHud_Dog.png"]];
     }
         
     CCSprite *sprite = (CCSprite *)[[dogIcons objectAtIndex:index] pointerValue];
@@ -1327,13 +1328,13 @@
     if(_droppedCount <= DROPPED_MAX && _droppedCount >= 0){
         for(NSValue *v in dogIcons){
             CCSprite *icon = (CCSprite *)[v pointerValue];
-            if([dogIcons indexOfObject:v] < _droppedCount){
 #ifdef DEBUG
+            if([dogIcons indexOfObject:v] < _droppedCount){
                 [icon setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"DogHud_X_6.png"]]];
-#endif
             } else {
                 [icon setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"DogHud_Dog.png"]]];
             }
+#endif
         }
     }
 
@@ -1646,6 +1647,7 @@
                             if(!ud->_muncher_hasDroppedDog){
                                 [ud->sprite1 stopAllActions];
                                 [ud->sprite2 stopAllActions];
+                                [ud->angryFace stopAllActions];
                             }
                             ud->restartTime = ud->timeWalking + 1;
                             ud->stopTimeDelta = 0;
