@@ -47,6 +47,7 @@
         NSMutableArray *armShootAnimFrames;
         NSMutableArray *altWalkAnimFrames;
         NSMutableArray *altFaceWalkAnimFrames;
+        NSMutableArray *postStopAnimFrames;
     };
 }
 

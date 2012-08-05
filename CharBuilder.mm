@@ -388,6 +388,7 @@
     c->specialFaceAnimFrames = [[NSMutableArray alloc] init];
     c->altFaceWalkAnimFrames = [[NSMutableArray alloc] init];
     c->altWalkAnimFrames = [[NSMutableArray alloc] init];
+    c->postStopAnimFrames = [[NSMutableArray alloc] init];
     for(int i = 1; i <= 8; i++){
         [c->walkAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -427,6 +428,11 @@
         [c->altWalkAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
           [NSString stringWithFormat:@"DogEater_DogGone_Walk_%d.png", i]]];
+    }
+    for(int i = 1; i <= 25; i++){
+        [c->postStopAnimFrames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithFormat:@"DogEater_DogBack_%d.png", i]]];
     }
     
     return c;

@@ -390,19 +390,10 @@
 -(void) spriteRunAnim:(id)sender data:(void*)params{
     //takes a sprite and an optional animation
     //if passed an action, run it. otherwise, stop all actions
-    
-    int isCop = 0;
-    
-    if([(NSMutableArray *)params count] == 3)
-        isCop = [(NSNumber *)[(NSMutableArray *)params objectAtIndex:2] intValue];
-    
     CCSprite *sprite = (CCSprite *)[(NSValue *)[(NSMutableArray *) params objectAtIndex:0] pointerValue];
-    if(!isCop)
-        [sprite stopAllActions];
     if([(NSMutableArray *) params count] > 1){
-        CCAnimation *anim = (CCAnimation *)[(NSValue *)[(NSMutableArray *) params objectAtIndex:1] pointerValue];
-        CCAction *wFAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO]];
-        [sprite runAction:wFAction];
+        CCAction *action = (CCAction *)[(NSValue *)[(NSMutableArray *) params objectAtIndex:1] pointerValue];
+        [sprite runAction:action];
     }
 }
 
@@ -838,6 +829,9 @@
         
         altFaceWalkAnim = [CCAnimation animationWithFrames:person->altFaceWalkAnimFrames delay:.1f];
         _altFaceWalkAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:altFaceWalkAnim restoreOriginalFrame:NO]] retain];
+        
+        postStopAnim = [CCAnimation animationWithFrames:person->postStopAnimFrames delay:.1f];
+        _postStopAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:postStopAnim restoreOriginalFrame:NO] times:1] retain];
     }
 
     //put the sprites in place
@@ -911,6 +905,7 @@
     ud->altWalkFace = _altFaceWalkAction;
     ud->heightOffset2 = person->heightOffset;
     ud->altAction = _walkFaceAction;
+    ud->postStopAction = _postStopAction;
     ud->idleAction = _idleAction;
     ud->altAnimation = walkFaceAnim;
     ud->collideFilter = _curPersonMaskBits;
@@ -1648,6 +1643,10 @@
                             }
                         }
                         if(!touched){
+                            if(!ud->_muncher_hasDroppedDog){
+                                [ud->sprite1 stopAllActions];
+                                [ud->sprite2 stopAllActions];
+                            }
                             ud->restartTime = ud->timeWalking + 1;
                             ud->stopTimeDelta = 0;
                             ud->touched = false;
@@ -1687,13 +1686,17 @@
                             } else {
                                 if(ud->timeWalking == ud->stopTime + ud->stopTimeDelta){
                                     ud->_muncher_hasDroppedDog = true;
-                                    [ud->sprite1 runAction:ud->altWalk];
+                                    NSMutableArray *animParams = [[NSMutableArray alloc] init];
+                                    [animParams addObject:[NSValue valueWithPointer:ud->sprite1]];
+                                    [animParams addObject:[NSValue valueWithPointer:ud->altWalk]];
+                                    [ud->sprite1 runAction:[CCSequence actions:ud->postStopAction, [CCCallFuncND actionWithTarget:self selector:@selector(spriteRunAnim:data:) data:animParams], nil]];
                                     [ud->sprite2 runAction:ud->altWalkFace];
                                     if(_droppedCount > 0 && !_gameOver){
                                         _droppedCount--;
                                         [self counterExplode:self data:[NSNumber numberWithInt:0]];
                                     }
                                 } else if(!ud->_muncher_hasDroppedDog){
+                                    CCLOG(@"muncher has not dropped dog");
                                     [ud->sprite1 runAction:ud->defaultAction];
                                     [ud->sprite2 runAction:ud->altAction];
                                 }
@@ -2194,6 +2197,7 @@
             bodyUserData *ud = (bodyUserData *)body->GetUserData();
             if(ud->sprite1.tag == S_MUNCHR && ud->touched){
                 CCLOG(@"Muncher touch released");
+
                 ud->restartTime = ud->timeWalking + 1;
                 ud->stopTimeDelta = 0;
                 ud->touched = false;
