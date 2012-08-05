@@ -28,6 +28,7 @@ static NSUserDefaults *standardUserDefaults;
     struct bgComponent{
         CCLabelTTF *label; // one or the other
         CCSprite *sprite;
+        NSMutableArray *anims;
         CGPoint position;
     };
     

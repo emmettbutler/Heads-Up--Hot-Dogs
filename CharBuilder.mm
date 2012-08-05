@@ -162,7 +162,7 @@
     c->fTag = F_COPHED;
     c->heightOffset = 2.9f;
     c->pointValue = 15;
-    c->frequency = 8;
+    c->frequency = 3;
     c->lowerArmAngle = 0;
     c->upperArmAngle = 55;
     c->framerate = .07f;
@@ -377,7 +377,7 @@
     c->friction = 0.15f;
     c->framerate = .06f;
     c->pointValue = 15;
-    c->frequency = 10;
+    c->frequency = 2;
     c->fTag = F_PNKHED;
     c->heightOffset = 2.9f;
     c->walkAnimFrames = [[NSMutableArray alloc] init];

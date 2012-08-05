@@ -27,11 +27,13 @@
     spcDogData *dd;
     bgComponent *bgc;
     BOOL loadFull = [full intValue];
+    CGSize winSize = [CCDirector sharedDirector].winSize;
 
     [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_common.plist"];
     if(loadFull){
         [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_nyc.plist"];
         [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_philly.plist"];
+        [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_chicago.plist"];
         [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_space.plist"];
     }
 
@@ -170,17 +172,17 @@
     lp->slug = [NSString stringWithString:@"chicago"];
     lp->name = [NSString stringWithString:@"Windy City"];
     lp->unlockThreshold = 14000;
-    lp->thumbnail = [NSString stringWithString:@"NYC_Thumb.png"];
+    lp->thumbnail = [NSString stringWithString:@"Chicago_Thumb.png"];
     lp->func = [NSString stringWithString:@"switchScreenChicago"];
 
     if(loadFull){
-        lp->bg = [NSString stringWithString:@"BG_NYC.png"];
+        lp->bg = [NSString stringWithString:@"Chicago_BG.png"];
         lp->bgm = [NSString stringWithString:@"gameplay 1.mp3"];
         lp->gravity = -30.0f;
-        lp->spritesheet = [NSString stringWithString:@"sprites_nyc"];
+        lp->spritesheet = [NSString stringWithString:@"sprites_chicago"];
         lp->personSpeedMul = 1;
         lp->restitutionMul = 1.2;
-        lp->frictionMul = 1;
+        lp->frictionMul = 1.4;
 
         dd = new spcDogData();
         dd->riseSprite = [NSString stringWithString:@"Bagel_Rise.png"];
@@ -210,6 +212,25 @@
         }
 
         lp->specialDog = dd;
+        
+        lp->bgComponents = [[NSMutableArray alloc] init];
+        bgc = new bgComponent();
+        bgc->sprite = [[CCSprite spriteWithSpriteFrameName:@"Flag_Flap_1.png"] retain];
+        bgc->sprite.position = CGPointMake(winSize.width-15, 250);
+        NSMutableArray *frames = [[NSMutableArray alloc] init];
+        bgc->anims = [[[NSMutableArray alloc] init] retain];
+        for(int i = 1; i <= 4; i++){
+            [frames addObject:[CCSprite spriteWithSpriteFrameName:[NSString stringWithFormat:@"Flag_Flap_%d.png", i]]];
+        }
+        CCAnimation *animation = [CCAnimation animationWithFrames:frames delay:.08];
+        [bgc->anims addObject:[NSValue valueWithPointer:[[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:animation restoreOriginalFrame:NO]] retain]]];
+        frames = [[NSMutableArray alloc] init];
+        for(int i = 8; i <= 11; i++){
+            [frames addObject:[CCSprite spriteWithSpriteFrameName:[NSString stringWithFormat:@"Flag_Flap_%d.png", i]]];
+        }
+        animation = [CCAnimation animationWithFrames:frames delay:.08];
+        [bgc->anims addObject:[NSValue valueWithPointer:[[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:animation restoreOriginalFrame:NO]] retain]]];
+        [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
     }
 
     [levelStructs addObject:[NSValue valueWithPointer:lp]];
@@ -282,6 +303,7 @@
     if(loadFull){
         [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_nyc.plist"];
         [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_philly.plist"];
+        [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_chicago.plist"];
         [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_space.plist"];
     }
 

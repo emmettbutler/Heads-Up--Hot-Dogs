@@ -1361,6 +1361,8 @@
 
     time++;
     
+    b2Vec2 windForce;
+    
     // level-specific repetitive actions
     if(level->slug == @"philly"){
         
@@ -1369,6 +1371,20 @@
             CCSprite *sprite = (CCSprite *)[v pointerValue];
             [sprite setOpacity:255.00 * cosf(.01 * time)];
         }
+    } else if(level->slug == @"chicago"){
+        float windX = .6 * cosf(.01 * time);
+        CCLOG(@"wind: %0.2f", windX);
+        windForce = b2Vec2(windX, .2);
+        CCSprite *flag = (CCSprite *)[[bgSprites objectAtIndex:0] pointerValue];
+        bgComponent *bgc = (bgComponent *)[[level->bgComponents objectAtIndex:0] pointerValue];
+        CCAction *flagPositive = (CCAction *)[[bgc->anims objectAtIndex:1] pointerValue];
+        CCAction *flagNegative = (CCAction *)[[bgc->anims objectAtIndex:0] pointerValue];
+        /*
+        if(windX > 0.0)
+            [flag runAction:flagPositive];
+        else 
+            [flag runAction:flagNegative];
+         */
     } else if(level->slug == @"space" && !(time % 100)){
         float maxGrav = 40.0f;
         float g = -1.0*(arc4random() % (int)(maxGrav - 1)) - 1;
@@ -1879,6 +1895,10 @@
                                     break;
                                 }
                             }
+                        }
+                        if(level->slug == @"chicago" && !(time % 3)){
+                            if(b->GetLinearVelocity().x != b->GetLinearVelocity().x+windForce.x && b->GetLinearVelocity().y != b->GetLinearVelocity().y+windForce.y)
+                                b->SetLinearVelocity(b2Vec2(b->GetLinearVelocity().x+windForce.x, b->GetLinearVelocity().y+windForce.y));
                         }
                         for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()) {
                             fixtureUserData *fUd = (fixtureUserData *)f->GetUserData();
