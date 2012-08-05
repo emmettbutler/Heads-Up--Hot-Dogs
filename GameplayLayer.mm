@@ -430,8 +430,9 @@
     if(!b) return;
     if(b->GetPosition().x > winSize.width/PTM_RATIO || b->GetPosition().x < 0) return;
     if(_gameOver) return;
-    if(_droppedCount <= DROPPED_MAX && !_gameOver) _droppedCount++;
+    if(_droppedCount < DROPPED_MAX && !_gameOver) _droppedCount++;
     NSLog(@"Dropped count: %d", _droppedCount);
+    [self counterExplode:self data:[NSNumber numberWithInt:1]];
 }
 
 -(void)clearLowerOffsets:(id)sender data:(NSValue *)userdata{
@@ -491,6 +492,7 @@
 -(void)destroyWiener:(id)sender data:(NSValue *)db {
     CGSize winSize = [CCDirector sharedDirector].winSize;
     b2Body *dogBody = (b2Body *)[db pointerValue];
+    if(!dogBody) return;
     bodyUserData *ud = (bodyUserData *)dogBody->GetUserData();
 
     CCSprite *dogSprite = (CCSprite *)sender;
@@ -834,7 +836,7 @@
         altFaceWalkAnim = [CCAnimation animationWithFrames:person->altFaceWalkAnimFrames delay:.1f];
         _altFaceWalkAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:altFaceWalkAnim restoreOriginalFrame:NO]] retain];
         
-        postStopAnim = [CCAnimation animationWithFrames:person->postStopAnimFrames delay:.1f];
+        postStopAnim = [CCAnimation animationWithFrames:person->postStopAnimFrames delay:.07f];
         _postStopAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:postStopAnim restoreOriginalFrame:NO] times:1] retain];
     }
 
@@ -1333,13 +1335,11 @@
     if(_droppedCount <= DROPPED_MAX && _droppedCount >= 0){
         for(NSValue *v in dogIcons){
             CCSprite *icon = (CCSprite *)[v pointerValue];
-#ifdef DEBUG
-            if([dogIcons indexOfObject:v] < _droppedCount){
+            if([dogIcons indexOfObject:v] < _droppedCount && [icon numberOfRunningActions] == 0){
                 [icon setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"DogHud_X_6.png"]]];
-            } else {
+            } else if([icon numberOfRunningActions] == 0){
                 [icon setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"DogHud_Dog.png"]]];
             }
-#endif
         }
     }
 
@@ -1509,10 +1509,9 @@
                     [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
                     [wienerParameters addObject:[NSNumber numberWithInt:0]];
                     id sleepAction = [CCCallFuncND actionWithTarget:self selector:@selector(setAwake:data:) data:wienerParameters];
-                    id particleAction = [CCCallFuncND actionWithTarget:self selector:@selector(counterExplode:data:) data:[NSNumber numberWithInt:1]];
                     id angleAction = [CCCallFuncND actionWithTarget:self selector:@selector(setRotation:data:) data:wienerParameters];
                     id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:[[NSValue valueWithPointer:dogBody] retain]];
-                    ud->deathSeq = [CCSequence actions: delay, sleepAction, angleAction, ud->altAction3, lockAction, incAction, particleAction, ud->altAction, destroyAction, nil];
+                    ud->deathSeq = [CCSequence actions: delay, sleepAction, angleAction, ud->altAction3, lockAction, incAction, ud->altAction, destroyAction, nil];
                     [ud->sprite1 runAction:ud->deathSeq];
                     CCLOG(@"Run death action");
                 } else if(ud->deathSeq){
@@ -1652,7 +1651,7 @@
                             ud->stopTimeDelta = 0;
                             ud->touched = false;
                         } else{
-                            if(ud->timeWalking == ud->stopTime + (ud->stopTimeDelta - 135)){
+                            if(ud->timeWalking == ud->stopTime + (ud->stopTimeDelta - ([ud->postStopAction duration]*60.0))){
                                 ud->_muncher_hasDroppedDog = true;
                                 ud->lowerYOffset = 9;
                                 if(ud->sprite1.flipX)
@@ -1963,14 +1962,12 @@
                                             ///////////////////////////  DOG SHOOTING  //////////////////////////
                                             
                                             ud->aimedAt = true;
-
-                                            id particleAction = [CCCallFuncND actionWithTarget:self selector:@selector(counterExplode:data:) data:[NSNumber numberWithInt:1]];
                                             id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:dBody];
                                             id incAction = [CCCallFuncND actionWithTarget:self selector:@selector(incrementDroppedCount:data:) data:dBody];
-                                            id lockAction = [CCCallFuncND actionWithTarget:self selector:@selector(lockWiener:data:) data:[[NSValue valueWithPointer:dogBody->GetUserData()] retain]];
+                                            id lockAction = [CCCallFuncND actionWithTarget:self selector:@selector(lockWiener:data:) data:[[NSValue valueWithPointer:ud] retain]];
                                             
                                             CCFiniteTimeAction *wienerExplodeAction = (CCFiniteTimeAction *)ud->altAction2;
-                                            ud->shotSeq = [[CCSequence actions:delay, incAction, particleAction, lockAction, wienerExplodeAction, destroyAction, nil] retain];
+                                            ud->shotSeq = [[CCSequence actions:delay, lockAction, incAction, wienerExplodeAction, destroyAction, nil] retain];
                                             if([ud->sprite1 numberOfRunningActions] == 0) 
                                                 [ud->sprite1 runAction:ud->shotSeq];
 
