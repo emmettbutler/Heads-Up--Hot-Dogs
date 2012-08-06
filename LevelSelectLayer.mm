@@ -216,20 +216,17 @@
         lp->bgComponents = [[NSMutableArray alloc] init];
         bgc = new bgComponent();
         bgc->sprite = [[CCSprite spriteWithSpriteFrameName:@"Flag_Flap_1.png"] retain];
-        bgc->sprite.position = CGPointMake(winSize.width-15, 250);
-        NSMutableArray *frames = [[NSMutableArray alloc] init];
-        bgc->anims = [[[NSMutableArray alloc] init] retain];
+        bgc->sprite.position = CGPointMake(winSize.width-17, 247);
+        bgc->anim1 = [[NSMutableArray alloc] init];
         for(int i = 1; i <= 4; i++){
-            [frames addObject:[CCSprite spriteWithSpriteFrameName:[NSString stringWithFormat:@"Flag_Flap_%d.png", i]]];
+            [bgc->anim1 addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                                   [NSString stringWithFormat:@"Flag_Flap_%d.png", i]]];
         }
-        CCAnimation *animation = [CCAnimation animationWithFrames:frames delay:.08];
-        [bgc->anims addObject:[NSValue valueWithPointer:[[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:animation restoreOriginalFrame:NO]] retain]]];
-        frames = [[NSMutableArray alloc] init];
+        bgc->anim2 = [[NSMutableArray alloc] init];
         for(int i = 8; i <= 11; i++){
-            [frames addObject:[CCSprite spriteWithSpriteFrameName:[NSString stringWithFormat:@"Flag_Flap_%d.png", i]]];
+            [bgc->anim2 addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                                    [NSString stringWithFormat:@"Flag_Flap_%d.png", i]]];
         }
-        animation = [CCAnimation animationWithFrames:frames delay:.08];
-        [bgc->anims addObject:[NSValue valueWithPointer:[[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:animation restoreOriginalFrame:NO]] retain]]];
         [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
     }
 

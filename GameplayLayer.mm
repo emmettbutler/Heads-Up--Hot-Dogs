@@ -1140,6 +1140,14 @@
         }
         [self addChild:spriteSheetCharacter];
         [self addChild:spriteSheetCommon];
+        
+        if(level->slug == @"chicago"){
+            bgComponent *bgc = (bgComponent *)[[level->bgComponents objectAtIndex:0] pointerValue];
+            CCAnimation *anim = [CCAnimation animationWithFrames:bgc->anim1 delay:.1f];
+            _flagLeftAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO]] retain];
+            anim = [CCAnimation animationWithFrames:bgc->anim2 delay:.1f];
+            _flagRightAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO]] retain];
+        }
 
         background = [CCSprite spriteWithSpriteFrameName:level->bg];
         background.anchorPoint = CGPointZero;
@@ -1372,19 +1380,21 @@
             [sprite setOpacity:255.00 * cosf(.01 * time)];
         }
     } else if(level->slug == @"chicago"){
-        float windX = .6 * cosf(.01 * time);
+        float windX = 2 * cosf(.01 * time);
+        //float windX = (((float)(arc4random() % 20)) / 20.0) - 10.0;
         CCLOG(@"wind: %0.2f", windX);
         windForce = b2Vec2(windX, .2);
         CCSprite *flag = (CCSprite *)[[bgSprites objectAtIndex:0] pointerValue];
-        bgComponent *bgc = (bgComponent *)[[level->bgComponents objectAtIndex:0] pointerValue];
-        CCAction *flagPositive = (CCAction *)[[bgc->anims objectAtIndex:1] pointerValue];
-        CCAction *flagNegative = (CCAction *)[[bgc->anims objectAtIndex:0] pointerValue];
-        /*
-        if(windX > 0.0)
-            [flag runAction:flagPositive];
-        else 
-            [flag runAction:flagNegative];
-         */
+        if(windX < .10 && windX > -.10){
+            [flag stopAllActions];
+            [flag setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Flag_Flap_6.png"]]];
+        }
+        if(windX > 0.0 && [flag numberOfRunningActions] == 0){
+            [flag runAction:_flagRightAction];
+        }
+        else if(windX < 0.0 && [flag numberOfRunningActions] == 0){ 
+            [flag runAction:_flagLeftAction];
+        }
     } else if(level->slug == @"space" && !(time % 100)){
         float maxGrav = 40.0f;
         float g = -1.0*(arc4random() % (int)(maxGrav - 1)) - 1;
@@ -1896,7 +1906,7 @@
                                 }
                             }
                         }
-                        if(level->slug == @"chicago" && !(time % 3)){
+                        if(level->slug == @"chicago" && !(time % 15)){
                             if(b->GetLinearVelocity().x != b->GetLinearVelocity().x+windForce.x && b->GetLinearVelocity().y != b->GetLinearVelocity().y+windForce.y)
                                 b->SetLinearVelocity(b2Vec2(b->GetLinearVelocity().x+windForce.x, b->GetLinearVelocity().y+windForce.y));
                         }
