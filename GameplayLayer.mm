@@ -1144,9 +1144,15 @@
         if(level->slug == @"chicago"){
             bgComponent *bgc = (bgComponent *)[[level->bgComponents objectAtIndex:0] pointerValue];
             CCAnimation *anim = [CCAnimation animationWithFrames:bgc->anim1 delay:.1f];
-            _flagLeftAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO]] retain];
+            _flag1LeftAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO]] retain];
             anim = [CCAnimation animationWithFrames:bgc->anim2 delay:.1f];
-            _flagRightAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO]] retain];
+            _flag1RightAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO]] retain];
+            
+            bgc = (bgComponent *)[[level->bgComponents objectAtIndex:1] pointerValue];
+            anim = [CCAnimation animationWithFrames:bgc->anim1 delay:.1f];
+            _flag2LeftAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO]] retain];
+            anim = [CCAnimation animationWithFrames:bgc->anim2 delay:.1f];
+            _flag2RightAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO]] retain];
         }
 
         background = [CCSprite spriteWithSpriteFrameName:level->bg];
@@ -1384,16 +1390,21 @@
         //float windX = (((float)(arc4random() % 20)) / 20.0) - 10.0;
         CCLOG(@"wind: %0.2f", windX);
         windForce = b2Vec2(windX, .2);
-        CCSprite *flag = (CCSprite *)[[bgSprites objectAtIndex:0] pointerValue];
+        CCSprite *flag1 = (CCSprite *)[[bgSprites objectAtIndex:0] pointerValue];
+        CCSprite *flag2 = (CCSprite *)[[bgSprites objectAtIndex:1] pointerValue];
         if(windX < .10 && windX > -.10){
-            [flag stopAllActions];
-            [flag setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Flag_Flap_6.png"]]];
+            [flag1 stopAllActions];
+            [flag1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Flag_Flap_6.png"]]];
+            [flag2 stopAllActions];
+            [flag2 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Flag_Flap_6.png"]]];
         }
-        if(windX > 0.0 && [flag numberOfRunningActions] == 0){
-            [flag runAction:_flagRightAction];
+        if(windX > 0.0 && [flag1 numberOfRunningActions] == 0){
+            [flag1 runAction:_flag1RightAction];
+            [flag2 runAction:_flag2RightAction];
         }
-        else if(windX < 0.0 && [flag numberOfRunningActions] == 0){ 
-            [flag runAction:_flagLeftAction];
+        else if(windX < 0.0 && [flag1 numberOfRunningActions] == 0){ 
+            [flag1 runAction:_flag1LeftAction];
+            [flag2 runAction:_flag2LeftAction];
         }
     } else if(level->slug == @"space" && !(time % 100)){
         float maxGrav = 40.0f;
