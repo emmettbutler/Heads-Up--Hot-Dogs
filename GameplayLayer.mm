@@ -1386,7 +1386,7 @@
             [sprite setOpacity:255.00 * cosf(.01 * time)];
         }
     } else if(level->slug == @"chicago"){
-        float windX = 2 * cosf(.01 * time);
+        float windX = 2.85 * cosf(.01 * time);
         //float windX = (((float)(arc4random() % 20)) / 20.0) - 10.0;
         CCLOG(@"wind: %0.2f", windX);
         windForce = b2Vec2(windX, .2);
@@ -1917,9 +1917,9 @@
                                 }
                             }
                         }
-                        if(level->slug == @"chicago" && !(time % 15)){
-                            if(b->GetLinearVelocity().x != b->GetLinearVelocity().x+windForce.x && b->GetLinearVelocity().y != b->GetLinearVelocity().y+windForce.y)
-                                b->SetLinearVelocity(b2Vec2(b->GetLinearVelocity().x+windForce.x, b->GetLinearVelocity().y+windForce.y));
+                        if(level->slug == @"chicago" && !(time % 17)){
+                            if(b->GetLinearVelocity().x != b->GetLinearVelocity().x+windForce.x)
+                                b->SetLinearVelocity(b2Vec2(b->GetLinearVelocity().x+windForce.x, b->GetLinearVelocity().y));
                         }
                         for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()) {
                             fixtureUserData *fUd = (fixtureUserData *)f->GetUserData();
@@ -2086,7 +2086,7 @@
                                     CCLOG(@"Touching muncher!");
                                     ud->touched = true;
                                     ud->stopTime = ud->timeWalking + 1;
-                                    ud->stopTimeDelta = 250;
+                                    ud->stopTimeDelta = 170;
                                     ud->animLock = false;
                                 
                                     [ud->sprite1 stopAllActions];
