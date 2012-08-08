@@ -40,6 +40,7 @@ static NSUserDefaults *standardUserDefaults;
         levelProps *next;
         levelProps *prev;
         int characterProbSum;
+        int maxDogs;
         float gravity;
         BOOL unlocked;
         int unlockThreshold;

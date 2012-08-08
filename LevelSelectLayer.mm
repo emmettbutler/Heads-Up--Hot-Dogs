@@ -58,6 +58,7 @@
         lp->personSpeedMul = 1;
         lp->restitutionMul = 1;
         lp->frictionMul = 1;
+        lp->maxDogs = 6;
 
         dd = new spcDogData();
         dd->riseSprite = [NSString stringWithString:@"Steak_Rise.png"];
@@ -111,6 +112,7 @@
         lp->personSpeedMul = 1.2;
         lp->restitutionMul = 1.2;
         lp->frictionMul = .95;
+        lp->maxDogs = 6;
 
         dd = new spcDogData();
         dd->riseSprite = [NSString stringWithString:@"Bagel_Rise.png"];
@@ -178,11 +180,12 @@
     if(loadFull){
         lp->bg = [NSString stringWithString:@"Chicago_BG.png"];
         lp->bgm = [NSString stringWithString:@"gameplay 1.mp3"];
-        lp->gravity = -30.0f;
+        lp->gravity = -27.0f;
         lp->spritesheet = [NSString stringWithString:@"sprites_chicago"];
-        lp->personSpeedMul = 1;
-        lp->restitutionMul = 1.2;
-        lp->frictionMul = 1.4;
+        lp->personSpeedMul = .85;
+        lp->restitutionMul = 1.3;
+        lp->frictionMul = 1.1;
+        lp->maxDogs = 5;
 
         dd = new spcDogData();
         dd->riseSprite = [NSString stringWithString:@"Bagel_Rise.png"];
@@ -262,11 +265,12 @@
         if(loadFull){
         lp->bg = [NSString stringWithString:@"SpaceBG.png"];
         lp->bgm = [NSString stringWithString:@"gameplay 3.mp3"];
-        lp->gravity = -1.0f;
+        lp->gravity = -40.0f;
         lp->spritesheet = [NSString stringWithString:@"sprites_space"];
         lp->personSpeedMul = .7;
         lp->restitutionMul = 1.7;
         lp->frictionMul = 100;
+        lp->maxDogs = 6;
 
         dd = new spcDogData();
         dd->riseSprite = [NSString stringWithString:@"Chips_Rise.png"];

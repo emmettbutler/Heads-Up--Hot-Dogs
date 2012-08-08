@@ -162,7 +162,7 @@
     c->fTag = F_COPHED;
     c->heightOffset = 2.9f;
     c->pointValue = 15;
-    c->frequency = 3;
+    c->frequency = 2;
     c->lowerArmAngle = 0;
     c->upperArmAngle = 55;
     c->framerate = .07f;

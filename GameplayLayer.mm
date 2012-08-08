@@ -431,7 +431,7 @@
     if(b->GetPosition().x > winSize.width/PTM_RATIO || b->GetPosition().x < 0) return;
     if(_gameOver) return;
     if(_droppedCount < DROPPED_MAX && !_gameOver) _droppedCount++;
-    NSLog(@"Dropped count: %d", _droppedCount);
+    CCLOG(@"Dropped count: %d", _droppedCount);
     [self counterExplode:self data:[NSNumber numberWithInt:1]];
 }
 
@@ -1062,7 +1062,7 @@
 -(void)wienerCallback:(id)sender data:(NSNumber *)thisType {
     CCLOG(@"Dogs onscreen: %d", _dogsOnscreen);
     
-    if(_dogsOnscreen <= _maxDogsOnScreen && !_gameOver){
+    if(_dogsOnscreen < _maxDogsOnScreen && !_gameOver){
         if(thisType.intValue == S_SPCDOG){
             id screenLightenAction = [CCCallFuncND actionWithTarget:self selector:@selector(screenFlash:data:) data:[[NSNumber numberWithInt:1] retain]];
             id darkenFGAction = [CCCallFuncND actionWithTarget:self selector:@selector(colorFG:data:) data:[[NSNumber numberWithInt:1] retain]];
@@ -1187,7 +1187,7 @@
         _dogsOnscreen = 0;
         _dogsSaved = 0;
         _gameOver = false;
-        _maxDogsOnScreen = 3;
+        _maxDogsOnScreen = level->maxDogs - 3;
         _shootLock = NO;
         _droppedSpacing = 200;
         _droppedCount = 0;
@@ -1330,19 +1330,19 @@
     if(_points > 19000 && _wienerSpawnDelayTime != .6){
         _wienerSpawnDelayTime = .6;
     } else if(_points > 14000 && _wienerSpawnDelayTime != .7){
-        _maxDogsOnScreen = 6;
+        _maxDogsOnScreen = level->maxDogs;
         _wienerSpawnDelayTime = .7;
     } else if(_points > 12000 && _wienerSpawnDelayTime != .9) {
         _wienerSpawnDelayTime = .9;
-        _maxDogsOnScreen = 5;
+        _maxDogsOnScreen = level->maxDogs - 1;
     } else if(_points > 7000 && _wienerSpawnDelayTime != 1) {
         _wienerSpawnDelayTime = 1;
-        _maxDogsOnScreen = 4;
-    } else if(_points > 5000 && _wienerSpawnDelayTime != 2) {
+        _maxDogsOnScreen = level->maxDogs - 2;
+    } else if(_points > 5000 && _wienerSpawnDelayTime != 1.5) {
         _wienerSpawnDelayTime = 2;
-    } else if(_points > 2000 && _wienerSpawnDelayTime != 3) {
+    } else if(_points > 2000 && _wienerSpawnDelayTime != 2.5) {
         _wienerSpawnDelayTime = 3;
-    } else if(_points > 1000 && _wienerSpawnDelayTime != 4) {
+    } else if(_points > 1000 && _wienerSpawnDelayTime != 3.5) {
         _wienerSpawnDelayTime = 4;
     }
     
@@ -1385,9 +1385,9 @@
             CCSprite *sprite = (CCSprite *)[v pointerValue];
             [sprite setOpacity:255.00 * cosf(.01 * time)];
         }
-    } else if(level->slug == @"chicago"){
-        float windX = 2.85 * cosf(.01 * time);
-        //float windX = (((float)(arc4random() % 20)) / 20.0) - 10.0;
+    } else if(level->slug == @"chicago" && !(time % 19)){
+        float windX = 3.2 * cosf(.01 * time);
+        //float windX = (float)(arc4random() % 5);
         CCLOG(@"wind: %0.2f", windX);
         windForce = b2Vec2(windX, .2);
         CCSprite *flag1 = (CCSprite *)[[bgSprites objectAtIndex:0] pointerValue];
@@ -1480,9 +1480,9 @@
                 // a dog is definitely on a head when it collides with that head
                 ud->_dog_isOnHead = true;
                 pBody = pdContact.fixtureB->GetBody();
-                CCLOG(@"Dog/Person Collision - Y Vel: %0.2f", dogBody->GetLinearVelocity().x);
                 bodyUserData *pUd = (bodyUserData *)pBody->GetUserData();
                 b2Filter dogFilter;
+                if(!dogBody) continue;
                 for(b2Fixture* fixture = dogBody->GetFixtureList(); fixture; fixture = fixture->GetNext()){
                     fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
                     if(fUd->tag == F_DOGCLD){
@@ -1535,6 +1535,7 @@
                 // dog is definitely not on a head if it's touching the floor
                 ud->_dog_isOnHead = false;
                 ud->hasTouchedHead = false;
+                ud->touchLock = false;
                 if(ud->shotSeq)
                     [ud->sprite1 stopAction:ud->shotSeq];
                 if(!ud->deathSeqLock){
@@ -1615,8 +1616,8 @@
             }
             
             //destroy any sprite/body pair that's offscreen
-            if(ud->sprite1.position.x > winSize.width + 130 || ud->sprite1.position.x < -130 ||
-               ud->sprite1.position.y > winSize.height + 4000 || ud->sprite1.position.y < -40){
+            if(ud->sprite1.position.x > winSize.width + 80 || ud->sprite1.position.x < -80 ||
+               ud->sprite1.position.y > winSize.height + 700 || ud->sprite1.position.y < -40){
                 [ud->sprite1 stopAllActions];
                 [ud->sprite2 stopAllActions];
                 [ud->overlaySprite stopAllActions];
@@ -1646,6 +1647,14 @@
                 _world->DestroyBody(b);
                 ud = NULL;
                 continue;
+            }
+            
+            if(!b) continue;
+            
+            if(ud->sprite1.tag == S_HOTDOG &&  b->GetPosition().y <= FLOOR4_HT && (ud->sprite1.position.x > winSize.width || ud->sprite1.position.x < 0)){
+                [ud->sprite1 removeFromParentAndCleanup:YES];
+                ud->sprite1 = NULL;
+                _world->DestroyBody(b);
             }
             
             if(ud->overlaySprite != NULL){
@@ -1707,6 +1716,7 @@
                         }
                     }
                 }
+                if(!b) continue;
                 if(ud->sprite1.tag == S_COPARM){
                     //things for cop's arm and raycasting
                     policeRayPoint1 = b->GetPosition();
@@ -1744,7 +1754,7 @@
                                     if(_droppedCount > 0 && !_gameOver){
                                         [self counterExplode:self data:[NSNumber numberWithInt:0]];
                                         _droppedCount--;
-                                        NSLog(@"Dropped count: %d", _droppedCount);
+                                        CCLOG(@"Dropped count: %d", _droppedCount);
                                     }
                                 } else if(!ud->_muncher_hasDroppedDog){
                                     [ud->sprite1 stopAction:ud->altAction2];
@@ -1794,6 +1804,7 @@
                         }
                     }
                     if(!(time % 45) && ud->dogsOnHead && !_gameOver){
+                        if(!b) continue;
                         _points += ud->dogsOnHead * 25;
                         _points += ud->spcDogsOnHead * 250;
                         NSMutableArray *plus25Params = [[NSMutableArray alloc] initWithCapacity:4];
@@ -1840,6 +1851,7 @@
                                 }
                             }
                             
+                            if(!b) continue;
                             j = b->GetJointList();
                             if(j){
                                 if(j->joint->GetType() == e_revoluteJoint && ud->targetAngle != -1){
@@ -1865,6 +1877,7 @@
                             _world->DestroyJoint(mj);
                         }
                     }
+                    if(!b) continue;
                     //things for hot dogs
                     if(b->IsAwake()){
                         if(!ud->grabbed){
@@ -1883,6 +1896,7 @@
                         // a hacky way to ensure that dogs are registered as not on a head
                         // this works because it measures when a dog is below the level of the lowest head
                         // and then flips the _dog_isOnHead bit
+                        if(!b) continue;
                         if(b->GetPosition().y - 1 < FLOOR4_HT && ud->_dog_isOnHead){
                             ud->_dog_isOnHead = false;
                         }
@@ -1917,9 +1931,13 @@
                                 }
                             }
                         }
-                        if(level->slug == @"chicago" && !(time % 17)){
-                            if(b->GetLinearVelocity().x != b->GetLinearVelocity().x+windForce.x)
-                                b->SetLinearVelocity(b2Vec2(b->GetLinearVelocity().x+windForce.x, b->GetLinearVelocity().y));
+                        if(level->slug == @"chicago" && !(time % 19) && b->GetPosition().y > FLOOR4_HT+.5){
+                            if(ud->sprite1.position.x > 10 && ud->sprite1.position.x < winSize.width - 10){
+                                if(![ud->shotSeq isDone]){
+                                    if(b->GetLinearVelocity().x != b->GetLinearVelocity().x+windForce.x)
+                                        b->SetLinearVelocity(b2Vec2(b->GetLinearVelocity().x+windForce.x, b->GetLinearVelocity().y));
+                                }
+                            }
                         }
                         for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()) {
                             fixtureUserData *fUd = (fixtureUserData *)f->GetUserData();
