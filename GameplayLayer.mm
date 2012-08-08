@@ -507,11 +507,6 @@
         [dogSprite removeFromParentAndCleanup:YES];
         [ud->overlaySprite removeFromParentAndCleanup:YES];
         _world->DestroyBody(dogBody);
-        
-        free(ud);
-        ud = NULL;
-        dogBody->SetUserData(NULL);
-        dogBody = nil;
 #ifdef DEBUG
 #else
         [[SimpleAudioEngine sharedEngine] playEffect:@"hot dog disappear.mp3"];
@@ -1153,6 +1148,10 @@
             _flag2LeftAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO]] retain];
             anim = [CCAnimation animationWithFrames:bgc->anim2 delay:.1f];
             _flag2RightAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO]] retain];
+            
+            bgc = (bgComponent *)[[level->bgComponents objectAtIndex:2] pointerValue];
+            anim = [CCAnimation animationWithFrames:bgc->anim1 delay:.1f];
+            _dustAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO]] retain];
         }
 
         background = [CCSprite spriteWithSpriteFrameName:level->bg];
@@ -1386,25 +1385,35 @@
             [sprite setOpacity:255.00 * cosf(.01 * time)];
         }
     } else if(level->slug == @"chicago" && !(time % 19)){
-        float windX = 3.2 * cosf(.01 * time);
+        float maxWind = 3.2;
+        float windX = maxWind * cosf(.01 * time);
         //float windX = (float)(arc4random() % 5);
         CCLOG(@"wind: %0.2f", windX);
         windForce = b2Vec2(windX, .2);
         CCSprite *flag1 = (CCSprite *)[[bgSprites objectAtIndex:0] pointerValue];
         CCSprite *flag2 = (CCSprite *)[[bgSprites objectAtIndex:1] pointerValue];
-        if(windX < .10 && windX > -.10){
+        CCSprite *dust = (CCSprite *)[[bgSprites objectAtIndex:2] pointerValue];
+        [dust setOpacity:(abs(windX) * (255/maxWind))];
+        if(windX < .70 && windX > -.70){
             [flag1 stopAllActions];
             [flag1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Flag_Flap_6.png"]]];
             [flag2 stopAllActions];
             [flag2 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Flag_Flap_6.png"]]];
+            [dust stopAllActions];
         }
-        if(windX > 0.0 && [flag1 numberOfRunningActions] == 0){
+        else if(windX > 0.0 && [flag1 numberOfRunningActions] == 0){
             [flag1 runAction:_flag1RightAction];
             [flag2 runAction:_flag2RightAction];
+            [dust setVisible:true];
+            [dust setFlipX:true];
+            [dust runAction:_dustAction];
         }
         else if(windX < 0.0 && [flag1 numberOfRunningActions] == 0){ 
             [flag1 runAction:_flag1LeftAction];
             [flag2 runAction:_flag2LeftAction];
+            [dust setVisible:true];
+            [dust setFlipX:false];
+            [dust runAction:_dustAction];
         }
     } else if(level->slug == @"space" && !(time % 100)){
         float maxGrav = 40.0f;
@@ -1536,7 +1545,8 @@
                 ud->_dog_isOnHead = false;
                 ud->hasTouchedHead = false;
                 ud->touchLock = false;
-                if(ud->shotSeq)
+                ud->grabbed = false;
+                if(ud->shotSeq && ud->touchLock)
                     [ud->sprite1 stopAction:ud->shotSeq];
                 if(!ud->deathSeqLock){
                     ud->deathSeqLock = true;
@@ -1572,10 +1582,11 @@
     
     for(int i = 0; i < [mouseJoints count]; i++){
         b2MouseJoint *j = (b2MouseJoint *)[(NSValue *)[mouseJoints objectAtIndex:i] pointerValue];
-        if((j->GetTarget().x == 0 && j->GetTarget().y == 0) || [mouseJoints count] > 2 || _gameOver){
+        if((j->GetTarget().x == 0 && j->GetTarget().y == 0) || [mouseJoints count] > 2 || !_numWorldTouches || _gameOver){
             bodyUserData *ud = (bodyUserData *)((b2Body *)j->GetBodyB())->GetUserData();
             ud->grabbed = false;
-            _world->DestroyJoint(j);
+            if(j->GetBodyA() && j->GetBodyB())
+                _world->DestroyJoint(j);
             [mouseJoints removeObject:[mouseJoints objectAtIndex:i]];
         }   
     }
@@ -1874,7 +1885,8 @@
                         for(int i = 0; i < [mouseJoints count]; i++){
                             b2MouseJoint *mj = (b2MouseJoint *)[(NSValue *)[mouseJoints objectAtIndex:i] pointerValue];
                             [mouseJoints removeObject:[mouseJoints objectAtIndex:i]];
-                            _world->DestroyJoint(mj);
+                            if(mj->GetBodyA() && mj->GetBodyB())
+                                _world->DestroyJoint(mj);
                         }
                     }
                     if(!b) continue;
@@ -2292,7 +2304,8 @@
                         b2MouseJoint *mj = (b2MouseJoint *)[(NSValue *)[mouseJoints objectAtIndex:i] pointerValue];
                         if(mj->GetBodyB() == body){
                             [mouseJoints removeObject:[mouseJoints objectAtIndex:i]];
-                            _world->DestroyJoint(mj);
+                            if(mj->GetBodyA() && mj->GetBodyB())
+                                _world->DestroyJoint(mj);
                         }
                     }
                     

@@ -188,30 +188,30 @@
         lp->maxDogs = 5;
 
         dd = new spcDogData();
-        dd->riseSprite = [NSString stringWithString:@"Bagel_Rise.png"];
-        dd->fallSprite = [NSString stringWithString:@"Bagel_Fall.png"];
-        dd->mainSprite = [NSString stringWithString:@"Bagel.png"];
-        dd->grabSprite = [NSString stringWithString:@"Bagel_Grab.png"];
+        dd->riseSprite = [NSString stringWithString:@"ChiDog_Rise.png"];
+        dd->fallSprite = [NSString stringWithString:@"ChiDog_Fall.png"];
+        dd->mainSprite = [NSString stringWithString:@"ChiDog.png"];
+        dd->grabSprite = [NSString stringWithString:@"ChiDog_Grab.png"];
         dd->deathAnimFrames = [[NSMutableArray alloc] init];
         dd->shotAnimFrames = [[NSMutableArray alloc] init];
         dd->flashAnimFrames = [[NSMutableArray alloc] init];
         for(int i = 0; i < 1; i++){
             [dd->flashAnimFrames addObject:
             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-            [NSString stringWithFormat:@"Bagel_Die_1.png"]]];
+            [NSString stringWithFormat:@"ChiDog_Death_1.png"]]];
             [dd->flashAnimFrames addObject:
             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-            [NSString stringWithFormat:@"Bagel_Die_2.png"]]];
+            [NSString stringWithFormat:@"ChiDog_Death_2.png"]]];
         }
         for(int i = 1; i <= 8; i++){
             [dd->deathAnimFrames addObject:
             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-            [NSString stringWithFormat:@"Bagel_Die_%d.png", i]]];
+            [NSString stringWithFormat:@"ChiDog_Death_%d.png", i]]];
         }
-        for(int i = 1; i <= 6; i++){
+        for(int i = 1; i <= 5; i++){
             [dd->shotAnimFrames addObject:
             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-            [NSString stringWithFormat:@"Bagel_Shot_%d.png", i]]];
+            [NSString stringWithFormat:@"ChiDog_Shot_%d.png", i]]];
         }
 
         lp->specialDog = dd;
@@ -243,6 +243,15 @@
         for(int i = 8; i <= 11; i++){
             [bgc->anim2 addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
                                    [NSString stringWithFormat:@"Flag_Flap_%d.png", i]]];
+        }
+        [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
+        bgc = new bgComponent();
+        bgc->sprite = [[CCSprite spriteWithSpriteFrameName:@"Dust1_1.png"] retain];
+        bgc->sprite.position = CGPointMake(179, 20);
+        bgc->anim1 = [[NSMutableArray alloc] init];
+        for(int i = 1; i <= 6; i++){
+            [bgc->anim1 addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                                   [NSString stringWithFormat:@"Dust1_%d.png", i]]];
         }
         [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
     }

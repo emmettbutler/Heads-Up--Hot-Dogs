@@ -26,7 +26,7 @@
     b2Body *_wallsBody, *_groundBody, *wienerBody, *targetBody, *_personBody, *_policeArmBody;
     b2Fixture *_bottomFixture, *_wallsFixture, *_wienerFixture, *_targetFixture, *_personFixture, *_policeArmFixture;
     CCSprite *_wiener, *_personLower, *_personUpper, *_personUpperOverlay, *_target, *_pauseButton, *background;
-    CCAction *_walkAction, *_walkFaceAction, *_altFaceWalkAction, *_altWalkAction, *_flag1RightAction, *_flag1LeftAction, *_flag2RightAction, *_flag2LeftAction;
+    CCAction *_walkAction, *_walkFaceAction, *_altFaceWalkAction, *_altWalkAction, *_flag1RightAction, *_flag1LeftAction, *_flag2RightAction, *_flag2LeftAction, *_dustAction;
     CCFiniteTimeAction *_idleAction, *_appearAction, *_hitAction, *_shotAction, *_specialAction, *_armShootAction, *_specialFaceAction, *_specialAngryFaceAction, *_postStopAction;
     CCAnimation *walkAnim, *idleAnim, *hitAnim, *dogDeathAnim, *dogAppearAnim, *walkFaceAnim, *walkDogFaceAnim;
     CCAnimation *dogShotAnim, *specialAnim, *armShootAnim, *specialFaceAnim, *specialAngryFaceAnim, *altWalkAnim, *altFaceWalkAnim, *postStopAnim;
