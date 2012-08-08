@@ -1546,7 +1546,7 @@
                 ud->hasTouchedHead = false;
                 ud->touchLock = false;
                 ud->grabbed = false;
-                if(ud->shotSeq && ud->touchLock)
+                if(ud->shotSeq && !ud->touchLock)
                     [ud->sprite1 stopAction:ud->shotSeq];
                 if(!ud->deathSeqLock){
                     ud->deathSeqLock = true;
