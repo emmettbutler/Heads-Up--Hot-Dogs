@@ -115,7 +115,6 @@
         BOOL _dog_isOnHead;
         BOOL _person_hasTouchedDog;
         BOOL _muncher_hasDroppedDog;
-        BOOL _police_hasShot;
     };
 
     struct fixtureUserData {
