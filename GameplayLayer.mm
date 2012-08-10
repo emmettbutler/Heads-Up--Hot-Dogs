@@ -520,6 +520,7 @@
 
     if(ud->aiming){
         ud->aiming = false;
+        ud->_police_hasShot = true;
     } else {
         ud->aiming = true;
     }
@@ -937,6 +938,7 @@
         if(person->tag == S_POLICE){
             ud->overlaySprite = target;
             ud->stopTimeDelta = 60; // frames
+            ud->_police_hasShot = false;
             ud->aimFace = [NSString stringWithString:@"Cop_Head_Aiming_1.png"];
         } else if (person->tag == S_MUNCHR){
             ud->tickleTimer = 0;
@@ -1355,18 +1357,6 @@
             }
         }
     }
-
-    if(_pause){
-        CCLabelTTF *label = [CCLabelTTF labelWithString:@"Pause" fontName:@"LostPet.TTF" fontSize:18.0];
-        CCMenuItem *button = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(pause)];
-        label = [CCLabelTTF labelWithString:@"Menu" fontName:@"LostPet.TTF" fontSize:18.0];
-        CCMenuItem *debug = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(debugDraw)];
-        CCMenu *menu = [CCMenu menuWithItems:button, debug, nil];
-        [menu setPosition:ccp(40, winSize.height-30)];
-        [menu alignItemsVertically];
-        [self addChild:menu];
-        return;
-    }
     
     if(_flashLayer){
         [_flashLayer setOpacity:255 - (190+((5*time) % 255))];
@@ -1597,6 +1587,7 @@
     for(b2Body* b = _world->GetBodyList(); b; b = b->GetNext()){
         if(b->GetUserData() && b->GetUserData() != (void*)100){
             bodyUserData *ud = (bodyUserData*)b->GetUserData();
+            // TODO - @try{} @catch (NSException * e){}
             //boilerplate - update sprite positions to match their physics bodies
             ud->sprite1.position = CGPointMake((b->GetPosition().x * PTM_RATIO)+ud->lowerXOffset, (b->GetPosition().y * PTM_RATIO)+ud->lowerYOffset);
             ud->sprite1.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
@@ -1674,6 +1665,10 @@
                         [ud->overlaySprite setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Target_NoDog.png"]]];
                         ud->overlaySprite.position = CGPointMake(policeRayPoint2.x*PTM_RATIO, policeRayPoint2.y*PTM_RATIO);
                         ud->overlaySprite.rotation = 3 * (time % 360);
+                        if(ud->_police_hasShot){
+                            [ud->overlaySprite removeFromParentAndCleanup:YES];
+                            ud->overlaySprite = NULL;
+                        }
                     }
                 }
                 else {
@@ -1880,8 +1875,7 @@
                     if(ud->sprite1.position.x > 0 && ud->sprite1.position.x < winSize.width)
                         _dogsOnscreen++;
                     if(_numWorldTouches <= 0){
-                        if(ud->grabbed) // don't mark any dog as held if there are no touches
-                            ud->grabbed = false;
+                        ud->grabbed = false;
                         for(int i = 0; i < [mouseJoints count]; i++){
                             b2MouseJoint *mj = (b2MouseJoint *)[(NSValue *)[mouseJoints objectAtIndex:i] pointerValue];
                             [mouseJoints removeObject:[mouseJoints objectAtIndex:i]];
@@ -1991,9 +1985,10 @@
                                                 
                                             }
                                         }
-
-                                        if(copBody && copBody->GetUserData() && copArmBody && copArmBody->GetUserData()){
-                                            copUd = (bodyUserData *)copBody->GetUserData();
+                                        if(!copBody || !copBody->GetUserData()) continue;
+                                        copUd = (bodyUserData *)copBody->GetUserData();
+                                        if(!copUd->_police_hasShot && copArmBody && copArmBody->GetUserData()){
+                                            
                                             NSValue *dBody = [[NSValue valueWithPointer:dogBody] retain];
 
                                             CCDelayTime *delay = [CCDelayTime actionWithDuration:((float)copUd->stopTimeDelta-10)/60];
@@ -2279,6 +2274,7 @@
     location = [[CCDirector sharedDirector] convertToGL:location];
     b2Vec2 locationWorld = b2Vec2(location.x/PTM_RATIO, location.y/PTM_RATIO);
     
+    CCLOG(@"touches count at start of touchesEnded: %d", [[event allTouches] count]);
     _numWorldTouches -= [touches count];
     
     for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
