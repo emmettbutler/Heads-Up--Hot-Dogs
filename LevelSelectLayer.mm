@@ -68,7 +68,7 @@
         dd->deathAnimFrames = [[NSMutableArray alloc] init];
         dd->flashAnimFrames = [[NSMutableArray alloc] init];
         dd->shotAnimFrames = [[NSMutableArray alloc] init];
-        for(int i = 0; i < 1; i++){
+        for(int i = 0; i < 2; i++){
             [dd->flashAnimFrames addObject:
             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
             [NSString stringWithFormat:@"Steak_Die_1.png"]]];
@@ -122,7 +122,7 @@
         dd->deathAnimFrames = [[NSMutableArray alloc] init];
         dd->shotAnimFrames = [[NSMutableArray alloc] init];
         dd->flashAnimFrames = [[NSMutableArray alloc] init];
-        for(int i = 0; i < 1; i++){
+        for(int i = 0; i < 2; i++){
             [dd->flashAnimFrames addObject:
             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
             [NSString stringWithFormat:@"Bagel_Die_1.png"]]];
@@ -195,7 +195,7 @@
         dd->deathAnimFrames = [[NSMutableArray alloc] init];
         dd->shotAnimFrames = [[NSMutableArray alloc] init];
         dd->flashAnimFrames = [[NSMutableArray alloc] init];
-        for(int i = 0; i < 1; i++){
+        for(int i = 0; i < 2; i++){
             [dd->flashAnimFrames addObject:
             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
             [NSString stringWithFormat:@"ChiDog_Death_1.png"]]];
@@ -289,7 +289,7 @@
         dd->deathAnimFrames = [[NSMutableArray alloc] init];
         dd->shotAnimFrames = [[NSMutableArray alloc] init];
         dd->flashAnimFrames = [[NSMutableArray alloc] init];
-        for(int i = 0; i < 1; i++){
+        for(int i = 0; i < 2; i++){
             [dd->flashAnimFrames addObject:
             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
             [NSString stringWithFormat:@"Chips_Die_1.png"]]];
