@@ -31,8 +31,6 @@
     [levelArray addObject:[NSValue valueWithPointer:s]];
     s = [self jogger];
     [levelArray addObject:[NSValue valueWithPointer:s]];
-    s = [self police];
-    [levelArray addObject:[NSValue valueWithPointer:s]];
     
     return levelArray;
 }
