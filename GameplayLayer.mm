@@ -1545,7 +1545,7 @@
                 ud->_dog_isOnHead = false;
                 ud->hasTouchedHead = false;
                 ud->touchLock = false;
-                ud->grabbed = false;
+                //ud->grabbed = false;
                 if(ud->shotSeq && !ud->touchLock)
                     [ud->sprite1 stopAction:ud->shotSeq];
                 if(!ud->deathSeqLock){
@@ -1882,12 +1882,6 @@
                     if(_numWorldTouches <= 0){
                         if(ud->grabbed) // don't mark any dog as held if there are no touches
                             ud->grabbed = false;
-                        for(int i = 0; i < [mouseJoints count]; i++){
-                            b2MouseJoint *mj = (b2MouseJoint *)[(NSValue *)[mouseJoints objectAtIndex:i] pointerValue];
-                            [mouseJoints removeObject:[mouseJoints objectAtIndex:i]];
-                            if(mj->GetBodyA() && mj->GetBodyB())
-                                _world->DestroyJoint(mj);
-                        }
                     }
                     if(!b) continue;
                     //things for hot dogs
