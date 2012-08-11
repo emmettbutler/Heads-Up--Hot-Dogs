@@ -520,6 +520,7 @@
 
     if(ud->aiming){
         ud->aiming = false;
+        ud->_cop_hasShot = true;
     } else {
         ud->aiming = true;
     }
@@ -937,6 +938,7 @@
         if(person->tag == S_POLICE){
             ud->overlaySprite = target;
             ud->stopTimeDelta = 60; // frames
+            ud->_cop_hasShot = false;
             ud->aimFace = [NSString stringWithString:@"Cop_Head_Aiming_1.png"];
         } else if (person->tag == S_MUNCHR){
             ud->tickleTimer = 0;
@@ -1674,6 +1676,10 @@
                         [ud->overlaySprite setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Target_NoDog.png"]]];
                         ud->overlaySprite.position = CGPointMake(policeRayPoint2.x*PTM_RATIO, policeRayPoint2.y*PTM_RATIO);
                         ud->overlaySprite.rotation = 3 * (time % 360);
+                        if(ud->_cop_hasShot){
+                            [ud->overlaySprite removeFromParentAndCleanup:YES];
+                            ud->overlaySprite = NULL;
+                        }
                     }
                 }
                 else {
@@ -1986,8 +1992,10 @@
                                             }
                                         }
 
-                                        if(copBody && copBody->GetUserData() && copArmBody && copArmBody->GetUserData()){
-                                            copUd = (bodyUserData *)copBody->GetUserData();
+                                        
+                                        if(!copBody || !copBody->GetUserData()) continue;
+                                        copUd = (bodyUserData *)copBody->GetUserData();
+                                        if(!copUd->_cop_hasShot && copArmBody && copArmBody->GetUserData()){
                                             NSValue *dBody = [[NSValue valueWithPointer:dogBody] retain];
 
                                             CCDelayTime *delay = [CCDelayTime actionWithDuration:((float)copUd->stopTimeDelta-10)/60];
@@ -2042,6 +2050,8 @@
                                                           [CCCallFuncND actionWithTarget:self selector:@selector(copFlipAim:data:) data:[[NSValue valueWithPointer:copBody] retain]],
                                                           nil];
                                             [self runAction:lockSeq];
+                                            
+                                            copUd->_cop_hasShot = true;
                                             
                                             break;
                                         }
