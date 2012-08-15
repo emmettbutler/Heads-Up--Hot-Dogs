@@ -86,8 +86,7 @@
         
         NSMutableArray *titleAnimFrames = [[NSMutableArray alloc] initWithCapacity:13];
         [titleAnimFrames addObject:
-         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-          [NSString stringWithString:@"blank_bg.png"]]];
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"blank_bg.png"]];
         for(int i = 2; i <= 13; i++){
             [titleAnimFrames addObject:
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:

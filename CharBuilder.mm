@@ -90,10 +90,10 @@
 +(personStruct *)businessman{
     personStruct *c = new personStruct();
     
-    c->slug = [NSString stringWithString:@"busman"];
-    c->lowerSprite = [NSString stringWithString:@"BusinessMan_Walk_1.png"];
-    c->upperSprite = [NSString stringWithString:@"BusinessHead_NoDog_1.png"];
-    c->upperOverlaySprite = [NSString stringWithString:@"BusinessHead_Dog_1.png"];
+    c->slug = @"busman";
+    c->lowerSprite = @"BusinessMan_Walk_1.png";
+    c->upperSprite = @"BusinessHead_NoDog_1.png";
+    c->upperOverlaySprite = @"BusinessHead_Dog_1.png";
     c->tag = S_BUSMAN;
     c->hitboxWidth = 21.0;
     c->hitboxHeight = .0001;
@@ -140,12 +140,12 @@
 +(personStruct *)police{
     personStruct *c = new personStruct();
 
-    c->slug = [NSString stringWithString:@"police"];
-    c->lowerSprite = [NSString stringWithString:@"Cop_Run_1.png"];
-    c->upperSprite = [NSString stringWithString:@"Cop_Head_NoDog_1.png"];
-    c->upperOverlaySprite = [NSString stringWithString:@"Cop_Head_Dog_1.png"];
-    c->armSprite = [NSString stringWithString:@"cop_arm.png"];
-    c->targetSprite = [NSString stringWithString:@"Target_NoDog.png"];
+    c->slug = @"police";
+    c->lowerSprite = @"Cop_Run_1.png";
+    c->upperSprite = @"Cop_Head_NoDog_1.png";
+    c->upperOverlaySprite = @"Cop_Head_Dog_1.png";
+    c->armSprite = @"cop_arm.png";
+    c->targetSprite = @"Target_NoDog.png";
     c->tag = S_POLICE;
     c->armTag = S_COPARM;
     c->hitboxWidth = 21.5;
@@ -179,7 +179,7 @@
     }
     [c->idleAnimFrames addObject:
      [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-      [NSString stringWithString:@"Cop_Idle.png"]]];
+      @"Cop_Idle.png"]];
     for(int i = 1; i <= 4; i++){
         [c->faceWalkAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -208,10 +208,10 @@
 +(personStruct *)jogger{
     personStruct *c = new personStruct();
     
-    c->slug = [NSString stringWithString:@"jogger"];
-    c->lowerSprite = [NSString stringWithString:@"Jogger_Run_1.png"];
-    c->upperSprite = [NSString stringWithString:@"Jogger_Head_NoDog_1.png"];
-    c->upperOverlaySprite = [NSString stringWithString:@"Jogger_Head_Dog_1.png"];
+    c->slug = @"jogger";
+    c->lowerSprite = @"Jogger_Run_1.png";
+    c->upperSprite = @"Jogger_Head_NoDog_1.png";
+    c->upperOverlaySprite = @"Jogger_Head_Dog_1.png";
     c->tag = S_JOGGER;
     c->hitboxWidth = 22.0;
     c->hitboxHeight = .0001;
@@ -258,10 +258,10 @@
 +(personStruct *)youngPro{
     personStruct *c = new personStruct();
     
-    c->slug = [NSString stringWithString:@"youngpro"];
-    c->lowerSprite = [NSString stringWithString:@"YoungProfesh_Walk_1.png"];
-    c->upperSprite = [NSString stringWithString:@"YoungProfesh_Head_NoDog_1.png"];
-    c->upperOverlaySprite = [NSString stringWithString:@"YoungProfesh_Head_Dog_1.png"];
+    c->slug = @"youngpro";
+    c->lowerSprite = @"YoungProfesh_Walk_1.png";
+    c->upperSprite = @"YoungProfesh_Head_NoDog_1.png";
+    c->upperOverlaySprite = @"YoungProfesh_Head_Dog_1.png";
     c->tag = S_YNGPRO;
     c->hitboxWidth = 24.0;
     c->hitboxHeight = .0001;
@@ -308,10 +308,10 @@
 +(personStruct *)crustPunk{
     personStruct *c = new personStruct();
     
-    c->slug = [NSString stringWithString:@"crpunk"];
-    c->lowerSprite = [NSString stringWithString:@"CrustPunk_Walk_1.png"];
-    c->upperSprite = [NSString stringWithString:@"CrustPunk_Head_NoDog_1.png"];
-    c->upperOverlaySprite = [NSString stringWithString:@"YoungProfesh_Head_Dog_1.png"];
+    c->slug = @"crpunk";
+    c->lowerSprite = @"CrustPunk_Walk_1.png";
+    c->upperSprite = @"CrustPunk_Head_NoDog_1.png";
+    c->upperOverlaySprite = @"YoungProfesh_Head_Dog_1.png";
     c->tag = S_CRPUNK;
     c->hitboxWidth = 16.0;
     c->hitboxHeight = .0001;
@@ -358,10 +358,10 @@
 +(personStruct *)dogMuncher{
     personStruct *c = new personStruct();
     
-    c->slug = [NSString stringWithString:@"muncher"];
-    c->lowerSprite = [NSString stringWithString:@"DogEater_Walk_1.png"];
-    c->upperSprite = [NSString stringWithString:@"DogEater_Head_NoDog_1.png"];
-    c->upperOverlaySprite = [NSString stringWithString:@"DogEater_Head_NoDog_1.png"];
+    c->slug = @"muncher";
+    c->lowerSprite = @"DogEater_Walk_1.png";
+    c->upperSprite = @"DogEater_Head_NoDog_1.png";
+    c->upperOverlaySprite = @"DogEater_Head_NoDog_1.png";
     c->tag = S_MUNCHR;
     c->flipSprites = true;
     c->hitboxWidth = 20.0;

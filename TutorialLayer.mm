@@ -68,7 +68,7 @@
         page = new tutorialPage();
         tSprite = new tutorialSprite();
         page->sprites = [[NSMutableArray alloc] init];
-        page->caption = [NSString stringWithString:@"This is a hot dog. It loves to travel."];
+        page->caption = @"This is a hot dog. It loves to travel.";
         for(int i = 1; i <= 10; i++){
             [animFrames addObject:
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -76,8 +76,7 @@
         }
         for(int i = 1; i <= 10; i++){
             [animFrames addObject:
-             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-              [NSString stringWithFormat:@"dog54x12.png", i]]];
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"dog54x12.png"]];
         }
         tSprite->animFrames = animFrames;
         tSprite->location = CGPointMake(winSize.width/2,275);
@@ -88,7 +87,7 @@
         page = new tutorialPage();
         tSprite = new tutorialSprite();
         page->sprites = [[NSMutableArray alloc] init];
-        page->caption = [NSString stringWithString:@"It hates sitting still. Lose 5 and you're out."];
+        page->caption = @"It hates sitting still. Lose 5 and you're out.";
         for(int i = 1; i < 8; i++){
             [animFrames addObject:
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -126,7 +125,7 @@
         page = new tutorialPage();
         tSprite = new tutorialSprite();
         page->sprites = [[NSMutableArray alloc] init];
-        page->caption = [NSString stringWithString:@"This is the hot dogs' transportation."];
+        page->caption = @"This is the hot dogs' transportation.";
         for(int i = 1; i < 6; i++){
             [animFrames addObject:
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -151,7 +150,7 @@
         page = new tutorialPage();
         tSprite = new tutorialSprite();
         page->sprites = [[NSMutableArray alloc] init];
-        page->caption = [NSString stringWithString:@"Their heads can carry hot dogs."];
+        page->caption = @"Their heads can carry hot dogs.";
         for(int i = 1; i < 6; i++){
             [animFrames addObject:
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -194,7 +193,7 @@
         page = new tutorialPage();
         tSprite = new tutorialSprite();
         page->sprites = [[NSMutableArray alloc] init];
-        page->caption = [NSString stringWithString:@"The dogs get carried away"];
+        page->caption = @"The dogs get carried away";
         for(int i = 1; i < 6; i++){
             [animFrames addObject:
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -237,7 +236,7 @@
         page = new tutorialPage();
         tSprite = new tutorialSprite();
         page->sprites = [[NSMutableArray alloc] init];
-        page->caption = [NSString stringWithString:@"But watch out for the police!"];
+        page->caption = @"But watch out for the police!";
         for(int i = 1; i < 6; i++){
             [animFrames addObject:
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -386,7 +385,7 @@
     
     if(count > 5){
         if(_from == @"options") [[CCDirector sharedDirector] replaceScene:[OptionsLayer scene]];
-        else [[CCDirector sharedDirector] replaceScene:[GameplayLayer sceneWithSlug:[[NSString stringWithString:@"philly"] retain]]];
+        else [[CCDirector sharedDirector] replaceScene:[GameplayLayer sceneWithSlug:[@"philly" retain]]];
         return;
     }
     
@@ -405,7 +404,7 @@
 }
 
 - (void)switchSceneStart{
-    [[CCDirector sharedDirector] replaceScene:[GameplayLayer sceneWithSlug:[[NSString stringWithString:@"philly"] retain]]];
+    [[CCDirector sharedDirector] replaceScene:[GameplayLayer sceneWithSlug:[@"philly" retain]]];
 }
 
 - (void)switchSceneTitleScreen{
