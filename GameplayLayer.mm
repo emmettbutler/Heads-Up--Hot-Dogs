@@ -2239,7 +2239,7 @@
                     b2MouseJoint *mj = (b2MouseJoint *)[(NSValue *)[mouseJoints objectAtIndex:i] pointerValue];
                     mouseJointUserData *jUd = (mouseJointUserData *)mj->GetUserData();
                     if(mj->GetBodyB() == body){
-                        [sprite stopAllActions];
+                        //[sprite stopAllActions];
                         ud->deathSeqLock = false;
                         for(int i = 0; i < 2; i++){
                             if((abs(locations[i].x - jUd->prevX) < 1.6 && abs(locations[i].y - jUd->prevY) < 1.6)){
