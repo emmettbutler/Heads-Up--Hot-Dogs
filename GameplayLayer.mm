@@ -1374,6 +1374,9 @@
     if(_flashLayer){
         [_flashLayer setOpacity:255 - (190+((5*time) % 255))];
     }
+    
+    // TODO - complete revamp of joint creation/destruction logic as it relates to number of touches
+    NSAssert([mouseJoints count] <= _numWorldTouches, @"mouse joint / touch imbalance");
 
     time++;
     
@@ -2139,6 +2142,7 @@
                     else if((ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG) && !ud->touchLock){ // loop over all hot dogs
                         for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
                             // if the dog is not already grabbed and one of the touches is on it, make the joint
+                            if([mouseJoints count] >= 2) break;
                             if (!ud->grabbed && ((fixture->TestPoint(locationWorld1) && !touched1) || (fixture->TestPoint(locationWorld2) && !touched2))){
                                 dogsTouched++;
                                 _lastTouchTime = time;
