@@ -1585,10 +1585,12 @@
     float rayLength = COP_RANGE;
     b2Vec2 intersectionPoint(0,0);
     
-
-    for(int i = 0; i < [mouseJoints count]; i++){
-        b2MouseJoint *j = (b2MouseJoint *)[(NSValue *)[mouseJoints objectAtIndex:i] pointerValue];
-        if((j->GetTarget().x == 0 && j->GetTarget().y == 0) || [mouseJoints count] > 2 || !_numWorldTouches || _gameOver){
+    // TODO - could this be called too much and cause slowdown?
+    CCLOG(@"mousejoints: %d", [mouseJoints count]);
+    CCLOG(@"_numWorldTouches: %d", _numWorldTouches);
+    if(!_numWorldTouches && [mouseJoints count]){
+        for(int i = 0; i < [mouseJoints count]; i++){
+            b2MouseJoint *j = (b2MouseJoint *)[(NSValue *)[mouseJoints objectAtIndex:i] pointerValue];
             bodyUserData *ud = (bodyUserData *)((b2Body *)j->GetBodyB())->GetUserData();
             ud->grabbed = false;
             if(j->GetBodyA() && j->GetBodyB())
