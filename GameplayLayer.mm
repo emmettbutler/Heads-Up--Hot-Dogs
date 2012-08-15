@@ -1352,9 +1352,9 @@
         for(NSValue *v in dogIcons){
             CCSprite *icon = (CCSprite *)[v pointerValue];
             if([dogIcons indexOfObject:v] < _droppedCount && [icon numberOfRunningActions] == 0){
-                [icon setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"DogHud_X_6.png"]];
+                [icon setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"DogHud_X_6.png"]]];
             } else if([icon numberOfRunningActions] == 0){
-                [icon setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"DogHud_Dog.png"]];
+                [icon setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"DogHud_Dog.png"]]];
             }
         }
     }
@@ -1374,9 +1374,6 @@
     if(_flashLayer){
         [_flashLayer setOpacity:255 - (190+((5*time) % 255))];
     }
-    
-    // TODO - complete revamp of joint creation/destruction logic as it relates to number of touches
-    NSAssert([mouseJoints count] <= _numWorldTouches, @"mouse joint / touch imbalance");
 
     time++;
     
@@ -1639,10 +1636,6 @@
                 if(ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG){
                     _dogsSaved++;
                 }
-                if(ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG)
-                    _world->DestroyBody(b);
-                else
-                    _world->DestroyBody(b);
                 CCLOG(@"Body removed - tag %d", ud->sprite1.tag);
                 [ud->sprite1 removeFromParentAndCleanup:YES];
                 if(ud->sprite2 != NULL){
@@ -1654,7 +1647,7 @@
                 if(ud->overlaySprite != NULL){
                     [ud->overlaySprite removeFromParentAndCleanup:YES];
                 }
-                
+                _world->DestroyBody(b);
                 ud = NULL;
                 continue;
             }
@@ -1884,7 +1877,8 @@
                     if(ud->sprite1.position.x > 0 && ud->sprite1.position.x < winSize.width)
                         _dogsOnscreen++;
                     if(_numWorldTouches <= 0){
-                        ud->grabbed = false;
+                        if(ud->grabbed) // don't mark any dog as held if there are no touches
+                            ud->grabbed = false;
                     }
                     if(!b) continue;
                     //things for hot dogs
@@ -1899,7 +1893,7 @@
                                     [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:ud->_dog_mainSprite]];
                                 }
                             }
-                        } else {
+                        } else { // this is breaking because aimedAt never gets turned false
                             [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:ud->_dog_grabSprite]];
                         }
                         // a hacky way to ensure that dogs are registered as not on a head
@@ -2090,9 +2084,6 @@
     int dogsTouched = 0;
     BOOL touched1 = false, touched2 = false;
     
-    CCLOG(@"locationWorld1: %0.2f x %0.2f", locationWorld1.x, locationWorld1.y);
-    CCLOG(@"locationWorld2: %0.2f x %0.2f", locationWorld2.x, locationWorld2.y);
-    
     if (count <= 2){
         CCLOG(@"%d touches", count);
         if(CGRectContainsPoint(_pauseButtonRect, touchLocation1)){
@@ -2142,7 +2133,6 @@
                     else if((ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG) && !ud->touchLock){ // loop over all hot dogs
                         for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
                             // if the dog is not already grabbed and one of the touches is on it, make the joint
-                            if([mouseJoints count] >= 2) break;
                             if (!ud->grabbed && ((fixture->TestPoint(locationWorld1) && !touched1) || (fixture->TestPoint(locationWorld2) && !touched2))){
                                 dogsTouched++;
                                 _lastTouchTime = time;
@@ -2152,7 +2142,6 @@
                                 md.bodyB = body;
                                 
                                 NSNumber *hash;
-                                
                                 if(fixture->TestPoint(locationWorld1)){
                                     md.target = locationWorld1;
                                     hash = [[NSNumber numberWithInt:[touch1 hash]]retain];
