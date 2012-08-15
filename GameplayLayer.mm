@@ -2044,7 +2044,6 @@
                                             
                                             ud->aimedAt = true;
 
-                                            id particleAction = [CCCallFunc actionWithTarget:self selector:@selector(counterExplode)];
                                             id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:dBody];
                                             id incAction = [CCCallFuncND actionWithTarget:self selector:@selector(incrementDroppedCount:data:) data:dBody];
                                             id lockAction = [CCCallFuncND actionWithTarget:self selector:@selector(lockWiener:data:) data:[[NSValue valueWithPointer:ud] retain]];
