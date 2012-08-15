@@ -43,17 +43,17 @@
 
     lp = new levelProps();
     lp->enabled = true;
-    lp->slug = [NSString stringWithString:@"philly"];
-    lp->name = [NSString stringWithString:@"Philly"];
+    lp->slug = @"philly";
+    lp->name = @"Philly";
     lp->unlockThreshold = -1;
-    lp->func = [NSString stringWithString:@"switchScreenPhilly"];
-    lp->thumbnail = [NSString stringWithString:@"Philly_Thumb.png"];
+    lp->func = @"switchScreenPhilly";
+    lp->thumbnail = @"Philly_Thumb.png";
 
     if(loadFull){
-        lp->bg = [NSString stringWithString:@"bg_philly.png"];
-        lp->bgm = [NSString stringWithString:@"gameplay 1.mp3"];
+        lp->bg = @"bg_philly.png";
+        lp->bgm = @"gameplay 1.mp3";
         lp->gravity = -30.0f;
-        lp->spritesheet = [NSString stringWithString:@"sprites_philly"];
+        lp->spritesheet = @"sprites_philly";
         lp->highScore = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"highScore%@", lp->slug]];
         lp->personSpeedMul = 1;
         lp->restitutionMul = 1;
@@ -61,10 +61,10 @@
         lp->maxDogs = 6;
 
         dd = new spcDogData();
-        dd->riseSprite = [NSString stringWithString:@"Steak_Rise.png"];
-        dd->fallSprite = [NSString stringWithString:@"Steak_Fall.png"];
-        dd->mainSprite = [NSString stringWithString:@"Steak.png"];
-        dd->grabSprite = [NSString stringWithString:@"Steak_Grabbed.png"];
+        dd->riseSprite = @"Steak_Rise.png";
+        dd->fallSprite = @"Steak_Fall.png";
+        dd->mainSprite = @"Steak.png";
+        dd->grabSprite = @"Steak_Grabbed.png";
         dd->deathAnimFrames = [[NSMutableArray alloc] init];
         dd->flashAnimFrames = [[NSMutableArray alloc] init];
         dd->shotAnimFrames = [[NSMutableArray alloc] init];
@@ -98,27 +98,27 @@
 
     lp = new levelProps();
     lp->enabled = true;
-    lp->slug = [NSString stringWithString:@"nyc"];
-    lp->name = [NSString stringWithString:@"Big Apple"];
+    lp->slug = @"nyc";
+    lp->name = @"Big Apple";
     lp->unlockThreshold = 15000;
-    lp->func = [NSString stringWithString:@"switchScreenNYC"];
-    lp->thumbnail = [NSString stringWithString:@"NYC_Thumb.png"];
+    lp->func = @"switchScreenNYC";
+    lp->thumbnail = @"NYC_Thumb.png";
 
     if(loadFull){
-        lp->bg = [NSString stringWithString:@"BG_NYC.png"];
-        lp->bgm = [NSString stringWithString:@"gameplay 3.mp3"];
+        lp->bg = @"BG_NYC.png";
+        lp->bgm = @"gameplay 3.mp3";
         lp->gravity = -32.0f;
-        lp->spritesheet = [NSString stringWithString:@"sprites_nyc"];
+        lp->spritesheet = @"sprites_nyc";
         lp->personSpeedMul = 1.2;
         lp->restitutionMul = 1.2;
         lp->frictionMul = .95;
         lp->maxDogs = 6;
 
         dd = new spcDogData();
-        dd->riseSprite = [NSString stringWithString:@"Bagel_Rise.png"];
-        dd->fallSprite = [NSString stringWithString:@"Bagel_Fall.png"];
-        dd->mainSprite = [NSString stringWithString:@"Bagel.png"];
-        dd->grabSprite = [NSString stringWithString:@"Bagel_Grab.png"];
+        dd->riseSprite = @"Bagel_Rise.png";
+        dd->fallSprite = @"Bagel_Fall.png";
+        dd->mainSprite = @"Bagel.png";
+        dd->grabSprite = @"Bagel_Grab.png";
         dd->deathAnimFrames = [[NSMutableArray alloc] init];
         dd->shotAnimFrames = [[NSMutableArray alloc] init];
         dd->flashAnimFrames = [[NSMutableArray alloc] init];
@@ -171,27 +171,27 @@
 
     lp = new levelProps();
     lp->enabled = true;
-    lp->slug = [NSString stringWithString:@"chicago"];
-    lp->name = [NSString stringWithString:@"Windy City"];
+    lp->slug = @"chicago";
+    lp->name = @"Windy City";
     lp->unlockThreshold = 14000;
-    lp->thumbnail = [NSString stringWithString:@"Chicago_Thumb.png"];
-    lp->func = [NSString stringWithString:@"switchScreenChicago"];
+    lp->thumbnail = @"Chicago_Thumb.png";
+    lp->func = @"switchScreenChicago";
 
     if(loadFull){
-        lp->bg = [NSString stringWithString:@"Chicago_BG.png"];
-        lp->bgm = [NSString stringWithString:@"gameplay 1.mp3"];
+        lp->bg = @"Chicago_BG.png";
+        lp->bgm = @"gameplay 1.mp3";
         lp->gravity = -27.0f;
-        lp->spritesheet = [NSString stringWithString:@"sprites_chicago"];
+        lp->spritesheet = @"sprites_chicago";
         lp->personSpeedMul = .85;
         lp->restitutionMul = 1.3;
         lp->frictionMul = 1.1;
         lp->maxDogs = 5;
 
         dd = new spcDogData();
-        dd->riseSprite = [NSString stringWithString:@"ChiDog_Rise.png"];
-        dd->fallSprite = [NSString stringWithString:@"ChiDog_Fall.png"];
-        dd->mainSprite = [NSString stringWithString:@"ChiDog.png"];
-        dd->grabSprite = [NSString stringWithString:@"ChiDog_Grab.png"];
+        dd->riseSprite = @"ChiDog_Rise.png";
+        dd->fallSprite = @"ChiDog_Fall.png";
+        dd->mainSprite = @"ChiDog.png";
+        dd->grabSprite = @"ChiDog_Grab.png";
         dd->deathAnimFrames = [[NSMutableArray alloc] init];
         dd->shotAnimFrames = [[NSMutableArray alloc] init];
         dd->flashAnimFrames = [[NSMutableArray alloc] init];
@@ -265,27 +265,27 @@
 
     lp = new levelProps();
     lp->enabled = false;
-    lp->slug = [NSString stringWithString:@"space"];
-    lp->name = [NSString stringWithString:@"Space Station"];
+    lp->slug = @"space";
+    lp->name = @"Space Station";
     lp->unlockThreshold = 16000;
-    lp->thumbnail = [NSString stringWithString:@"Space_Thumb.png"];
-    lp->func = [NSString stringWithString:@"switchScreenSpace"];
+    lp->thumbnail = @"Space_Thumb.png";
+    lp->func = @"switchScreenSpace";
 
         if(loadFull){
-        lp->bg = [NSString stringWithString:@"SpaceBG.png"];
-        lp->bgm = [NSString stringWithString:@"gameplay 3.mp3"];
+        lp->bg = @"SpaceBG.png";
+        lp->bgm = @"gameplay 3.mp3";
         lp->gravity = -40.0f;
-        lp->spritesheet = [NSString stringWithString:@"sprites_space"];
+        lp->spritesheet = @"sprites_space";
         lp->personSpeedMul = .7;
         lp->restitutionMul = 1.7;
         lp->frictionMul = 100;
         lp->maxDogs = 6;
 
         dd = new spcDogData();
-        dd->riseSprite = [NSString stringWithString:@"Chips_Rise.png"];
-        dd->fallSprite = [NSString stringWithString:@"Chips_Fall.png"];
-        dd->mainSprite = [NSString stringWithString:@"Chips.png"];
-        dd->grabSprite = [NSString stringWithString:@"Chips_Grab.png"];
+        dd->riseSprite = @"Chips_Rise.png";
+        dd->fallSprite = @"Chips_Fall.png";
+        dd->mainSprite = @"Chips.png";
+        dd->grabSprite = @"Chips_Grab.png";
         dd->deathAnimFrames = [[NSMutableArray alloc] init];
         dd->shotAnimFrames = [[NSMutableArray alloc] init];
         dd->flashAnimFrames = [[NSMutableArray alloc] init];
@@ -500,19 +500,19 @@
 }
 
 -(void)switchScreenPhilly{
-    [self switchScreenStartWithSlug:[NSString stringWithString:@"philly"]];
+    [self switchScreenStartWithSlug:@"philly"];
 }
 
 -(void)switchScreenNYC{
-    [self switchScreenStartWithSlug:[NSString stringWithString:@"nyc"]];
+    [self switchScreenStartWithSlug:@"nyc"];
 }
 
 -(void)switchScreenChicago{
-    [self switchScreenStartWithSlug:[NSString stringWithString:@"chicago"]];
+    [self switchScreenStartWithSlug:@"chicago"];
 }
 
 -(void)switchScreenSpace{
-    [self switchScreenStartWithSlug:[NSString stringWithString:@"space"]];
+    [self switchScreenStartWithSlug:@"space"];
 }
 
 -(void)switchScreenStartWithSlug:(NSString *)slug{

@@ -250,19 +250,19 @@
     
     switch(points.intValue){
         default:  seq = [CCSequence actions:ud->_not_dogContact, removeAction, nil];
-            sound = [NSString stringWithString:@"25pts.mp3"];
+            sound = @"25pts.mp3";
             break;
         case 10:  seq = [CCSequence actions:ud->_not_dogContact, removeAction, nil];
-            sound = [NSString stringWithString:@"25pts.mp3"];
+            sound = @"25pts.mp3";
             break;
         case 15:  seq = [CCSequence actions:ud->_not_dogContact, removeAction, nil];
-            sound = [NSString stringWithString:@"50pts.mp3"];
+            sound = @"50pts.mp3";
             break;
         case 25:  seq = [CCSequence actions:ud->_not_dogContact, removeAction, nil];
-            sound = [NSString stringWithString:@"100pts.mp3"];
+            sound = @"100pts.mp3";
             break;
         case 100: seq = [CCSequence actions:ud->_not_spcContact, removeAction, nil];
-            sound = [NSString stringWithString:@"100pts.mp3"];
+            sound = @"100pts.mp3";
             break;
     }
 #ifdef DEBUG
@@ -560,10 +560,10 @@
             }
             break;
         default:
-            riseSprite = [NSString stringWithString:@"Dog_Rise.png"];
-            fallSprite = [NSString stringWithString:@"Dog_Fall.png"];
-            mainSprite = [NSString stringWithString:@"dog54x12.png"];
-            grabSprite = [NSString stringWithString:@"Dog_Grabbed.png"];
+            riseSprite = @"Dog_Rise.png";
+            fallSprite = @"Dog_Fall.png";
+            mainSprite = @"dog54x12.png";
+            grabSprite = @"Dog_Grabbed.png";
             deathDelay = 2.7;
             tag = S_HOTDOG;
             for(int i = 0; i < 8; i++){
@@ -939,7 +939,7 @@
             ud->overlaySprite = target;
             ud->stopTimeDelta = 60; // frames
             ud->_cop_hasShot = false;
-            ud->aimFace = [NSString stringWithString:@"Cop_Head_Aiming_1.png"];
+            ud->aimFace = @"Cop_Head_Aiming_1.png";
         } else if (person->tag == S_MUNCHR){
             ud->tickleTimer = 0;
             ud->_muncher_hasDroppedDog = false;
@@ -1401,9 +1401,9 @@
         [dust setOpacity:(abs(windX) * (255/maxWind))];
         if(windX < .70 && windX > -.70){
             [flag1 stopAllActions];
-            [flag1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Flag_Flap_6.png"]]];
+            [flag1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"Flag_Flap_6.png"]];
             [flag2 stopAllActions];
-            [flag2 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Flag_Flap_6.png"]]];
+            [flag2 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"Flag_Flap_6.png"]];
             [dust stopAllActions];
         }
         else if(windX > 0.0 && [flag1 numberOfRunningActions] == 0){
@@ -1683,7 +1683,7 @@
             if(ud->overlaySprite != NULL){
                 if(ud->sprite1.tag == S_POLICE){
                     if(!ud->aiming){
-                        [ud->overlaySprite setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Target_NoDog.png"]]];
+                        [ud->overlaySprite setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"Target_NoDog.png"]];
                         ud->overlaySprite.position = CGPointMake(policeRayPoint2.x*PTM_RATIO, policeRayPoint2.y*PTM_RATIO);
                         ud->overlaySprite.rotation = 3 * (time % 360);
                         if(ud->_cop_hasShot){
@@ -1870,7 +1870,7 @@
                                         a = acos(dx / sqrt((dx*dx) + (dy*dy)));
                                         CCLOG(@"Angle to dog: %0.2f - Upper angle: %d - lower angle: %d", a, upperArmAngle, lowerArmAngle);
                                         ud->targetAngle = a;
-                                        [ud->overlaySprite setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Target_Dog.png"]]];
+                                        [ud->overlaySprite setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"Target_Dog.png"]];
                                         ud->overlaySprite.position = CGPointMake(aimedDog->GetPosition().x*PTM_RATIO, aimedDog->GetPosition().y*PTM_RATIO);
                                         ud->overlaySprite.rotation = 6 * (time % 360);
                                         break;
@@ -2014,7 +2014,7 @@
                                             //////////////////////////  COP BODY SHOOTING  /////////////////////////
 
                                             [copUd->sprite1 stopAllActions];
-                                            [copUd->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"Cop_Idle.png"]]];
+                                            [copUd->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"Cop_Idle.png"]];
                                             CCFiniteTimeAction *bodyShootAnimAction = (CCFiniteTimeAction *)copUd->altAction2;
                                             CCSequence *bodySeq = [CCSequence actions:delay, bodyShootAnimAction, nil];
                                             if([copUd->sprite2 numberOfRunningActions] == 0)
@@ -2236,7 +2236,6 @@
     for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
         if (body->GetUserData() != NULL && body->GetUserData() != (void*)100) {
             bodyUserData *ud = (bodyUserData *)body->GetUserData();
-            CCSprite *sprite = ud->sprite1;
             if(ud->sprite1.tag == S_MUNCHR && ud->touched){
                 for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
                     for(int i = 0; i < count; i++){
