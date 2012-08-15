@@ -1351,9 +1351,9 @@
         for(NSValue *v in dogIcons){
             CCSprite *icon = (CCSprite *)[v pointerValue];
             if([dogIcons indexOfObject:v] < _droppedCount && [icon numberOfRunningActions] == 0){
-                [icon setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"DogHud_X_6.png"]]];
+                [icon setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"DogHud_X_6.png"]];
             } else if([icon numberOfRunningActions] == 0){
-                [icon setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithString:@"DogHud_Dog.png"]]];
+                [icon setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"DogHud_Dog.png"]];
             }
         }
     }
@@ -1373,6 +1373,9 @@
     if(_flashLayer){
         [_flashLayer setOpacity:255 - (190+((5*time) % 255))];
     }
+    
+    // TODO - complete revamp of joint creation/destruction logic as it relates to number of touches
+    NSAssert([mouseJoints count] <= _numWorldTouches, @"mouse joint / touch imbalance");
 
     time++;
     
@@ -1582,7 +1585,7 @@
     float rayLength = COP_RANGE;
     b2Vec2 intersectionPoint(0,0);
     
-    // TODO - could this be called too much and cause slowdown?
+
     for(int i = 0; i < [mouseJoints count]; i++){
         b2MouseJoint *j = (b2MouseJoint *)[(NSValue *)[mouseJoints objectAtIndex:i] pointerValue];
         if((j->GetTarget().x == 0 && j->GetTarget().y == 0) || [mouseJoints count] > 2 || !_numWorldTouches || _gameOver){
@@ -1647,6 +1650,10 @@
                 if(ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG){
                     _dogsSaved++;
                 }
+                if(ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG)
+                    _world->DestroyBody(b);
+                else
+                    _world->DestroyBody(b);
                 CCLOG(@"Body removed - tag %d", ud->sprite1.tag);
                 [ud->sprite1 removeFromParentAndCleanup:YES];
                 if(ud->sprite2 != NULL){
@@ -1658,7 +1665,7 @@
                 if(ud->overlaySprite != NULL){
                     [ud->overlaySprite removeFromParentAndCleanup:YES];
                 }
-                _world->DestroyBody(b);
+                
                 ud = NULL;
                 continue;
             }
@@ -1764,6 +1771,7 @@
                                 if(ud->sprite1.tag != S_POLICE){
                                     if([ud->sprite2 numberOfRunningActions] == 0)
                                         [ud->sprite2 runAction:ud->altAction];
+
                                 }
                             } else {
                                 if(ud->timeWalking == ud->stopTime + ud->stopTimeDelta){
@@ -1887,8 +1895,7 @@
                     if(ud->sprite1.position.x > 0 && ud->sprite1.position.x < winSize.width)
                         _dogsOnscreen++;
                     if(_numWorldTouches <= 0){
-                        if(ud->grabbed) // don't mark any dog as held if there are no touches
-                            ud->grabbed = false;
+                        ud->grabbed = false;
                     }
                     if(!b) continue;
                     //things for hot dogs
@@ -1903,7 +1910,7 @@
                                     [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:ud->_dog_mainSprite]];
                                 }
                             }
-                        } else { // this is breaking because aimedAt never gets turned false
+                        } else {
                             [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:ud->_dog_grabSprite]];
                         }
                         // a hacky way to ensure that dogs are registered as not on a head
@@ -2036,6 +2043,8 @@
                                             ///////////////////////////  DOG SHOOTING  //////////////////////////
                                             
                                             ud->aimedAt = true;
+
+                                            id particleAction = [CCCallFunc actionWithTarget:self selector:@selector(counterExplode)];
                                             id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:dBody];
                                             id incAction = [CCCallFuncND actionWithTarget:self selector:@selector(incrementDroppedCount:data:) data:dBody];
                                             id lockAction = [CCCallFuncND actionWithTarget:self selector:@selector(lockWiener:data:) data:[[NSValue valueWithPointer:ud] retain]];
@@ -2094,6 +2103,9 @@
     int dogsTouched = 0;
     BOOL touched1 = false, touched2 = false;
     
+    CCLOG(@"locationWorld1: %0.2f x %0.2f", locationWorld1.x, locationWorld1.y);
+    CCLOG(@"locationWorld2: %0.2f x %0.2f", locationWorld2.x, locationWorld2.y);
+    
     if (count <= 2){
         CCLOG(@"%d touches", count);
         if(CGRectContainsPoint(_pauseButtonRect, touchLocation1)){
@@ -2143,6 +2155,7 @@
                     else if((ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG) && !ud->touchLock){ // loop over all hot dogs
                         for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
                             // if the dog is not already grabbed and one of the touches is on it, make the joint
+                            if([mouseJoints count] >= 2) break;
                             if (!ud->grabbed && ((fixture->TestPoint(locationWorld1) && !touched1) || (fixture->TestPoint(locationWorld2) && !touched2))){
                                 dogsTouched++;
                                 [ud->sprite1 stopAllActions];
@@ -2162,13 +2175,14 @@
                                 b2MouseJointDef md;
                                 md.bodyA = _groundBody;
                                 md.bodyB = body;
+                                
                                 if(fixture->TestPoint(locationWorld1)){
                                     md.target = locationWorld1;
                                     jUd->prevX = locationWorld1.x;
                                     jUd->prevY = locationWorld1.y;
                                     touched1 = true;
                                 }
-                                else if(fixture->TestPoint(locationWorld2)){
+                                else if(_numWorldTouches >= 2 && fixture->TestPoint(locationWorld2)){
                                     md.target = locationWorld2;
                                     jUd->prevX = locationWorld2.x;
                                     jUd->prevY = locationWorld2.y;
@@ -2240,7 +2254,7 @@
                     b2MouseJoint *mj = (b2MouseJoint *)[(NSValue *)[mouseJoints objectAtIndex:i] pointerValue];
                     mouseJointUserData *jUd = (mouseJointUserData *)mj->GetUserData();
                     if(mj->GetBodyB() == body){
-                        [sprite stopAllActions];
+                        //[sprite stopAllActions];
                         ud->deathSeqLock = false;
                         for(int i = 0; i < 2; i++){
                             if((abs(locations[i].x - jUd->prevX) < 1.6 && abs(locations[i].y - jUd->prevY) < 1.6)){
