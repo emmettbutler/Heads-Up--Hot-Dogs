@@ -2065,7 +2065,6 @@
     b2Vec2 locationWorld1, locationWorld2;
     NSSet *allTouches = [event allTouches];
     int count = [allTouches count];
-    b2Vec2 *locations = new b2Vec2[count];
     UITouch *touch2 = NULL;
     locationWorld2 = b2Vec2(-1, -1);
     
@@ -2073,14 +2072,12 @@
     CGPoint touchLocation1 = [touch1 locationInView: [touch1 view]];
     touchLocation1 = [[CCDirector sharedDirector] convertToGL: touchLocation1];
     locationWorld1 = b2Vec2(touchLocation1.x/PTM_RATIO, touchLocation1.y/PTM_RATIO);
-    locations[0] = locationWorld1;
     
     if(count > 1){
         touch2 = [[allTouches allObjects] objectAtIndex:1];
         CGPoint touchLocation2 = [touch2 locationInView: [touch2 view]];
         touchLocation2 = [[CCDirector sharedDirector] convertToGL: touchLocation2];
         locationWorld2 = b2Vec2(touchLocation2.x/PTM_RATIO, touchLocation2.y/PTM_RATIO);
-        locations[1] = locationWorld2;
     }
     
     _numWorldTouches = count;
@@ -2176,7 +2173,6 @@
             }
         }
     }
-    return;
 }
 
 -(void)ccTouchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -2245,7 +2241,6 @@
         }
     }
 }
-
 
 - (void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
     if(_gameOver) return;
