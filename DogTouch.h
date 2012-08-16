@@ -23,5 +23,7 @@
 -(void)destroyMouseJoint:(NSValue *)w;
 -(NSValue *)getMouseJoint;
 -(NSNumber *)getHash;
+-(void)moveTouch;
+-(void)removeTouch:(NSValue *)w;
 
 @end
