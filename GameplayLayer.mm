@@ -2215,11 +2215,7 @@
                     }
                 }
             } else if((ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG) && ud->grabbed){
-<<<<<<< HEAD
                 [ud->sprite1 stopAllActions];
-=======
-                [sprite stopAllActions];
->>>>>>> touchbugs
                 ud->deathSeqLock = false;
                 int index;
                 for(NSValue *v in dogTouches){
