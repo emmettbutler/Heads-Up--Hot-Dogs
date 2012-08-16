@@ -36,7 +36,7 @@
     CCLayerColor *_pauseLayer, *_flashLayer;
     NSMutableArray *bgSprites;
     CCMenu *_pauseMenu;
-    NSMutableArray *floorBits, *xPositions, *wienerParameters, *headParams, *mouseJoints;
+    NSMutableArray *floorBits, *xPositions, *wienerParameters, *headParams, *mouseJoints, *dogTouches;
     NSMutableArray *personParameters, *wakeParameters, *movementPatterns, *movementParameters, *_touchLocations, *dogIcons, *allTouchHashes;
     NSString *scoreText, *droppedText;
     int _points, _droppedCount, _spawnLimiter, time, _curPersonMaskBits, _droppedSpacing, _lastTouchTime, _firstDeathTime, lowerArmAngle, upperArmAngle;

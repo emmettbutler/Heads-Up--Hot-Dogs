@@ -1254,6 +1254,7 @@
         
         // allocate array to hold mouse joints for mutliple touches
         mouseJoints = [[NSMutableArray alloc] init];
+        dogTouches = [[NSMutableArray alloc] init];
         
         fixtureUserData *fUd = new fixtureUserData();
         fUd->tag = F_GROUND;
@@ -1587,8 +1588,8 @@
     b2Vec2 intersectionPoint(0,0);
     
     // TODO - could this be called too much and cause slowdown?
-    CCLOG(@"mousejoints: %d", [mouseJoints count]);
-    CCLOG(@"_numWorldTouches: %d", _numWorldTouches);
+    //CCLOG(@"mousejoints: %d", [mouseJoints count]);
+    //CCLOG(@"_numWorldTouches: %d", _numWorldTouches);
     /*if(!_numWorldTouches && [mouseJoints count]){
         for(int i = 0; i < [mouseJoints count]; i++){
             b2MouseJoint *j = (b2MouseJoint *)[(NSValue *)[mouseJoints objectAtIndex:i] pointerValue];
@@ -2085,17 +2086,18 @@
     NSSet *allTouches = [event allTouches];
     int count = [allTouches count];
     b2Vec2 *locations = new b2Vec2[count];
+    UITouch *touch2 = NULL;
     locationWorld2 = b2Vec2(-1, -1);
     
-    UITouch *touch = [[allTouches allObjects] objectAtIndex:0];
-    CGPoint touchLocation1 = [touch locationInView: [touch view]];
+    UITouch *touch1 = [[allTouches allObjects] objectAtIndex:0];
+    CGPoint touchLocation1 = [touch1 locationInView: [touch1 view]];
     touchLocation1 = [[CCDirector sharedDirector] convertToGL: touchLocation1];
     locationWorld1 = b2Vec2(touchLocation1.x/PTM_RATIO, touchLocation1.y/PTM_RATIO);
     locations[0] = locationWorld1;
     
     if(count > 1){
-        touch = [[allTouches allObjects] objectAtIndex:1];
-        CGPoint touchLocation2 = [touch locationInView: [touch view]];
+        touch2 = [[allTouches allObjects] objectAtIndex:1];
+        CGPoint touchLocation2 = [touch2 locationInView: [touch2 view]];
         touchLocation2 = [[CCDirector sharedDirector] convertToGL: touchLocation2];
         locationWorld2 = b2Vec2(touchLocation2.x/PTM_RATIO, touchLocation2.y/PTM_RATIO);
         locations[1] = locationWorld2;
@@ -2161,9 +2163,6 @@
                             //if([mouseJoints count] >= 2) break;
                             if (!ud->grabbed && ((fixture->TestPoint(locationWorld1) && !touched1) || (fixture->TestPoint(locationWorld2) && !touched2))){
                                 dogsTouched++;
-                                
-                                DogTouch *touch = [[DogTouch alloc] initWithBody:[[NSValue valueWithPointer:body] retain]];
-                                
                                 _lastTouchTime = time;
                                 
                                 mouseJointUserData *jUd = new mouseJointUserData();
@@ -2173,27 +2172,31 @@
                                 md.bodyA = _groundBody;
                                 md.bodyB = body;
                                 
+                                NSNumber *hash;
+                                
                                 if(fixture->TestPoint(locationWorld1)){
-                                    CCLOG(@"locationWorld1 is on a dog");
                                     md.target = locationWorld1;
                                     jUd->prevX = locationWorld1.x;
                                     jUd->prevY = locationWorld1.y;
+                                    hash = [[NSNumber numberWithInt:[touch1 hash]]retain];
+                                    CCLOG(@"touch hash: %d", [touch1 hash]);
                                     touched1 = true;
                                 }
-                                else if(_numWorldTouches >= 2 && locationWorld2.x > 0 && fixture->TestPoint(locationWorld2)){
-                                    CCLOG(@"locationWorld2 is on a dog");
+                                else if(touch2 && _numWorldTouches >= 2 && locationWorld2.x > 0 && fixture->TestPoint(locationWorld2)){
                                     md.target = locationWorld2;
                                     jUd->prevX = locationWorld2.x;
                                     jUd->prevY = locationWorld2.y;
+                                    CCLOG(@"touch hash: %d", [touch2 hash]);
+                                    hash = [[NSNumber numberWithInt:[touch2 hash]]retain];
                                     touched2 = true;
                                 }
                                 md.collideConnected = true;
                                 md.userData = jUd;
                                 md.maxForce = 10000.0f * body->GetMass();
                                 
-                                b2MouseJoint *_mouseJoint = [touch createMouseJoint:[NSValue valueWithPointer:&md] withWorld:[NSValue valueWithPointer:_world]];
-                                //b2MouseJoint *_mouseJoint = (b2MouseJoint *)_world->CreateJoint(&md);
-                                [mouseJoints addObject:[NSValue valueWithPointer:_mouseJoint]];
+                                DogTouch *touch = [[DogTouch alloc] initWithBody:[[NSValue valueWithPointer:body] retain] andMouseJoint:[[NSValue valueWithPointer:&md] retain] andWorld:[NSValue valueWithPointer:_world] andHash:hash];
+                                [dogTouches addObject:[NSValue valueWithPointer:touch]];
+                                [mouseJoints addObject:[touch getMouseJoint]];
 
                                 break;
                             }
@@ -2213,16 +2216,17 @@
     int count = [allTouches count];
     b2Vec2 *locations = new b2Vec2[count];
     b2Vec2 locationWorld2 = b2Vec2(-1, -1);
+    UITouch *touch2 = NULL;
     
-    UITouch *touch = [[allTouches allObjects] objectAtIndex:0];
-    CGPoint touchLocation1 = [touch locationInView: [touch view]];
+    UITouch *touch1 = [[[allTouches allObjects] objectAtIndex:0] retain];
+    CGPoint touchLocation1 = [touch1 locationInView: [touch1 view]];
     touchLocation1 = [[CCDirector sharedDirector] convertToGL: touchLocation1];
     b2Vec2 locationWorld1 = b2Vec2(touchLocation1.x/PTM_RATIO, touchLocation1.y/PTM_RATIO);
     locations[0] = locationWorld1;
     
     if(count > 1){
-        touch = [[allTouches allObjects] objectAtIndex:1];
-        CGPoint touchLocation2 = [touch locationInView: [touch view]];
+        touch2 = [[[allTouches allObjects] objectAtIndex:1] retain];
+        CGPoint touchLocation2 = [touch2 locationInView: [touch2 view]];
         touchLocation2 = [[CCDirector sharedDirector] convertToGL: touchLocation2];
         locationWorld2 = b2Vec2(touchLocation2.x/PTM_RATIO, touchLocation2.y/PTM_RATIO);
         locations[1] = locationWorld2;
@@ -2250,21 +2254,11 @@
                 }
             } else if((ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG) && ud->grabbed){
                 for(int i = 0; i < [mouseJoints count]; i++){
-                    b2MouseJoint *mj = (b2MouseJoint *)[(NSValue *)[mouseJoints objectAtIndex:i] pointerValue];
-                    mouseJointUserData *jUd = (mouseJointUserData *)mj->GetUserData();
-                    if(mj->GetBodyB() == body){
+                    //b2MouseJoint *mj = (b2MouseJoint *)[(NSValue *)[mouseJoints objectAtIndex:i] pointerValue];
+                    //mouseJointUserData *jUd = (mouseJointUserData *)mj->GetUserData();
+                    //if(mj->GetBodyB() == body){
                         [sprite stopAllActions];
                         ud->deathSeqLock = false;
-                        for(int i = 0; i < 2; i++){
-                            if((abs(locations[i].x - jUd->prevX) < 1.6 && abs(locations[i].y - jUd->prevY) < 1.6)){
-                                if(locations[i].x < 1.6 && locations[i].y < 1.6){
-                                    locations[i] = b2Vec2(1, 1);
-                                }
-                                mj->SetTarget(locations[i]);
-                                jUd->prevX = locations[i].x;
-                                jUd->prevY = locations[i].y;
-                            }
-                        }
                         for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
                             fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
                             if(fUd->tag == F_DOGCLD){
@@ -2278,11 +2272,26 @@
                                 break;
                             }
                         }
+                    //}
+                    int index;
+                    for(NSValue *v in dogTouches){
+                        DogTouch *dt = (DogTouch *)[v pointerValue];
+                        b2MouseJoint *mj = (b2MouseJoint *)[[dt getMouseJoint] pointerValue];
+                        NSNumber *hash = [[dt getHash] retain];
+                        //CCLOG(@"currently tested hash: %d", hash.intValue);
+                        if(hash.intValue == [touch1 hash]){
+                            index = 0;
+                        } else if(touch2 && hash.intValue == [touch2 hash]){
+                            index = 1;
+                        }
+                        mj->SetTarget(locations[index]);
+                        //jUd->prevX = locations[index].x;
+                        //jUd->prevY = locations[index].y;
                     }
                 }
             }
         }
-    }        
+    }
 }
 
 
