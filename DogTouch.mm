@@ -12,8 +12,9 @@
 
 @implementation DogTouch
 
--(DogTouch *)initWithBody:(NSValue *)b{
+-(DogTouch *)initWithBody:(NSValue *)b andMouseJoint:(NSValue *)j andWorld:(NSValue *)w andHash:(NSNumber *)h{
     self->dog = b;
+    self->hash = h;
     b2Body *body = (b2Body *)[b pointerValue];
     bodyUserData *ud = (bodyUserData *)body->GetUserData();
     
@@ -27,6 +28,12 @@
     body->SetFixedRotation(true);
     body->SetAwake(true);
     
+    b2MouseJointDef* mdstar = (b2MouseJointDef *)[j pointerValue];
+    b2MouseJointDef md = *mdstar;
+    b2World *world = (b2World *)[w pointerValue];
+    b2MouseJoint *mj = (b2MouseJoint *)world->CreateJoint(&md);
+    self->mouseJoint = [[NSValue valueWithPointer:mj] retain];
+    
     return self;
 }
 
@@ -37,6 +44,14 @@
     b2MouseJoint *mj = (b2MouseJoint *)world->CreateJoint(&md);
     self->mouseJoint = [[NSValue valueWithPointer:mj] retain];
     return mj;
+}
+
+-(NSValue *)getMouseJoint{
+    return self->mouseJoint;
+}
+
+-(NSNumber *)getHash{
+    return self->hash;
 }
 
 @end

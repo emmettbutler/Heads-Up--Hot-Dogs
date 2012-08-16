@@ -14,10 +14,14 @@
     NSValue *dog;
     b2Vec2 location;
     NSValue *mouseJoint;
+    NSNumber *hash;
+    BOOL locationHasBeenSetThisTick;
 }
 
--(DogTouch *)initWithBody:(NSValue *)b;
+-(DogTouch *)initWithBody:(NSValue *)b andMouseJoint:(NSValue *)j andWorld:(NSValue *)w andHash:(NSValue *)h;
 -(b2MouseJoint *)createMouseJoint:(NSValue *)m withWorld:(NSValue *)w;
 -(void)destroyMouseJoint:(NSValue *)w;
+-(NSValue *)getMouseJoint;
+-(NSNumber *)getHash;
 
 @end
