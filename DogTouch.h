@@ -13,18 +13,19 @@
 @interface DogTouch : NSObject {
     NSValue *dog;
     b2Vec2 location;
-    NSValue *mouseJoint;
+    b2MouseJoint *mouseJoint;
     NSNumber *hash;
     BOOL toDeleteFlag;
+    NSValue *world;
 }
 
 -(DogTouch *)initWithBody:(NSValue *)b andMouseJoint:(NSValue *)j andWorld:(NSValue *)w andHash:(NSValue *)h;
 -(b2MouseJoint *)createMouseJoint:(NSValue *)m withWorld:(NSValue *)w;
 -(void)destroyMouseJoint:(NSValue *)w;
--(NSValue *)getMouseJoint;
+-(b2MouseJoint *)getMouseJoint;
 -(NSNumber *)getHash;
 -(void)moveTouch;
--(void)removeTouch:(NSValue *)w;
+-(void)removeTouch;;
 -(BOOL)isFlaggedForDeletion;
 -(void)flagForDeletion;
 

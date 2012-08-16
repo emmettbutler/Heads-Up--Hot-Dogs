@@ -2085,6 +2085,10 @@
         locationWorld2 = b2Vec2(touchLocation2.x/PTM_RATIO, touchLocation2.y/PTM_RATIO);
     }
     
+    b2MouseJointDef md;
+    md.bodyA = _groundBody;
+    NSNumber *hash;
+    
     _numWorldTouches = count;
     _touchedDog = NO;
     int dogsTouched = 0;
@@ -2143,11 +2147,9 @@
                                 dogsTouched++;
                                 _lastTouchTime = time;
                                 
-                                b2MouseJointDef md;
-                                md.bodyA = _groundBody;
                                 md.bodyB = body;
-                                
-                                NSNumber *hash;
+                                md.collideConnected = true;
+                                md.maxForce = 10000.0f * body->GetMass();
 
                                 if(fixture->TestPoint(locationWorld1)){
                                     md.target = locationWorld1;
@@ -2161,10 +2163,8 @@
                                     hash = [[NSNumber numberWithInt:[touch2 hash]]retain];
                                     touched2 = true;
                                 }
-                                md.collideConnected = true;
-                                md.maxForce = 10000.0f * body->GetMass();
                                 
-                                DogTouch *touch = [[DogTouch alloc] initWithBody:[[NSValue valueWithPointer:body] retain] andMouseJoint:[[NSValue valueWithPointer:&md] retain] andWorld:[NSValue valueWithPointer:_world] andHash:hash];
+                                DogTouch *touch = [[DogTouch alloc] initWithBody:[[NSValue valueWithPointer:body]retain] andMouseJoint:[NSValue valueWithPointer:&md] andWorld:[[NSValue valueWithPointer:_world]retain] andHash:hash];
                                 [dogTouches addObject:[NSValue valueWithPointer:touch]];
 
                                 break;
@@ -2226,7 +2226,7 @@
                 int index;
                 for(NSValue *v in dogTouches){
                     DogTouch *dt = (DogTouch *)[v pointerValue];
-                    b2MouseJoint *mj = (b2MouseJoint *)[[dt getMouseJoint] pointerValue];
+                    b2MouseJoint *mj = [dt getMouseJoint];
                     NSNumber *hash = [[dt getHash] retain];
                     [dt moveTouch];
                     //CCLOG(@"currently tested hash: %d", hash.intValue);
@@ -2246,27 +2246,25 @@
 - (void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
     if(_gameOver) return;
 
-    UITouch *myTouch = [touches anyObject];
-    
     _numWorldTouches -= [touches count];
     
-    for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
-        if (body->GetUserData() && body->GetUserData() != (void*)100) {
-            bodyUserData *ud = (bodyUserData *)body->GetUserData();
-            if(ud->sprite1.tag == S_MUNCHR && ud->touched && !ud->_muncher_hasDroppedDog){
-                ud->restartTime = ud->timeWalking + 1;
-                ud->stopTimeDelta = 0;
-                ud->touched = false;
+    for(UITouch *touch in touches){
+        for(NSValue *v in dogTouches){
+            DogTouch *dt = (DogTouch *)[v pointerValue];
+            NSNumber *hash = [[dt getHash] retain];
+            if([touch hash] == hash.intValue){
+                [dt removeTouch];
+                [dt flagForDeletion];
             }
-            else if((ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG) && ud->grabbed){
-                for(NSValue *v in dogTouches){
-                    DogTouch *dt = (DogTouch *)[v pointerValue];
-                    NSNumber *hash = [[dt getHash] retain];
-                    if([myTouch hash] == hash.intValue){
-                        [dt removeTouch:[[NSValue valueWithPointer:_world]retain]];
-                        [dt flagForDeletion];
-                    }
-                } 
+        }
+        for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
+            if (body->GetUserData() && body->GetUserData() != (void*)100) {
+                bodyUserData *ud = (bodyUserData *)body->GetUserData();
+                if(ud->sprite1.tag == S_MUNCHR && ud->touched && !ud->_muncher_hasDroppedDog){
+                    ud->restartTime = ud->timeWalking + 1;
+                    ud->stopTimeDelta = 0;
+                    ud->touched = false;
+                }
             }
         }
     }

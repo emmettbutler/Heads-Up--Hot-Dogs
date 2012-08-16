@@ -15,6 +15,8 @@
 -(DogTouch *)initWithBody:(NSValue *)b andMouseJoint:(NSValue *)j andWorld:(NSValue *)w andHash:(NSNumber *)h{
     self->dog = b;
     self->hash = h;
+    self->world = w;
+    
     b2Body *body = (b2Body *)[b pointerValue];
     bodyUserData *ud = (bodyUserData *)body->GetUserData();
     
@@ -29,11 +31,10 @@
     body->SetAwake(true);
     
     b2MouseJointDef* mdstar = (b2MouseJointDef *)[j pointerValue];
-    b2MouseJointDef md = *mdstar;
-    b2World *world = (b2World *)[w pointerValue];
-    b2MouseJoint *mj = (b2MouseJoint *)world->CreateJoint(&md);
-    self->mouseJoint = [[NSValue valueWithPointer:mj] retain];
     
+    b2World *_world = (b2World *)[self->world pointerValue];
+    self->mouseJoint = (b2MouseJoint *)_world->CreateJoint(mdstar);
+
     return self;
 }
 
@@ -54,15 +55,10 @@
     }
 }
 
--(void)removeTouch:(NSValue *)w{
+-(void)removeTouch{
     b2Filter filter;
     b2Body *body = (b2Body *)[self->dog pointerValue];
     bodyUserData *ud = (bodyUserData *)body->GetUserData();
-    
-    b2World *world = (b2World *)[w pointerValue];
-    b2MouseJoint *mj = (b2MouseJoint *)[self->mouseJoint pointerValue];
-    if(!mj) return;
-    world->DestroyJoint(mj);
     
     ud->grabbed = false;
     body->SetLinearVelocity(b2Vec2(0, 0));
@@ -72,6 +68,9 @@
         body->SetTransform(b2Vec2(body->GetPosition().x, 1.8), 0);
     if(body->GetPosition().x < 1)
         body->SetTransform(b2Vec2(1.5, body->GetPosition().y), 0);
+    
+    b2World *_world = (b2World *)[self->world pointerValue];
+    _world->DestroyJoint(self->mouseJoint);
     
     for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
         fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
@@ -88,16 +87,7 @@
     }
 }
 
--(b2MouseJoint *)createMouseJoint:(NSValue *)m withWorld:(NSValue *)w{
-    b2MouseJointDef* mdstar = (b2MouseJointDef *)[m pointerValue];
-    b2MouseJointDef md = *mdstar;
-    b2World *world = (b2World *)[w pointerValue];
-    b2MouseJoint *mj = (b2MouseJoint *)world->CreateJoint(&md);
-    self->mouseJoint = [[NSValue valueWithPointer:mj] retain];
-    return mj;
-}
-
--(NSValue *)getMouseJoint{
+-(b2MouseJoint *)getMouseJoint{
     return self->mouseJoint;
 }
 
