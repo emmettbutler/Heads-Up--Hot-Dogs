@@ -61,6 +61,7 @@
     
     b2World *world = (b2World *)[w pointerValue];
     b2MouseJoint *mj = (b2MouseJoint *)[self->mouseJoint pointerValue];
+    if(!mj) return;
     world->DestroyJoint(mj);
     
     ud->grabbed = false;
@@ -102,6 +103,14 @@
 
 -(NSNumber *)getHash{
     return self->hash;
+}
+
+-(BOOL)isFlaggedForDeletion{
+    return self->toDeleteFlag;
+}
+
+-(void)flagForDeletion{
+    self->toDeleteFlag = true;
 }
 
 @end

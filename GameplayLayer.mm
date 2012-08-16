@@ -1324,6 +1324,12 @@
     int32 velocityIterations = 2;
     int32 positionIterations = 1;
     
+    for(int i = 0; i < [dogTouches count]; i++){
+        DogTouch *dt = (DogTouch *)[[dogTouches objectAtIndex:i] pointerValue];
+        if([dt isFlaggedForDeletion])
+            [dogTouches removeObject:[dogTouches objectAtIndex:i]];
+    }
+    
     if(!_policeOnScreen)
         _shootLock = 0;
 
@@ -2253,17 +2259,14 @@
                 ud->touched = false;
             }
             else if((ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG) && ud->grabbed){
-                NSValue *toDelete;
                 for(NSValue *v in dogTouches){
                     DogTouch *dt = (DogTouch *)[v pointerValue];
                     NSNumber *hash = [[dt getHash] retain];
                     if([myTouch hash] == hash.intValue){
                         [dt removeTouch:[[NSValue valueWithPointer:_world]retain]];
-                        toDelete = v;
+                        [dt flagForDeletion];
                     }
-                }
-                if(toDelete)
-                    [dogTouches removeObject:toDelete];
+                } 
             }
         }
     }

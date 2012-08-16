@@ -15,7 +15,7 @@
     b2Vec2 location;
     NSValue *mouseJoint;
     NSNumber *hash;
-    BOOL locationHasBeenSetThisTick;
+    BOOL toDeleteFlag;
 }
 
 -(DogTouch *)initWithBody:(NSValue *)b andMouseJoint:(NSValue *)j andWorld:(NSValue *)w andHash:(NSValue *)h;
@@ -25,5 +25,7 @@
 -(NSNumber *)getHash;
 -(void)moveTouch;
 -(void)removeTouch:(NSValue *)w;
+-(BOOL)isFlaggedForDeletion;
+-(void)flagForDeletion;
 
 @end
