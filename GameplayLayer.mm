@@ -2226,26 +2226,12 @@
             } else if((ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG) && ud->grabbed){
                 [sprite stopAllActions];
                 ud->deathSeqLock = false;
-                // TODO - move this into dogtouch moveTouch method
-                for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
-                    fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
-                    if(fUd->tag == F_DOGCLD){
-                        b2Filter filter;
-                        // here, we set the dog's collision filter to disallow all collisions.
-                        // the original filter data has been saved in the fixture's ogCollideFilter field
-                        // so that on touch end, we can restore its original collision state
-                        filter = fixture->GetFilterData();
-                        filter.maskBits = 0x0000;
-                        fixture->SetFilterData(filter);
-                        break;
-                    }
-                }
-                
                 int index;
                 for(NSValue *v in dogTouches){
                     DogTouch *dt = (DogTouch *)[v pointerValue];
                     b2MouseJoint *mj = (b2MouseJoint *)[[dt getMouseJoint] pointerValue];
                     NSNumber *hash = [[dt getHash] retain];
+                    [dt moveTouch];
                     //CCLOG(@"currently tested hash: %d", hash.intValue);
                     if(hash.intValue == [touch1 hash]){
                         index = 0;
@@ -2269,7 +2255,7 @@
     _numWorldTouches -= [touches count];
     
     for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
-        if (body->GetUserData() != NULL && body->GetUserData() != (void*)100) {
+        if (body->GetUserData() && body->GetUserData() != (void*)100) {
             bodyUserData *ud = (bodyUserData *)body->GetUserData();
             if(ud->sprite1.tag == S_MUNCHR && ud->touched && !ud->_muncher_hasDroppedDog){
                 ud->restartTime = ud->timeWalking + 1;
@@ -2279,46 +2265,13 @@
             else if((ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG) && ud->grabbed){
                 for(NSValue *v in dogTouches){
                     DogTouch *dt = (DogTouch *)[v pointerValue];
-                    b2MouseJoint *mj = (b2MouseJoint *)[[dt getMouseJoint] pointerValue];
                     NSNumber *hash = [[dt getHash] retain];
                     if([myTouch hash] == hash.intValue){
-                        [self dropWiener:[[NSValue valueWithPointer:body] retain] userData:[[NSValue valueWithPointer:ud] retain] joint:[[NSValue valueWithPointer:mj] retain]];
-                        break;
+                        [dt removeTouch:[[NSValue valueWithPointer:_world]retain]];
+                        [dogTouches removeObject:v];
                     }
                 }
             }
-        }
-    }
-}
-
--(void)dropWiener:(NSValue *)b userData:(NSValue *)u joint:(NSValue *)j{
-    b2Filter filter;
-    b2Body *body = (b2Body *)[b pointerValue];
-    bodyUserData *ud = (bodyUserData *)[u pointerValue];
-    
-    b2MouseJoint *mj = (b2MouseJoint *)[j pointerValue];
-    _world->DestroyJoint(mj);
-    
-    ud->grabbed = false;
-    body->SetLinearVelocity(b2Vec2(0, 0));
-    body->SetFixedRotation(false);
-    
-    if(body->GetPosition().y < .8 && body->GetPosition().x < .5)
-        body->SetTransform(b2Vec2(body->GetPosition().x, 1.8), 0);
-    if(body->GetPosition().x < 1)
-        body->SetTransform(b2Vec2(1.5, body->GetPosition().y), 0);
-    
-    for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
-        fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
-        if(fUd->tag == F_DOGCLD){
-            // here, we restore the fixture's original collision filter from that saved in
-            // its ogCollideFilter field
-            filter = fixture->GetFilterData();
-            fUd->ogCollideFilters = fUd->ogCollideFilters | 0xfffff000;
-            filter.maskBits = fUd->ogCollideFilters;
-            filter.maskBits = filter.maskBits | FLOOR1;
-            fixture->SetFilterData(filter);
-            ud->collideFilter = filter.maskBits;
         }
     }
 }
