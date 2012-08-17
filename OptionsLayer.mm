@@ -56,6 +56,7 @@
         [sfxLabel setString:@"SFX off"];
         sfxOn = 0;
     }
+    [[sfxLabel texture] setAliasTexParameters];
     [[NSUserDefaults standardUserDefaults] synchronize];
     
 }

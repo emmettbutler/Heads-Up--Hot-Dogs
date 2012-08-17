@@ -1342,23 +1342,23 @@
 
     CGSize winSize = [CCDirector sharedDirector].winSize;
     
-    if(_points > 19000 && _wienerSpawnDelayTime != .6){
-        _wienerSpawnDelayTime = .6;
-    } else if(_points > 14000 && _wienerSpawnDelayTime != .7){
+    if(_points > 19000 && !(time % 300) && _wienerSpawnDelayTime > .1){
+        _wienerSpawnDelayTime -= .05;
+    } else if(_points > 14000 && _wienerSpawnDelayTime != .6){
         _maxDogsOnScreen = level->maxDogs;
-        _wienerSpawnDelayTime = .7;
-    } else if(_points > 12000 && _wienerSpawnDelayTime != .9) {
-        _wienerSpawnDelayTime = .9;
+        _wienerSpawnDelayTime = .6;
+    } else if(_points > 12000 && _wienerSpawnDelayTime != .8) {
+        _wienerSpawnDelayTime = .8;
         _maxDogsOnScreen = level->maxDogs - 1;
     } else if(_points > 7000 && _wienerSpawnDelayTime != 1) {
         _wienerSpawnDelayTime = 1;
         _maxDogsOnScreen = level->maxDogs - 2;
     } else if(_points > 5000 && _wienerSpawnDelayTime != 1.5) {
-        _wienerSpawnDelayTime = 2;
+        _wienerSpawnDelayTime = 1.5;
     } else if(_points > 2000 && _wienerSpawnDelayTime != 2.5) {
-        _wienerSpawnDelayTime = 3;
+        _wienerSpawnDelayTime = 2.5;
     } else if(_points > 1000 && _wienerSpawnDelayTime != 3.5) {
-        _wienerSpawnDelayTime = 4;
+        _wienerSpawnDelayTime = 3.5;
     }
     
     if(_droppedCount <= DROPPED_MAX && _droppedCount >= 0){
@@ -2234,7 +2234,7 @@
         } else if(touch2 && hash.intValue == [touch2 hash]){
             index = 1;
         }
-        [dt moveTouch:[NSValue valueWithPointer:&locations[index]]];
+        [dt moveTouch:[[NSValue valueWithPointer:&locations[index]]retain]];
     }
     
     for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
