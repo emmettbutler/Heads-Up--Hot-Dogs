@@ -38,8 +38,17 @@
     return self;
 }
 
--(void)moveTouch{
+-(void)moveTouch:(NSValue *)l{
     b2Body *body = (b2Body *)[self->dog pointerValue];
+    
+    b2Vec2 *locationW = (b2Vec2 *)[l pointerValue];
+    b2Vec2 locationWorld = *locationW;
+    self->mouseJoint->SetTarget(locationWorld);
+    
+    bodyUserData *ud = (bodyUserData *)body->GetUserData();
+    [ud->sprite1 stopAllActions];
+    ud->deathSeqLock = false;
+    
     for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
         fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
         if(fUd->tag == F_DOGCLD){

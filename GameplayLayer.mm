@@ -1326,7 +1326,7 @@
     
     for(int i = 0; i < [dogTouches count]; i++){
         DogTouch *dt = (DogTouch *)[[dogTouches objectAtIndex:i] pointerValue];
-        if([dt isFlaggedForDeletion])
+        if([dt isFlaggedForDeletion] || _gameOver)
             [dogTouches removeObject:[dogTouches objectAtIndex:i]];
     }
     
@@ -2200,11 +2200,17 @@
         locations[1] = locationWorld2;
     }
     
-#ifdef DEBUG
-    for(int i = 0; i < count; i++){
-        //CCLOG(@"locations[%d] %0.2f x %0.2f", i, locations[i].x, locations[i].y);
+    int index;
+    for(NSValue *v in dogTouches){
+        DogTouch *dt = (DogTouch *)[v pointerValue];
+        NSNumber *hash = [[dt getHash] retain];
+        if(hash.intValue == [touch1 hash]){
+            index = 0;
+        } else if(touch2 && hash.intValue == [touch2 hash]){
+            index = 1;
+        }
+        [dt moveTouch:[NSValue valueWithPointer:&locations[index]]];
     }
-#endif
     
     for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
         if (body->GetUserData() != NULL && body->GetUserData() != (void*)100) {
@@ -2219,24 +2225,6 @@
                             else ud->tickleTimer = 0;
                         }
                     }
-                }
-            } else if((ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG) && ud->grabbed){
-                [ud->sprite1 stopAllActions];
-                ud->deathSeqLock = false;
-                int index;
-                for(NSValue *v in dogTouches){
-                    DogTouch *dt = (DogTouch *)[v pointerValue];
-                    b2MouseJoint *mj = [dt getMouseJoint];
-                    NSNumber *hash = [[dt getHash] retain];
-                    [dt moveTouch];
-                    //CCLOG(@"currently tested hash: %d", hash.intValue);
-                    if(hash.intValue == [touch1 hash]){
-                        index = 0;
-                    } else if(touch2 && hash.intValue == [touch2 hash]){
-                        index = 1;
-                    }
-                    if(!mj) continue;
-                    mj->SetTarget(locations[index]);
                 }
             }
         }
