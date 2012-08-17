@@ -1393,6 +1393,13 @@
             CCSprite *sprite = (CCSprite *)[v pointerValue];
             [sprite setOpacity:255.00 * cosf(.01 * time)];
         }
+    } else if(level->slug == @"london"){
+        if(!(time % 200)){
+            if(_ventsOn)
+                _ventsOn = false;
+            else
+                _ventsOn = true;
+        }
     } else if(level->slug == @"chicago" && !(time % 19)){
         float maxWind = 3.2;
         float windX = maxWind * cosf(.01 * time);
@@ -1940,6 +1947,8 @@
                                 }
                             }
                         }
+                        
+                        // per-level dog movement changes
                         if(level->slug == @"chicago" && !(time % 19) && b->GetPosition().y > FLOOR4_HT+.5){
                             if(ud->sprite1.position.x > 10 && ud->sprite1.position.x < winSize.width - 10){
                                 if(![ud->shotSeq isDone]){
@@ -1947,7 +1956,13 @@
                                         b->SetLinearVelocity(b2Vec2(b->GetLinearVelocity().x+windForce.x, b->GetLinearVelocity().y));
                                 }
                             }
+                        } else if(level->slug == @"london" && !(time % 19) && _ventsOn) {
+                            int ventForce = 8;
+                            if((ud->sprite1.position.x > 90 && ud->sprite1.position.x < 190) || (ud->sprite1.position.x > 280 && ud->sprite1.position.x < 320))
+                                if(b->GetLinearVelocity().y != b->GetLinearVelocity().y+ventForce)
+                                    b->SetLinearVelocity(b2Vec2(b->GetLinearVelocity().x+((((float) rand() / RAND_MAX) * 2) - 1), b->GetLinearVelocity().y+ventForce));
                         }
+                        
                         for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()) {
                             fixtureUserData *fUd = (fixtureUserData *)f->GetUserData();
                             b2RayCastOutput output;

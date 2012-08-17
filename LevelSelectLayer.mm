@@ -163,6 +163,60 @@
     }
 
     [levelStructs addObject:[NSValue valueWithPointer:lp]];
+    
+    /********************************************************************************
+     * LONDON LEVEL SETTINGS
+     *******************************************************************************/
+    
+    lp = new levelProps();
+    lp->enabled = true;
+    lp->slug = @"london";
+    lp->name = @"London";
+    lp->unlockThreshold = 12000;
+    lp->func = @"switchScreenLondon";
+    lp->thumbnail = @"NYC_Thumb.png";
+    
+    if(loadFull){
+        lp->bg = @"BG_NYC.png";
+        lp->bgm = @"gameplay 3.mp3";
+        lp->gravity = -22.0f;
+        lp->spritesheet = @"sprites_nyc";
+        lp->personSpeedMul = 1.2;
+        lp->restitutionMul = 1.2;
+        lp->frictionMul = .95;
+        lp->maxDogs = 6;
+        
+        dd = new spcDogData();
+        dd->riseSprite = @"Bagel_Rise.png";
+        dd->fallSprite = @"Bagel_Fall.png";
+        dd->mainSprite = @"Bagel.png";
+        dd->grabSprite = @"Bagel_Grab.png";
+        dd->deathAnimFrames = [[NSMutableArray alloc] init];
+        dd->shotAnimFrames = [[NSMutableArray alloc] init];
+        dd->flashAnimFrames = [[NSMutableArray alloc] init];
+        for(int i = 0; i < 1; i++){
+            [dd->flashAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"Bagel_Die_1.png"]]];
+            [dd->flashAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"Bagel_Die_2.png"]]];
+        }
+        for(int i = 1; i <= 8; i++){
+            [dd->deathAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"Bagel_Die_%d.png", i]]];
+        }
+        for(int i = 1; i <= 6; i++){
+            [dd->shotAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"Bagel_Shot_%d.png", i]]];
+        }
+        
+        lp->specialDog = dd;
+    }
+    
+    [levelStructs addObject:[NSValue valueWithPointer:lp]];
 
 
     /********************************************************************************
@@ -505,6 +559,10 @@
 
 -(void)switchScreenNYC{
     [self switchScreenStartWithSlug:@"nyc"];
+}
+
+-(void)switchScreenLondon{
+    [self switchScreenStartWithSlug:@"london"];
 }
 
 -(void)switchScreenChicago{
