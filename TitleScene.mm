@@ -100,6 +100,12 @@
         
         time = 0;
         
+        NSInteger introDone = [[NSUserDefaults standardUserDefaults] integerForKey:@"introDone"];
+        if(!introDone){
+            [[NSUserDefaults standardUserDefaults] setInteger:1 forKey:@"sfxon"];
+            [[NSUserDefaults standardUserDefaults] synchronize];
+        }
+        
         [background runAction:_titleAnimAction];
         
         [TestFlight passCheckpoint:@"Title Screen"];

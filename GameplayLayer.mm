@@ -212,7 +212,8 @@
 -(void)playGunshot{
 #ifdef DEBUG
 #else
-    [[SimpleAudioEngine sharedEngine] playEffect:@"gunshot 1.mp3" pitch:1 pan:0 gain:.4];
+    if(_sfxOn)
+        [[SimpleAudioEngine sharedEngine] playEffect:@"gunshot 1.mp3" pitch:1 pan:0 gain:.4];
 #endif
 }
 
@@ -268,7 +269,8 @@
     }
 #ifdef DEBUG
 #else
-    [[SimpleAudioEngine sharedEngine] playEffect:sound];
+    if(_sfxOn)
+        [[SimpleAudioEngine sharedEngine] playEffect:sound];
 #endif
     [sprite runAction:seq];
 }
@@ -319,7 +321,8 @@
     CCAction *removeAction = [CCCallFuncND actionWithTarget:self selector:@selector(removeSprite:data:) data:[[NSValue valueWithPointer:oneHundred] retain]];
 #ifdef DEBUG
 #else
-    [[SimpleAudioEngine sharedEngine] playEffect:@"100pts.mp3"];
+    if(_sfxOn)
+        [[SimpleAudioEngine sharedEngine] playEffect:@"100pts.mp3"];
 #endif
     id seq;
     if (spec.intValue == 1)
@@ -510,7 +513,8 @@
         _world->DestroyBody(dogBody);
 #ifdef DEBUG
 #else
-        [[SimpleAudioEngine sharedEngine] playEffect:@"hot dog disappear.mp3"];
+        if(_sfxOn)
+            [[SimpleAudioEngine sharedEngine] playEffect:@"hot dog disappear.mp3"];
 #endif
     }
 }
@@ -699,7 +703,8 @@
     [_wiener runAction:seq];
 #ifdef DEBUG
 #else
-    [[SimpleAudioEngine sharedEngine] playEffect:@"hot dog appear 1.mp3"];
+    if(_sfxOn)
+        [[SimpleAudioEngine sharedEngine] playEffect:@"hot dog appear 1.mp3"];
 #endif
     CCLOG(@"Spawned wiener with maskBits: %d", wienerShapeDef.filter.maskBits);
 }
@@ -1231,6 +1236,8 @@
         [self addChild: scoreLabel z:72];
 
         NSInteger highScore = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"highScore%@", level->slug]];
+        _sfxOn = [standardUserDefaults integerForKey:@"sfxon"];
+        
         CCLabelTTF *highScoreLabel = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"HI: %d", highScore] fontName:@"LostPet.TTF" fontSize:18.0];
         highScoreLabel.color = _color_pink;
         [[highScoreLabel texture] setAliasTexParameters];
@@ -1450,7 +1457,8 @@
 #ifdef DEBUG
 #else
             [[SimpleAudioEngine sharedEngine] stopBackgroundMusic];
-            [[SimpleAudioEngine sharedEngine] playEffect:@"game over sting.mp3"];
+            if(_sfxOn)
+                [[SimpleAudioEngine sharedEngine] playEffect:@"game over sting.mp3"];
 #endif
             CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"Lvl_TextBox.png"];
             sprite.position = ccp(winSize.width/2, winSize.height/2);
@@ -1500,7 +1508,8 @@
             if(fBUd->tag >= F_BUSHED && fBUd->tag <= F_TOPHED){
 #ifdef DEBUG
 #else
-                [[SimpleAudioEngine sharedEngine] playEffect:@"hot dog on head.mp3" pitch:1 pan:0 gain:.3];
+                if(_sfxOn)
+                    [[SimpleAudioEngine sharedEngine] playEffect:@"hot dog on head.mp3" pitch:1 pan:0 gain:.3];
 #endif
                 // a dog is definitely on a head when it collides with that head
                 ud->_dog_isOnHead = true;
@@ -2113,11 +2122,12 @@
         CCLOG(@"%d touches", count);
         if(CGRectContainsPoint(_pauseButtonRect, touchLocation1)){
             if(!_pause){
-                [self pauseButton];
 #ifdef DEBUG
 #else
-                [[SimpleAudioEngine sharedEngine] playEffect:@"pause 3.mp3"];
+                if(_sfxOn)
+                    [[SimpleAudioEngine sharedEngine] playEffect:@"pause 3.mp3"];
 #endif
+                [self pauseButton];
             }
             else{
                 [self resumeGame];

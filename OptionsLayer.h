@@ -12,9 +12,11 @@
 {
     CCSpriteBatchNode *spriteSheet, *spriteSheetCommon;
     ccColor3B _color_pink;
-    CGRect _siteRect, _creditsRect, _tutRect, _scoresRect;
+    CGRect _siteRect, _creditsRect, _tutRect, _scoresRect, _sfxRect;
     BOOL credits, scores;
+    NSInteger sfxOn;
     CCLayerColor *creditsLayer, *scoresLayer;
+    CCLabelTTF *sfxLabel;
 }
 
 +(CCScene *)scene;

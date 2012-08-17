@@ -42,6 +42,24 @@
     [[CCDirector sharedDirector] replaceScene:[TutorialLayer sceneWithFrom:@"options"]];
 }
 
+-(void)flipSFX{
+    if(!sfxOn){
+        [[NSUserDefaults standardUserDefaults] setInteger:1 forKey:@"sfxon"];
+        [sfxLabel setString:@"SFX on"];
+        sfxOn = 1;
+#ifdef DEBUG
+#else
+        [[SimpleAudioEngine sharedEngine] playEffect:@"pause 3.mp3"];
+#endif
+    } else {
+        [[NSUserDefaults standardUserDefaults] setInteger:0 forKey:@"sfxon"];
+        [sfxLabel setString:@"SFX off"];
+        sfxOn = 0;
+    }
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    
+}
+
 -(void)deleteScores{
     CGSize winSize = [[CCDirector sharedDirector] winSize];
     
@@ -165,6 +183,7 @@
 -(id) init{
     if ((self = [super init])){
         CGSize winSize = [[CCDirector sharedDirector] winSize];
+        sfxOn = [[NSUserDefaults standardUserDefaults] integerForKey:@"sfxon"];
         self.isTouchEnabled = true;
         
         _color_pink = ccc3(255, 62, 166);
@@ -214,7 +233,7 @@
         [self addChild:m z:11];
         
         CCSprite *tutorialButton = [CCSprite spriteWithSpriteFrameName:@"YakisobaPan.png"];
-        tutorialButton.position = ccp(170, 130);
+        tutorialButton.position = ccp(120, 130);
         tutorialButton.scale = imgScale;
         [[tutorialButton texture] setAliasTexParameters];
         [self addChild:tutorialButton z:10];
@@ -224,11 +243,11 @@
         label.color = _color_pink;
         b = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(playTutorial)];
         m = [CCMenu menuWithItems:b, nil];
-        [m setPosition:ccp(170, 90)];
+        [m setPosition:ccp(120, 90)];
         [self addChild:m z:11];
         
         CCSprite *scoresButton = [CCSprite spriteWithSpriteFrameName:@"Taco.png"];
-        scoresButton.position = ccp(320, 130);
+        scoresButton.position = ccp(240, 130);
         scoresButton.scale = imgScale;
         [[scoresButton texture] setAliasTexParameters];
         [self addChild:scoresButton z:10];
@@ -238,7 +257,24 @@
         label.color = _color_pink;
         b = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(clearScoresWindow)];
         m = [CCMenu menuWithItems:b, nil];
-        [m setPosition:ccp(320, 90)];
+        [m setPosition:ccp(240, 90)];
+        [self addChild:m z:11];
+        
+        CCSprite *sfxButton = [CCSprite spriteWithSpriteFrameName:@"ChiDog.png"];
+        sfxButton.position = ccp(360, 130);
+        sfxButton.scale = imgScale;
+        [[sfxButton texture] setAliasTexParameters];
+        [self addChild:sfxButton z:10];
+        _sfxRect = CGRectMake((sfxButton.position.x-(sfxButton.contentSize.width)/2), (sfxButton.position.y-(sfxButton.contentSize.height)/2), (sfxButton.contentSize.width+10), (sfxButton.contentSize.height+10));
+        if(sfxOn)
+            sfxLabel = [CCLabelTTF labelWithString:@"SFX on" fontName:@"LostPet.TTF" fontSize:22.0];
+        else
+            sfxLabel = [CCLabelTTF labelWithString:@"SFX off" fontName:@"LostPet.TTF" fontSize:22.0];
+        [[sfxLabel texture] setAliasTexParameters];
+        sfxLabel.color = _color_pink;
+        b = [CCMenuItemLabel itemWithLabel:sfxLabel target:self selector:@selector(flipSFX)];
+        m = [CCMenu menuWithItems:b, nil];
+        [m setPosition:ccp(360, 90)];
         [self addChild:m z:11];
         
         CCSprite *restartButton = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
@@ -306,6 +342,8 @@
         [self playTutorial];
     } else if(CGRectContainsPoint(_scoresRect, touchLocation1)){
         [self clearScoresWindow];
+    } else if(CGRectContainsPoint(_sfxRect, touchLocation1)){
+        [self flipSFX];
     }
 }
 
