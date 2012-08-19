@@ -9,6 +9,7 @@
 #import "cocos2d.h"
 #import <CocosDenshion/SimpleAudioEngine.h>
 #import "LevelSelectLayer.h"
+#import <Twitter/Twitter.h>
 
 @interface LoseLayer : CCLayer
 {
