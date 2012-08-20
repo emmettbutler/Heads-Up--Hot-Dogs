@@ -25,8 +25,6 @@
     
     s = [self businessman];
     [levelArray addObject:[NSValue valueWithPointer:s]];
-    s = [self dogMuncher];
-    [levelArray addObject:[NSValue valueWithPointer:s]];
     s = [self youngPro];
     [levelArray addObject:[NSValue valueWithPointer:s]];
     s = [self jogger];
@@ -46,8 +44,6 @@
     s = [self jogger];
     [levelArray addObject:[NSValue valueWithPointer:s]];
     s = [self police];
-    [levelArray addObject:[NSValue valueWithPointer:s]];
-    s = [self dogMuncher];
     [levelArray addObject:[NSValue valueWithPointer:s]];
     
     return levelArray;

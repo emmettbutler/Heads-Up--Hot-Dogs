@@ -55,6 +55,7 @@
         lp->bgm = @"gameplay 1.mp3";
         lp->spritesheet = @"sprites_philly";
         lp->highScore = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"highScore%@", lp->slug]];
+        lp->personSpeedMul = 1;
 
         dd = new spcDogData();
         dd->riseSprite = @"Steak_Rise.png";
