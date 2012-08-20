@@ -83,6 +83,27 @@
     [[CCDirector sharedDirector] replaceScene:[LoseLayer sceneWithData:loseParams]];
 }
 
+-(void)reportAchievements{
+    // achievement reporting (internally locked by the reporter object)
+    if(_points >= 40000){
+        [reporter reportAchievementIdentifier:@"points_40000" percentComplete:100];
+    }
+    else if(_points >= 20000){
+        [reporter reportAchievementIdentifier:@"points_20000" percentComplete:100];
+    }
+    else if(_points >= 10000){
+        [reporter reportAchievementIdentifier:@"points_10000" percentComplete:100];
+    } else if(_points >= 5000){
+        [reporter reportAchievementIdentifier:@"points_5000" percentComplete:100];
+    }
+    if(time/60 > 90 && _droppedCount == 0 && !_hasDroppedDog){
+        [reporter reportAchievementIdentifier:@"nodrops_90" percentComplete:100];
+    }
+    if(_peopleGrumped > 100){
+        [reporter reportAchievementIdentifier:@"grumps_100" percentComplete:100];
+    }
+}
+
 -(void)resumeGame{
     [self removeChild:_pauseMenu cleanup:YES];
     [self removeChild:_pauseLayer cleanup:YES];
@@ -506,6 +527,7 @@
     CCLOG(@"Destroying dog (tag %d)...", dogSprite.tag);
 
     if(dogSprite.tag == S_HOTDOG || dogSprite.tag == S_SPCDOG){
+        _hasDroppedDog = true;
         dogBody->SetAwake(false);
         [dogSprite stopAllActions];
         [dogSprite removeFromParentAndCleanup:YES];
@@ -1214,7 +1236,7 @@
         _shootLock = NO;
         _droppedSpacing = 200;
         _droppedCount = 0;
-        _achievementLock = false;
+        _hasDroppedDog = false;
         _currentRayAngle = 0;
 
         //contact listener init
@@ -1407,12 +1429,7 @@
 
     time++;
     
-    // achievement reporting (internally locked by the reporter object)
-    if(_points >= 10000){
-        [reporter reportAchievementIdentifier:@"points_10000" percentComplete:100];
-    } else if(_points >= 5000){
-        [reporter reportAchievementIdentifier:@"points_5000" percentComplete:100];
-    }
+    [self reportAchievements];
     
     b2Vec2 windForce;
     // level-specific repetitive actions

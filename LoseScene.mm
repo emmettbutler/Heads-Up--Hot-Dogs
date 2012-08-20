@@ -89,6 +89,10 @@
     if ((self = [super init])){
         touchLock = false;
         self.isTouchEnabled = YES;
+        
+        reporter = [[AchievementReporter alloc] init];
+        [reporter loadAchievements];
+        
         // color definitions
         _color_pink = ccc3(255, 62, 166);
         _color_blue = ccc3(6, 110, 163);
@@ -208,8 +212,11 @@
         }
             
         CCLOG(@"OverallTime + _timePlayed/60 --> %d + %d = %d", overallTime, _timePlayed/60, overallTime+(_timePlayed/60));
-        [standardUserDefaults setInteger:overallTime+(_timePlayed/60) forKey:@"overallTime"];
+        int newOverallTime = overallTime+(_timePlayed/60);
+        [standardUserDefaults setInteger:newOverallTime forKey:@"overallTime"];
         [standardUserDefaults synchronize];
+        
+        [reporter reportAchievementIdentifier:@"totaltime_1" percentComplete:newOverallTime/432000]; // two hours
     
         [scoreLine setString:[NSString stringWithFormat:@"Total points: %06d", _score]];
     

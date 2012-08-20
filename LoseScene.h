@@ -10,6 +10,7 @@
 #import <CocosDenshion/SimpleAudioEngine.h>
 #import "LevelSelectLayer.h"
 #import <Twitter/Twitter.h>
+#import "AchievementReporter.h"
 
 @interface LoseLayer : CCLayer
 {
@@ -21,6 +22,7 @@
     CCLabelTTF *levelLabel1, *levelLabel2;
     NSInteger highScore;
     ALuint sting;
+    AchievementReporter *reporter;
     BOOL touchLock, _setNewHighScore;
     CGRect _twitterRect;
     NSString *slug;
