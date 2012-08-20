@@ -87,11 +87,9 @@
     // achievement reporting (internally locked by the reporter object)
     if(_points >= 40000){
         [reporter reportAchievementIdentifier:@"points_40000" percentComplete:100];
-    }
-    else if(_points >= 20000){
+    } else if(_points >= 20000){
         [reporter reportAchievementIdentifier:@"points_20000" percentComplete:100];
-    }
-    else if(_points >= 10000){
+    } else if(_points >= 10000){
         [reporter reportAchievementIdentifier:@"points_10000" percentComplete:100];
     } else if(_points >= 5000){
         [reporter reportAchievementIdentifier:@"points_5000" percentComplete:100];
@@ -1231,8 +1229,11 @@
         _dogsSaved = 0;
         _gameOver = false;
         _maxDogsOnScreen = 6;
-        if(level->maxDogs)
+        _levelMaxDogs = 6;
+        if(level->maxDogs){
+            _levelMaxDogs = level->maxDogs;
             _maxDogsOnScreen = level->maxDogs - 3;
+        }
         _shootLock = NO;
         _droppedSpacing = 200;
         _droppedCount = 0;
@@ -1384,14 +1385,14 @@
     if(_points > 19000 && !(time % 300) && _wienerSpawnDelayTime > .1){
         _wienerSpawnDelayTime -= .05;
     } else if(_points > 14000 && _wienerSpawnDelayTime != .6){
-        _maxDogsOnScreen = level->maxDogs;
+        _maxDogsOnScreen = _levelMaxDogs;
         _wienerSpawnDelayTime = .6;
     } else if(_points > 12000 && _wienerSpawnDelayTime != .8) {
         _wienerSpawnDelayTime = .8;
-        _maxDogsOnScreen = level->maxDogs - 1;
+        _maxDogsOnScreen = _levelMaxDogs - 1;
     } else if(_points > 7000 && _wienerSpawnDelayTime != 1) {
         _wienerSpawnDelayTime = 1;
-        _maxDogsOnScreen = level->maxDogs - 2;
+        _maxDogsOnScreen = _levelMaxDogs - 2;
     } else if(_points > 5000 && _wienerSpawnDelayTime != 1.5) {
         _wienerSpawnDelayTime = 1.5;
     } else if(_points > 2000 && _wienerSpawnDelayTime != 2.5) {
