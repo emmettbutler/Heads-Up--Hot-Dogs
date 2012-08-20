@@ -33,6 +33,33 @@
     }];
 }
 
+- (IBAction)tweetButtonPressed:(id)sender withScore:(NSNumber *)score{
+    //Create the tweet sheet
+    TWTweetComposeViewController *tweetSheet = [[TWTweetComposeViewController alloc] init];
+    
+    //Customize the tweet sheet here
+    //Add a tweet message
+    [tweetSheet setInitialText:[NSString stringWithFormat:@"I just scored %d points in @HeadsUpHotDogs!", score.intValue]];
+    
+    //Add an image
+    [tweetSheet addImage:[UIImage imageNamed:@"Icon_Head_big.png"]];
+    
+    //Add a link
+    //Don't worry, Twitter will handle turning this into a t.co link
+    [tweetSheet addURL:[NSURL URLWithString:@"http://headsuphotdogs.com"]];
+    
+    UIViewController* myController = [[UIViewController alloc] init];
+    [[[CCDirector sharedDirector] openGLView] addSubview:myController.view];
+    
+    //Set a blocking handler for the tweet sheet
+    tweetSheet.completionHandler = ^(TWTweetComposeViewControllerResult result){
+        [myController dismissModalViewControllerAnimated:YES];
+    };
+    
+    //Show the tweet sheet!
+    [myController presentModalViewController:tweetSheet animated:YES];
+}
+
 +(CCScene *) sceneWithData:(void*)data
 {
 	CCScene *scene = [CCScene node];
@@ -128,6 +155,13 @@
         [menu setPosition:ccp(370, 26)];
         [self addChild:menu z:11];
         
+        CCSprite *twitterButton = [CCSprite spriteWithSpriteFrameName:@"twitter.png"];
+        twitterButton.position = ccp(83, 78);
+        twitterButton.scale = 1;
+        [[twitterButton texture] setAliasTexParameters];
+        [self addChild:twitterButton z:10];
+        _twitterRect = CGRectMake((twitterButton.position.x-(twitterButton.contentSize.width)/2), (twitterButton.position.y-(twitterButton.contentSize.height)/2), (twitterButton.contentSize.width+10), (twitterButton.contentSize.height+10));
+        
         _lock = 0;
         
         [TestFlight passCheckpoint:@"Game Over Screen"];
@@ -206,7 +240,10 @@
 - (void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     UITouch *myTouch = [touches anyObject];
     CGPoint location = [myTouch locationInView:[myTouch view]];
-    location = [[CCDirector sharedDirector] convertToGL:location];  
+    location = [[CCDirector sharedDirector] convertToGL:location];
+    
+    NSLog(@"Touch: %0.2f x %0.2f", location.x, location.y);
+    
     if(levelBox){
         if(!touchLock){
             touchLock = true;
@@ -214,6 +251,10 @@
             [levelLabel2 removeFromParentAndCleanup:YES];
             [levelBox removeFromParentAndCleanup:YES];
         }
+    }
+    
+    if(CGRectContainsPoint(_twitterRect,location)){
+        [self tweetButtonPressed:self withScore:[NSNumber numberWithInt:_score]];
     }
 }
 
