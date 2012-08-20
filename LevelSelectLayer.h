@@ -16,46 +16,25 @@ static NSUserDefaults *standardUserDefaults;
 
 @interface LevelSelectLayer : CCLayer {
     struct spcDogData{
-        NSString *riseSprite;
-        NSString *fallSprite;
-        NSString *mainSprite;
-        NSString *grabSprite;
-        NSMutableArray *deathAnimFrames;
-        NSMutableArray *shotAnimFrames;
-        NSMutableArray *flashAnimFrames;
+        NSString *riseSprite, *fallSprite, *mainSprite, *grabSprite;
+        NSMutableArray *deathAnimFrames, *shotAnimFrames, *flashAnimFrames;
     };
     
     struct bgComponent{
         CCLabelTTF *label; // one or the other
         CCSprite *sprite;
-        NSMutableArray *anim1;
-        NSMutableArray *anim2;
+        NSMutableArray *anim1, *anim2;
         CGPoint position;
     };
     
     struct levelProps{
-        NSString *bg;
-        NSString *bgm;
-        NSMutableArray *bgComponents;
-        levelProps *next;
-        levelProps *prev;
-        int characterProbSum;
-        int maxDogs;
-        float gravity;
-        BOOL unlocked;
-        int unlockThreshold;
-        NSString *name;
-        NSString *slug;
-        BOOL enabled;
-        int highScore;
-        NSString *func;
-        float frictionMul;
+        NSString *bg, *bgm, *name, *slug, *func, *spritesheet, *thumbnail;
+        NSMutableArray *bgComponents, *characters;
+        levelProps *next, *prev;
+        int characterProbSum, maxDogs, highScore, unlockThreshold;
+        float gravity, frictionMul, personSpeedMul, restitutionMul, dogDeathDelay;
+        BOOL unlocked, enabled;
         spcDogData *specialDog;
-        NSString *spritesheet;
-        NSString *thumbnail;
-        NSMutableArray *characters;
-        float personSpeedMul;
-        float restitutionMul;
     };
 
     int time;

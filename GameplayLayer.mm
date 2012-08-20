@@ -570,6 +570,8 @@
             mainSprite = @"dog54x12.png";
             grabSprite = @"Dog_Grabbed.png";
             deathDelay = 2.7;
+            if(level->dogDeathDelay)
+                deathDelay = level->dogDeathDelay;
             tag = S_HOTDOG;
             for(int i = 0; i < 8; i++){
                 [wienerFlashAnimFrames addObject:
@@ -682,10 +684,14 @@
     b2FixtureDef wienerShapeDef;
     wienerShapeDef.shape = &wienerShape;
     wienerShapeDef.density = 0.5f;
-    wienerShapeDef.friction = 1.0f*level->frictionMul;
+    wienerShapeDef.friction = 1.0f;
+    if(level->frictionMul)
+        wienerShapeDef.friction = 1.0f*level->frictionMul;
     wienerShapeDef.userData = fUd2;
     wienerShapeDef.filter.maskBits = f;
-    wienerShapeDef.restitution = 0.2f*level->restitutionMul;
+    wienerShapeDef.restitution = 0.2f;
+    if(level->restitutionMul)
+        wienerShapeDef.restitution = 0.2f*level->restitutionMul;
     wienerShapeDef.filter.categoryBits = WIENER;
     _wienerFixture = wienerBody->CreateFixture(&wienerShapeDef);
 
@@ -979,7 +985,9 @@
     b2FixtureDef personShapeDef;
     personShapeDef.shape = &personShape;
     personShapeDef.density = 0;
-    personShapeDef.friction = person->friction*level->frictionMul;
+    personShapeDef.friction = person->friction;
+    if(level->frictionMul)
+        personShapeDef.friction = person->friction*level->frictionMul;
     personShapeDef.restitution = person->restitution;
     personShapeDef.userData = fUd1;
     personShapeDef.filter.categoryBits = _curPersonMaskBits;
@@ -1112,7 +1120,10 @@
             }
         }
         
-        b2Vec2 gravity = b2Vec2(0.0f, level->gravity);
+        b2Vec2 gravity;
+        gravity = b2Vec2(0.0f, -30.0);
+        if(level->gravity)
+            gravity = b2Vec2(0.0f, level->gravity);
         _world = new b2World(gravity);
         
         for(int i = 1; i < 4; i++){
@@ -1194,7 +1205,9 @@
         _dogsOnscreen = 0;
         _dogsSaved = 0;
         _gameOver = false;
-        _maxDogsOnScreen = level->maxDogs - 3;
+        _maxDogsOnScreen = 6;
+        if(level->maxDogs)
+            _maxDogsOnScreen = level->maxDogs - 3;
         _shootLock = NO;
         _droppedSpacing = 200;
         _droppedCount = 0;

@@ -9,7 +9,7 @@
 #import "LevelSelectLayer.h"
 #import "GameplayLayer.h"
 
-#define NUM_LEVELS 4
+#define NUM_LEVELS 6
 
 @implementation LevelSelectLayer
 
@@ -53,13 +53,8 @@
     if(loadFull){
         lp->bg = @"bg_philly.png";
         lp->bgm = @"gameplay 1.mp3";
-        lp->gravity = -30.0f;
         lp->spritesheet = @"sprites_philly";
         lp->highScore = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"highScore%@", lp->slug]];
-        lp->personSpeedMul = 1;
-        lp->restitutionMul = 1;
-        lp->frictionMul = 1;
-        lp->maxDogs = 6;
 
         dd = new spcDogData();
         dd->riseSprite = @"Steak_Rise.png";
@@ -113,7 +108,6 @@
         lp->personSpeedMul = 1.2;
         lp->restitutionMul = 1.2;
         lp->frictionMul = .95;
-        lp->maxDogs = 6;
 
         dd = new spcDogData();
         dd->riseSprite = @"Bagel_Rise.png";
@@ -185,7 +179,6 @@
         lp->personSpeedMul = 1.2;
         lp->restitutionMul = 1.2;
         lp->frictionMul = .95;
-        lp->maxDogs = 6;
         
         dd = new spcDogData();
         dd->riseSprite = @"Bagel_Rise.png";
@@ -234,12 +227,11 @@
     if(loadFull){
         lp->bg = @"Japan_BG.png";
         lp->bgm = @"gameplay 1.mp3";
-        lp->gravity = -22.0f;
+        lp->gravity = -28.0f;
         lp->spritesheet = @"sprites_japan";
+        lp->dogDeathDelay = .7;
         lp->personSpeedMul = 1;
-        lp->restitutionMul = 1;
-        lp->frictionMul = 1;
-        lp->maxDogs = 6;
+        lp->maxDogs = 7;
         
         dd = new spcDogData();
         dd->riseSprite = @"Bagel_Rise.png";
@@ -387,7 +379,6 @@
         lp->personSpeedMul = .7;
         lp->restitutionMul = 1.7;
         lp->frictionMul = 100;
-        lp->maxDogs = 6;
 
         dd = new spcDogData();
         dd->riseSprite = @"Chips_Rise.png";
