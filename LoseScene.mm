@@ -45,10 +45,10 @@
     
     NSString *highScoreString = [NSString stringWithFormat:@"I just set a new high score in @HeadsUpHotDogs: %d points!", _score];
     
-    if(!_setNewHighScore)
-        [tweetSheet setInitialText:[tweets objectAtIndex:arc4random() % [tweets count]]];
-    else
-        [tweetSheet setInitialText:highScoreString];
+    if(_setNewHighScore)
+        [tweets addObject:highScoreString];
+
+    [tweetSheet setInitialText:[tweets objectAtIndex:arc4random() % [tweets count]]];
     //[tweetSheet addImage:[UIImage imageNamed:@"Icon_Head_big.png"]];
     [tweetSheet addURL:[NSURL URLWithString:@"http://headsuphotdogs.com"]];
     

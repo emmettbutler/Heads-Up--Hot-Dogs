@@ -1110,6 +1110,9 @@
         [CCTexture2D setDefaultAlphaPixelFormat:kCCTexture2DPixelFormat_RGBA4444];
         self.isTouchEnabled = YES;
         
+        reporter = [[AchievementReporter alloc] init];
+        [reporter loadAchievements];
+        
         [standardUserDefaults setInteger:1 forKey:@"introDone"];
         
         NSMutableArray *levelStructs = [LevelSelectLayer buildLevels:[NSNumber numberWithInt:1]];
@@ -1211,6 +1214,7 @@
         _shootLock = NO;
         _droppedSpacing = 200;
         _droppedCount = 0;
+        _achievementLock = false;
         _currentRayAngle = 0;
 
         //contact listener init
@@ -1403,8 +1407,14 @@
 
     time++;
     
-    b2Vec2 windForce;
+    // achievement reporting (internally locked by the reporter object)
+    if(_points >= 10000){
+        [reporter reportAchievementIdentifier:@"points_10000" percentComplete:100];
+    } else if(_points >= 5000){
+        [reporter reportAchievementIdentifier:@"points_5000" percentComplete:100];
+    }
     
+    b2Vec2 windForce;
     // level-specific repetitive actions
     if(level->slug == @"philly"){
         
@@ -2025,8 +2035,6 @@
                                                 
                                             }
                                         }
-
-                                        
                                         if(!copBody || !copBody->GetUserData()) continue;
                                         copUd = (bodyUserData *)copBody->GetUserData();
                                         if(!copUd->_cop_hasShot && copArmBody && copArmBody->GetUserData()){
@@ -2054,7 +2062,6 @@
                                             CCSequence *faceSeq = [CCSequence actions:delay, faceShootAnimAction, nil];
                                             if([copUd->sprite2 numberOfRunningActions] == 0)
                                                 [copUd->sprite2 runAction:faceSeq];
-                                            
                                             
                                             //////////////////////////  COP ARM SHOOTING  //////////////////////////
                                             
