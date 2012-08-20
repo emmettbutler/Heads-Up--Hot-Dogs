@@ -21,7 +21,7 @@
     CCLabelTTF *levelLabel1, *levelLabel2;
     NSInteger highScore;
     ALuint sting;
-    BOOL touchLock;
+    BOOL touchLock, _setNewHighScore;
     CGRect _twitterRect;
     NSString *slug;
     ccColor3B _color_pink, _color_blue, _color_darkblue;

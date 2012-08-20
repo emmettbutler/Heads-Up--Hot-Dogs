@@ -33,30 +33,28 @@
     }];
 }
 
-- (IBAction)tweetButtonPressed:(id)sender withScore:(NSNumber *)score{
-    //Create the tweet sheet
+- (IBAction)tweetButtonPressed:(id)sender{
     TWTweetComposeViewController *tweetSheet = [[TWTweetComposeViewController alloc] init];
     
-    //Customize the tweet sheet here
-    //Add a tweet message
-    [tweetSheet setInitialText:[NSString stringWithFormat:@"I just scored %d points in @HeadsUpHotDogs!", score.intValue]];
+    NSMutableArray *tweets = [[NSMutableArray alloc] init];
+    [tweets addObject:[NSString stringWithFormat:@"I just scored %d points in @HeadsUpHotDogs!", _score]];
+    [tweets addObject:[NSString stringWithFormat:@"I just dropped hot dogs on %d people's heads in @HeadsUpHotDogs!", _peopleGrumped]];
+    [tweets addObject:[NSString stringWithFormat:@"I just saved %d hot dogs from destruction in @HeadsUpHotDogs!", _dogsSaved]];
+    [tweets addObject:[NSString stringWithFormat:@"I just saved %d inches of meat from destruction in @HeadsUpHotDogs!", _dogsSaved * 12]];
+    [tweets addObject:@"I am the new savior of franks in @HeadsUpHotDogs!"];
     
-    //Add an image
-    [tweetSheet addImage:[UIImage imageNamed:@"Icon_Head_big.png"]];
+    NSString *highScoreString = [NSString stringWithFormat:@"I just set a new high score in @HeadsUpHotDogs: %d points!", _score];
     
-    //Add a link
-    //Don't worry, Twitter will handle turning this into a t.co link
+    if(!_setNewHighScore)
+        [tweetSheet setInitialText:[tweets objectAtIndex:arc4random() % [tweets count]]];
+    else
+        [tweetSheet setInitialText:highScoreString];
+    //[tweetSheet addImage:[UIImage imageNamed:@"Icon_Head_big.png"]];
     [tweetSheet addURL:[NSURL URLWithString:@"http://headsuphotdogs.com"]];
     
     UIViewController* myController = [[UIViewController alloc] init];
     [[[CCDirector sharedDirector] openGLView] addSubview:myController.view];
-    
-    //Set a blocking handler for the tweet sheet
-    tweetSheet.completionHandler = ^(TWTweetComposeViewControllerResult result){
-        [myController dismissModalViewControllerAnimated:YES];
-    };
-    
-    //Show the tweet sheet!
+    tweetSheet.completionHandler = ^(TWTweetComposeViewControllerResult result){[myController dismissModalViewControllerAnimated:YES];};
     [myController presentModalViewController:tweetSheet animated:YES];
 }
 
@@ -182,6 +180,7 @@
         _lock = 1;
 
         if(_score > highScore){
+            _setNewHighScore = true;
             [standardUserDefaults setInteger:_score forKey:[NSString stringWithFormat:@"highScore%@", level->slug]];
             highScore = _score;
             [self reportScore:highScore forCategory:level->slug];
@@ -242,7 +241,7 @@
     CGPoint location = [myTouch locationInView:[myTouch view]];
     location = [[CCDirector sharedDirector] convertToGL:location];
     
-    NSLog(@"Touch: %0.2f x %0.2f", location.x, location.y);
+    CCLOG(@"Touch: %0.2f x %0.2f", location.x, location.y);
     
     if(levelBox){
         if(!touchLock){
@@ -254,7 +253,7 @@
     }
     
     if(CGRectContainsPoint(_twitterRect,location)){
-        [self tweetButtonPressed:self withScore:[NSNumber numberWithInt:_score]];
+        [self tweetButtonPressed:self];
     }
 }
 
