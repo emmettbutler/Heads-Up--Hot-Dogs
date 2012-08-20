@@ -9,6 +9,7 @@
 #import "cocos2d.h"
 #import <CocosDenshion/SimpleAudioEngine.h>
 #import "LevelSelectLayer.h"
+#import <Twitter/Twitter.h>
 
 @interface LoseLayer : CCLayer
 {
@@ -21,6 +22,7 @@
     NSInteger highScore;
     ALuint sting;
     BOOL touchLock;
+    CGRect _twitterRect;
     NSString *slug;
     ccColor3B _color_pink, _color_blue, _color_darkblue;
     levelProps *level;
