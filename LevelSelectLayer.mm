@@ -35,6 +35,7 @@
         [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_philly.plist"];
         [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_chicago.plist"];
         [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_space.plist"];
+        [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_london.plist"];
     }
 
     /********************************************************************************
@@ -218,6 +219,59 @@
     
     [levelStructs addObject:[NSValue valueWithPointer:lp]];
 
+    /********************************************************************************
+     * JAPAN LEVEL SETTINGS
+     *******************************************************************************/
+    
+    lp = new levelProps();
+    lp->enabled = true;
+    lp->slug = @"japan";
+    lp->name = @"Hot Spring";
+    lp->unlockThreshold = 13500;
+    lp->func = @"switchScreenJapan";
+    lp->thumbnail = @"Space_Thumb.png";
+    
+    if(loadFull){
+        lp->bg = @"Japan_BG.png";
+        lp->bgm = @"gameplay 1.mp3";
+        lp->gravity = -22.0f;
+        lp->spritesheet = @"sprites_japan";
+        lp->personSpeedMul = 1;
+        lp->restitutionMul = 1;
+        lp->frictionMul = 1;
+        lp->maxDogs = 6;
+        
+        dd = new spcDogData();
+        dd->riseSprite = @"Bagel_Rise.png";
+        dd->fallSprite = @"Bagel_Fall.png";
+        dd->mainSprite = @"Bagel.png";
+        dd->grabSprite = @"Bagel_Grab.png";
+        dd->deathAnimFrames = [[NSMutableArray alloc] init];
+        dd->shotAnimFrames = [[NSMutableArray alloc] init];
+        dd->flashAnimFrames = [[NSMutableArray alloc] init];
+        for(int i = 0; i < 1; i++){
+            [dd->flashAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"Bagel_Die_1.png"]]];
+            [dd->flashAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"Bagel_Die_2.png"]]];
+        }
+        for(int i = 1; i <= 8; i++){
+            [dd->deathAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"Bagel_Die_%d.png", i]]];
+        }
+        for(int i = 1; i <= 6; i++){
+            [dd->shotAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"Bagel_Shot_%d.png", i]]];
+        }
+        
+        lp->specialDog = dd;
+    }
+    
+    [levelStructs addObject:[NSValue valueWithPointer:lp]];
 
     /********************************************************************************
      * CHICAGO LEVEL SETTINGS
@@ -383,6 +437,7 @@
         [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_philly.plist"];
         [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_chicago.plist"];
         [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_space.plist"];
+        [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_japan.plist"];
     }
 
     for(NSValue *v in levelStructs){
@@ -567,6 +622,10 @@
 
 -(void)switchScreenChicago{
     [self switchScreenStartWithSlug:@"chicago"];
+}
+
+-(void)switchScreenJapan{
+    [self switchScreenStartWithSlug:@"japan"];
 }
 
 -(void)switchScreenSpace{
