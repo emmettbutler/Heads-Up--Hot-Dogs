@@ -35,18 +35,6 @@
 
 - (IBAction)tweetButtonPressed:(id)sender{
     TWTweetComposeViewController *tweetSheet = [[TWTweetComposeViewController alloc] init];
-    
-    NSMutableArray *tweets = [[NSMutableArray alloc] init];
-    [tweets addObject:[NSString stringWithFormat:@"I just scored %d points in @HeadsUpHotDogs!", _score]];
-    [tweets addObject:[NSString stringWithFormat:@"I just dropped hot dogs on %d people's heads in @HeadsUpHotDogs!", _peopleGrumped]];
-    [tweets addObject:[NSString stringWithFormat:@"I just saved %d hot dogs from destruction in @HeadsUpHotDogs!", _dogsSaved]];
-    [tweets addObject:[NSString stringWithFormat:@"I just saved %d inches of meat from destruction in @HeadsUpHotDogs!", _dogsSaved * 12]];
-    [tweets addObject:@"I am the new savior of franks in @HeadsUpHotDogs!"];
-    
-    NSString *highScoreString = [NSString stringWithFormat:@"I just set a new high score in @HeadsUpHotDogs: %d points!", _score];
-    
-    if(_setNewHighScore)
-        [tweets addObject:highScoreString];
 
     [tweetSheet setInitialText:[tweets objectAtIndex:arc4random() % [tweets count]]];
     //[tweetSheet addImage:[UIImage imageNamed:@"Icon_Head_big.png"]];
@@ -97,6 +85,18 @@
         _color_pink = ccc3(255, 62, 166);
         _color_blue = ccc3(6, 110, 163);
         _color_darkblue = ccc3(14, 168, 248);
+        
+        tweets = [[NSMutableArray alloc] init];
+        [tweets addObject:[NSString stringWithFormat:@"I just scored %d points in @HeadsUpHotDogs beta!", _score]];
+        [tweets addObject:[NSString stringWithFormat:@"I just dropped hot dogs on %d people's heads in @HeadsUpHotDogs beta!", _peopleGrumped]];
+        [tweets addObject:[NSString stringWithFormat:@"I just saved %d hot dogs from destruction in @HeadsUpHotDogs beta!", _dogsSaved]];
+        [tweets addObject:[NSString stringWithFormat:@"I just saved %d inches of meat from destruction in @HeadsUpHotDogs beta!", _dogsSaved * 12]];
+        [tweets addObject:@"I am the new savior of franks in @HeadsUpHotDogs beta!"];
+        
+        NSString *highScoreString = [NSString stringWithFormat:@"I just set a new high score in @HeadsUpHotDogs beta: %d points!", _score];
+        
+        if(_setNewHighScore)
+            [tweets addObject:highScoreString];
         
         spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_menus.png"];
         [self addChild:spriteSheet];

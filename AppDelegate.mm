@@ -136,6 +136,12 @@
     standardUserDefaults = [NSUserDefaults standardUserDefaults];
 #ifdef DEBUG
     [standardUserDefaults setInteger:0 forKey:@"introDone"]; //should be 0, is 1 for debugging
+    [standardUserDefaults setInteger:1 forKey:@"unlockednyc"];
+    [standardUserDefaults setInteger:1 forKey:@"unlockedjapan"];
+    [standardUserDefaults setInteger:1 forKey:@"unlockedlondon"];
+    [standardUserDefaults setInteger:1 forKey:@"unlockedchicago"];
+    [standardUserDefaults setInteger:1 forKey:@"unlockedspace"];
+    
     [standardUserDefaults synchronize];
 #else
     [[SimpleAudioEngine sharedEngine] preloadEffect:@"menu intro.mp3"];
