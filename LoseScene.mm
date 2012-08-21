@@ -86,18 +86,6 @@
         _color_blue = ccc3(6, 110, 163);
         _color_darkblue = ccc3(14, 168, 248);
         
-        tweets = [[NSMutableArray alloc] init];
-        [tweets addObject:[NSString stringWithFormat:@"I just scored %d points in @HeadsUpHotDogs beta!", _score]];
-        [tweets addObject:[NSString stringWithFormat:@"I just dropped hot dogs on %d people's heads in @HeadsUpHotDogs beta!", _peopleGrumped]];
-        [tweets addObject:[NSString stringWithFormat:@"I just saved %d hot dogs from destruction in @HeadsUpHotDogs beta!", _dogsSaved]];
-        [tweets addObject:[NSString stringWithFormat:@"I just saved %d inches of meat from destruction in @HeadsUpHotDogs beta!", _dogsSaved * 12]];
-        [tweets addObject:@"I am the new savior of franks in @HeadsUpHotDogs beta!"];
-        
-        NSString *highScoreString = [NSString stringWithFormat:@"I just set a new high score in @HeadsUpHotDogs beta: %d points!", _score];
-        
-        if(_setNewHighScore)
-            [tweets addObject:highScoreString];
-        
         spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_menus.png"];
         [self addChild:spriteSheet];
         
@@ -182,6 +170,8 @@
         NSInteger bestTime = [standardUserDefaults integerForKey:@"bestTime"];
         NSInteger overallTime = [standardUserDefaults integerForKey:@"overallTime"];
         _lock = 1;
+        
+        
 
         if(_score > highScore){
             _setNewHighScore = true;
@@ -210,6 +200,18 @@
             levelLabel2.position = ccp(winSize.width/2, winSize.height/2-10);
             [self addChild:levelLabel2];
         }
+        
+        tweets = [[NSMutableArray alloc] init];
+        [tweets addObject:[NSString stringWithFormat:@"I just scored %d points in @HeadsUpHotDogs beta!", _score]];
+        [tweets addObject:[NSString stringWithFormat:@"I just dropped hot dogs on %d people's heads in @HeadsUpHotDogs beta!", _peopleGrumped]];
+        [tweets addObject:[NSString stringWithFormat:@"I just saved %d hot dogs from destruction in @HeadsUpHotDogs beta!", _dogsSaved]];
+        [tweets addObject:[NSString stringWithFormat:@"I just saved %d inches of meat from destruction in @HeadsUpHotDogs beta!", _dogsSaved * 12]];
+        [tweets addObject:@"I am the new savior of franks in @HeadsUpHotDogs beta!"];
+        
+        NSString *highScoreString = [NSString stringWithFormat:@"I just set a new high score in @HeadsUpHotDogs beta: %d points!", _score];
+        
+        if(_setNewHighScore)
+            [tweets addObject:highScoreString];
             
         CCLOG(@"OverallTime + _timePlayed/60 --> %d + %d = %d", overallTime, _timePlayed/60, overallTime+(_timePlayed/60));
         int newOverallTime = overallTime+(_timePlayed/60);

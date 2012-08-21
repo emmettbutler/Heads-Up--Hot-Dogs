@@ -94,8 +94,14 @@
     } else if(_points >= 5000){
         [reporter reportAchievementIdentifier:@"points_5000" percentComplete:100];
     }
-    if(time/60 > 90 && _droppedCount == 0 && !_hasDroppedDog){
+    if(time/60 > 180 && _droppedCount == 0 && !_hasDroppedDog){
+        [reporter reportAchievementIdentifier:@"nodrops_180" percentComplete:100];
+    }
+    else if(time/60 > 90 && _droppedCount == 0 && !_hasDroppedDog){
         [reporter reportAchievementIdentifier:@"nodrops_90" percentComplete:100];
+    }
+    if(_points > 30000 && !_hasDroppedDog){
+        [reporter reportAchievementIdentifier:@"nodrops_30000" percentComplete:100];
     }
     if(_peopleGrumped > 100){
         [reporter reportAchievementIdentifier:@"grumps_100" percentComplete:100];
@@ -589,7 +595,7 @@
             fallSprite = @"Dog_Fall.png";
             mainSprite = @"dog54x12.png";
             grabSprite = @"Dog_Grabbed.png";
-            deathDelay = 2.7;
+            deathDelay = 1.9;
             if(level->dogDeathDelay)
                 deathDelay = level->dogDeathDelay;
             tag = S_HOTDOG;
