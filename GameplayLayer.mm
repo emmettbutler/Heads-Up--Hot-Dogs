@@ -1867,6 +1867,7 @@
                                 }
                             } else {
                                 if(ud->timeWalking == ud->stopTime + ud->stopTimeDelta){
+                                    [ud->ripples runAction:ud->walkRipple];
                                     [ud->sprite2 runAction:ud->altWalkFace];
                                     [ud->angryFace runAction:ud->angryFaceWalkAction];
                                     if(_droppedCount > 0 && !_gameOver){
@@ -1881,6 +1882,7 @@
                                     CCLOG(@"muncher has not dropped dog");
                                     if(!ud->animLock){
                                         ud->animLock = true;
+                                        [ud->ripples runAction:ud->walkRipple];
                                         [ud->sprite1 runAction:ud->defaultAction];
                                         [ud->sprite2 runAction:ud->altAction];
                                         [ud->angryFace runAction:ud->angryFaceWalkAction];
