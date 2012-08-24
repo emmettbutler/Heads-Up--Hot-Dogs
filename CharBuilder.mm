@@ -213,7 +213,7 @@
     c->fTag = F_COPHED;
     c->heightOffset = 2.9f;
     c->pointValue = 15;
-    c->frequency = 2;
+    c->frequency = 9;
     c->lowerArmAngle = 0;
     c->upperArmAngle = 55;
     c->framerate = .07f;
@@ -467,11 +467,11 @@
     c->friction = 0.15f;
     c->framerate = .06f;
     c->pointValue = 15;
-    c->frequency = 2;
+    c->frequency = 9;
     c->fTag = F_PNKHED;
     c->heightOffset = 2.9f;
     c->rippleXOffset = -.012;
-    c->rippleYOffset = -1.325;
+    c->rippleYOffset = -1.425;
     c->walkAnimFrames = [[NSMutableArray alloc] init];
     c->idleAnimFrames = [[NSMutableArray alloc] init];
     c->faceWalkAnimFrames = [[NSMutableArray alloc] init];

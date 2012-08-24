@@ -939,7 +939,7 @@
             _personUpper.flipX = YES;
             _personUpperOverlay.flipX = YES;
             _rippleSprite.flipX = YES;
-        }
+        } else { _rippleSprite.flipX = YES; }
         if(person->tag == S_POLICE){
             lowerArmAngle = 0;
             upperArmAngle = 55;
@@ -2112,7 +2112,9 @@
                                             //////////////////////////  COP BODY SHOOTING  /////////////////////////
 
                                             [copUd->sprite1 stopAllActions];
+                                            [copUd->ripples stopAllActions];
                                             [copUd->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"Cop_Idle.png"]];
+                                            [copUd->ripples setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"Cop_Ripple_Idle.png"]];
                                             CCFiniteTimeAction *bodyShootAnimAction = (CCFiniteTimeAction *)copUd->altAction2;
                                             CCSequence *bodySeq = [CCSequence actions:delay, bodyShootAnimAction, nil];
                                             if([copUd->sprite2 numberOfRunningActions] == 0)
@@ -2246,6 +2248,11 @@
                                     if([ud->angryFace numberOfRunningActions] == 0){
                                         [ud->angryFace runAction:ud->dogOnHeadTickleAction];
                                     }
+                                    
+                                    [ud->ripples stopAllActions];
+                                    //if([ud->ripples numberOfRunningActions] == 0){
+                                    //    [ud->ripples runAction:ud->idleRipple];
+                                    //}
                                 }
                             }
                         }

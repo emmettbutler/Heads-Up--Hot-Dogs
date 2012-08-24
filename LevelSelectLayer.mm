@@ -223,7 +223,7 @@
     lp->name = @"Hot Spring";
     lp->unlockThreshold = 13500;
     lp->func = @"switchScreenJapan";
-    lp->thumbnail = @"Space_Thumb.png";
+    lp->thumbnail = @"Japan_Thumb.png";
     
     if(loadFull){
         lp->bg = @"Japan_BG.png";
