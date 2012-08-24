@@ -196,6 +196,7 @@
     c->lowerSprite = @"Cop_Run_1.png";
     c->upperSprite = @"Cop_Head_NoDog_1.png";
     c->upperOverlaySprite = @"Cop_Head_Dog_1.png";
+    c->rippleSprite = @"BusinessMan_Ripple_Walk_1.png";
     c->armSprite = @"cop_arm.png";
     c->targetSprite = @"Target_NoDog.png";
     c->tag = S_POLICE;
@@ -217,6 +218,8 @@
     c->upperArmAngle = 55;
     c->framerate = .07f;
     c->armJointXOffset = 15;
+    c->rippleXOffset = -.012;
+    c->rippleYOffset = -1.125;
     c->walkAnimFrames = [[NSMutableArray alloc] init];
     c->idleAnimFrames = [[NSMutableArray alloc] init];
     c->faceWalkAnimFrames = [[NSMutableArray alloc] init];
@@ -224,6 +227,8 @@
     c->specialAnimFrames = [[NSMutableArray alloc] init];
     c->specialFaceAnimFrames = [[NSMutableArray alloc] init];
     c->armShootAnimFrames = [[NSMutableArray alloc] init];
+    c->rippleWalkAnimFrames = [[NSMutableArray alloc] init];
+    c->rippleIdleAnimFrames = [[NSMutableArray alloc] init];
     for(int i = 1; i <= 8; i++){
         [c->walkAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -253,6 +258,13 @@
     [c->specialFaceAnimFrames addObject:
      [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
       [NSString stringWithFormat:@"Cop_Head_Shoot_2.png"]]];
+    [c->rippleIdleAnimFrames addObject:
+     [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"Cop_Ripple_Idle.png"]];
+    for(int i = 1; i <= 8; i++){
+        [c->rippleWalkAnimFrames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithFormat:@"Cop_Ripple_Walk_%d.png", i]]];
+    }
     
     return c;
 }
@@ -264,6 +276,7 @@
     c->lowerSprite = @"Jogger_Run_1.png";
     c->upperSprite = @"Jogger_Head_NoDog_1.png";
     c->upperOverlaySprite = @"Jogger_Head_Dog_1.png";
+    c->rippleSprite = @"BusinessMan_Ripple_Walk_1.png";
     c->tag = S_JOGGER;
     c->hitboxWidth = 22.0;
     c->hitboxHeight = .0001;
@@ -279,10 +292,13 @@
     c->pointValue = 25;
     c->frequency = 4;
     c->heightOffset = 2.55f;
+    c->rippleXOffset = -.012;
+    c->rippleYOffset = -1.125;
     c->walkAnimFrames = [[NSMutableArray alloc] init];
     c->idleAnimFrames = [[NSMutableArray alloc] init];
     c->faceWalkAnimFrames = [[NSMutableArray alloc] init];
     c->faceDogWalkAnimFrames = [[NSMutableArray alloc] init];
+    c->rippleWalkAnimFrames = [[NSMutableArray alloc] init];
     for(int i = 1; i <= 8; i++){
         [c->walkAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -303,6 +319,11 @@
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
           [NSString stringWithFormat:@"Jogger_Head_Dog_%d.png", i]]];
     }
+    for(int i = 1; i <= 8; i++){
+        [c->rippleWalkAnimFrames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithFormat:@"Jogger_Ripple_Run_%d.png", i]]];
+    }
     
     return c;
 }
@@ -314,6 +335,7 @@
     c->lowerSprite = @"YoungProfesh_Walk_1.png";
     c->upperSprite = @"YoungProfesh_Head_NoDog_1.png";
     c->upperOverlaySprite = @"YoungProfesh_Head_Dog_1.png";
+    c->rippleSprite = @"BusinessMan_Ripple_Walk_1.png";
     c->tag = S_YNGPRO;
     c->hitboxWidth = 24.0;
     c->hitboxHeight = .0001;
@@ -329,10 +351,13 @@
     c->pointValue = 15;
     c->frequency = 5;
     c->heightOffset = 2.9f;
+    c->rippleXOffset = .1;
+    c->rippleYOffset = -1.325;
     c->walkAnimFrames = [[NSMutableArray alloc] init];
     c->idleAnimFrames = [[NSMutableArray alloc] init];
     c->faceWalkAnimFrames = [[NSMutableArray alloc] init];
     c->faceDogWalkAnimFrames = [[NSMutableArray alloc] init];
+    c->rippleWalkAnimFrames = [[NSMutableArray alloc] init];
     for(int i = 1; i <= 8; i++){
         [c->walkAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -353,6 +378,11 @@
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
           [NSString stringWithFormat:@"YoungProfesh_Head_Dog_%d.png", i]]];
     }
+    for(int i = 1; i <= 8; i++){
+        [c->rippleWalkAnimFrames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithFormat:@"YoungProfesh_Ripple_Walk_%d.png", i]]];
+    }
     
     return c;
 }
@@ -364,6 +394,7 @@
     c->lowerSprite = @"CrustPunk_Walk_1.png";
     c->upperSprite = @"CrustPunk_Head_NoDog_1.png";
     c->upperOverlaySprite = @"YoungProfesh_Head_Dog_1.png";
+    c->rippleSprite = @"BusinessMan_Ripple_Walk_1.png";
     c->tag = S_CRPUNK;
     c->hitboxWidth = 16.0;
     c->hitboxHeight = .0001;
@@ -379,10 +410,13 @@
     c->frequency = 4;
     c->fTag = F_PNKHED;
     c->heightOffset = 2.4f;
+    c->rippleXOffset = -.012;
+    c->rippleYOffset = -1.125;
     c->walkAnimFrames = [[NSMutableArray alloc] init];
     c->idleAnimFrames = [[NSMutableArray alloc] init];
     c->faceWalkAnimFrames = [[NSMutableArray alloc] init];
     c->faceDogWalkAnimFrames = [[NSMutableArray alloc] init];
+    c->rippleWalkAnimFrames = [[NSMutableArray alloc] init];
     for(int i = 1; i <= 8; i++){
         [c->walkAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -403,6 +437,11 @@
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
           [NSString stringWithFormat:@"CrustPunk_Head_Dog_%d.png", i]]];
     }
+    for(int i = 1; i <= 8; i++){
+        [c->rippleWalkAnimFrames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithFormat:@"CrustPunk_Ripple_Walk_%d.png", i]]];
+    }
     
     return c;
 }
@@ -414,6 +453,7 @@
     c->lowerSprite = @"DogEater_Walk_1.png";
     c->upperSprite = @"DogEater_Head_NoDog_1.png";
     c->upperOverlaySprite = @"DogEater_Head_NoDog_1.png";
+    c->rippleSprite = @"BusinessMan_Ripple_Walk_1.png";
     c->tag = S_MUNCHR;
     c->flipSprites = true;
     c->hitboxWidth = 20.0;
@@ -430,6 +470,8 @@
     c->frequency = 2;
     c->fTag = F_PNKHED;
     c->heightOffset = 2.9f;
+    c->rippleXOffset = -.012;
+    c->rippleYOffset = -1.325;
     c->walkAnimFrames = [[NSMutableArray alloc] init];
     c->idleAnimFrames = [[NSMutableArray alloc] init];
     c->faceWalkAnimFrames = [[NSMutableArray alloc] init];
@@ -439,6 +481,7 @@
     c->altFaceWalkAnimFrames = [[NSMutableArray alloc] init];
     c->altWalkAnimFrames = [[NSMutableArray alloc] init];
     c->postStopAnimFrames = [[NSMutableArray alloc] init];
+    c->rippleWalkAnimFrames = [[NSMutableArray alloc] init];
     for(int i = 1; i <= 8; i++){
         [c->walkAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -483,6 +526,11 @@
         [c->postStopAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
           [NSString stringWithFormat:@"DogEater_DogBack_%d.png", i]]];
+    }
+    for(int i = 1; i <= 8; i++){
+        [c->rippleWalkAnimFrames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithFormat:@"DogEater_Ripple_Walk_%d.png", i]]];
     }
     
     return c;

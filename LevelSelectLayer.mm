@@ -230,7 +230,7 @@
         lp->bgm = @"gameplay 1.mp3";
         lp->gravity = -28.0f;
         lp->spritesheet = @"sprites_japan";
-        lp->dogDeathDelay = .7;
+        lp->dogDeathDelay = .001;
         lp->personSpeedMul = 1;
         lp->maxDogs = 7;
         

@@ -910,15 +910,16 @@
     }
     
     int moveDelta;
+    float rippleXOffset;
     
     //set secondary values based on the direction of the walk
     if((xPos.intValue > winSize.width/2)){
         moveDelta = -1*person->moveDelta;
+        rippleXOffset = person->rippleXOffset;
         if(person->flipSprites){
             _personLower.flipX = YES;
             _personUpper.flipX = YES;
             _personUpperOverlay.flipX = YES;
-            _rippleSprite.flipX = YES;
         }
         if(person->tag == S_POLICE){
             lowerArmAngle = 132;
@@ -932,6 +933,7 @@
     }
     else {
         moveDelta = person->moveDelta;
+        rippleXOffset = -1 * person->rippleXOffset;
         if(!person->flipSprites){
             _personLower.flipX = YES;
             _personUpper.flipX = YES;
@@ -968,7 +970,7 @@
         ud->ripples = _rippleSprite;
         ud->walkRipple = _rippleWalkAction;
         ud->idleRipple = _rippleIdleAction;
-        ud->rippleXOffset = person->rippleXOffset;
+        ud->rippleXOffset = rippleXOffset;
         ud->rippleYOffset = person->rippleYOffset;
     }
     ud->defaultAction = _walkAction;
