@@ -42,6 +42,7 @@
 @synthesize personLower = _personLower;
 @synthesize personUpper = _personUpper;
 @synthesize personUpperOverlay = _personUpperOverlay;
+@synthesize rippleSprite = _rippleSprite;
 @synthesize policeArm = _policeArm;
 @synthesize wiener = _wiener;
 @synthesize target = _target;
@@ -791,6 +792,7 @@
     //if we're not supposed to spawn , just skip all this
     NSNumber *xPos = [xPositions objectAtIndex:arc4random() % [xPositions count]];
     CCSprite *target;
+    CCAction *_rippleWalkAction, *_rippleIdleAction;
     NSMutableArray *armShootAnimFrames;
 
     density = 10;
@@ -799,6 +801,10 @@
     self.personLower = [CCSprite spriteWithSpriteFrameName:person->lowerSprite];
     self.personUpper = [CCSprite spriteWithSpriteFrameName:person->upperSprite];
     self.personUpperOverlay = [CCSprite spriteWithSpriteFrameName:person->upperOverlaySprite];
+    if(person->rippleSprite){
+        self.rippleSprite = [CCSprite spriteWithSpriteFrameName:person->rippleSprite];
+        _rippleSprite.tag = person->tag;
+    }
     _personLower.tag = person->tag;
     _personUpper.tag = person->tag;
     _personUpperOverlay.tag = person->tag;
@@ -842,7 +848,20 @@
     walkDogFaceAnim = [CCAnimation animationWithFrames:person->faceDogWalkAnimFrames delay:person->framerate/level->personSpeedMul];
     CCAction *_walkDogFaceAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:walkDogFaceAnim restoreOriginalFrame:NO]] retain];
     [_personUpperOverlay runAction:_walkDogFaceAction];
-
+    
+    // if he has a ripple anim
+    if(level->slug == @"japan"){
+        if(person->rippleWalkAnimFrames){
+            CCAnimation *rippleWalkAction = [CCAnimation animationWithFrames:person->rippleWalkAnimFrames delay:person->framerate/level->personSpeedMul];
+            _rippleWalkAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:rippleWalkAction restoreOriginalFrame:NO]] retain];
+            [_rippleSprite runAction:_rippleWalkAction];
+        }
+        if(person->rippleIdleAnimFrames){
+            CCAnimation *rippleIdleAction = [CCAnimation animationWithFrames:person->rippleIdleAnimFrames delay:.2];
+            _rippleIdleAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:rippleIdleAction restoreOriginalFrame:NO]] retain];
+        }
+    }
+        
     if(person->tag == S_POLICE){
         specialAnim = [CCAnimation animationWithFrames:person->specialAnimFrames delay:.08f];
         _specialAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:specialAnim restoreOriginalFrame:NO] times:1] retain];
@@ -881,6 +900,10 @@
     [spriteSheetCharacter addChild:_personLower z:zIndex];
     [spriteSheetCharacter addChild:_personUpper z:zIndex+2];
     [spriteSheetCharacter addChild:_personUpperOverlay z:zIndex+2];
+    if(person->rippleSprite){
+        _rippleSprite.position = ccp(xPos.intValue, yPos);
+        [spriteSheetCharacter addChild:_rippleSprite z:zIndex+3];
+    }
     if(person->tag == S_POLICE){
         _policeArm.position = ccp(xPos.intValue, yPos);
         [spriteSheetCharacter addChild:_policeArm z:zIndex-2];
@@ -895,6 +918,7 @@
             _personLower.flipX = YES;
             _personUpper.flipX = YES;
             _personUpperOverlay.flipX = YES;
+            _rippleSprite.flipX = YES;
         }
         if(person->tag == S_POLICE){
             lowerArmAngle = 132;
@@ -912,6 +936,7 @@
             _personLower.flipX = YES;
             _personUpper.flipX = YES;
             _personUpperOverlay.flipX = YES;
+            _rippleSprite.flipX = YES;
         }
         if(person->tag == S_POLICE){
             lowerArmAngle = 0;
@@ -939,6 +964,13 @@
     ud->sprite1 = _personLower;
     ud->sprite2 = _personUpper;
     ud->angryFace = _personUpperOverlay;
+    if(level->slug == @"japan" && person->rippleSprite){
+        ud->ripples = _rippleSprite;
+        ud->walkRipple = _rippleWalkAction;
+        ud->idleRipple = _rippleIdleAction;
+        ud->rippleXOffset = person->rippleXOffset;
+        ud->rippleYOffset = person->rippleYOffset;
+    }
     ud->defaultAction = _walkAction;
     ud->angryFaceWalkAction = _walkDogFaceAction;
     ud->altWalk = _altWalkAction;
@@ -1756,6 +1788,11 @@
                                                    (b->GetPosition().y+ud->heightOffset2)*PTM_RATIO);
                 ud->angryFace.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
             }
+            if(ud->ripples != NULL){
+                ud->ripples.position = CGPointMake((b->GetPosition().x+ud->rippleXOffset)*PTM_RATIO,
+                                                   (b->GetPosition().y+ud->rippleYOffset)*PTM_RATIO);
+                ud->ripples.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
+            }
             if(ud->sprite1 != NULL){
                 if(ud->sprite1.tag == S_MUNCHR){
                     _muncherOnScreen = YES;
@@ -1811,18 +1848,20 @@
                             if(ud->sprite1.tag != S_POLICE && ud->sprite1.tag != S_MUNCHR){
                                 [ud->sprite2 stopAllActions];
                                 [ud->sprite1 stopAllActions];
+                                [ud->ripples stopAllActions];
                                 [ud->angryFace stopAllActions];
                                 [ud->sprite1 runAction:ud->idleAction];
+                                [ud->ripples runAction:ud->idleRipple];
                             }
                         }
                         else if((ud->stopTime && ud->timeWalking == ud->stopTime + ud->stopTimeDelta) || ud->timeWalking == ud->restartTime){
                             if(ud->sprite1.tag != S_MUNCHR){
                                 [ud->sprite1 runAction:ud->defaultAction];
+                                [ud->ripples runAction:ud->walkRipple];
                                 [ud->sprite2 runAction:ud->altAction];
                                 if(ud->sprite1.tag != S_POLICE){
                                     if([ud->sprite2 numberOfRunningActions] == 0)
                                         [ud->sprite2 runAction:ud->altAction];
-
                                 }
                             } else {
                                 if(ud->timeWalking == ud->stopTime + ud->stopTimeDelta){

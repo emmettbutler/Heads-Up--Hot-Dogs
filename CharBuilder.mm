@@ -126,6 +126,7 @@
     c->lowerSprite = @"BusinessMan_Walk_1.png";
     c->upperSprite = @"BusinessHead_NoDog_1.png";
     c->upperOverlaySprite = @"BusinessHead_Dog_1.png";
+    c->rippleSprite = @"BusinessMan_Ripple_Walk_1.png";
     c->tag = S_BUSMAN;
     c->hitboxWidth = 21.0;
     c->hitboxHeight = .0001;
@@ -141,10 +142,14 @@
     c->pointValue = 10;
     c->frequency = 5;
     c->heightOffset = 2.9f;
+    c->rippleXOffset = -.012;
+    c->rippleYOffset = -1.125;
     c->walkAnimFrames = [[NSMutableArray alloc] init];
     c->idleAnimFrames = [[NSMutableArray alloc] init];
     c->faceWalkAnimFrames = [[NSMutableArray alloc] init];
     c->faceDogWalkAnimFrames = [[NSMutableArray alloc] init];
+    c->rippleWalkAnimFrames = [[NSMutableArray alloc] init];
+    c->rippleIdleAnimFrames = [[NSMutableArray alloc] init];
     for(int i = 1; i <= 6; i++){
         [c->walkAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -164,6 +169,21 @@
         [c->faceDogWalkAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
           [NSString stringWithFormat:@"BusinessHead_Dog_%d.png", i]]];
+    }
+    for(int i = 1; i <= 3; i++){
+        [c->faceDogWalkAnimFrames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithFormat:@"BusinessHead_Dog_%d.png", i]]];
+    }
+    for(int i = 1; i <= 2; i++){
+        [c->rippleIdleAnimFrames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithFormat:@"BusinessMan_Ripple_Idle_%d.png", i]]];
+    }
+    for(int i = 1; i <= 6; i++){
+        [c->rippleWalkAnimFrames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithFormat:@"BusinessMan_Ripple_Walk_%d.png", i]]];
     }
     
     return c;

@@ -27,7 +27,7 @@
     GLESDraw *m_debugDraw;
     b2Body *_wallsBody, *_groundBody, *wienerBody, *targetBody, *_personBody, *_policeArmBody;
     b2Fixture *_bottomFixture, *_wallsFixture, *_wienerFixture, *_targetFixture, *_personFixture, *_policeArmFixture;
-    CCSprite *_wiener, *_personLower, *_personUpper, *_personUpperOverlay, *_target, *_pauseButton, *background;
+    CCSprite *_wiener, *_personLower, *_personUpper, *_personUpperOverlay, *_rippleSprite, *_target, *_pauseButton, *background;
     CCAction *_walkAction, *_walkFaceAction, *_altFaceWalkAction, *_altWalkAction, *_flag1RightAction, *_flag1LeftAction, *_flag2RightAction, *_flag2LeftAction, *_dustAction;
     CCFiniteTimeAction *_idleAction, *_appearAction, *_hitAction, *_shotAction, *_specialAction, *_armShootAction, *_specialFaceAction, *_specialAngryFaceAction, *_postStopAction;
     CCAnimation *walkAnim, *idleAnim, *hitAnim, *dogDeathAnim, *dogAppearAnim, *walkFaceAnim, *walkDogFaceAnim;
@@ -67,8 +67,11 @@
         NSString *ogSprite2;
         NSString *aimFace;
         CCSprite *angryFace;
+        CCSprite *ripples;
         CCSprite *overlaySprite;
         CCAction *altAction;
+        CCAction *walkRipple;
+        CCAction *idleRipple;
         CCAction *altAction2;
         CCAction *altAction3;
         CCAction *altWalk;
@@ -92,6 +95,7 @@
         CGRect boundingBox;
         // end point notifiers
         float armSpeed;
+        float rippleXOffset, rippleYOffset;
         float deathDelay; // how long a hot dog sits on the ground before dying, in seconds
         float moveDelta; // the linear velocity of the person
         int stopTime; // time into walk at which person should pause
@@ -188,6 +192,7 @@
 @property (nonatomic, retain) CCSprite *personLower;
 @property (nonatomic, retain) CCSprite *personUpper;
 @property (nonatomic, retain) CCSprite *personUpperOverlay;
+@property (nonatomic, retain) CCSprite *rippleSprite;
 @property (nonatomic, retain) CCSprite *policeArm;
 @property (nonatomic, retain) CCSprite *wiener;
 @property (nonatomic, retain) CCSprite *target;

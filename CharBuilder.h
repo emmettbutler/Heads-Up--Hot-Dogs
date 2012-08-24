@@ -18,6 +18,7 @@
         NSString *upperSprite;
         NSString *lowerSprite;
         NSString *upperOverlaySprite;
+        NSString *rippleSprite;
         NSString *armSprite;
         NSString *targetSprite;
         float hitboxWidth;
@@ -36,12 +37,16 @@
         float armJointXOffset;
         int fTag;
         int frequency;
+        float rippleXOffset;
+        float rippleYOffset;
         int pointValue;
         BOOL flipSprites;
         NSMutableArray *walkAnimFrames;
         NSMutableArray *idleAnimFrames; 
         NSMutableArray *faceWalkAnimFrames;
         NSMutableArray *faceDogWalkAnimFrames;
+        NSMutableArray *rippleWalkAnimFrames;
+        NSMutableArray *rippleIdleAnimFrames;
         NSMutableArray *specialAnimFrames;
         NSMutableArray *specialFaceAnimFrames;
         NSMutableArray *armShootAnimFrames;
