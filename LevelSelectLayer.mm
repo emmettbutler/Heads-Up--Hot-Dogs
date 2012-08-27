@@ -13,8 +13,7 @@
 
 @implementation LevelSelectLayer
 
-+(CCScene *) scene
-{
++(CCScene *) scene{
 	CCScene *scene = [CCScene node];
 	LevelSelectLayer *layer = [LevelSelectLayer node];
 	[scene addChild:layer];
