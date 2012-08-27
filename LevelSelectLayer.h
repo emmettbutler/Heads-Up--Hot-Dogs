@@ -28,7 +28,7 @@ static NSUserDefaults *standardUserDefaults;
     };
     
     struct levelProps{
-        NSString *bg, *bgm, *name, *slug, *func, *spritesheet, *thumbnail;
+        NSString *bg, *bgm, *name, *slug, *func, *spritesheet, *thumbnail, *unlockTweet;
         NSMutableArray *bgComponents, *characters;
         levelProps *next, *prev;
         int characterProbSum, maxDogs, highScore, unlockThreshold;

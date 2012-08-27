@@ -100,6 +100,7 @@
     lp->unlockThreshold = 15000;
     lp->func = @"switchScreenNYC";
     lp->thumbnail = @"NYC_Thumb.png";
+    lp->unlockTweet = @"I traveled to the Big Apple for some mischief in @HeadsUpHotDogs";
 
     if(loadFull){
         lp->bg = @"BG_NYC.png";
@@ -171,6 +172,7 @@
     lp->unlockThreshold = 12000;
     lp->func = @"switchScreenLondon";
     lp->thumbnail = @"NYC_Thumb.png";
+    lp->unlockTweet = @"I went to London to conquer some franks in @HeadsUpHotDogs";
     
     if(loadFull){
         lp->bg = @"BG_NYC.png";
@@ -224,6 +226,7 @@
     lp->unlockThreshold = 13500;
     lp->func = @"switchScreenJapan";
     lp->thumbnail = @"Japan_Thumb.png";
+    lp->unlockTweet = @"I was ready to relax in a calming Japanese hot spring in @HeadsUpHotDogs";
     
     if(loadFull){
         lp->bg = @"Japan_BG.png";
@@ -277,6 +280,7 @@
     lp->unlockThreshold = 14000;
     lp->thumbnail = @"Chicago_Thumb.png";
     lp->func = @"switchScreenChicago";
+    lp->unlockTweet = @"I traveled to the Windy City in @HeadsUpHotDogs";
 
     if(loadFull){
         lp->bg = @"Chicago_BG.png";
@@ -371,6 +375,7 @@
     lp->unlockThreshold = 16000;
     lp->thumbnail = @"Space_Thumb.png";
     lp->func = @"switchScreenSpace";
+    lp->unlockTweet = @"We sent a frankfurter to the moon in @HeadsUpHotDogs";
 
         if(loadFull){
         lp->bg = @"SpaceBG.png";

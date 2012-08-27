@@ -212,6 +212,10 @@
         
         if(_setNewHighScore)
             [tweets addObject:highScoreString];
+        
+        if(_score > level->next->unlockThreshold){
+            [tweets addObject:level->next->unlockTweet];
+        }
             
         CCLOG(@"OverallTime + _timePlayed/60 --> %d + %d = %d", overallTime, _timePlayed/60, overallTime+(_timePlayed/60));
         int newOverallTime = overallTime+(_timePlayed/60);
