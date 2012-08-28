@@ -600,18 +600,25 @@
             if(level->dogDeathDelay)
                 deathDelay = level->dogDeathDelay;
             tag = S_HOTDOG;
-            for(int i = 0; i < 8; i++){
-                [wienerFlashAnimFrames addObject:
-                 [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                  [NSString stringWithFormat:@"Dog_Die_1.png"]]];
-                [wienerFlashAnimFrames addObject:
-                 [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                  [NSString stringWithFormat:@"Dog_Die_2.png"]]];
-            }
-            for(int i = 1; i <= 7; i++){
-                [wienerDeathAnimFrames addObject:
-                 [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                  [NSString stringWithFormat:@"Dog_Die_%d.png", i]]];
+            if(level->dogDeathAnimFrames){
+                for(int i = 0; i < [level->dogDeathAnimFrames count]; i++){
+                    [wienerDeathAnimFrames addObject:[level->dogDeathAnimFrames objectAtIndex:i]];
+                }
+                wienerFlashAnimFrames = NULL;
+            } else {
+                for(int i = 0; i < 8; i++){
+                    [wienerFlashAnimFrames addObject:
+                     [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                      [NSString stringWithFormat:@"Dog_Die_1.png"]]];
+                    [wienerFlashAnimFrames addObject:
+                     [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                      [NSString stringWithFormat:@"Dog_Die_2.png"]]];
+                }
+                for(int i = 1; i <= 7; i++){
+                    [wienerDeathAnimFrames addObject:
+                     [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                      [NSString stringWithFormat:@"Dog_Die_%d.png", i]]];
+                }
             }
             for(int i = 1; i <= 5; i++){
                 [wienerShotAnimFrames addObject:
@@ -631,9 +638,12 @@
     _wiener.tag = tag;
     [spriteSheetCommon addChild:_wiener z:50];
     
-    CCAnimation *dogFlashAnim = [CCAnimation animationWithFrames:wienerFlashAnimFrames delay:.1f];
-    CCAction *_flashAction = [[CCAnimate alloc] initWithAnimation:dogFlashAnim];
-    
+    CCAction *_flashAction;
+    if(wienerFlashAnimFrames){
+        CCAnimation *dogFlashAnim = [CCAnimation animationWithFrames:wienerFlashAnimFrames delay:.1f];
+        _flashAction = [[CCAnimate alloc] initWithAnimation:dogFlashAnim];
+    }
+        
     dogDeathAnim = [CCAnimation animationWithFrames:wienerDeathAnimFrames delay:.1f];
     CCAction *_deathAction = [[CCAnimate alloc] initWithAnimation:dogDeathAnim];
     
@@ -654,7 +664,8 @@
     ud->_dog_grabSprite = grabSprite;
     ud->altAction = _deathAction;
     ud->altAction2 = _shotAction;
-    ud->altAction3 = _flashAction;
+    if(wienerFlashAnimFrames)
+        ud->altAction3 = _flashAction;
     ud->unique_id = _id_counter;
     ud->deathDelay = deathDelay;
     ud->deathSeq = NULL;
@@ -1710,7 +1721,10 @@
                     id sleepAction = [CCCallFuncND actionWithTarget:self selector:@selector(setAwake:data:) data:wienerParameters];
                     id angleAction = [CCCallFuncND actionWithTarget:self selector:@selector(setRotation:data:) data:wienerParameters];
                     id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:[[NSValue valueWithPointer:dogBody] retain]];
-                    ud->deathSeq = [CCSequence actions: delay, sleepAction, angleAction, ud->altAction3, lockAction, incAction, ud->altAction, destroyAction, nil];
+                    if(ud->altAction3)
+                        ud->deathSeq = [CCSequence actions: delay, sleepAction, angleAction, ud->altAction3, lockAction, incAction, ud->altAction, destroyAction, nil];
+                    else
+                        ud->deathSeq = [CCSequence actions: delay, sleepAction, angleAction, lockAction, incAction, ud->altAction, destroyAction, nil];
                     [ud->sprite1 runAction:ud->deathSeq];
                     CCLOG(@"Run death action");
                 } else if(ud->deathSeq){

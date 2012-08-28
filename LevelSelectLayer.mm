@@ -292,6 +292,13 @@
         lp->personSpeedMul = 1;
         lp->maxDogs = 7;
         
+        lp->dogDeathAnimFrames = [[NSMutableArray alloc] init];
+        for(int i = 1; i <= 9; i++){
+            [lp->dogDeathAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"Splash_%d.png", i]]];
+        }
+        
         dd = new spcDogData();
         dd->riseSprite = @"Bagel_Rise.png";
         dd->fallSprite = @"Bagel_Fall.png";
@@ -437,7 +444,7 @@
         lp->bgm = @"gameplay 3.mp3";
         lp->gravity = -40.0f;
         lp->spritesheet = @"sprites_space";
-        lp->personSpeedMul = .7;
+        lp->personSpeedMul = 1.1;
         lp->restitutionMul = 1.7;
         lp->frictionMul = 100;
 
