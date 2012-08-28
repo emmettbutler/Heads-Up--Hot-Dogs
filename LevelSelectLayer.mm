@@ -104,11 +104,9 @@
     if(loadFull){
         lp->bg = @"BG_NYC.png";
         lp->bgm = @"gameplay 3.mp3";
-        lp->gravity = -32.0f;
+        lp->gravity = -22.0f;
         lp->spritesheet = @"sprites_nyc";
-        lp->personSpeedMul = 1.2;
-        lp->restitutionMul = 1.2;
-        lp->frictionMul = .95;
+        lp->personSpeedMul = 1;
         lp->vent1X = 140;
         lp->vent2X = 360;
 

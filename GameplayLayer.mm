@@ -1235,10 +1235,11 @@
         if(level->slug == @"nyc"){
             vent1 = (steamVent *)[[level->activeComponents objectAtIndex:0] pointerValue];
             [spriteSheetCommon addChild:vent1->steamSprite];
+            [vent1->steamSprite setVisible:false];
             CCAnimation *anim = [CCAnimation animationWithFrames:vent1->startAnimFrames delay:.1];
             CCFiniteTimeAction *startingAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO] times:1] retain];
             anim = [CCAnimation animationWithFrames:vent1->loopingAnimFrames delay:.1];
-            CCFiniteTimeAction *loopingAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO] times:5] retain];
+            CCFiniteTimeAction *loopingAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO] times:10] retain];
             anim = [CCAnimation animationWithFrames:vent1->stopAnimFrames delay:.1];
             CCFiniteTimeAction *stoppingAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO] times:1] retain];
             vent1->combinedAction = [[CCSequence actions:startingAction, loopingAction, stoppingAction, [CCCallFunc actionWithTarget:self selector:@selector(flipVent1)], nil] retain];
@@ -1247,11 +1248,12 @@
             anim = [CCAnimation animationWithFrames:vent1->startAnimFrames delay:.1];
             startingAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO] times:1] retain];
             anim = [CCAnimation animationWithFrames:vent1->loopingAnimFrames delay:.1];
-            loopingAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO] times:5] retain];
+            loopingAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO] times:10] retain];
             anim = [CCAnimation animationWithFrames:vent1->stopAnimFrames delay:.1];
             stoppingAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO] times:1] retain];
             vent2->combinedAction = [[CCSequence actions:startingAction, loopingAction, stoppingAction, [CCCallFunc actionWithTarget:self selector:@selector(flipVent2)], nil] retain];
             [spriteSheetCommon addChild:vent2->steamSprite];
+            [vent2->steamSprite setVisible:false];
         } else if(level->slug == @"chicago"){
             bgComponent *bgc = (bgComponent *)[[level->bgComponents objectAtIndex:0] pointerValue];
             CCAnimation *anim = [CCAnimation animationWithFrames:bgc->anim1 delay:.1f];
@@ -1518,11 +1520,13 @@
         }
         if(!(time % 400)){
             if([vent1->steamSprite numberOfRunningActions] == 0){
+                [vent1->steamSprite setVisible:true];
                 vent1->on = true;
                 [vent1->steamSprite runAction:vent1->combinedAction];
             }
         } if(!(time % 250)){
             if([vent2->steamSprite numberOfRunningActions] == 0){
+                [vent2->steamSprite setVisible:true];
                 vent2->on = true;
                 [vent2->steamSprite runAction:vent2->combinedAction];
             }
@@ -2099,13 +2103,13 @@
                         } else if(level->slug == @"nyc" && !(time % 19)) {
                             int ventForce = 8;
                             if(vent1->on){
-                                if((ud->sprite1.position.x > level->vent1X - 10 && ud->sprite1.position.x < level->vent1X + 10)){
+                                if((ud->sprite1.position.x > level->vent1X - 30 && ud->sprite1.position.x < level->vent1X + 30)){
                                     if(b->GetLinearVelocity().y != b->GetLinearVelocity().y+ventForce)
                                         b->SetLinearVelocity(b2Vec2(b->GetLinearVelocity().x+((((float) rand() / RAND_MAX) * 2) - 1), b->GetLinearVelocity().y+ventForce));
                                 }
                             }
                             if(vent2->on){
-                                if((ud->sprite1.position.x > level->vent2X - 10 && ud->sprite1.position.x < level->vent2X + 10)){
+                                if((ud->sprite1.position.x > level->vent2X - 30 && ud->sprite1.position.x < level->vent2X + 30)){
                                     if(b->GetLinearVelocity().y != b->GetLinearVelocity().y+ventForce)
                                         b->SetLinearVelocity(b2Vec2(b->GetLinearVelocity().x+((((float) rand() / RAND_MAX) * 2) - 1), b->GetLinearVelocity().y+ventForce));
                                 }
