@@ -104,9 +104,9 @@
     if(loadFull){
         lp->bg = @"BG_NYC.png";
         lp->bgm = @"gameplay 3.mp3";
-        lp->gravity = -22.0f;
+        lp->gravity = -24.0f;
         lp->spritesheet = @"sprites_nyc";
-        lp->personSpeedMul = 1;
+        lp->personSpeedMul = .8;
         lp->vent1X = 140;
         lp->vent2X = 360;
 
@@ -289,9 +289,9 @@
         lp->gravity = -28.0f;
         lp->spritesheet = @"sprites_japan";
         lp->dogDeathDelay = .001;
-        lp->personSpeedMul = 1;
+        lp->personSpeedMul = .7;
         lp->maxDogs = 7;
-        lp->gravity = -20.0;
+        lp->gravity = -17.0;
         
         lp->dogDeathAnimFrames = [[NSMutableArray alloc] init];
         for(int i = 1; i <= 9; i++){
