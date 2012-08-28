@@ -2117,12 +2117,14 @@
                         } else if(level->slug == @"nyc" && !(time % 19)) {
                             int ventForce = 8;
                             if(vent1->on){
+                                [ud->sprite1 stopAllActions];
                                 if((ud->sprite1.position.x > level->vent1X - 30 && ud->sprite1.position.x < level->vent1X + 30)){
                                     if(b->GetLinearVelocity().y != b->GetLinearVelocity().y+ventForce)
                                         b->SetLinearVelocity(b2Vec2(b->GetLinearVelocity().x+((((float) rand() / RAND_MAX) * 2) - 1), b->GetLinearVelocity().y+ventForce));
                                 }
                             }
                             if(vent2->on){
+                                [ud->sprite1 stopAllActions];
                                 if((ud->sprite1.position.x > level->vent2X - 30 && ud->sprite1.position.x < level->vent2X + 30)){
                                     if(b->GetLinearVelocity().y != b->GetLinearVelocity().y+ventForce)
                                         b->SetLinearVelocity(b2Vec2(b->GetLinearVelocity().x+((((float) rand() / RAND_MAX) * 2) - 1), b->GetLinearVelocity().y+ventForce));

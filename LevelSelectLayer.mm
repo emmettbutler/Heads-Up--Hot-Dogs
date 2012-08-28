@@ -291,6 +291,7 @@
         lp->dogDeathDelay = .001;
         lp->personSpeedMul = 1;
         lp->maxDogs = 7;
+        lp->gravity = -20.0;
         
         lp->dogDeathAnimFrames = [[NSMutableArray alloc] init];
         for(int i = 1; i <= 9; i++){
