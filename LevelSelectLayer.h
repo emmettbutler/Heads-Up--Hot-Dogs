@@ -27,11 +27,18 @@ static NSUserDefaults *standardUserDefaults;
         CGPoint position;
     };
     
+    struct steamVent{
+        CCSprite *steamSprite;
+        NSMutableArray *startAnimFrames, *stopAnimFrames, *loopingAnimFrames;
+        CCAction *combinedAction;
+        BOOL on;
+    };
+    
     struct levelProps{
         NSString *bg, *bgm, *name, *slug, *func, *spritesheet, *thumbnail, *unlockTweet;
         NSMutableArray *bgComponents, *characters, *activeComponents;
         levelProps *next, *prev;
-        int characterProbSum, maxDogs, highScore, unlockThreshold;
+        int characterProbSum, maxDogs, highScore, unlockThreshold, vent1X, vent2X;
         float gravity, frictionMul, personSpeedMul, restitutionMul, dogDeathDelay;
         BOOL unlocked, enabled;
         spcDogData *specialDog;

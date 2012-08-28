@@ -1130,6 +1130,20 @@
     CCLOG(@"Spawned person with tag %d", fTag);
 }
 
+-(void)flipVent1{
+    if(vent1->on)
+        vent1->on = false;
+    else
+        vent1->on = true;
+}
+
+-(void)flipVent2{
+    if(vent2->on)
+        vent2->on = false;
+    else
+        vent2->on = true;
+}
+
 -(void)wienerCallback:(id)sender data:(NSNumber *)thisType {
     CCLOG(@"Dogs onscreen: %d", _dogsOnscreen);
     
@@ -1218,7 +1232,27 @@
         [self addChild:spriteSheetCharacter];
         [self addChild:spriteSheetCommon];
         
-        if(level->slug == @"chicago"){
+        if(level->slug == @"nyc"){
+            vent1 = (steamVent *)[[level->activeComponents objectAtIndex:0] pointerValue];
+            [spriteSheetCommon addChild:vent1->steamSprite];
+            CCAnimation *anim = [CCAnimation animationWithFrames:vent1->startAnimFrames delay:.1];
+            CCFiniteTimeAction *startingAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO] times:1] retain];
+            anim = [CCAnimation animationWithFrames:vent1->loopingAnimFrames delay:.1];
+            CCFiniteTimeAction *loopingAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO] times:5] retain];
+            anim = [CCAnimation animationWithFrames:vent1->stopAnimFrames delay:.1];
+            CCFiniteTimeAction *stoppingAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO] times:1] retain];
+            vent1->combinedAction = [[CCSequence actions:startingAction, loopingAction, stoppingAction, [CCCallFunc actionWithTarget:self selector:@selector(flipVent1)], nil] retain];
+            
+            vent2 = (steamVent *)[[level->activeComponents objectAtIndex:1] pointerValue];
+            anim = [CCAnimation animationWithFrames:vent1->startAnimFrames delay:.1];
+            startingAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO] times:1] retain];
+            anim = [CCAnimation animationWithFrames:vent1->loopingAnimFrames delay:.1];
+            loopingAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO] times:5] retain];
+            anim = [CCAnimation animationWithFrames:vent1->stopAnimFrames delay:.1];
+            stoppingAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO] times:1] retain];
+            vent2->combinedAction = [[CCSequence actions:startingAction, loopingAction, stoppingAction, [CCCallFunc actionWithTarget:self selector:@selector(flipVent2)], nil] retain];
+            [spriteSheetCommon addChild:vent2->steamSprite];
+        } else if(level->slug == @"chicago"){
             bgComponent *bgc = (bgComponent *)[[level->bgComponents objectAtIndex:0] pointerValue];
             CCAnimation *anim = [CCAnimation animationWithFrames:bgc->anim1 delay:.1f];
             _flag1LeftAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO]] retain];
@@ -1479,15 +1513,22 @@
     } else if(level->slug == @"nyc"){
         for(NSValue *v in bgSprites){
             CCSprite *sprite = (CCSprite *)[v pointerValue];
-            [sprite setOpacity:255.00 * cosf(.01 * time)];
+            if(sprite.tag && sprite.tag == 1)
+                [sprite setOpacity:255.00 * cosf(.01 * time)];
+        }
+        if(!(time % 400)){
+            if([vent1->steamSprite numberOfRunningActions] == 0){
+                vent1->on = true;
+                [vent1->steamSprite runAction:vent1->combinedAction];
+            }
+        } if(!(time % 250)){
+            if([vent2->steamSprite numberOfRunningActions] == 0){
+                vent2->on = true;
+                [vent2->steamSprite runAction:vent2->combinedAction];
+            }
         }
     } else if(level->slug == @"london"){
-        if(!(time % 200)){
-            if(_ventsOn)
-                _ventsOn = false;
-            else
-                _ventsOn = true;
-        }
+        
     } else if(level->slug == @"chicago" && !(time % 19)){
         float maxWind = 3.2;
         float windX = maxWind * cosf(.01 * time);
@@ -2055,11 +2096,20 @@
                                         b->SetLinearVelocity(b2Vec2(b->GetLinearVelocity().x+windForce.x, b->GetLinearVelocity().y));
                                 }
                             }
-                        } else if(level->slug == @"london" && !(time % 19) && _ventsOn) {
+                        } else if(level->slug == @"nyc" && !(time % 19)) {
                             int ventForce = 8;
-                            if((ud->sprite1.position.x > 90 && ud->sprite1.position.x < 190) || (ud->sprite1.position.x > 280 && ud->sprite1.position.x < 320))
-                                if(b->GetLinearVelocity().y != b->GetLinearVelocity().y+ventForce)
-                                    b->SetLinearVelocity(b2Vec2(b->GetLinearVelocity().x+((((float) rand() / RAND_MAX) * 2) - 1), b->GetLinearVelocity().y+ventForce));
+                            if(vent1->on){
+                                if((ud->sprite1.position.x > level->vent1X - 10 && ud->sprite1.position.x < level->vent1X + 10)){
+                                    if(b->GetLinearVelocity().y != b->GetLinearVelocity().y+ventForce)
+                                        b->SetLinearVelocity(b2Vec2(b->GetLinearVelocity().x+((((float) rand() / RAND_MAX) * 2) - 1), b->GetLinearVelocity().y+ventForce));
+                                }
+                            }
+                            if(vent2->on){
+                                if((ud->sprite1.position.x > level->vent2X - 10 && ud->sprite1.position.x < level->vent2X + 10)){
+                                    if(b->GetLinearVelocity().y != b->GetLinearVelocity().y+ventForce)
+                                        b->SetLinearVelocity(b2Vec2(b->GetLinearVelocity().x+((((float) rand() / RAND_MAX) * 2) - 1), b->GetLinearVelocity().y+ventForce));
+                                }
+                            }
                         }
                         
                         for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()) {
