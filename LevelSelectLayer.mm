@@ -174,7 +174,7 @@
         
         lp->activeComponents = [[NSMutableArray alloc] init];
         steamVent *vent = new steamVent();
-        vent->steamSprite = [CCSprite spriteWithSpriteFrameName:@"Steam_Coming_1.png"];
+        vent->steamSprite = [CCSprite spriteWithSpriteFrameName:@"Steam_Whole_1.png"];
         vent->steamSprite.position = CGPointMake(vent1Pos.x-3, vent1Pos.y+110);
         vent->startAnimFrames = [[NSMutableArray alloc] init];
         for(int i = 1; i <= 9; i++){
@@ -194,7 +194,7 @@
         [lp->activeComponents addObject:[NSValue valueWithPointer:vent]];
         
         steamVent *vent2 = new steamVent();
-        vent2->steamSprite = [CCSprite spriteWithSpriteFrameName:@"Steam_Coming_1.png"];
+        vent2->steamSprite = [CCSprite spriteWithSpriteFrameName:@"Steam_Whole_1.png"];
         vent2->steamSprite.position = CGPointMake(vent2Pos.x-3, vent2Pos.y+110);
         vent2->startAnimFrames = [[NSMutableArray alloc] init];
         for(int i = 1; i <= 9; i++){
