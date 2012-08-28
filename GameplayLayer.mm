@@ -14,7 +14,6 @@
 #import "PointNotify.h"
 #import "DogTouch.h"
 
-#define PTM_RATIO 32
 #define DEGTORAD 0.0174532
 #define FLOOR1_HT 0
 #define FLOOR2_HT .4
@@ -133,7 +132,6 @@
 #else
         [[SimpleAudioEngine sharedEngine] pauseBackgroundMusic];
 #endif
-        CGSize winSize = [[CCDirector sharedDirector] winSize];
         _pauseLayer = [CCLayerColor layerWithColor:ccc4(190, 190, 190, 155) width:winSize.width height:winSize.height];
         _pauseLayer.anchorPoint = CGPointZero;
         [self addChild:_pauseLayer z:80];
@@ -327,7 +325,6 @@
 }
 
 -(void)plusOneHundred:(id)sender data:(void*)params {
-    CGSize winSize = [[CCDirector sharedDirector] winSize];
     NSNumber *xPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:0];
     NSNumber *yPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:1];
     NSNumber *spec = (NSNumber *)[(NSMutableArray *) params objectAtIndex:2]; // 1 means a special dog
@@ -405,8 +402,6 @@
 }
 
 -(void)screenFlash:(id)sender data:(NSNumber *)light{
-    CGSize winSize = [[CCDirector sharedDirector] winSize];
-
     if(light.intValue == 1){
         _flashLayer = [CCLayerColor layerWithColor:ccc4(255, 255, 255, 200) width:winSize.width height:winSize.height];
         [self addChild:_flashLayer z:-1];
@@ -455,7 +450,6 @@
 }
 
 -(void)incrementDroppedCount:(id)sender data:(NSValue *)body{
-    CGSize winSize = [CCDirector sharedDirector].winSize;
     b2Body *b = (b2Body *)[body pointerValue];
     if(!b) return;
     if(b->GetPosition().x > winSize.width/PTM_RATIO || b->GetPosition().x < 0) return;
@@ -520,7 +514,6 @@
 }
 
 -(void)destroyWiener:(id)sender data:(NSValue *)db {
-    CGSize winSize = [CCDirector sharedDirector].winSize;
     b2Body *dogBody = (b2Body *)[db pointerValue];
     if(!dogBody) return;
     bodyUserData *ud = (bodyUserData *)dogBody->GetUserData();
@@ -562,7 +555,6 @@
     int floor, f, tag;
     float deathDelay;
     NSString *fallSprite, *riseSprite, *mainSprite, *grabSprite;
-    CGSize winSize = [CCDirector sharedDirector].winSize;
     
     int sideBuffer = 10;
     CGPoint location = CGPointMake(arc4random() % (int)(sideBuffer+(winSize.width-(2*sideBuffer))), DOG_SPAWN_MINHT+(arc4random() % (int)(winSize.height-DOG_SPAWN_MINHT)));
@@ -1188,7 +1180,7 @@
 
 -(id) initWithSlug:(NSString *)levelSlug {
     if( (self=[super init])) {
-        CGSize winSize = [CCDirector sharedDirector].winSize;
+        winSize = [CCDirector sharedDirector].winSize;
         
         standardUserDefaults = [NSUserDefaults standardUserDefaults];
         [[CCDirector sharedDirector] setDisplayFPS:NO];
@@ -1466,8 +1458,6 @@
     
     if(!_policeOnScreen)
         _shootLock = 0;
-
-    CGSize winSize = [CCDirector sharedDirector].winSize;
     
     if(_points > 19000 && !(time % 300) && _wienerSpawnDelayTime > .1){
         _wienerSpawnDelayTime -= .05;

@@ -19,6 +19,8 @@
 #import "LevelSelectLayer.h"
 #import "AchievementReporter.h"
 
+#define PTM_RATIO 32
+
 @interface GameplayLayer : CCLayer
 {
     b2World *_world;
@@ -47,6 +49,7 @@
     float _wienerSpawnDelayTime, _currentRayAngle;
     BOOL _moving, _touchedDog, _rayTouchingDog, _pause, _shootLock, _dogHasHitGround, _dogHasDied, _policeOnScreen, _muncherOnScreen, _gameOver, _ventsOn, _hasDroppedDog;
     NSString *currentAnimation, *slug;
+    CGSize winSize;
     CGRect _pauseButtonRect;
     NSUserDefaults *standardUserDefaults;
     NSInteger _overallTime, _sfxOn;
