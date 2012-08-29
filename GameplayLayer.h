@@ -111,6 +111,7 @@
         int pointValue; // how many points is a dog contact on this head worth?
         BOOL aiming;
         BOOL touched;
+        BOOL exploding;
         BOOL touchLock;
         BOOL aimedAt;
         BOOL grabbed;

@@ -2048,7 +2048,7 @@
                     //things for hot dogs
                     if(b->IsAwake()){
                         if(!ud->grabbed){
-                            if(!ud->aimedAt){
+                            if(!ud->aimedAt && !ud->exploding){
                                 if(b->GetLinearVelocity().y > 1.5){
                                     [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:ud->_dog_riseSprite]];
                                 } else if (b->GetLinearVelocity().y < -1.5){
@@ -2126,8 +2126,10 @@
                                 }
                             }
                         } else if(level->slug == @"london"){
-                            if([firecracker explosionHittingDog:[NSValue valueWithPointer:b]]){
+                            if(!ud->grabbed && [firecracker explosionHittingDog:[NSValue valueWithPointer:b]]){
                                 // TODO - this duplicates the dog-destruction logic for cop shooting, change deduplicate it
+                                ud->exploding = true;
+                                b->SetActive(false);
                                 id incAction = [CCCallFuncND actionWithTarget:self selector:@selector(incrementDroppedCount:data:) data:[[NSValue valueWithPointer:b] retain]];
                                 id lockAction = [CCCallFuncND actionWithTarget:self selector:@selector(lockWiener:data:) data:[[NSValue valueWithPointer:ud] retain]];
                                 id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:[[NSValue valueWithPointer:b] retain]];
