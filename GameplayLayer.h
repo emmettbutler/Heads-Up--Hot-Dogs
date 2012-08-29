@@ -18,6 +18,7 @@
 #import "PersonDogContactListener.h"
 #import "LevelSelectLayer.h"
 #import "AchievementReporter.h"
+#import "Firecracker.h"
 
 #define PTM_RATIO 32
 

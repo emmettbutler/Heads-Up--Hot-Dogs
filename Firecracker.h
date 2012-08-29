@@ -17,8 +17,11 @@
     CCAction *explodeAnimation;
     b2Body *worldBody;
     CCSpriteBatchNode *spritesheet;
+    NSString *fallSprite, *riseSprite;
     b2Fixture *hitboxSensor;
     BOOL isNowExploding;
+    CGSize winSize;
+    float fallSpeed;
     b2Vec2 position;
 }
 
@@ -27,5 +30,6 @@
 -(void)explode;
 -(void)pullUp;
 -(BOOL)explosionHittingDog:(NSValue *)d;
+-(void)runSequence;
 
 @end

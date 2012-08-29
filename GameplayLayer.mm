@@ -1436,7 +1436,7 @@
         _wallsBody->CreateFixture(&wallsBoxDef);
 
         [TestFlight passCheckpoint:@"Game Started"];
-
+        
         //schedule callbacks for dogs, people, and game value decrements
         [self spawnCallback];
         [self wienerCallback:self data:[[NSNumber numberWithInt:arc4random() % 10] retain]];
@@ -1508,6 +1508,11 @@
     time++;
     
     [self reportAchievements];
+    
+    if(!(time % 100)){
+        Firecracker *firecracker = [[Firecracker alloc] init:[NSValue valueWithPointer:_world] withSpritesheet:[NSValue valueWithPointer:spriteSheetCommon]];
+        [firecracker runSequence];
+    }
     
     b2Vec2 windForce;
     // level-specific repetitive actions
