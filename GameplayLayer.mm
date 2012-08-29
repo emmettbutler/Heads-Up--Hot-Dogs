@@ -14,7 +14,6 @@
 #import "PointNotify.h"
 #import "DogTouch.h"
 
-#define PTM_RATIO 32
 #define DEGTORAD 0.0174532
 #define FLOOR1_HT 0
 #define FLOOR2_HT .4
@@ -133,7 +132,6 @@
 #else
         [[SimpleAudioEngine sharedEngine] pauseBackgroundMusic];
 #endif
-        CGSize winSize = [[CCDirector sharedDirector] winSize];
         _pauseLayer = [CCLayerColor layerWithColor:ccc4(190, 190, 190, 155) width:winSize.width height:winSize.height];
         _pauseLayer.anchorPoint = CGPointZero;
         [self addChild:_pauseLayer z:80];
@@ -327,7 +325,6 @@
 }
 
 -(void)plusOneHundred:(id)sender data:(void*)params {
-    CGSize winSize = [[CCDirector sharedDirector] winSize];
     NSNumber *xPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:0];
     NSNumber *yPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:1];
     NSNumber *spec = (NSNumber *)[(NSMutableArray *) params objectAtIndex:2]; // 1 means a special dog
@@ -405,8 +402,6 @@
 }
 
 -(void)screenFlash:(id)sender data:(NSNumber *)light{
-    CGSize winSize = [[CCDirector sharedDirector] winSize];
-
     if(light.intValue == 1){
         _flashLayer = [CCLayerColor layerWithColor:ccc4(255, 255, 255, 200) width:winSize.width height:winSize.height];
         [self addChild:_flashLayer z:-1];
@@ -455,7 +450,6 @@
 }
 
 -(void)incrementDroppedCount:(id)sender data:(NSValue *)body{
-    CGSize winSize = [CCDirector sharedDirector].winSize;
     b2Body *b = (b2Body *)[body pointerValue];
     if(!b) return;
     if(b->GetPosition().x > winSize.width/PTM_RATIO || b->GetPosition().x < 0) return;
@@ -520,7 +514,6 @@
 }
 
 -(void)destroyWiener:(id)sender data:(NSValue *)db {
-    CGSize winSize = [CCDirector sharedDirector].winSize;
     b2Body *dogBody = (b2Body *)[db pointerValue];
     if(!dogBody) return;
     bodyUserData *ud = (bodyUserData *)dogBody->GetUserData();
@@ -562,7 +555,6 @@
     int floor, f, tag;
     float deathDelay;
     NSString *fallSprite, *riseSprite, *mainSprite, *grabSprite;
-    CGSize winSize = [CCDirector sharedDirector].winSize;
     
     int sideBuffer = 10;
     CGPoint location = CGPointMake(arc4random() % (int)(sideBuffer+(winSize.width-(2*sideBuffer))), DOG_SPAWN_MINHT+(arc4random() % (int)(winSize.height-DOG_SPAWN_MINHT)));
@@ -1188,7 +1180,7 @@
 
 -(id) initWithSlug:(NSString *)levelSlug {
     if( (self=[super init])) {
-        CGSize winSize = [CCDirector sharedDirector].winSize;
+        winSize = [CCDirector sharedDirector].winSize;
         
         standardUserDefaults = [NSUserDefaults standardUserDefaults];
         [[CCDirector sharedDirector] setDisplayFPS:NO];
@@ -1444,7 +1436,7 @@
         _wallsBody->CreateFixture(&wallsBoxDef);
 
         [TestFlight passCheckpoint:@"Game Started"];
-
+        
         //schedule callbacks for dogs, people, and game value decrements
         [self spawnCallback];
         [self wienerCallback:self data:[[NSNumber numberWithInt:arc4random() % 10] retain]];
@@ -1466,8 +1458,6 @@
     
     if(!_policeOnScreen)
         _shootLock = 0;
-
-    CGSize winSize = [CCDirector sharedDirector].winSize;
     
     if(_points > 19000 && !(time % 300) && _wienerSpawnDelayTime > .1){
         _wienerSpawnDelayTime -= .05;
@@ -1543,7 +1533,10 @@
             }
         }
     } else if(level->slug == @"london"){
-        
+        if(!(time % 300)){
+            firecracker = [[Firecracker alloc] init:[NSValue valueWithPointer:_world] withSpritesheet:[NSValue valueWithPointer:spriteSheetCommon]];
+            [firecracker runSequence];
+        }
     } else if(level->slug == @"chicago" && !(time % 19)){
         float maxWind = 3.2;
         float windX = maxWind * cosf(.01 * time);
@@ -2131,6 +2124,17 @@
                                         [ud->sprite1 stopAllActions];
                                     }
                                 }
+                            }
+                        } else if(level->slug == @"london"){
+                            if([firecracker explosionHittingDog:[NSValue valueWithPointer:b]]){
+                                // TODO - this duplicates the dog-destruction logic for cop shooting, change deduplicate it
+                                id incAction = [CCCallFuncND actionWithTarget:self selector:@selector(incrementDroppedCount:data:) data:[[NSValue valueWithPointer:b] retain]];
+                                id lockAction = [CCCallFuncND actionWithTarget:self selector:@selector(lockWiener:data:) data:[[NSValue valueWithPointer:ud] retain]];
+                                id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:[[NSValue valueWithPointer:b] retain]];
+                                CCFiniteTimeAction *wienerExplodeAction = (CCFiniteTimeAction *)ud->altAction2;
+                                ud->shotSeq = [[CCSequence actions:lockAction, incAction, wienerExplodeAction, destroyAction, nil] retain];
+                                if([ud->sprite1 numberOfRunningActions] == 0)
+                                    [ud->sprite1 runAction:ud->shotSeq];
                             }
                         }
                         

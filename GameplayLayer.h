@@ -18,6 +18,9 @@
 #import "PersonDogContactListener.h"
 #import "LevelSelectLayer.h"
 #import "AchievementReporter.h"
+#import "Firecracker.h"
+
+#define PTM_RATIO 32
 
 @interface GameplayLayer : CCLayer
 {
@@ -47,9 +50,11 @@
     float _wienerSpawnDelayTime, _currentRayAngle;
     BOOL _moving, _touchedDog, _rayTouchingDog, _pause, _shootLock, _dogHasHitGround, _dogHasDied, _policeOnScreen, _muncherOnScreen, _gameOver, _ventsOn, _hasDroppedDog;
     NSString *currentAnimation, *slug;
+    CGSize winSize;
     CGRect _pauseButtonRect;
     NSUserDefaults *standardUserDefaults;
     NSInteger _overallTime, _sfxOn;
+    Firecracker *firecracker;
     CCDelayTime *winUpDelay, *winDownDelay;
     CCCallFuncN *removeWindow;
     ccColor3B _color_pink;
