@@ -7,7 +7,7 @@
 //
 
 #import "Firecracker.h"
-
+#import "GameplayLayer.h"
 
 @implementation Firecracker
 
@@ -98,7 +98,6 @@
 
 -(void)dealloc{
     self->world->DestroyBody(self->worldBody);
-    [super dealloc];
 }
 
 @end

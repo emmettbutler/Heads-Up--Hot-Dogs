@@ -1509,11 +1509,6 @@
     
     [self reportAchievements];
     
-    if(!(time % 100)){
-        Firecracker *firecracker = [[Firecracker alloc] init:[NSValue valueWithPointer:_world] withSpritesheet:[NSValue valueWithPointer:spriteSheetCommon]];
-        [firecracker runSequence];
-    }
-    
     b2Vec2 windForce;
     // level-specific repetitive actions
     if(level->slug == @"philly"){
@@ -1538,7 +1533,10 @@
             }
         }
     } else if(level->slug == @"london"){
-        
+        if(!(time % 300)){
+            firecracker = [[Firecracker alloc] init:[NSValue valueWithPointer:_world] withSpritesheet:[NSValue valueWithPointer:spriteSheetCommon]];
+            [firecracker runSequence];
+        }
     } else if(level->slug == @"chicago" && !(time % 19)){
         float maxWind = 3.2;
         float windX = maxWind * cosf(.01 * time);
@@ -2126,6 +2124,17 @@
                                         [ud->sprite1 stopAllActions];
                                     }
                                 }
+                            }
+                        } else if(level->slug == @"london"){
+                            if([firecracker explosionHittingDog:[NSValue valueWithPointer:b]]){
+                                // TODO - this duplicates the dog-destruction logic for cop shooting, change deduplicate it
+                                id incAction = [CCCallFuncND actionWithTarget:self selector:@selector(incrementDroppedCount:data:) data:[[NSValue valueWithPointer:b] retain]];
+                                id lockAction = [CCCallFuncND actionWithTarget:self selector:@selector(lockWiener:data:) data:[[NSValue valueWithPointer:ud] retain]];
+                                id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:[[NSValue valueWithPointer:b] retain]];
+                                CCFiniteTimeAction *wienerExplodeAction = (CCFiniteTimeAction *)ud->altAction2;
+                                ud->shotSeq = [[CCSequence actions:lockAction, incAction, wienerExplodeAction, destroyAction, nil] retain];
+                                if([ud->sprite1 numberOfRunningActions] == 0)
+                                    [ud->sprite1 runAction:ud->shotSeq];
                             }
                         }
                         

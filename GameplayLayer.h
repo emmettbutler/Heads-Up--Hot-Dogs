@@ -54,6 +54,7 @@
     CGRect _pauseButtonRect;
     NSUserDefaults *standardUserDefaults;
     NSInteger _overallTime, _sfxOn;
+    Firecracker *firecracker;
     CCDelayTime *winUpDelay, *winDownDelay;
     CCCallFuncN *removeWindow;
     ccColor3B _color_pink;
