@@ -173,6 +173,7 @@
         S_JOGGER    =   6,
         S_YNGPRO    =   7,
         S_MUNCHR    =   8,
+        S_PROFSR    =   9,
         S_TOPPSN    =   10, // top person sprite tag, this must be TOPPSN > POLICE > BUSMAN with only person tags between
         S_COPARM    =   11,
         S_CRSHRS    =   20, // crosshairs
@@ -185,6 +186,7 @@
         F_COPHED    =   4, // cop's head
         F_PNKHED    =   5, // crust punk's head
         F_JOGHED    =   6, // jogger's head
+        F_PRFHED    =   9,
         F_TOPHED    =   10, // top head fixture tag, this must be TOPHED > COPHED > BUSHED with only head tags between
         F_COPARM    =   11, 
         F_BUSBDY    =   53, // businessman's body

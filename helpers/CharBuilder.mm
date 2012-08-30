@@ -27,6 +27,8 @@
     [levelArray addObject:[NSValue valueWithPointer:s]];
     s = [self youngPro];
     [levelArray addObject:[NSValue valueWithPointer:s]];
+    s = [self professor];
+    [levelArray addObject:[NSValue valueWithPointer:s]];
     s = [self jogger];
     [levelArray addObject:[NSValue valueWithPointer:s]];
     
@@ -282,7 +284,7 @@
     c->hitboxHeight = .0001;
     c->hitboxCenterX = 0;
     c->hitboxCenterY = 3.7;
-    c->moveDelta = 6;
+    c->moveDelta = 6.5;
     c->sensorHeight = 1.3f;
     c->sensorWidth = 1.5f;
     c->restitution = .4f;
@@ -436,6 +438,66 @@
         [c->faceDogWalkAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
           [NSString stringWithFormat:@"CrustPunk_Head_Dog_%d.png", i]]];
+    }
+    for(int i = 1; i <= 8; i++){
+        [c->rippleWalkAnimFrames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithFormat:@"CrustPunk_Ripple_Walk_%d.png", i]]];
+    }
+    
+    return c;
+}
+
++(personStruct *)professor{
+    personStruct *c = new personStruct();
+    
+    c->slug = @"professor";
+    c->lowerSprite = @"Professor_Walk_1.png";
+    c->upperSprite = @"Professor_Head_NoDog_1.png";
+    c->upperOverlaySprite = @"Professor_Head_Dog_1.png";
+    c->rippleSprite = @"BusinessMan_Ripple_Walk_1.png";
+    c->tag = S_PROFSR;
+    c->flipSprites = true;
+    c->hitboxWidth = 16.0;
+    c->hitboxHeight = .0001;
+    c->hitboxCenterX = 0;
+    c->hitboxCenterY = 3.8;
+    c->moveDelta = 4.7;
+    c->sensorHeight = 2.0f;
+    c->sensorWidth = 1.5f;
+    c->restitution = .89f;
+    c->friction = 0.15f;
+    c->framerate = .06f;
+    c->pointValue = 25;
+    c->frequency = 6;
+    c->fTag = F_PRFHED;
+    c->heightOffset = 2.9f;
+    c->rippleXOffset = -.012;
+    c->rippleYOffset = -1.125;
+    c->walkAnimFrames = [[NSMutableArray alloc] init];
+    c->idleAnimFrames = [[NSMutableArray alloc] init];
+    c->faceWalkAnimFrames = [[NSMutableArray alloc] init];
+    c->faceDogWalkAnimFrames = [[NSMutableArray alloc] init];
+    c->rippleWalkAnimFrames = [[NSMutableArray alloc] init];
+    for(int i = 1; i <= 8; i++){
+        [c->walkAnimFrames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithFormat:@"Professor_Walk_%d.png", i]]];
+    }
+    for(int i = 1; i <= 1; i++){
+        [c->idleAnimFrames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithFormat:@"Professor_Walk_%d.png", i]]];
+    }
+    for(int i = 1; i <= 4; i++){
+        [c->faceWalkAnimFrames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithFormat:@"Professor_Head_NoDog_%d.png", i]]];
+    }
+    for(int i = 1; i <= 4; i++){
+        [c->faceDogWalkAnimFrames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithFormat:@"Professor_Head_Dog_%d.png", i]]];
     }
     for(int i = 1; i <= 8; i++){
         [c->rippleWalkAnimFrames addObject:
