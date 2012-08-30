@@ -26,7 +26,7 @@
                                [NSString stringWithFormat:@"Shiba_Walk_%d.png", i]]];
     }
     CCAnimation *animation = [CCAnimation animationWithFrames:animFrames delay:.1f];
-    self->walkAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:animation restoreOriginalFrame:NO]];
+    self->walkAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:animation restoreOriginalFrame:NO]] retain];
     
     animFrames = [[NSMutableArray alloc] init];
     for(int i = 1; i <= 18; i++){
@@ -88,18 +88,21 @@
 -(void)removeSprite{
     [self->mainSprite removeFromParentAndCleanup:YES];
     self->world->DestroyBody(self->worldBody);
+    self->mainSprite = NULL;
+    self->worldBody = NULL;
 }
 
 -(BOOL)dogIsInHitbox:(NSValue *)d{
     b2Body *dogBody = (b2Body *)[d pointerValue];
+    if(!self->worldBody) return false;
     if(self->hitboxSensor->TestPoint(dogBody->GetPosition()))
         return true;
     return false;
 }
 
 -(void)updateSensorPosition{
-    // TODO - destroy sprite and body when offscreen`
-    
+    // TODO - destroy sprite and body when offscreen
+    if(!self->mainSprite || !self->worldBody) return;
     float xPos = (float)(self->mainSprite.position.x + self->mainSprite.contentSize.width / 2)/PTM_RATIO;
     if(self->mainSprite.flipX)
         xPos = (float)(self->mainSprite.position.x - self->mainSprite.contentSize.width / 2)/PTM_RATIO;
@@ -127,15 +130,22 @@
         spriteMove = 10.0;
     }
     
+    self->offset = CGPointMake(spriteMove, 10);
+    
     [self->mainSprite setPosition:CGPointMake(self->mainSprite.position.x+spriteMove, self->mainSprite.position.y+10)];
     
     [self->mainSprite stopAllActions];
     [self->mainSprite runAction:self->eatAction];
-    [self->mainSprite runAction:[CCSequence actions:[CCDelayTime actionWithDuration:2], [CCMoveTo actionWithDuration:distanceRemaining/self->speed position:ccp(self->destination, self->mainSprite.position.y)], [CCCallFunc actionWithTarget:self selector:@selector(removeSprite)], nil]];
+    [self->mainSprite runAction:[CCSequence actions:[CCDelayTime actionWithDuration:2], [CCCallFunc actionWithTarget:self selector:@selector(playWalkAnim)], [CCMoveTo actionWithDuration:distanceRemaining/self->speed position:ccp(self->destination, self->mainSprite.position.y)], [CCCallFunc actionWithTarget:self selector:@selector(removeSprite)], nil]];
     
     [ud->sprite1 runAction:[CCSequence actions:[CCDelayTime actionWithDuration:.7], [CCCallFuncND actionWithTarget:self selector:@selector(destroyBody:data:) data:[[NSValue valueWithPointer:dogBody] retain]], nil]];
     
     return true;
+}
+
+-(void)playWalkAnim{
+    [self->mainSprite setPosition:CGPointMake(self->mainSprite.position.x + (-1)*self->offset.x, self->mainSprite.position.y + (-1)*self->offset.y  )];
+    [self->mainSprite runAction:self->walkAction];
 }
 
 -(BOOL)hasEatenDog{

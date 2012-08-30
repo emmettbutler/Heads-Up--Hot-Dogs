@@ -20,6 +20,7 @@
     b2Fixture *hitboxSensor;
     BOOL hasEatenDog, hasEntered;
     float destination, speed;
+    CGPoint offset;
     CGSize winSize;
 }
 
