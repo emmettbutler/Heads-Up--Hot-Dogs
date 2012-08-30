@@ -18,7 +18,7 @@
     CCFiniteTimeAction *eatAction;
     CCSpriteBatchNode *spritesheet;
     b2Fixture *hitboxSensor;
-    BOOL hasEatenDog;
+    BOOL hasEatenDog, hasEntered;
     float destination, speed;
     CGSize winSize;
 }

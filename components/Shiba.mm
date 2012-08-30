@@ -93,6 +93,8 @@
 }
 
 -(void)updateSensorPosition{
+    // TODO - destroy sprite and body when offscreen
+    
     float xPos = (float)(self->mainSprite.position.x + self->mainSprite.contentSize.width / 2)/PTM_RATIO;
     if(self->mainSprite.flipX)
         xPos = (float)(self->mainSprite.position.x - self->mainSprite.contentSize.width / 2)/PTM_RATIO;
@@ -112,6 +114,7 @@
     
     [self->mainSprite stopAllActions];
     [self->mainSprite runAction:self->eatAction];
+    [self->mainSprite runAction:[CCSequence actions:[CCDelayTime actionWithDuration:2], [CCMoveTo actionWithDuration:distanceRemaining/self->speed position:ccp(self->destination, self->mainSprite.position.y)], nil]];
     
     bodyUserData *ud = (bodyUserData *)dogBody->GetUserData();
     [ud->sprite1 removeFromParentAndCleanup:YES];
