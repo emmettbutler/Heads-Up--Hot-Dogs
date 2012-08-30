@@ -18,7 +18,7 @@
     self->spritesheet = (CCSpriteBatchNode *)[s pointerValue];
     self->mainSprite = [CCSprite spriteWithSpriteFrameName:@"Shiba_Walk_1.png"];
     
-    self->speed = 100;
+    self->speed = 50;
     
     NSMutableArray *animFrames = [[NSMutableArray alloc] init];
     for(int i = 1; i <= 10; i++){
@@ -79,10 +79,15 @@
     
     [self->mainSprite setPosition:CGPointMake(x.floatValue, floor.floatValue + self->mainSprite.contentSize.height / 2)];
     [self->spritesheet addChild:self->mainSprite z:z.intValue];
-    [self->mainSprite runAction:[CCMoveTo actionWithDuration:winSize.width/self->speed position:ccp(self->destination, self->mainSprite.position.y)]];
+    [self->mainSprite runAction:[CCSequence actions:[CCMoveTo actionWithDuration:winSize.width/self->speed position:ccp(self->destination, self->mainSprite.position.y)], [CCCallFunc actionWithTarget:self selector:@selector(removeSprite)], nil]];
     [self->mainSprite runAction:self->walkAction];
     
     return self;
+}
+
+-(void)removeSprite{
+    [self->mainSprite removeFromParentAndCleanup:YES];
+    self->world->DestroyBody(self->worldBody);
 }
 
 -(BOOL)dogIsInHitbox:(NSValue *)d{
@@ -93,7 +98,7 @@
 }
 
 -(void)updateSensorPosition{
-    // TODO - destroy sprite and body when offscreen
+    // TODO - destroy sprite and body when offscreen`
     
     float xPos = (float)(self->mainSprite.position.x + self->mainSprite.contentSize.width / 2)/PTM_RATIO;
     if(self->mainSprite.flipX)
@@ -101,34 +106,40 @@
     self->worldBody->SetTransform(b2Vec2(xPos, (self->mainSprite.position.y-10)/PTM_RATIO), self->worldBody->GetAngle());
 }
 
+-(void)destroyBody:(id)sender data:(NSValue *)b{
+    b2Body *body = (b2Body *)[b pointerValue];
+    bodyUserData *ud = (bodyUserData *)body->GetUserData();
+    [ud->sprite1 removeFromParentAndCleanup:YES];
+    self->world->DestroyBody(body);
+}
+
 -(BOOL)eatDog:(NSValue *)d{
     self->hasEatenDog = true;
     b2Body *dogBody = (b2Body *)[d pointerValue];
+    bodyUserData *ud = (bodyUserData *)dogBody->GetUserData();
     
-    float distanceRemaining;
+    float distanceRemaining, spriteMove;
     if(self->mainSprite.flipX){
         distanceRemaining = self->mainSprite.position.x + self->mainSprite.contentSize.width / 2;
+        spriteMove = -10.0;
     } else {
         distanceRemaining = winSize.width - self->mainSprite.position.x + self->mainSprite.contentSize.width / 2;
+        spriteMove = 10.0;
     }
+    
+    [self->mainSprite setPosition:CGPointMake(self->mainSprite.position.x+spriteMove, self->mainSprite.position.y+10)];
     
     [self->mainSprite stopAllActions];
     [self->mainSprite runAction:self->eatAction];
-    [self->mainSprite runAction:[CCSequence actions:[CCDelayTime actionWithDuration:2], [CCMoveTo actionWithDuration:distanceRemaining/self->speed position:ccp(self->destination, self->mainSprite.position.y)], nil]];
+    [self->mainSprite runAction:[CCSequence actions:[CCDelayTime actionWithDuration:2], [CCMoveTo actionWithDuration:distanceRemaining/self->speed position:ccp(self->destination, self->mainSprite.position.y)], [CCCallFunc actionWithTarget:self selector:@selector(removeSprite)], nil]];
     
-    bodyUserData *ud = (bodyUserData *)dogBody->GetUserData();
-    [ud->sprite1 removeFromParentAndCleanup:YES];
-    self->world->DestroyBody(dogBody);
+    [ud->sprite1 runAction:[CCSequence actions:[CCDelayTime actionWithDuration:.7], [CCCallFuncND actionWithTarget:self selector:@selector(destroyBody:data:) data:[[NSValue valueWithPointer:dogBody] retain]], nil]];
     
     return true;
 }
 
 -(BOOL)hasEatenDog{
     return self->hasEatenDog;
-}
-
--(void)runWalkAction{
-    [self->mainSprite runAction:self->walkAction];
-}
+}   
 
 @end

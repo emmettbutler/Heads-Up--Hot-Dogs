@@ -24,7 +24,6 @@
 }
 
 -(Shiba *)init:(NSValue *)s withWorld:(NSValue *)w;
--(void)walkAcross;
 -(BOOL)dogIsInHitbox:(NSValue *)d;
 -(BOOL)eatDog:(NSValue *)d;
 -(BOOL)hasEatenDog;

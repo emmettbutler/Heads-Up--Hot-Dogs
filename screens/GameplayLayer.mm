@@ -2143,7 +2143,7 @@
                         }
                         
                         if([shiba dogIsInHitbox:[NSValue valueWithPointer:b]] && ![shiba hasEatenDog]){
-                            if([shiba eatDog:[NSValue valueWithPointer:b]]){
+                            if(!ud->grabbed && [shiba eatDog:[NSValue valueWithPointer:b]]){
                                 [self incrementDroppedCount:self data:[NSValue valueWithPointer:b]];
                             }
                         }
