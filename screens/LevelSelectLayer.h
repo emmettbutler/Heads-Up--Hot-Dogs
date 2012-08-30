@@ -52,6 +52,7 @@ static NSUserDefaults *standardUserDefaults;
     int curLevelIndex;
     levelProps *level;
     CGRect rightArrowRect;
+    BOOL NO_LEVEL_LOCKS;
     CGRect leftArrowRect;
     CGRect thumbnailRect;
     CCSprite *thumb;

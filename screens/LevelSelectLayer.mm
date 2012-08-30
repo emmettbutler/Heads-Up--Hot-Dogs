@@ -540,6 +540,9 @@
         standardUserDefaults = [NSUserDefaults standardUserDefaults];
         CGSize winSize = [[CCDirector sharedDirector] winSize];
         [[CCDirector sharedDirector] setDisplayFPS:NO];
+        
+        // for testing only - don't lock the levels
+        NO_LEVEL_LOCKS = true;
 
         self.isTouchEnabled = true;
 
@@ -615,7 +618,7 @@
     time++;
     level = (levelProps *)[(NSValue *)[lStructs objectAtIndex:curLevelIndex] pointerValue];
 
-    if(level->unlocked || level->unlockThreshold < 0){
+    if(NO_LEVEL_LOCKS || level->unlocked || level->unlockThreshold < 0){
         [thumb setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:level->thumbnail]];
         [nameLabel setString:[NSString stringWithFormat:@"%@", level->name]];
         [scoreLabel setString:[NSString stringWithFormat:@"high score: %06d", level->highScore]];
@@ -660,10 +663,7 @@
     }
     else if(CGRectContainsPoint(thumbnailRect, location)){
         SEL levelMethod = NSSelectorFromString(level->func);
-#ifdef DEBUG // will eventually have this happen in deployment too
-#else
-        if(level->unlocked)
-#endif
+        if(NO_LEVEL_LOCKS || level->unlocked)
             [self performSelector:levelMethod];
     }
 }

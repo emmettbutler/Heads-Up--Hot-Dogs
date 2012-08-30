@@ -482,6 +482,7 @@
     c->altWalkAnimFrames = [[NSMutableArray alloc] init];
     c->postStopAnimFrames = [[NSMutableArray alloc] init];
     c->rippleWalkAnimFrames = [[NSMutableArray alloc] init];
+    c->rippleIdleAnimFrames = [[NSMutableArray alloc] init];
     for(int i = 1; i <= 8; i++){
         [c->walkAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -531,6 +532,11 @@
         [c->rippleWalkAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
           [NSString stringWithFormat:@"DogEater_Ripple_Walk_%d.png", i]]];
+    }
+    for(int i = 1; i <= 4; i++){
+        [c->rippleIdleAnimFrames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithFormat:@"DogEater_Ripple_Rub_%d.png", i]]];
     }
     
     return c;

@@ -64,7 +64,7 @@
 }
 
 -(void)dropDown{
-    CCFiniteTimeAction *moveAction = [CCMoveTo actionWithDuration:.8 position:ccp(self->mainSprite.position.x, winSize.height - self->mainSprite.contentSize.height/2)];
+    CCFiniteTimeAction *moveAction = [CCMoveTo actionWithDuration:.6 position:ccp(self->mainSprite.position.x, winSize.height - self->mainSprite.contentSize.height/2)];
     [self->mainSprite runAction:[CCSequence actions:moveAction, [CCCallFunc actionWithTarget:self selector:@selector(createHitbox)], [CCCallFunc actionWithTarget:self selector:@selector(setStillSprite)], nil]];
 }
 
@@ -75,7 +75,7 @@
 
 -(void)pullUp{
     self->isNowExploding = false;
-    CCFiniteTimeAction *moveAction = [CCMoveTo actionWithDuration:1.2 position:ccp(self->mainSprite.position.x, winSize.height + self->mainSprite.contentSize.height/2)];
+    CCFiniteTimeAction *moveAction = [CCMoveTo actionWithDuration:.6 position:ccp(self->mainSprite.position.x, winSize.height + self->mainSprite.contentSize.height/2)];
     [self->mainSprite runAction:[CCSequence actions:[CCCallFunc actionWithTarget:self selector:@selector(setPullUpSprite)], moveAction, nil]];
 }
 

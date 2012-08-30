@@ -923,7 +923,7 @@
             _personLower.flipX = YES;
             _personUpper.flipX = YES;
             _personUpperOverlay.flipX = YES;
-        }
+        } else { _rippleSprite.flipX = YES; }
         if(person->tag == S_POLICE){
             lowerArmAngle = 132;
             upperArmAngle = 175;
@@ -2109,19 +2109,21 @@
                             }
                         } else if(level->slug == @"nyc" && !(time % 19)) {
                             int ventForce = 8;
-                            if(vent1->on){
-                                if((ud->sprite1.position.x > level->vent1X - 30 && ud->sprite1.position.x < level->vent1X + 30)){
-                                    if(b->GetLinearVelocity().y != b->GetLinearVelocity().y+ventForce){
-                                        b->SetLinearVelocity(b2Vec2(b->GetLinearVelocity().x+((((float) rand() / RAND_MAX) * 2) - 1), b->GetLinearVelocity().y+ventForce));
-                                         [ud->sprite1 stopAllActions];
+                            if(ud->sprite1.position.y < winSize.height - 40){
+                                if(vent1->on){
+                                    if((ud->sprite1.position.x > level->vent1X - 30 && ud->sprite1.position.x < level->vent1X + 30)){
+                                        if(b->GetLinearVelocity().y != b->GetLinearVelocity().y+ventForce){
+                                            b->SetLinearVelocity(b2Vec2(b->GetLinearVelocity().x+((((float) rand() / RAND_MAX) * 2) - 1), b->GetLinearVelocity().y+ventForce));
+                                            [ud->sprite1 stopAllActions];
+                                        }
                                     }
                                 }
-                            }
-                            if(vent2->on){
-                                if((ud->sprite1.position.x > level->vent2X - 30 && ud->sprite1.position.x < level->vent2X + 30)){
-                                    if(b->GetLinearVelocity().y != b->GetLinearVelocity().y+ventForce){
-                                        b->SetLinearVelocity(b2Vec2(b->GetLinearVelocity().x+((((float) rand() / RAND_MAX) * 2) - 1), b->GetLinearVelocity().y+ventForce));
-                                        [ud->sprite1 stopAllActions];
+                                if(vent2->on){
+                                    if((ud->sprite1.position.x > level->vent2X - 30 && ud->sprite1.position.x < level->vent2X + 30)){
+                                        if(b->GetLinearVelocity().y != b->GetLinearVelocity().y+ventForce){
+                                            b->SetLinearVelocity(b2Vec2(b->GetLinearVelocity().x+((((float) rand() / RAND_MAX) * 2) - 1), b->GetLinearVelocity().y+ventForce));
+                                            [ud->sprite1 stopAllActions];
+                                        }
                                     }
                                 }
                             }
@@ -2330,9 +2332,9 @@
                                     }
                                     
                                     [ud->ripples stopAllActions];
-                                    //if([ud->ripples numberOfRunningActions] == 0){
-                                    //    [ud->ripples runAction:ud->idleRipple];
-                                    //}
+                                    if([ud->ripples numberOfRunningActions] == 0){
+                                        [ud->ripples runAction:ud->idleRipple];
+                                    }
                                 }
                             }
                         }
