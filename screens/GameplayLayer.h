@@ -19,7 +19,16 @@
 #import "LevelSelectLayer.h"
 #import "AchievementReporter.h"
 #import "Firecracker.h"
+#import "Shiba.h"
 
+#define FLOOR1_HT 0
+#define FLOOR1_Z 42
+#define FLOOR2_HT .4
+#define FLOOR2_Z 32
+#define FLOOR3_HT .8
+#define FLOOR3_Z 22
+#define FLOOR4_HT 1.2
+#define FLOOR4_Z 12
 #define PTM_RATIO 32
 
 @interface GameplayLayer : CCLayer
@@ -55,6 +64,7 @@
     NSUserDefaults *standardUserDefaults;
     NSInteger _overallTime, _sfxOn;
     Firecracker *firecracker;
+    Shiba *shiba;
     CCDelayTime *winUpDelay, *winDownDelay;
     CCCallFuncN *removeWindow;
     ccColor3B _color_pink;

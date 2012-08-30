@@ -15,10 +15,6 @@
 #import "DogTouch.h"
 
 #define DEGTORAD 0.0174532
-#define FLOOR1_HT 0
-#define FLOOR2_HT .4
-#define FLOOR3_HT .8
-#define FLOOR4_HT 1.2
 #define DOG_SPAWN_MINHT 240
 #define COP_RANGE 4
 #define DOG_COUNTER_HT 295
@@ -782,7 +778,6 @@
         }
     }
 
-    CGSize winSize = [CCDirector sharedDirector].winSize;
     // cycle through a set of several possible mask/category bits for dog/person collision
     // this is so that a dog can be told only to collide with the person who it's touching already,
     // or to collide with all people. this breaks when there are more than 4 people onscreen
@@ -818,19 +813,19 @@
     }
     
     if(floorBit.intValue == 1){
-        zIndex = 42;
+        zIndex = FLOOR1_Z;
         yPos = 76;
     }
     else if(floorBit.intValue == 2){
-        zIndex = 32;
+        zIndex = FLOOR2_Z;
         yPos = 89;
     }
     else if(floorBit.intValue == 4){
-        zIndex = 22;
+        zIndex = FLOOR3_Z;
         yPos = 102;
     }
     else{
-        zIndex = 12;
+        zIndex = FLOOR4_Z;
         yPos = 115;
     }
 
@@ -903,7 +898,7 @@
     [spriteSheetCharacter addChild:_personLower z:zIndex];
     [spriteSheetCharacter addChild:_personUpper z:zIndex+2];
     [spriteSheetCharacter addChild:_personUpperOverlay z:zIndex+2];
-    if(person->rippleSprite){
+    if(person->rippleSprite && level->slug == @"japan"){
         _rippleSprite.position = ccp(xPos.intValue, yPos);
         [spriteSheetCharacter addChild:_rippleSprite z:zIndex+3];
     }
@@ -1508,6 +1503,11 @@
     time++;
     
     [self reportAchievements];
+    [shiba updateSensorPosition];
+    
+    if(!(time % 700)){
+        shiba = [[Shiba alloc] init:[NSValue valueWithPointer:spriteSheetCharacter] withWorld:[NSValue valueWithPointer:_world]];
+    }
     
     b2Vec2 windForce;
     // level-specific repetitive actions
@@ -2139,6 +2139,12 @@
                                 ud->shotSeq = [[CCSequence actions:lockAction, incAction, wienerExplodeAction, destroyAction, nil] retain];
                                 if([ud->sprite1 numberOfRunningActions] == 0)
                                     [ud->sprite1 runAction:ud->shotSeq];
+                            }
+                        }
+                        
+                        if([shiba dogIsInHitbox:[NSValue valueWithPointer:b]] && ![shiba hasEatenDog]){
+                            if([shiba eatDog:[NSValue valueWithPointer:b]]){
+                                [self incrementDroppedCount:self data:[NSValue valueWithPointer:b]];
                             }
                         }
                         

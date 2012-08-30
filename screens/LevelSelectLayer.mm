@@ -541,7 +541,7 @@
         CGSize winSize = [[CCDirector sharedDirector] winSize];
         [[CCDirector sharedDirector] setDisplayFPS:NO];
         
-        // for testing only - don't lock the levels
+        // TODO: for testing only - don't lock the levels
         NO_LEVEL_LOCKS = true;
 
         self.isTouchEnabled = true;
