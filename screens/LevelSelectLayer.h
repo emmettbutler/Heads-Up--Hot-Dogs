@@ -40,7 +40,7 @@ static NSUserDefaults *standardUserDefaults;
         levelProps *next, *prev;
         int characterProbSum, maxDogs, highScore, unlockThreshold, vent1X, vent2X;
         float gravity, frictionMul, personSpeedMul, restitutionMul, dogDeathDelay;
-        BOOL unlocked, enabled;
+        BOOL unlocked, enabled, hasShiba;
         spcDogData *specialDog;
     };
 

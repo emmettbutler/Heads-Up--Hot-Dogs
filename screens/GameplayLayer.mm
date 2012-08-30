@@ -1505,7 +1505,7 @@
     [self reportAchievements];
     [shiba updateSensorPosition];
     
-    if(!(time % 700)){
+    if(level->hasShiba && !(time % 500) && arc4random() % 3 == 1){
         shiba = [[Shiba alloc] init:[NSValue valueWithPointer:spriteSheetCharacter] withWorld:[NSValue valueWithPointer:_world]];
     }
     

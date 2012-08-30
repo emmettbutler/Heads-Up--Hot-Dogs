@@ -354,6 +354,7 @@
         lp->restitutionMul = 1.3;
         lp->frictionMul = 1.1;
         lp->maxDogs = 5;
+        lp->hasShiba = true;
 
         dd = new spcDogData();
         dd->riseSprite = @"ChiDog_Rise.png";
@@ -440,7 +441,7 @@
     lp->func = @"switchScreenSpace";
     lp->unlockTweet = @"We sent a frankfurter to the moon in @HeadsUpHotDogs";
 
-        if(loadFull){
+    if(loadFull){
         lp->bg = @"SpaceBG.png";
         lp->bgm = @"gameplay 3.mp3";
         lp->gravity = -40.0f;
@@ -448,6 +449,7 @@
         lp->personSpeedMul = 1.1;
         lp->restitutionMul = 1.7;
         lp->frictionMul = 100;
+        lp->hasShiba = true;
 
         dd = new spcDogData();
         dd->riseSprite = @"Chips_Rise.png";
