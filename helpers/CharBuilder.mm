@@ -21,102 +21,69 @@
 
 +(NSMutableArray *)philly{
     NSMutableArray *levelArray = [[[NSMutableArray alloc] init] retain];
-    personStruct *s;
-    
-    s = [self businessman];
-    [levelArray addObject:[NSValue valueWithPointer:s]];
-    s = [self youngPro];
-    [levelArray addObject:[NSValue valueWithPointer:s]];
-    s = [self professor];
-    [levelArray addObject:[NSValue valueWithPointer:s]];
-    s = [self jogger];
-    [levelArray addObject:[NSValue valueWithPointer:s]];
+
+    [levelArray addObject:[NSValue valueWithPointer:[self businessman]]];
+    [levelArray addObject:[NSValue valueWithPointer:[self youngPro]]];
+    [levelArray addObject:[NSValue valueWithPointer:[self professor]]];
+    [levelArray addObject:[NSValue valueWithPointer:[self jogger]]];
     
     return levelArray;
 }
 
 +(NSMutableArray *)nyc{
     NSMutableArray *levelArray = [[[NSMutableArray alloc] init] retain];;
-    personStruct *s;
-    
-    s = [self crustPunk];
-    [levelArray addObject:[NSValue valueWithPointer:s]];
-    s = [self youngPro];
-    [levelArray addObject:[NSValue valueWithPointer:s]];
-    s = [self jogger];
-    [levelArray addObject:[NSValue valueWithPointer:s]];
-    s = [self police];
-    [levelArray addObject:[NSValue valueWithPointer:s]];
+
+    [levelArray addObject:[NSValue valueWithPointer:[self crustPunk]]];
+    [levelArray addObject:[NSValue valueWithPointer:[self youngPro]]];
+    [levelArray addObject:[NSValue valueWithPointer:[self jogger]]];
+    [levelArray addObject:[NSValue valueWithPointer:[self police]]];
     
     return levelArray;
 }
 
 +(NSMutableArray *)london{
     NSMutableArray *levelArray = [[[NSMutableArray alloc] init] retain];;
-    personStruct *s;
     
-    s = [self crustPunk];
-    [levelArray addObject:[NSValue valueWithPointer:s]];
-    s = [self youngPro];
-    [levelArray addObject:[NSValue valueWithPointer:s]];
-    s = [self jogger];
-    [levelArray addObject:[NSValue valueWithPointer:s]];
-    s = [self police];
-    [levelArray addObject:[NSValue valueWithPointer:s]];
-    s = [self dogMuncher];
-    [levelArray addObject:[NSValue valueWithPointer:s]];
+    [levelArray addObject:[NSValue valueWithPointer:[self crustPunk]]];
+    [levelArray addObject:[NSValue valueWithPointer:[self professor]]];
+    [levelArray addObject:[NSValue valueWithPointer:[self jogger]]];
+    [levelArray addObject:[NSValue valueWithPointer:[self police]]];
+    [levelArray addObject:[NSValue valueWithPointer:[self dogMuncher]]];
     
     return levelArray;
 }
 
 +(NSMutableArray *)japan{
     NSMutableArray *levelArray = [[[NSMutableArray alloc] init] retain];;
-    personStruct *s;
     
-    s = [self businessman];
-    [levelArray addObject:[NSValue valueWithPointer:s]];
-    s = [self youngPro];
-    [levelArray addObject:[NSValue valueWithPointer:s]];
-    s = [self jogger];
-    [levelArray addObject:[NSValue valueWithPointer:s]];
-    s = [self police];
-    [levelArray addObject:[NSValue valueWithPointer:s]];
-    s = [self dogMuncher];
-    [levelArray addObject:[NSValue valueWithPointer:s]];
+    [levelArray addObject:[NSValue valueWithPointer:[self businessman]]];
+    [levelArray addObject:[NSValue valueWithPointer:[self youngPro]]];
+    [levelArray addObject:[NSValue valueWithPointer:[self jogger]]];
+    [levelArray addObject:[NSValue valueWithPointer:[self police]]];
+    [levelArray addObject:[NSValue valueWithPointer:[self dogMuncher]]];
     
     return levelArray;
 }
 
 +(NSMutableArray *)chicago{
     NSMutableArray *levelArray = [[[NSMutableArray alloc] init] retain];;
-    personStruct *s;
     
-    s = [self businessman];
-    [levelArray addObject:[NSValue valueWithPointer:s]];
-    s = [self youngPro];
-    [levelArray addObject:[NSValue valueWithPointer:s]];
-    s = [self jogger];
-    [levelArray addObject:[NSValue valueWithPointer:s]];
-    s = [self police];
-    [levelArray addObject:[NSValue valueWithPointer:s]];
-    s = [self dogMuncher];
-    [levelArray addObject:[NSValue valueWithPointer:s]];
+    [levelArray addObject:[NSValue valueWithPointer:[self businessman]]];
+    [levelArray addObject:[NSValue valueWithPointer:[self professor]]];
+    [levelArray addObject:[NSValue valueWithPointer:[self jogger]]];
+    [levelArray addObject:[NSValue valueWithPointer:[self police]]];
+    [levelArray addObject:[NSValue valueWithPointer:[self dogMuncher]]];
     
     return levelArray;
 }
 
 +(NSMutableArray *)space{
     NSMutableArray *levelArray = [[[NSMutableArray alloc] init] retain];;
-    personStruct *s;
     
-    s = [self dogMuncher];
-    [levelArray addObject:[NSValue valueWithPointer:s]];
-    s = [self youngPro];
-    [levelArray addObject:[NSValue valueWithPointer:s]];
-    s = [self jogger];
-    [levelArray addObject:[NSValue valueWithPointer:s]];
-    s = [self police];
-    [levelArray addObject:[NSValue valueWithPointer:s]];
+    [levelArray addObject:[NSValue valueWithPointer:[self dogMuncher]]];
+    [levelArray addObject:[NSValue valueWithPointer:[self youngPro]]];
+    [levelArray addObject:[NSValue valueWithPointer:[self jogger]]];
+    [levelArray addObject:[NSValue valueWithPointer:[self police]]];
     
     return levelArray;
 }
@@ -458,15 +425,15 @@
     c->rippleSprite = @"BusinessMan_Ripple_Walk_1.png";
     c->tag = S_PROFSR;
     c->flipSprites = true;
-    c->hitboxWidth = 16.0;
+    c->hitboxWidth = 18.0;
     c->hitboxHeight = .0001;
     c->hitboxCenterX = 0;
     c->hitboxCenterY = 3.8;
     c->moveDelta = 4.7;
     c->sensorHeight = 2.0f;
     c->sensorWidth = 1.5f;
-    c->restitution = .89f;
-    c->friction = 0.15f;
+    c->restitution = .69f;
+    c->friction = 0.45f;
     c->framerate = .06f;
     c->pointValue = 25;
     c->frequency = 6;
