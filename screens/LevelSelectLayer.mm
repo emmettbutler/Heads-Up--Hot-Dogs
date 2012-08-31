@@ -292,6 +292,7 @@
         lp->personSpeedMul = .7;
         lp->maxDogs = 7;
         lp->gravity = -17.0;
+        lp->spawnInterval = 4.0;
         
         lp->dogDeathAnimFrames = [[NSMutableArray alloc] init];
         for(int i = 1; i <= 9; i++){
@@ -340,7 +341,7 @@
     lp->enabled = true;
     lp->slug = @"chicago";
     lp->name = @"Windy City";
-    lp->unlockThreshold = 14000;
+    lp->unlockThreshold = 6500;
     lp->thumbnail = @"Chicago_Thumb.png";
     lp->func = @"switchScreenChicago";
     lp->unlockTweet = @"I traveled to the Windy City in @HeadsUpHotDogs";
@@ -544,6 +545,7 @@
         [[CCDirector sharedDirector] setDisplayFPS:NO];
         
         // TODO: for testing only - don't lock the levels
+        // this completely bypasses the storage of level unlock userDefaults and simply shows all levels as available
         NO_LEVEL_LOCKS = true;
 
         self.isTouchEnabled = true;
