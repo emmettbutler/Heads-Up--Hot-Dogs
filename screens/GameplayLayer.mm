@@ -1523,13 +1523,13 @@
             if(sprite.tag && sprite.tag == 1)
                 [sprite setOpacity:255.00 * cosf(.01 * time)];
         }
-        if(!(time % 400)){
+        if(!(time % 560)){
             if([vent1->steamSprite numberOfRunningActions] == 0){
                 [vent1->steamSprite setVisible:true];
                 vent1->on = true;
                 [vent1->steamSprite runAction:vent1->combinedAction];
             }
-        } if(!(time % 250)){
+        } if(!(time % 450)){
             if([vent2->steamSprite numberOfRunningActions] == 0){
                 [vent2->steamSprite setVisible:true];
                 vent2->on = true;
