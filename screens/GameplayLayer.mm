@@ -552,8 +552,8 @@
     float deathDelay;
     NSString *fallSprite, *riseSprite, *mainSprite, *grabSprite;
     
-    int sideBuffer = 10;
-    CGPoint location = CGPointMake(arc4random() % (int)(sideBuffer+(winSize.width-(2*sideBuffer))), DOG_SPAWN_MINHT+(arc4random() % (int)(winSize.height-DOG_SPAWN_MINHT)));
+    int SIDE_BUFFER = 40;
+    CGPoint location = CGPointMake(arc4random() % (int)(SIDE_BUFFER+(winSize.width-(2*SIDE_BUFFER))), DOG_SPAWN_MINHT+(arc4random() % (int)(winSize.height-DOG_SPAWN_MINHT)));
     
     NSMutableArray *wienerDeathAnimFrames = [[NSMutableArray alloc] init];
     NSMutableArray *wienerFlashAnimFrames = [[NSMutableArray alloc] init];
