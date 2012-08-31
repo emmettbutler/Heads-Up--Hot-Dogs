@@ -39,7 +39,7 @@ static NSUserDefaults *standardUserDefaults;
         NSMutableArray *bgComponents, *characters, *activeComponents, *dogDeathAnimFrames;
         levelProps *next, *prev;
         int characterProbSum, maxDogs, highScore, unlockThreshold, vent1X, vent2X;
-        float gravity, frictionMul, personSpeedMul, restitutionMul, dogDeathDelay;
+        float gravity, frictionMul, personSpeedMul, restitutionMul, dogDeathDelay, spawnInterval;
         BOOL unlocked, enabled, hasShiba;
         spcDogData *specialDog;
     };

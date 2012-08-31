@@ -1308,6 +1308,10 @@
             _levelMaxDogs = level->maxDogs;
             _maxDogsOnScreen = level->maxDogs - 3;
         }
+        _levelSpawnInterval = 3.5;
+        if(level->spawnInterval){
+            _levelSpawnInterval = level->spawnInterval;
+        }
         _shootLock = NO;
         _droppedSpacing = 200;
         _droppedCount = 0;
@@ -1456,21 +1460,21 @@
     
     if(_points > 19000 && !(time % 300) && _wienerSpawnDelayTime > .1){
         _wienerSpawnDelayTime -= .05;
-    } else if(_points > 14000 && _wienerSpawnDelayTime != .6){
+    } else if(_points > 14000 && _wienerSpawnDelayTime != _levelSpawnInterval - 2.9){
         _maxDogsOnScreen = _levelMaxDogs;
-        _wienerSpawnDelayTime = .6;
-    } else if(_points > 12000 && _wienerSpawnDelayTime != .8) {
-        _wienerSpawnDelayTime = .8;
+        _wienerSpawnDelayTime = _levelSpawnInterval - 2.9;
+    } else if(_points > 12000 && _wienerSpawnDelayTime != _levelSpawnInterval - 2.7) {
+        _wienerSpawnDelayTime = _levelSpawnInterval - 2.7;
         _maxDogsOnScreen = _levelMaxDogs - 1;
-    } else if(_points > 7000 && _wienerSpawnDelayTime != 1) {
-        _wienerSpawnDelayTime = 1;
+    } else if(_points > 7000 && _wienerSpawnDelayTime != _levelSpawnInterval - 2.5) {
+        _wienerSpawnDelayTime = _levelSpawnInterval - 2.5;
         _maxDogsOnScreen = _levelMaxDogs - 2;
-    } else if(_points > 5000 && _wienerSpawnDelayTime != 1.5) {
-        _wienerSpawnDelayTime = 1.5;
-    } else if(_points > 2000 && _wienerSpawnDelayTime != 2.5) {
-        _wienerSpawnDelayTime = 2.5;
-    } else if(_points > 1000 && _wienerSpawnDelayTime != 3.5) {
-        _wienerSpawnDelayTime = 3.5;
+    } else if(_points > 5000 && _wienerSpawnDelayTime != _levelSpawnInterval - 2) {
+        _wienerSpawnDelayTime = _levelSpawnInterval - 2;
+    } else if(_points > 2000 && _wienerSpawnDelayTime != _levelSpawnInterval - 1) {
+        _wienerSpawnDelayTime = _levelSpawnInterval - 1;
+    } else if(_points > 1000 && _wienerSpawnDelayTime != _levelSpawnInterval) {
+        _wienerSpawnDelayTime = _levelSpawnInterval;
     }
     
     if(_droppedCount <= DROPPED_MAX && _droppedCount >= 0){

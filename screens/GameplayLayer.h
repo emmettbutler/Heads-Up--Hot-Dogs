@@ -56,7 +56,7 @@
     NSString *scoreText, *droppedText;
     int _points, _droppedCount, _spawnLimiter, time, _curPersonMaskBits, _droppedSpacing, _lastTouchTime, _firstDeathTime, lowerArmAngle, upperArmAngle;
     int _peopleGrumped, _dogsSaved, _id_counter, _numTouches, _dogsOnscreen, _maxDogsOnScreen, _numWorldTouches, _sfxVol, _levelMaxDogs;
-    float _wienerSpawnDelayTime, _currentRayAngle;
+    float _wienerSpawnDelayTime, _currentRayAngle, _levelSpawnInterval;
     BOOL _moving, _touchedDog, _rayTouchingDog, _pause, _shootLock, _dogHasHitGround, _dogHasDied, _policeOnScreen, _muncherOnScreen, _gameOver, _ventsOn, _hasDroppedDog;
     NSString *currentAnimation, *slug;
     CGSize winSize;
