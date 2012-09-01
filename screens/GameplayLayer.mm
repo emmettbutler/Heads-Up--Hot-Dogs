@@ -297,6 +297,23 @@
     [sprite runAction:seq];
 }
 
+-(void)heartParticles:(NSValue *)loc{
+    CCParticleSystem* heartParticles = [CCParticleFire node];
+    ccColor4F startColor = {1, 1, 1, 1};
+    ccColor4F endColor = {1, 1, 1, 0};
+    heartParticles.startColor = startColor;
+    heartParticles.endColor = endColor;
+    heartParticles.texture = [[CCTextureCache sharedTextureCache] textureForKey:[NSString stringWithFormat:@"Heart_Particle_%d.png", (arc4random() % 3) + 1]];
+    heartParticles.blendFunc = (ccBlendFunc) {GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA};
+    heartParticles.autoRemoveOnFinish = YES;
+    heartParticles.startSize = 1.0f;
+    heartParticles.speed = 90.0f;
+    heartParticles.anchorPoint = ccp(0.5f,0.5f);
+    heartParticles.position = [loc CGPointValue];
+    heartParticles.duration = 0.1f;
+    [self addChild:heartParticles z:60];
+}
+
 -(void)plusTwentyFive:(id)sender data:(void*)params {
     NSNumber *xPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:0];
     NSNumber *yPos = (NSNumber *)[(NSMutableArray *) params objectAtIndex:1];
@@ -428,6 +445,18 @@
     }
 }
 
+-(void)setFace:(NSValue *)body{
+    b2Body *b = (b2Body *)[body pointerValue];
+    bodyUserData *ud = (bodyUserData *)b->GetUserData();
+    if(ud->dogsOnHead == 0){
+        [ud->angryFace setVisible:NO];
+        [ud->sprite2 setVisible:YES];
+    } else {
+        [ud->angryFace setVisible:YES];
+        [ud->sprite2 setVisible:NO];
+    }
+}
+
 -(void)countDogsOnHead:(NSValue *)_body{
     b2Body *b = (b2Body *)[_body pointerValue];
     bodyUserData *ud = (bodyUserData *)b->GetUserData();
@@ -456,6 +485,93 @@
     }
 }
 
+-(void)movePerson:(NSValue *)body{
+    b2Body *b = (b2Body *)[body pointerValue];
+    bodyUserData *ud = (bodyUserData *)b->GetUserData();
+    // move person across screen at the appropriate speed
+    if((ud->timeWalking <= ud->stopTime || ud->timeWalking >= ud->stopTime + ud->stopTimeDelta)){
+        if(b->GetLinearVelocity().x != ud->moveDelta){ b->SetLinearVelocity(b2Vec2(ud->moveDelta, 0)); }
+        if(ud->timeWalking == ud->stopTime){
+            if(ud->sprite1.tag != S_POLICE && ud->sprite1.tag != S_MUNCHR){
+                [ud->sprite2 stopAllActions];
+                [ud->sprite1 stopAllActions];
+                [ud->ripples stopAllActions];
+                [ud->angryFace stopAllActions];
+                if(ud->_busman_willVomit){
+                    [ud->angryFace setVisible:NO];
+                    [ud->sprite2 setVisible:YES];
+                    ud->_busman_isVomiting = true;
+                    ud->stopTimeDelta = 250;
+                    ud->heightOffset2 = 2.3;
+                    ud->widthOffset = -.4;
+                    if(ud->sprite1.flipX){
+                        ud->widthOffset *= -1;
+                    }
+                    [ud->sprite2 runAction:ud->_vomitAction];
+                    [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"BusinessMan_Idle_1.png"]];
+                    
+                    float xBarf = b->GetPosition().x*PTM_RATIO - 40, yBarf = b->GetPosition().y*PTM_RATIO + 50, xVel = -70;
+                    if(ud->sprite1.flipX){
+                        xBarf = b->GetPosition().x*PTM_RATIO + 40;
+                        xVel = 70;
+                    }
+                    CGPoint barfPosition = CGPointMake(xBarf, yBarf);
+                    
+                    NSMutableArray *parameters = [[NSMutableArray alloc] init];
+                    [parameters addObject:[NSValue valueWithCGPoint:barfPosition]];
+                    [parameters addObject:[NSNumber numberWithInt:xVel]];
+                    
+                    [ud->sprite1 runAction:[CCSequence actions:[CCDelayTime actionWithDuration:2.9], [CCCallFuncND actionWithTarget:self selector:@selector(barfDogs:data:) data:parameters], nil]];
+                } else {
+                    [ud->sprite1 runAction:ud->idleAction];
+                    [ud->ripples runAction:ud->idleRipple];
+                }
+            }
+        }
+        else if((ud->stopTime && ud->timeWalking == ud->stopTime + ud->stopTimeDelta) || ud->timeWalking == ud->restartTime){
+            if(ud->sprite1.tag != S_MUNCHR){
+                ud->_busman_isVomiting = false;
+                [ud->sprite1 runAction:ud->defaultAction];
+                [ud->ripples runAction:ud->walkRipple];
+                [ud->sprite2 runAction:ud->altAction];
+                if(ud->sprite1.tag != S_POLICE){
+                    if([ud->sprite2 numberOfRunningActions] == 0)
+                        [ud->sprite2 runAction:ud->altAction];
+                }
+                if(ud->_busman_willVomit){
+                    ud->heightOffset2 = 2.9;
+                    ud->widthOffset = 0;
+                }
+            } else {
+                if(ud->timeWalking == ud->stopTime + ud->stopTimeDelta){
+                    [ud->ripples runAction:ud->walkRipple];
+                    [ud->sprite2 runAction:ud->altWalkFace];
+                    [ud->angryFace runAction:ud->angryFaceWalkAction];
+                    if(_droppedCount > 0 && !_gameOver){
+                        [self counterExplode:self data:[NSNumber numberWithInt:0]];
+                        _droppedCount--;
+                        CCLOG(@"Dropped count: %d", _droppedCount);
+                    }
+                } else if(!ud->_muncher_hasDroppedDog){
+                    [ud->sprite1 stopAction:ud->altAction2];
+                    [ud->sprite2 stopAction:ud->altAction3];
+                    [ud->angryFace stopAction:ud->dogOnHeadTickleAction];
+                    CCLOG(@"muncher has not dropped dog");
+                    if(!ud->animLock){
+                        ud->animLock = true;
+                        [ud->ripples runAction:ud->walkRipple];
+                        [ud->sprite1 runAction:ud->defaultAction];
+                        [ud->sprite2 runAction:ud->altAction];
+                        [ud->angryFace runAction:ud->angryFaceWalkAction];
+                    }
+                }
+            }
+            if([ud->angryFace numberOfRunningActions] == 0)
+                [ud->angryFace runAction:ud->angryFaceWalkAction];
+        }
+    } else if(b->GetLinearVelocity().x != 0){ b->SetLinearVelocity(b2Vec2(0, 0)); }
+}
+
 -(void)colorFG:(id)sender data:(NSNumber *)dark{
     for(b2Body* b = _world->GetBodyList(); b; b = b->GetNext()){
         if(b->GetUserData() && b->GetUserData() != (void*)100){
@@ -473,6 +589,24 @@
                 }
             }
         }
+    }
+}
+
+-(void)setDogDisplayFrame:(NSValue *)body{
+    b2Body *b = (b2Body *)[body pointerValue];
+    bodyUserData *ud = (bodyUserData *)b->GetUserData();
+    if(!ud->grabbed){
+        if(!ud->aimedAt && !ud->exploding){
+            if(b->GetLinearVelocity().y > 1.5){
+                [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:ud->_dog_riseSprite]];
+            } else if (b->GetLinearVelocity().y < -1.5){
+                [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:ud->_dog_fallSprite]];
+            } else {
+                [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:ud->_dog_mainSprite]];
+            }
+        }
+    } else { // this is breaking because aimedAt never gets turned false
+        [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:ud->_dog_grabSprite]];
     }
 }
 
@@ -1681,6 +1815,7 @@
             bodyUserData *ud = (bodyUserData *)dogBody->GetUserData();
             fixtureUserData *fBUd = (fixtureUserData *)pdContact.fixtureB->GetUserData();
             if(fBUd->tag >= F_BUSHED && fBUd->tag <= F_TOPHED){
+                [self heartParticles:[NSValue valueWithCGPoint:ud->sprite1.position]];
 #ifdef DEBUG
 #else
                 if(_sfxOn)
@@ -1704,22 +1839,6 @@
                         break;
                     }
                 }
-                int particle = (arc4random() % 3) + 1;
-                CGPoint position = ud->sprite1.position;
-                CCParticleSystem* heartParticles = [CCParticleFire node];
-                ccColor4F startColor = {1, 1, 1, 1};
-                ccColor4F endColor = {1, 1, 1, 0};
-                heartParticles.startColor = startColor;
-                heartParticles.endColor = endColor;
-                heartParticles.texture = [[CCTextureCache sharedTextureCache] textureForKey:[NSString stringWithFormat:@"Heart_Particle_%d.png", particle]];
-                heartParticles.blendFunc = (ccBlendFunc) {GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA};
-                heartParticles.autoRemoveOnFinish = YES;
-                heartParticles.startSize = 1.0f;
-                heartParticles.speed = 90.0f;
-                heartParticles.anchorPoint = ccp(0.5f,0.5f);
-                heartParticles.position = position;
-                heartParticles.duration = 0.1f;
-                [self addChild:heartParticles z:60];
                 if(!ud->hasTouchedHead && !_gameOver){
                     NSMutableArray *plusPointsParams = [[NSMutableArray alloc] initWithCapacity:4];
                     [plusPointsParams addObject:[NSNumber numberWithInt:pBody->GetPosition().x*PTM_RATIO]];
@@ -1769,9 +1888,6 @@
                     //[ud->sprite1 stopAction:ud->deathSeq];
                 }
                 ud->aimedAt = false;
-            }
-            else if (fBUd->tag == F_WALLS){
-                CCLOG(@"Dog/wall collision - _dog_isOnHead: %d - dog is awake: %d", ud->_dog_isOnHead, dogBody->IsAwake());
             }
         }
     }
@@ -1940,97 +2056,10 @@
                     ud->dogsOnHead = 0;
                     ud->spcDogsOnHead = 0;
                     ud->timeWalking++;
-                    // move person across screen at the appropriate speed
-                    if((ud->timeWalking <= ud->stopTime || ud->timeWalking >= ud->stopTime + ud->stopTimeDelta)){
-                        if(b->GetLinearVelocity().x != ud->moveDelta){ b->SetLinearVelocity(b2Vec2(ud->moveDelta, 0)); }
-                        if(ud->timeWalking == ud->stopTime){
-                            if(ud->sprite1.tag != S_POLICE && ud->sprite1.tag != S_MUNCHR){
-                                [ud->sprite2 stopAllActions];
-                                [ud->sprite1 stopAllActions];
-                                [ud->ripples stopAllActions];
-                                [ud->angryFace stopAllActions];
-                                if(ud->_busman_willVomit){
-                                    [ud->angryFace setVisible:NO];
-                                    [ud->sprite2 setVisible:YES];
-                                    ud->_busman_isVomiting = true;
-                                    ud->stopTimeDelta = 250;
-                                    ud->heightOffset2 = 2.3;
-                                    ud->widthOffset = -.4;
-                                    if(ud->sprite1.flipX){
-                                        ud->widthOffset *= -1;
-                                    }
-                                    [ud->sprite2 runAction:ud->_vomitAction];
-                                    [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"BusinessMan_Idle_1.png"]];
-                                    
-                                    float xBarf = b->GetPosition().x*PTM_RATIO - 40, yBarf = b->GetPosition().y*PTM_RATIO + 50, xVel = -70;
-                                    if(ud->sprite1.flipX){
-                                        xBarf = b->GetPosition().x*PTM_RATIO + 40;
-                                        xVel = 70;
-                                    }
-                                    CGPoint barfPosition = CGPointMake(xBarf, yBarf);
-                                    
-                                    NSMutableArray *parameters = [[NSMutableArray alloc] init];
-                                    [parameters addObject:[NSValue valueWithCGPoint:barfPosition]];
-                                    [parameters addObject:[NSNumber numberWithInt:xVel]];
-                                    
-                                    [ud->sprite1 runAction:[CCSequence actions:[CCDelayTime actionWithDuration:2.9], [CCCallFuncND actionWithTarget:self selector:@selector(barfDogs:data:) data:parameters], nil]];
-                                } else {
-                                    [ud->sprite1 runAction:ud->idleAction];
-                                    [ud->ripples runAction:ud->idleRipple];
-                                }
-                            }
-                        }
-                        else if((ud->stopTime && ud->timeWalking == ud->stopTime + ud->stopTimeDelta) || ud->timeWalking == ud->restartTime){
-                            if(ud->sprite1.tag != S_MUNCHR){
-                                ud->_busman_isVomiting = false;
-                                [ud->sprite1 runAction:ud->defaultAction];
-                                [ud->ripples runAction:ud->walkRipple];
-                                [ud->sprite2 runAction:ud->altAction];
-                                if(ud->sprite1.tag != S_POLICE){
-                                    if([ud->sprite2 numberOfRunningActions] == 0)
-                                        [ud->sprite2 runAction:ud->altAction];
-                                }
-                                if(ud->_busman_willVomit){
-                                    ud->heightOffset2 = 2.9;
-                                    ud->widthOffset = 0;
-                                }
-                            } else {
-                                if(ud->timeWalking == ud->stopTime + ud->stopTimeDelta){
-                                    [ud->ripples runAction:ud->walkRipple];
-                                    [ud->sprite2 runAction:ud->altWalkFace];
-                                    [ud->angryFace runAction:ud->angryFaceWalkAction];
-                                    if(_droppedCount > 0 && !_gameOver){
-                                        [self counterExplode:self data:[NSNumber numberWithInt:0]];
-                                        _droppedCount--;
-                                        CCLOG(@"Dropped count: %d", _droppedCount);
-                                    }
-                                } else if(!ud->_muncher_hasDroppedDog){
-                                    [ud->sprite1 stopAction:ud->altAction2];
-                                    [ud->sprite2 stopAction:ud->altAction3];
-                                    [ud->angryFace stopAction:ud->dogOnHeadTickleAction];
-                                    CCLOG(@"muncher has not dropped dog");
-                                    if(!ud->animLock){
-                                        ud->animLock = true;
-                                        [ud->ripples runAction:ud->walkRipple];
-                                        [ud->sprite1 runAction:ud->defaultAction];
-                                        [ud->sprite2 runAction:ud->altAction];
-                                        [ud->angryFace runAction:ud->angryFaceWalkAction];
-                                    }
-                                }
-                            }
-                            if([ud->angryFace numberOfRunningActions] == 0)
-                                [ud->angryFace runAction:ud->angryFaceWalkAction];
-                        }
-                    } else if(b->GetLinearVelocity().x != 0){ b->SetLinearVelocity(b2Vec2(0, 0)); }
+                    [self movePerson:[NSValue valueWithPointer:b]];
                     [self countDogsOnHead:[NSValue valueWithPointer:b]];
                     if(!ud->_busman_isVomiting){
-                        if(ud->dogsOnHead == 0){
-                            [ud->angryFace setVisible:NO];
-                            [ud->sprite2 setVisible:YES];
-                        } else {
-                            [ud->angryFace setVisible:YES];
-                            [ud->sprite2 setVisible:NO];
-                        }
+                        [self setFace:[NSValue valueWithPointer:b]];
                     }
                     if(!(time % 45) && ud->dogsOnHead && !_gameOver){
                         if(!b) continue;
@@ -2044,6 +2073,7 @@
                         else
                             [plus25Params addObject:[NSNumber numberWithInt:0]];
                         [plus25Params addObject:[NSValue valueWithPointer:ud]];
+                        // TODO - why is this an action instead of a plain function call?
                         [self runAction:[CCCallFuncND actionWithTarget:self selector:@selector(plusTwentyFive:data:) data:plus25Params]];
                     }
                     if(ud->sprite1.tag == S_POLICE){
@@ -2103,19 +2133,7 @@
                     if(!b) continue;
                     //things for hot dogs
                     if(b->IsAwake()){
-                        if(!ud->grabbed){
-                            if(!ud->aimedAt && !ud->exploding){
-                                if(b->GetLinearVelocity().y > 1.5){
-                                    [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:ud->_dog_riseSprite]];
-                                } else if (b->GetLinearVelocity().y < -1.5){
-                                    [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:ud->_dog_fallSprite]];
-                                } else {
-                                    [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:ud->_dog_mainSprite]];
-                                }
-                            }
-                        } else { // this is breaking because aimedAt never gets turned false
-                            [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:ud->_dog_grabSprite]];
-                        }
+                        [self setDogDisplayFrame:[NSValue valueWithPointer:b]];
                         // a hacky way to ensure that dogs are registered as not on a head
                         // this works because it measures when a dog is below the level of the lowest head
                         // and then flips the _dog_isOnHead bit - however it does make the design more brittle
@@ -2155,7 +2173,7 @@
                                 [self incrementDroppedCount:self data:[NSValue valueWithPointer:b]];
                             }
                         }
-                        
+                        // start cop shooting logic
                         for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()) {
                             fixtureUserData *fUd = (fixtureUserData *)f->GetUserData();
                             b2RayCastOutput output;
@@ -2188,7 +2206,6 @@
                                                         copArmBody = body;
                                                     }
                                                 }
-                                                
                                             }
                                         }
                                         if(!copBody || !copBody->GetUserData()) continue;
@@ -2251,7 +2268,7 @@
                                     }
                                 }
                             }
-                        }
+                        } // end cop shooting stuff
                     }
                 }
             }
