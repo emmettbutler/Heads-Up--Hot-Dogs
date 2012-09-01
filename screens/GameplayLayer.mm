@@ -389,6 +389,44 @@
     body->SetTransform(pos, angle.intValue);
 }
 
+-(void)setOffHeadCollisionFilters:(NSValue *)body{
+    b2Body *b = (b2Body *)[body pointerValue];
+    bodyUserData *ud = (bodyUserData *)b->GetUserData();
+    for(b2Fixture* fixture = b->GetFixtureList(); fixture; fixture = fixture->GetNext()){
+        fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
+        if(fUd->tag == F_DOGCLD){
+            // this is the case in which a dog is not on a person's head.
+            // we set the filters to their original value (all people, floor, and walls)
+            b2Filter dogFilter = fixture->GetFilterData();
+            dogFilter.maskBits = fUd->ogCollideFilters;
+            if(b->GetPosition().y > winSize.height/PTM_RATIO)
+                dogFilter.maskBits = 0xfffff000;
+            else if(b->GetPosition().y < winSize.height/PTM_RATIO)
+                dogFilter.maskBits = dogFilter.maskBits | WALLS;
+            fixture->SetFilterData(dogFilter);
+            ud->collideFilter = dogFilter.maskBits;
+            break;
+        }
+    }
+}
+
+-(void)setOnHeadCollisionFilters:(NSValue *)body{
+    b2Body *b = (b2Body *)[body pointerValue];
+    bodyUserData *ud = (bodyUserData *)b->GetUserData();
+    for(b2Fixture* fixture = b->GetFixtureList(); fixture; fixture = fixture->GetNext()){
+        fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
+        if(fUd->tag == F_DOGCLD){
+            // this is the case in which a dog is not on a person's head.
+            // we set the filters to their original value (all people, floor, and walls)
+            b2Filter dogFilter = fixture->GetFilterData();
+            dogFilter.maskBits = dogFilter.maskBits & 0xffef;
+            fixture->SetFilterData(dogFilter);
+            ud->collideFilter = dogFilter.maskBits;
+            break;
+        }
+    }
+}
+
 -(void)colorFG:(id)sender data:(NSNumber *)dark{
     for(b2Body* b = _world->GetBodyList(); b; b = b->GetNext()){
         if(b->GetUserData() && b->GetUserData() != (void*)100){
@@ -2119,35 +2157,9 @@
                             ud->_dog_isOnHead = false;
                         }
                         if(!ud->_dog_isOnHead){
-                            for(b2Fixture* fixture = b->GetFixtureList(); fixture; fixture = fixture->GetNext()){
-                                fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
-                                if(fUd->tag == F_DOGCLD){
-                                    // this is the case in which a dog is not on a person's head.
-                                    // we set the filters to their original value (all people, floor, and walls)
-                                    b2Filter dogFilter = fixture->GetFilterData();
-                                    dogFilter.maskBits = fUd->ogCollideFilters;
-                                    if(b->GetPosition().y > winSize.height/PTM_RATIO)
-                                        dogFilter.maskBits = 0xfffff000;
-                                    else if(b->GetPosition().y < winSize.height/PTM_RATIO)
-                                        dogFilter.maskBits = dogFilter.maskBits | WALLS;
-                                    fixture->SetFilterData(dogFilter);
-                                    ud->collideFilter = dogFilter.maskBits;
-                                    break;
-                                }
-                            }
+                            [self setOffHeadCollisionFilters:[NSValue valueWithPointer:b]];
                         } else if(ud->_dog_isOnHead){
-                            for(b2Fixture* fixture = b->GetFixtureList(); fixture; fixture = fixture->GetNext()){
-                                fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
-                                if(fUd->tag == F_DOGCLD){
-                                    // this is the case in which a dog is not on a person's head.
-                                    // we set the filters to their original value (all people, floor, and walls)
-                                    b2Filter dogFilter = fixture->GetFilterData();
-                                    dogFilter.maskBits = dogFilter.maskBits & 0xffef;
-                                    fixture->SetFilterData(dogFilter);
-                                    ud->collideFilter = dogFilter.maskBits;
-                                    break;
-                                }
-                            }
+                            [self setOnHeadCollisionFilters:[NSValue valueWithPointer:b]];
                         }
                         
                         // per-level dog movement changes
