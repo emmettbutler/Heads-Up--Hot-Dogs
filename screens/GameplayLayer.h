@@ -20,6 +20,7 @@
 #import "AchievementReporter.h"
 #import "Firecracker.h"
 #import "Shiba.h"
+#import "SteamVent.h"
 
 #define FLOOR1_HT 0
 #define FLOOR1_Z 42
@@ -48,7 +49,7 @@
     CCLabelTTF *scoreLabel, *droppedLabel, *gravityLabel;
     b2Vec2 policeRayPoint1, policeRayPoint2;
     CCLayerColor *_pauseLayer, *_flashLayer;
-    steamVent *vent1, *vent2;
+    SteamVent *vent1, *vent2;
     NSMutableArray *bgSprites;
     CCMenu *_pauseMenu;
     NSMutableArray *floorBits, *xPositions, *wienerParameters, *headParams, *mouseJoints, *dogTouches;
