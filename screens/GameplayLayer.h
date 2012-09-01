@@ -44,7 +44,7 @@
     CCFiniteTimeAction *_appearAction;
     CCSpriteBatchNode *spriteSheetCommon, *spriteSheetLevel, *spriteSheetCharacter;
     CCLabelTTF *scoreLabel;
-    b2Vec2 policeRayPoint1, policeRayPoint2;
+    b2Vec2 policeRayPoint1, policeRayPoint2, windForce;
     CCLayerColor *_pauseLayer, *_flashLayer;
     SteamVent *vent1, *vent2;
     Firecracker *firecracker;
