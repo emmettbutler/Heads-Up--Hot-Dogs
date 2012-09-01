@@ -68,9 +68,20 @@
     [self->mainSprite runAction:[CCSequence actions:moveAction, [CCCallFunc actionWithTarget:self selector:@selector(createHitbox)], [CCCallFunc actionWithTarget:self selector:@selector(setStillSprite)], nil]];
 }
 
+-(void)flipExploding{
+    if(self->isNowExploding)
+        self->isNowExploding = false;
+    else
+        self->isNowExploding = true;
+}
+
 -(void)explode{
-    self->isNowExploding = true;
+    [self->mainSprite runAction:[CCSequence actions:[CCDelayTime actionWithDuration:1], [CCCallFunc actionWithTarget:self selector:@selector(flipExploding)], nil]];
     [self->mainSprite runAction:self->explodeAnimation];
+}
+
+-(void)setHasKilledDog{
+    self->hasKilledDog = true;
 }
 
 -(void)pullUp{
@@ -91,8 +102,12 @@
 
 -(BOOL)explosionHittingDog:(NSValue *)d {
     b2Body *dog = (b2Body *)[d pointerValue];
-    if(self->isNowExploding)
-        return self->hitboxSensor->TestPoint(dog->GetPosition());
+    if(!self->hasKilledDog && self->isNowExploding){
+        BOOL touching = self->hitboxSensor->TestPoint(dog->GetPosition());
+        if(touching)
+            self->hasKilledDog = true;
+        return touching;
+    }
     return false;
 }
 

@@ -1537,7 +1537,7 @@
             }
         }
     } else if(level->slug == @"london"){
-        if(!(time % 300)){
+        if(!(time % 300) && arc4random() % 2  == 1){
             firecracker = [[Firecracker alloc] init:[NSValue valueWithPointer:_world] withSpritesheet:[NSValue valueWithPointer:spriteSheetCommon]];
             [firecracker runSequence];
         }

@@ -18,7 +18,7 @@
     CCSpriteBatchNode *spritesheet;
     NSString *fallSprite, *riseSprite;
     b2Fixture *hitboxSensor;
-    BOOL isNowExploding;
+    BOOL isNowExploding, hasKilledDog;
     CGSize winSize;
     float fallSpeed;
     b2Vec2 position;
@@ -30,5 +30,6 @@
 -(void)pullUp;
 -(BOOL)explosionHittingDog:(NSValue *)d;
 -(void)runSequence;
+-(void)setHasKilledDog;
 
 @end
