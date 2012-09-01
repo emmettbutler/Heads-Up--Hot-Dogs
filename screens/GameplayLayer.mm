@@ -791,6 +791,7 @@
     NSNumber *xPos = [xPositions objectAtIndex:arc4random() % [xPositions count]];
     CCSprite *target;
     CCAction *_rippleWalkAction, *_rippleIdleAction;
+    CCFiniteTimeAction *_vomitAction;
     NSMutableArray *armShootAnimFrames;
 
     density = 10;
@@ -846,6 +847,11 @@
     walkDogFaceAnim = [CCAnimation animationWithFrames:person->faceDogWalkAnimFrames delay:person->framerate/level->personSpeedMul];
     CCAction *_walkDogFaceAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:walkDogFaceAnim restoreOriginalFrame:NO]] retain];
     [_personUpperOverlay runAction:_walkDogFaceAction];
+    
+    if(person->vomitAnimFrames){
+        CCAnimation *animation = [CCAnimation animationWithFrames:person->vomitAnimFrames delay:.12f];
+        _vomitAction = [[CCAnimate actionWithAnimation:animation restoreOriginalFrame:NO] retain];
+    }
     
     // if he has a ripple anim
     if(level->slug == @"japan"){
@@ -970,6 +976,10 @@
         ud->idleRipple = _rippleIdleAction;
         ud->rippleXOffset = rippleXOffset;
         ud->rippleYOffset = person->rippleYOffset;
+    }
+    if(person->vomitAnimFrames && arc4random() % 2 == 1){
+        ud->_busman_willVomit = true;
+        ud->_vomitAction = _vomitAction;
     }
     ud->defaultAction = _walkAction;
     ud->angryFaceWalkAction = _walkDogFaceAction;
@@ -1837,7 +1847,7 @@
                 }
             }
             if(ud->sprite2 != NULL){
-                ud->sprite2.position = CGPointMake((b->GetPosition().x)*PTM_RATIO,
+                ud->sprite2.position = CGPointMake((b->GetPosition().x+ud->widthOffset)*PTM_RATIO,
                                                    (b->GetPosition().y+ud->heightOffset2)*PTM_RATIO);
                 ud->sprite2.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
             }
@@ -1908,8 +1918,19 @@
                                 [ud->sprite1 stopAllActions];
                                 [ud->ripples stopAllActions];
                                 [ud->angryFace stopAllActions];
-                                [ud->sprite1 runAction:ud->idleAction];
-                                [ud->ripples runAction:ud->idleRipple];
+                                if(ud->_vomitAction && ud->_busman_willVomit){
+                                    ud->stopTimeDelta = 250;
+                                    ud->heightOffset2 = 2.3;
+                                    ud->widthOffset = -.4;
+                                    if(ud->sprite1.flipX){
+                                        ud->widthOffset *= -1;
+                                    }
+                                    [ud->sprite2 runAction:ud->_vomitAction];
+                                    [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"BusinessMan_Idle_1.png"]];
+                                } else {
+                                    [ud->sprite1 runAction:ud->idleAction];
+                                    [ud->ripples runAction:ud->idleRipple];
+                                }
                             }
                         }
                         else if((ud->stopTime && ud->timeWalking == ud->stopTime + ud->stopTimeDelta) || ud->timeWalking == ud->restartTime){
@@ -1920,6 +1941,10 @@
                                 if(ud->sprite1.tag != S_POLICE){
                                     if([ud->sprite2 numberOfRunningActions] == 0)
                                         [ud->sprite2 runAction:ud->altAction];
+                                }
+                                if(ud->_busman_willVomit){
+                                    ud->heightOffset2 = 2.9;
+                                    ud->widthOffset = 0;
                                 }
                             } else {
                                 if(ud->timeWalking == ud->stopTime + ud->stopTimeDelta){

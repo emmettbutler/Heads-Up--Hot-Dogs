@@ -71,34 +71,24 @@
 
     struct bodyUserData {
         CCSprite *sprite1, *sprite2, *angryFace, *ripples, *overlaySprite;
-        float heightOffset2, lengthOffset2, lowerXOffset, lowerYOffset;
+        float heightOffset2, widthOffset, lengthOffset2, lowerXOffset, lowerYOffset;
         NSString *_dog_fallSprite, *_dog_riseSprite, *_dog_grabSprite, *_dog_mainSprite, *ogSprite2, *aimFace;
         CCAction *altAction, *walkRipple, *idleRipple, *altAction2, *altAction3, *altWalk, *altWalkFace, *idleAction, *defaultAction, *angryFaceWalkAction, *dogOnHeadTickleAction, *deathSeq, *shotSeq;
         CCAnimation *altAnimation;
-        CCFiniteTimeAction *postStopAction, *_not_dogContact, *_not_dogOnHead, *_not_leaveScreen, *_not_leaveScreenFlash, *_not_spcContact, *_not_spcOnHead, *_not_spcLeaveScreen;
+        CCFiniteTimeAction *postStopAction, *_not_dogContact, *_not_dogOnHead, *_not_leaveScreen, *_not_leaveScreenFlash, *_not_spcContact, *_not_spcOnHead, *_not_spcLeaveScreen, *_vomitAction;
         CGRect boundingBox;
         // end point notifiers
-        float armSpeed;
-        float rippleXOffset, rippleYOffset;
+        float armSpeed, rippleXOffset, rippleYOffset;
         float deathDelay; // how long a hot dog sits on the ground before dying, in seconds
         float moveDelta; // the linear velocity of the person
         int stopTime; // time into walk at which person should pause
         int stopTimeDelta; // how long the pause should last
         int timeWalking; // how long has this person been walking
-        int restartTime;
-        int pointValue; // how many points is a dog contact on this head worth?
+        int restartTime, pointValue; // how many points is a dog contact on this head worth?
         BOOL aiming, touched, exploding, touchLock, aimedAt, grabbed, deathSeqLock, animLock, hasLeftScreen;
         double targetAngle;
-        int dogsOnHead;
-        int spcDogsOnHead;
-        int unique_id;
-        int tickleTimer;
-        int collideFilter;
-        BOOL hasTouchedHead;
-        BOOL _dog_isOnHead;
-        BOOL _person_hasTouchedDog;
-        BOOL _muncher_hasDroppedDog;
-        BOOL _cop_hasShot;
+        int dogsOnHead, spcDogsOnHead, unique_id, tickleTimer, collideFilter;
+        BOOL hasTouchedHead, _dog_isOnHead, _person_hasTouchedDog, _muncher_hasDroppedDog, _cop_hasShot, _busman_willVomit;
     };
 
     struct fixtureUserData {

@@ -119,6 +119,7 @@
     c->faceDogWalkAnimFrames = [[NSMutableArray alloc] init];
     c->rippleWalkAnimFrames = [[NSMutableArray alloc] init];
     c->rippleIdleAnimFrames = [[NSMutableArray alloc] init];
+    c->vomitAnimFrames = [[NSMutableArray alloc] init];
     for(int i = 1; i <= 6; i++){
         [c->walkAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -153,6 +154,16 @@
         [c->rippleWalkAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
           [NSString stringWithFormat:@"BusinessMan_Ripple_Walk_%d.png", i]]];
+    }
+    for(int i = 1; i <= 26; i++){
+        [c->vomitAnimFrames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithFormat:@"BusinessMan_Dog_Vomit_%d.png", i]]];
+    }
+    for(int i = 14; i >= 1; i--){
+        [c->vomitAnimFrames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithFormat:@"BusinessMan_Dog_Vomit_%d.png", i]]];
     }
     
     return c;
