@@ -370,6 +370,17 @@
     }
 }
 
+-(void)explodeDog:(id)sender data:(NSValue *)body{
+    b2Body *b = (b2Body *)[body pointerValue];
+    bodyUserData *ud = (bodyUserData *)b->GetUserData();
+    id incAction = [CCCallFuncND actionWithTarget:self selector:@selector(incrementDroppedCount:data:) data:[[NSValue valueWithPointer:b] retain]];
+    id lockAction = [CCCallFuncND actionWithTarget:self selector:@selector(lockWiener:data:) data:[[NSValue valueWithPointer:ud] retain]];
+    id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:[[NSValue valueWithPointer:b] retain]];
+    CCFiniteTimeAction *wienerExplodeAction = (CCFiniteTimeAction *)ud->altAction2;
+    CCAction *shotSeq = [[CCSequence actions:lockAction, incAction, wienerExplodeAction, destroyAction, nil] retain];
+    [ud->sprite1 runAction:shotSeq];
+}
+
 -(void)setRotation:(id)sender data:(void*)params {
     b2Body *body = (b2Body *)[(NSValue *)[(NSMutableArray *) params objectAtIndex:0] pointerValue];
     NSNumber *angle = (NSNumber *)[(NSMutableArray *) params objectAtIndex:1];
@@ -2152,16 +2163,10 @@
                             [vent2 blowFrank:[NSValue valueWithPointer:b]];
                         } else if(level->slug == @"london"){
                             if(!ud->grabbed && [firecracker explosionHittingDog:[NSValue valueWithPointer:b]]){
-                                // TODO - this duplicates the dog-destruction logic for cop shooting, change deduplicate it
+                                // TODO - this duplicates the dog-destruction logic for cop shooting, deduplicate it
                                 ud->exploding = true;
                                 b->SetActive(false);
-                                id incAction = [CCCallFuncND actionWithTarget:self selector:@selector(incrementDroppedCount:data:) data:[[NSValue valueWithPointer:b] retain]];
-                                id lockAction = [CCCallFuncND actionWithTarget:self selector:@selector(lockWiener:data:) data:[[NSValue valueWithPointer:ud] retain]];
-                                id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:[[NSValue valueWithPointer:b] retain]];
-                                CCFiniteTimeAction *wienerExplodeAction = (CCFiniteTimeAction *)ud->altAction2;
-                                ud->shotSeq = [[CCSequence actions:lockAction, incAction, wienerExplodeAction, destroyAction, nil] retain];
-                                if([ud->sprite1 numberOfRunningActions] == 0)
-                                    [ud->sprite1 runAction:ud->shotSeq];
+                                [self explodeDog:self data:[NSValue valueWithPointer:b]];
                             }
                         }
                         
@@ -2254,16 +2259,9 @@
                                             ///////////////////////////  DOG SHOOTING  //////////////////////////
                                             
                                             ud->aimedAt = true;
-
-                                            id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:dBody];
-                                            id incAction = [CCCallFuncND actionWithTarget:self selector:@selector(incrementDroppedCount:data:) data:dBody];
-                                            id lockAction = [CCCallFuncND actionWithTarget:self selector:@selector(lockWiener:data:) data:[[NSValue valueWithPointer:ud] retain]];
-                                            
-                                            CCFiniteTimeAction *wienerExplodeAction = (CCFiniteTimeAction *)ud->altAction2;
-                                            ud->shotSeq = [[CCSequence actions:delay, lockAction, incAction, wienerExplodeAction, destroyAction, nil] retain];
+                                            ud->shotSeq = [[CCSequence actions:delay, [CCCallFuncND actionWithTarget:self selector:@selector(explodeDog:data:) data:dBody], nil] retain];
                                             if([ud->sprite1 numberOfRunningActions] == 0) 
                                                 [ud->sprite1 runAction:ud->shotSeq];
-
                                             
                                             id lockSeq = [CCSequence actions:delay,
                                                           [CCCallFunc actionWithTarget:self selector:@selector(flipShootLock)],
