@@ -2068,7 +2068,7 @@
                         // this works because it measures when a dog is below the level of the lowest head
                         // and then flips the _dog_isOnHead bit
                         if(!b) continue;
-                        if(b->GetPosition().y - 1 < FLOOR4_HT && ud->_dog_isOnHead){
+                        if(b->GetPosition().y - 1 < FLOOR4_HT){
                             ud->_dog_isOnHead = false;
                         }
                         if(!ud->_dog_isOnHead){

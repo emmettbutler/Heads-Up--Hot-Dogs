@@ -70,44 +70,12 @@
     ccColor3B _color_pink;
 
     struct bodyUserData {
-        CCSprite *sprite1;
-        CCSprite *sprite2;
-        float heightOffset2;
-        float lengthOffset2;
-        float lowerXOffset;
-        float lowerYOffset;
-        NSString *_dog_fallSprite;
-        NSString *_dog_riseSprite;
-        NSString *_dog_grabSprite;
-        NSString *_dog_mainSprite;
-        NSString *ogSprite2;
-        NSString *aimFace;
-        CCSprite *angryFace;
-        CCSprite *ripples;
-        CCSprite *overlaySprite;
-        CCAction *altAction;
-        CCAction *walkRipple;
-        CCAction *idleRipple;
-        CCAction *altAction2;
-        CCAction *altAction3;
-        CCAction *altWalk;
-        CCAction *altWalkFace;
-        CCAction *idleAction;
-        CCAction *defaultAction;
+        CCSprite *sprite1, *sprite2, *angryFace, *ripples, *overlaySprite;
+        float heightOffset2, lengthOffset2, lowerXOffset, lowerYOffset;
+        NSString *_dog_fallSprite, *_dog_riseSprite, *_dog_grabSprite, *_dog_mainSprite, *ogSprite2, *aimFace;
+        CCAction *altAction, *walkRipple, *idleRipple, *altAction2, *altAction3, *altWalk, *altWalkFace, *idleAction, *defaultAction, *angryFaceWalkAction, *dogOnHeadTickleAction, *deathSeq, *shotSeq;
         CCAnimation *altAnimation;
-        CCAction *angryFaceWalkAction;
-        CCAction *dogOnHeadTickleAction;
-        CCAction *deathSeq;
-        CCAction *shotSeq;
-        CCFiniteTimeAction *postStopAction;
-        // point notifier actions
-        CCFiniteTimeAction *_not_dogContact;
-        CCFiniteTimeAction *_not_dogOnHead;
-        CCFiniteTimeAction *_not_leaveScreen;
-        CCFiniteTimeAction *_not_leaveScreenFlash;
-        CCFiniteTimeAction *_not_spcContact;
-        CCFiniteTimeAction *_not_spcOnHead;
-        CCFiniteTimeAction *_not_spcLeaveScreen;
+        CCFiniteTimeAction *postStopAction, *_not_dogContact, *_not_dogOnHead, *_not_leaveScreen, *_not_leaveScreenFlash, *_not_spcContact, *_not_spcOnHead, *_not_spcLeaveScreen;
         CGRect boundingBox;
         // end point notifiers
         float armSpeed;
@@ -119,15 +87,7 @@
         int timeWalking; // how long has this person been walking
         int restartTime;
         int pointValue; // how many points is a dog contact on this head worth?
-        BOOL aiming;
-        BOOL touched;
-        BOOL exploding;
-        BOOL touchLock;
-        BOOL aimedAt;
-        BOOL grabbed;
-        BOOL deathSeqLock;
-        BOOL animLock;
-        BOOL hasLeftScreen;
+        BOOL aiming, touched, exploding, touchLock, aimedAt, grabbed, deathSeqLock, animLock, hasLeftScreen;
         double targetAngle;
         int dogsOnHead;
         int spcDogsOnHead;
