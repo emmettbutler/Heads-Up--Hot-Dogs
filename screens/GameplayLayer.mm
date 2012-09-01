@@ -498,6 +498,29 @@
     }
 }
 
+-(void)perFrameLevelDogEffects:(NSValue *)body{
+    b2Body *b = (b2Body *)[body pointerValue];
+    bodyUserData *ud = (bodyUserData *)b->GetUserData();
+    // per-level dog movement changes
+    if(level->slug == @"chicago" && !(time % 19) && b->GetPosition().y > FLOOR4_HT+.5){
+        if(ud->sprite1.position.x > 10 && ud->sprite1.position.x < winSize.width - 10){
+            if(![ud->shotSeq isDone]){
+                if(b->GetLinearVelocity().x != b->GetLinearVelocity().x+windForce.x)
+                    b->SetLinearVelocity(b2Vec2(b->GetLinearVelocity().x+windForce.x, b->GetLinearVelocity().y));
+            }
+        }
+    } else if(level->slug == @"nyc" && !(time % 19)) {
+        [vent1 blowFrank:[NSValue valueWithPointer:b]];
+        [vent2 blowFrank:[NSValue valueWithPointer:b]];
+    } else if(level->slug == @"london"){
+        if(!ud->grabbed && [firecracker explosionHittingDog:[NSValue valueWithPointer:b]]){
+            ud->exploding = true;
+            b->SetActive(false);
+            [self explodeDog:self data:[NSValue valueWithPointer:b]];
+        }
+    }
+}
+
 -(void)setFace:(NSValue *)body{
     b2Body *b = (b2Body *)[body pointerValue];
     bodyUserData *ud = (bodyUserData *)b->GetUserData();
@@ -1785,7 +1808,6 @@
         shiba = [[Shiba alloc] init:[NSValue valueWithPointer:spriteSheetCharacter] withWorld:[NSValue valueWithPointer:_world]];
     }
     
-    b2Vec2 windForce;
     // level-specific repetitive actions
     if(level->slug == @"philly"){
         
@@ -2088,7 +2110,6 @@
                 }
                 if(!b) continue;
                 if(ud->sprite1.tag == S_COPARM){
-                    //things for cop's arm and raycasting
                     policeRayPoint1 = b->GetPosition();
                     policeRayPoint2 = policeRayPoint1 + rayLength * b2Vec2(cosf(b->GetAngle()), sinf(b->GetAngle()));
                     input.p1 = policeRayPoint1;
@@ -2160,24 +2181,7 @@
                             [self setOnHeadCollisionFilters:[NSValue valueWithPointer:b]];
                         }
                         
-                        // per-level dog movement changes
-                        if(level->slug == @"chicago" && !(time % 19) && b->GetPosition().y > FLOOR4_HT+.5){
-                            if(ud->sprite1.position.x > 10 && ud->sprite1.position.x < winSize.width - 10){
-                                if(![ud->shotSeq isDone]){
-                                    if(b->GetLinearVelocity().x != b->GetLinearVelocity().x+windForce.x)
-                                        b->SetLinearVelocity(b2Vec2(b->GetLinearVelocity().x+windForce.x, b->GetLinearVelocity().y));
-                                }
-                            }
-                        } else if(level->slug == @"nyc" && !(time % 19)) {
-                            [vent1 blowFrank:[NSValue valueWithPointer:b]];
-                            [vent2 blowFrank:[NSValue valueWithPointer:b]];
-                        } else if(level->slug == @"london"){
-                            if(!ud->grabbed && [firecracker explosionHittingDog:[NSValue valueWithPointer:b]]){
-                                ud->exploding = true;
-                                b->SetActive(false);
-                                [self explodeDog:self data:[NSValue valueWithPointer:b]];
-                            }
-                        }
+                        [self perFrameLevelDogEffects:[NSValue valueWithPointer:b]];
                         
                         if([shiba dogIsInHitbox:[NSValue valueWithPointer:b]] && ![shiba hasEatenDog]){
                             if(!ud->grabbed && [shiba eatDog:[NSValue valueWithPointer:b]]){
