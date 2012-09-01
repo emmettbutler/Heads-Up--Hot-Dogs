@@ -37,7 +37,7 @@
     AchievementReporter *reporter;
     levelProps *level;
     GLESDraw *m_debugDraw;
-    b2Body *_wallsBody, *_groundBody, *wienerBody, *targetBody, *_personBody, *_policeArmBody;
+    b2Body *_wallsBody, *_groundBody, *targetBody, *_personBody, *_policeArmBody;
     b2Fixture *_bottomFixture, *_wallsFixture, *_wienerFixture, *_targetFixture, *_personFixture, *_policeArmFixture;
     CCSprite *_wiener, *_personLower, *_personUpper, *_personUpperOverlay, *_rippleSprite, *_target, *_pauseButton, *background;
     CCAction *_walkAction, *_walkFaceAction, *_altFaceWalkAction, *_altWalkAction, *_flag1RightAction, *_flag1LeftAction, *_flag2RightAction, *_flag2LeftAction, *_dustAction;

@@ -547,18 +547,17 @@
     }
 }
 
--(void)putDog:(id)sender data:(NSNumber *)type {
-    int floor, f, tag;
-    float deathDelay;
-    NSString *fallSprite, *riseSprite, *mainSprite, *grabSprite;
-    
-    int SIDE_BUFFER = 40;
-    CGPoint location = CGPointMake(arc4random() % (int)(SIDE_BUFFER+(winSize.width-(2*SIDE_BUFFER))), DOG_SPAWN_MINHT+(arc4random() % (int)(winSize.height-DOG_SPAWN_MINHT)));
+-(NSValue *)createWiener:(id)sender data:(NSMutableArray *)params{
+    CGPoint location = [[params objectAtIndex:0] CGPointValue];
+    NSNumber *type = [params objectAtIndex:1];
     
     NSMutableArray *wienerDeathAnimFrames = [[NSMutableArray alloc] init];
     NSMutableArray *wienerFlashAnimFrames = [[NSMutableArray alloc] init];
     NSMutableArray *wienerShotAnimFrames = [[NSMutableArray alloc] init];
     NSMutableArray *wienerAppearAnimFrames = [[NSMutableArray alloc] init];
+    NSString *fallSprite, *riseSprite, *mainSprite, *grabSprite;
+    int floor, f, tag;
+    float deathDelay;
     
     spcDogData *dd = (spcDogData *)level->specialDog;
     
@@ -631,7 +630,7 @@
         CCAnimation *dogFlashAnim = [CCAnimation animationWithFrames:wienerFlashAnimFrames delay:.1f];
         _flashAction = [[CCAnimate alloc] initWithAnimation:dogFlashAnim];
     }
-        
+    
     dogDeathAnim = [CCAnimation animationWithFrames:wienerDeathAnimFrames delay:.1f];
     CCAction *_deathAction = [[CCAnimate alloc] initWithAnimation:dogDeathAnim];
     
@@ -642,7 +641,7 @@
     _shotAction = [[CCAnimate alloc] initWithAnimation:dogShotAnim restoreOriginalFrame:NO];
     
     _id_counter++;
-
+    
     //set up the userdata structures
     bodyUserData *ud = new bodyUserData();
     ud->sprite1 = _wiener;
@@ -663,11 +662,11 @@
     ud->hasLeftScreen = false;
     ud->touchLock = false;
     ud->_dog_isOnHead = false;
-
+    
     fixtureUserData *fUd1 = new fixtureUserData();
     fUd1->ogCollideFilters = 0;
     fUd1->tag = F_DOGGRB;
-
+    
     //for the collision fixture userdata struct, randomly assign floor
     fixtureUserData *fUd2 = new fixtureUserData();
     floor = arc4random() % 4;
@@ -686,14 +685,14 @@
     }
     fUd2->ogCollideFilters = f;
     fUd2->tag = F_DOGCLD;
-
+    
     //create the body
     b2BodyDef wienerBodyDef;
     wienerBodyDef.type = b2_dynamicBody;
     wienerBodyDef.position.Set(location.x/PTM_RATIO, location.y/PTM_RATIO);
     wienerBodyDef.userData = ud;
-    wienerBody = _world->CreateBody(&wienerBodyDef);
-
+    b2Body *wienerBody = _world->CreateBody(&wienerBodyDef);
+    
     //create the grab box fixture
     b2PolygonShape wienerGrabShape;
     wienerGrabShape.SetAsBox((_wiener.contentSize.width+50)/PTM_RATIO/2, (_wiener.contentSize.height+50)/PTM_RATIO/2);
@@ -703,7 +702,7 @@
     wienerGrabShapeDef.filter.maskBits = 0x0000;
     wienerGrabShapeDef.userData = fUd1;
     _wienerFixture = wienerBody->CreateFixture(&wienerGrabShapeDef);
-
+    
     //create the collision fixture
     b2PolygonShape wienerShape;
     wienerShape.SetAsBox(_wiener.contentSize.width/PTM_RATIO/2, _wiener.contentSize.height/PTM_RATIO/2);
@@ -720,7 +719,23 @@
         wienerShapeDef.restitution = 0.2f*level->restitutionMul;
     wienerShapeDef.filter.categoryBits = WIENER;
     _wienerFixture = wienerBody->CreateFixture(&wienerShapeDef);
+    
+    return [NSValue valueWithPointer:wienerBody];
+}
 
+-(void)putDog:(id)sender data:(NSNumber *)type {
+    int SIDE_BUFFER = 40;
+    CGPoint location = CGPointMake(arc4random() % (int)(SIDE_BUFFER+(winSize.width-(2*SIDE_BUFFER))), DOG_SPAWN_MINHT+(arc4random() % (int)(winSize.height-DOG_SPAWN_MINHT)));
+    
+    NSMutableArray *parameters = [[NSMutableArray alloc] init];
+    [parameters addObject:[NSValue valueWithCGPoint:location]];
+    [parameters addObject:type];
+    NSValue *b = [self createWiener:self data:parameters];
+    b2Body *wienerBody = (b2Body *)[b pointerValue];
+    
+    bodyUserData *ud = (bodyUserData *)wienerBody->GetUserData();
+    CCSprite *sprite = (CCSprite *)ud->sprite1;
+    
     wienerBody->SetAwake(false);
 
     //wake up the hot dog after the appear animation is done
@@ -732,13 +747,12 @@
     CCCallFuncND *wakeAction = [CCCallFuncND actionWithTarget:self selector:@selector(setAwake:data:) data:wakeParameters];
     CCSequence *seq;
     seq = [CCSequence actions:_appearAction, wakeAction, nil];
-    [_wiener runAction:seq];
+    [sprite runAction:seq];
 #ifdef DEBUG
 #else
     if(_sfxOn)
         [[SimpleAudioEngine sharedEngine] playEffect:@"hot dog appear 1.mp3"];
 #endif
-    CCLOG(@"Spawned wiener with maskBits: %d", wienerShapeDef.filter.maskBits);
 }
 
 -(void)walkIn{
