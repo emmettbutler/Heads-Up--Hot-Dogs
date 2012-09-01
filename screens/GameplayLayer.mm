@@ -427,6 +427,34 @@
     }
 }
 
+-(void)countDogsOnHead:(NSValue *)_body{
+    b2Body *b = (b2Body *)[_body pointerValue];
+    bodyUserData *ud = (bodyUserData *)b->GetUserData();
+    for(b2Fixture* fixture = b->GetFixtureList(); fixture; fixture = fixture->GetNext()){
+        fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
+        // detect if any people have dogs on or above their heads
+        if(fUd->tag >= F_BUSSEN && fUd->tag <= F_TOPSEN){
+            for(b2Body* body = _world->GetBodyList(); body; body = body->GetNext()){
+                if(body->GetUserData() && body->GetUserData() != (void*)100){
+                    bodyUserData *dogUd = (bodyUserData *)body->GetUserData();
+                    if(!dogUd->sprite1) continue;
+                    if(dogUd->sprite1.tag == S_HOTDOG || dogUd->sprite1.tag == S_SPCDOG){
+                        b2Vec2 dogLocation = b2Vec2(body->GetPosition().x, body->GetPosition().y);
+                        if(fixture->TestPoint(dogLocation) && dogUd->hasTouchedHead && !dogUd->grabbed &&
+                           dogUd->collideFilter == ud->collideFilter){
+                            ud->dogsOnHead++;
+                            if(dogUd->sprite1.tag == S_SPCDOG)
+                                ud->spcDogsOnHead++;
+                            // if the dog is within the head sensor, then it is on a head
+                            dogUd->_dog_isOnHead = true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 -(void)colorFG:(id)sender data:(NSNumber *)dark{
     for(b2Body* b = _world->GetBodyList(); b; b = b->GetNext()){
         if(b->GetUserData() && b->GetUserData() != (void*)100){
@@ -2032,36 +2060,14 @@
                                 [ud->angryFace runAction:ud->angryFaceWalkAction];
                         }
                     } else if(b->GetLinearVelocity().x != 0){ b->SetLinearVelocity(b2Vec2(0, 0)); }
-                    for(b2Fixture* fixture = b->GetFixtureList(); fixture; fixture = fixture->GetNext()){
-                        fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
-                        // detect if any people have dogs on or above their heads
-                        if(fUd->tag >= F_BUSSEN && fUd->tag <= F_TOPSEN){
-                            for(b2Body* body = _world->GetBodyList(); body; body = body->GetNext()){
-                                if(body->GetUserData() && body->GetUserData() != (void*)100){
-                                    bodyUserData *dogUd = (bodyUserData *)body->GetUserData();
-                                    if(!dogUd->sprite1) continue;
-                                    if(dogUd->sprite1.tag == S_HOTDOG || dogUd->sprite1.tag == S_SPCDOG){
-                                        b2Vec2 dogLocation = b2Vec2(body->GetPosition().x, body->GetPosition().y);
-                                        if(fixture->TestPoint(dogLocation) && dogUd->hasTouchedHead && !dogUd->grabbed &&
-                                           dogUd->collideFilter == ud->collideFilter){
-                                            ud->dogsOnHead++;
-                                            if(dogUd->sprite1.tag == S_SPCDOG)
-                                                ud->spcDogsOnHead++;
-                                            // if the dog is within the head sensor, then it is on a head
-                                            dogUd->_dog_isOnHead = true;
-                                        }
-                                    }
-                                }
-                            }
-                            if(!ud->_busman_isVomiting){
-                                if(ud->dogsOnHead == 0){
-                                    [ud->angryFace setVisible:NO];
-                                    [ud->sprite2 setVisible:YES];
-                                } else {
-                                    [ud->angryFace setVisible:YES];
-                                    [ud->sprite2 setVisible:NO];
-                                }
-                            }
+                    [self countDogsOnHead:[NSValue valueWithPointer:b]];
+                    if(!ud->_busman_isVomiting){
+                        if(ud->dogsOnHead == 0){
+                            [ud->angryFace setVisible:NO];
+                            [ud->sprite2 setVisible:YES];
+                        } else {
+                            [ud->angryFace setVisible:YES];
+                            [ud->sprite2 setVisible:NO];
                         }
                     }
                     if(!(time % 45) && ud->dogsOnHead && !_gameOver){
@@ -2151,7 +2157,8 @@
                         }
                         // a hacky way to ensure that dogs are registered as not on a head
                         // this works because it measures when a dog is below the level of the lowest head
-                        // and then flips the _dog_isOnHead bit
+                        // and then flips the _dog_isOnHead bit - however it does make the design more brittle
+                        // since it breaks when we make very short characters
                         if(!b) continue;
                         if(b->GetPosition().y - 1 < FLOOR4_HT){
                             ud->_dog_isOnHead = false;
