@@ -2175,12 +2175,11 @@
                         if(b->GetPosition().y - 1 < FLOOR4_HT){
                             ud->_dog_isOnHead = false;
                         }
-                        if(!ud->_dog_isOnHead){
-                            [self setOffHeadCollisionFilters:[NSValue valueWithPointer:b]];
-                        } else if(ud->_dog_isOnHead){
+                        if(ud->_dog_isOnHead){
                             [self setOnHeadCollisionFilters:[NSValue valueWithPointer:b]];
+                        } else {
+                            [self setOffHeadCollisionFilters:[NSValue valueWithPointer:b]];
                         }
-                        
                         [self perFrameLevelDogEffects:[NSValue valueWithPointer:b]];
                         
                         if([shiba dogIsInHitbox:[NSValue valueWithPointer:b]] && ![shiba hasEatenDog]){
