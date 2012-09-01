@@ -297,6 +297,27 @@
     [sprite runAction:seq];
 }
 
+-(void)runDogDeathAction:(NSValue *)body{
+    CCLOG(@"Run death action");
+    b2Body *dogBody = (b2Body *)[body pointerValue];
+    bodyUserData *ud = (bodyUserData *)dogBody->GetUserData();
+    ud->deathSeqLock = true;
+    id delay = [CCDelayTime actionWithDuration:ud->deathDelay];
+    id lockAction = [CCCallFuncND actionWithTarget:self selector:@selector(lockWiener:data:) data:[[NSValue valueWithPointer:ud] retain]];
+    id incAction = [CCCallFuncND actionWithTarget:self selector:@selector(incrementDroppedCount:data:) data:[[NSValue valueWithPointer:dogBody] retain]];
+    NSMutableArray *wienerParameters = [[NSMutableArray alloc] initWithCapacity:2];
+    [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
+    [wienerParameters addObject:[NSNumber numberWithInt:0]];
+    id sleepAction = [CCCallFuncND actionWithTarget:self selector:@selector(setAwake:data:) data:wienerParameters];
+    id angleAction = [CCCallFuncND actionWithTarget:self selector:@selector(setRotation:data:) data:wienerParameters];
+    id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:[[NSValue valueWithPointer:dogBody] retain]];
+    if(ud->altAction3)
+        ud->deathSeq = [CCSequence actions: delay, sleepAction, angleAction, ud->altAction3, lockAction, incAction, ud->altAction, destroyAction, nil];
+    else
+        ud->deathSeq = [CCSequence actions: delay, sleepAction, angleAction, lockAction, incAction, ud->altAction, destroyAction, nil];
+    [ud->sprite1 runAction:ud->deathSeq];
+}
+
 -(void)heartParticles:(NSValue *)loc{
     CCParticleSystem* heartParticles = [CCParticleFire node];
     ccColor4F startColor = {1, 1, 1, 1};
@@ -602,6 +623,41 @@
                 [ud->angryFace runAction:ud->angryFaceWalkAction];
         }
     } else if(b->GetLinearVelocity().x != 0){ b->SetLinearVelocity(b2Vec2(0, 0)); }
+}
+
+-(void)updateMuncher:(NSValue *)body{
+    b2Body *b = (b2Body *)[body pointerValue];
+    bodyUserData *ud = (bodyUserData *)b->GetUserData();
+    if(ud->stopTime < 1000 && ud->stopTime > 0){
+        BOOL touched = true;
+        if(!((ud->timeWalking - ud->stopTime) % 20)){
+            if(ud->tickleTimer < (ud->timeWalking - ud->stopTime)-30 && !ud->_muncher_hasDroppedDog){
+                touched = false;
+            }
+        }
+        if(!touched){
+            ud->restartTime = ud->timeWalking + 1;
+            ud->stopTimeDelta = 0;
+            ud->touched = false;
+        } else{
+            if(ud->timeWalking == ud->stopTime + (ud->stopTimeDelta - ([ud->postStopAction duration]*60.0))){
+                ud->_muncher_hasDroppedDog = true;
+                ud->lowerYOffset = 9;
+                if(ud->sprite1.flipX)
+                    ud->lowerXOffset = -12;
+                else
+                    ud->lowerXOffset = 11;
+                NSMutableArray *animParams = [[NSMutableArray alloc] init];
+                [animParams addObject:[NSValue valueWithPointer:ud->sprite1]];
+                [animParams addObject:[NSValue valueWithPointer:ud->altWalk]];
+                [ud->sprite1 runAction:[CCSequence actions:ud->postStopAction, [CCCallFuncND actionWithTarget:self selector:@selector(spriteRunAnim:data:) data:animParams], [CCCallFuncND actionWithTarget:self selector:@selector(clearLowerOffsets:data:) data:[[NSValue valueWithPointer:ud] retain]], nil]];
+                [ud->sprite2 stopAllActions];
+                [ud->angryFace stopAllActions];
+                [ud->sprite2 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"DogEater_DogGone_Head1.png"]];
+                [ud->angryFace setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"DogEater_DogGone_Head1.png"]];
+            }
+        }
+    }
 }
 
 -(void)colorFG:(id)sender data:(NSNumber *)dark{
@@ -1883,7 +1939,7 @@
                     [plusPointsParams addObject:[NSNumber numberWithInt:p]];
                     [plusPointsParams addObject:[NSValue valueWithPointer:pUd]];
                     _points += p;
-                    [self runAction:[CCCallFuncND actionWithTarget:self selector:@selector(plusPoints:data:) data:plusPointsParams]];
+                    [self plusPoints:self data:plusPointsParams];
                 }
                 ud->hasTouchedHead = true;
                 if(!pUd->_person_hasTouchedDog){
@@ -1900,24 +1956,7 @@
                 if(ud->shotSeq && !ud->touchLock)
                     [ud->sprite1 stopAction:ud->shotSeq];
                 if(!ud->deathSeqLock){
-                    ud->deathSeqLock = true;
-                    id delay = [CCDelayTime actionWithDuration:ud->deathDelay];
-                    id lockAction = [CCCallFuncND actionWithTarget:self selector:@selector(lockWiener:data:) data:[[NSValue valueWithPointer:ud] retain]];
-                    id incAction = [CCCallFuncND actionWithTarget:self selector:@selector(incrementDroppedCount:data:) data:[[NSValue valueWithPointer:dogBody] retain]];
-                    NSMutableArray *wienerParameters = [[NSMutableArray alloc] initWithCapacity:2];
-                    [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
-                    [wienerParameters addObject:[NSNumber numberWithInt:0]];
-                    id sleepAction = [CCCallFuncND actionWithTarget:self selector:@selector(setAwake:data:) data:wienerParameters];
-                    id angleAction = [CCCallFuncND actionWithTarget:self selector:@selector(setRotation:data:) data:wienerParameters];
-                    id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:[[NSValue valueWithPointer:dogBody] retain]];
-                    if(ud->altAction3)
-                        ud->deathSeq = [CCSequence actions: delay, sleepAction, angleAction, ud->altAction3, lockAction, incAction, ud->altAction, destroyAction, nil];
-                    else
-                        ud->deathSeq = [CCSequence actions: delay, sleepAction, angleAction, lockAction, incAction, ud->altAction, destroyAction, nil];
-                    [ud->sprite1 runAction:ud->deathSeq];
-                    CCLOG(@"Run death action");
-                } else if(ud->deathSeq){
-                    //[ud->sprite1 stopAction:ud->deathSeq];
+                    [self runDogDeathAction:[NSValue valueWithPointer:dogBody]];
                 }
                 ud->aimedAt = false;
             }
@@ -2045,36 +2084,7 @@
                     _muncherOnScreen = YES;
                     if(ud->hasLeftScreen)
                         _muncherOnScreen = NO;
-                    if(ud->stopTime < 1000 && ud->stopTime > 0){
-                        BOOL touched = true;
-                        if(!((ud->timeWalking - ud->stopTime) % 20)){
-                            if(ud->tickleTimer < (ud->timeWalking - ud->stopTime)-30 && !ud->_muncher_hasDroppedDog){
-                                touched = false;
-                            }
-                        }
-                        if(!touched){
-                            ud->restartTime = ud->timeWalking + 1;
-                            ud->stopTimeDelta = 0;
-                            ud->touched = false;
-                        } else{
-                            if(ud->timeWalking == ud->stopTime + (ud->stopTimeDelta - ([ud->postStopAction duration]*60.0))){
-                                ud->_muncher_hasDroppedDog = true;
-                                ud->lowerYOffset = 9;
-                                if(ud->sprite1.flipX)
-                                    ud->lowerXOffset = -12;
-                                else
-                                    ud->lowerXOffset = 11;
-                                NSMutableArray *animParams = [[NSMutableArray alloc] init];
-                                [animParams addObject:[NSValue valueWithPointer:ud->sprite1]];
-                                [animParams addObject:[NSValue valueWithPointer:ud->altWalk]];
-                                [ud->sprite1 runAction:[CCSequence actions:ud->postStopAction, [CCCallFuncND actionWithTarget:self selector:@selector(spriteRunAnim:data:) data:animParams], [CCCallFuncND actionWithTarget:self selector:@selector(clearLowerOffsets:data:) data:[[NSValue valueWithPointer:ud] retain]], nil]];
-                                [ud->sprite2 stopAllActions];
-                                [ud->angryFace stopAllActions];
-                                [ud->sprite2 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"DogEater_DogGone_Head1.png"]];
-                                [ud->angryFace setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"DogEater_DogGone_Head1.png"]];
-                            }
-                        }
-                    }
+                    [self updateMuncher:[NSValue valueWithPointer:b]];
                 }
                 if(!b) continue;
                 if(ud->sprite1.tag == S_COPARM){
@@ -2093,7 +2103,7 @@
                     if(!ud->_busman_isVomiting){
                         [self setFace:[NSValue valueWithPointer:b]];
                     }
-                    if(!(time % 45) && ud->dogsOnHead && !_gameOver){
+                    if(!(time % 40) && ud->dogsOnHead && !_gameOver){
                         // get some points if a dog is on a head
                         if(!b) continue;
                         _points += ud->dogsOnHead * 25;
@@ -2163,7 +2173,6 @@
                             [vent2 blowFrank:[NSValue valueWithPointer:b]];
                         } else if(level->slug == @"london"){
                             if(!ud->grabbed && [firecracker explosionHittingDog:[NSValue valueWithPointer:b]]){
-                                // TODO - this duplicates the dog-destruction logic for cop shooting, deduplicate it
                                 ud->exploding = true;
                                 b->SetActive(false);
                                 [self explodeDog:self data:[NSValue valueWithPointer:b]];
