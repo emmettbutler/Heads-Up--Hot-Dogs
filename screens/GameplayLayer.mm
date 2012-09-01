@@ -1968,8 +1968,7 @@
                     pUd->_person_hasTouchedDog = true;
                     _peopleGrumped++;
                 }
-            }
-            else if (fBUd->tag == F_GROUND){
+            } else if (fBUd->tag == F_GROUND){
                 // dog is definitely not on a head if it's touching the floor
                 ud->_dog_isOnHead = false;
                 ud->hasTouchedHead = false;
@@ -2140,6 +2139,7 @@
                         [self plusTwentyFive:self data:plus25Params];
                     }
                     if(ud->sprite1.tag == S_POLICE){
+                        if(!b) continue;
                         _policeOnScreen = YES;
                         if(ud->hasLeftScreen)
                             _policeOnScreen = NO;
@@ -2151,7 +2151,6 @@
                                 r->SetMotorSpeed(8 * cosf(.07 * time));
                             }
                         } else {
-                             if(!b) continue;
                             [self aimAtAimedDog:[NSValue valueWithPointer:b]];
                         }
                     }
@@ -2171,15 +2170,13 @@
                         // this works because it measures when a dog is below the level of the lowest head
                         // and then flips the _dog_isOnHead bit - however it does make the design more brittle
                         // since it breaks when we make very short characters
-                        if(!b) continue;
-                        if(b->GetPosition().y - 1 < FLOOR4_HT){
+                        
+                        if(b->GetPosition().y - 1 < FLOOR4_HT)
                             ud->_dog_isOnHead = false;
-                        }
-                        if(ud->_dog_isOnHead){
+                        if(ud->_dog_isOnHead)
                             [self setOnHeadCollisionFilters:[NSValue valueWithPointer:b]];
-                        } else {
+                        else
                             [self setOffHeadCollisionFilters:[NSValue valueWithPointer:b]];
-                        }
                         [self perFrameLevelDogEffects:[NSValue valueWithPointer:b]];
                         
                         if([shiba dogIsInHitbox:[NSValue valueWithPointer:b]] && ![shiba hasEatenDog]){
