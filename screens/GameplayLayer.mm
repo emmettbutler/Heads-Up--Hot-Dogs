@@ -143,6 +143,7 @@
         pauseTitle.position = ccp((sprite.position.x+3), (sprite.position.y+sprite.contentSize.height/2)-20);
         [_pauseLayer addChild:pauseTitle z:81];
 
+        NSInteger _overallTime = [standardUserDefaults integerForKey:@"overallTime"];
         CCLOG(@"Initial overall time: %d seconds", _overallTime);
         int totalTime = (time/60)+_overallTime;
         CCLOG(@"Total time: %d seconds", totalTime);
@@ -713,16 +714,14 @@
         _flashAction = [[CCAnimate alloc] initWithAnimation:dogFlashAnim];
     }
     
-    dogDeathAnim = [CCAnimation animationWithFrames:wienerDeathAnimFrames delay:.1f];
+    CCAnimation *dogDeathAnim = [CCAnimation animationWithFrames:wienerDeathAnimFrames delay:.1f];
     CCAction *_deathAction = [[CCAnimate alloc] initWithAnimation:dogDeathAnim];
     
-    dogAppearAnim = [CCAnimation animationWithFrames:wienerAppearAnimFrames delay:.08f];
+    CCAnimation *dogAppearAnim = [CCAnimation animationWithFrames:wienerAppearAnimFrames delay:.08f];
     _appearAction = [CCAnimate actionWithAnimation:dogAppearAnim];
     
-    dogShotAnim = [CCAnimation animationWithFrames:wienerShotAnimFrames delay:.1f ];
-    _shotAction = [[CCAnimate alloc] initWithAnimation:dogShotAnim restoreOriginalFrame:NO];
-    
-    _id_counter++;
+    CCAnimation *dogShotAnim = [CCAnimation animationWithFrames:wienerShotAnimFrames delay:.1f ];
+    CCFiniteTimeAction *_shotAction = [[CCAnimate alloc] initWithAnimation:dogShotAnim restoreOriginalFrame:NO];
     
     //set up the userdata structures
     bodyUserData *ud = new bodyUserData();
@@ -735,15 +734,8 @@
     ud->altAction2 = _shotAction;
     if(wienerFlashAnimFrames)
         ud->altAction3 = _flashAction;
-    ud->unique_id = _id_counter;
     ud->deathDelay = deathDelay;
     ud->deathSeq = NULL;
-    ud->deathSeqLock = false;
-    ud->aimedAt = false;
-    ud->hasTouchedHead = false;
-    ud->hasLeftScreen = false;
-    ud->touchLock = false;
-    ud->_dog_isOnHead = false;
     
     fixtureUserData *fUd1 = new fixtureUserData();
     fUd1->ogCollideFilters = 0;
@@ -783,7 +775,7 @@
     wienerGrabShapeDef.filter.categoryBits = WIENER;
     wienerGrabShapeDef.filter.maskBits = 0x0000;
     wienerGrabShapeDef.userData = fUd1;
-    _wienerFixture = wienerBody->CreateFixture(&wienerGrabShapeDef);
+    wienerBody->CreateFixture(&wienerGrabShapeDef);
     
     //create the collision fixture
     b2PolygonShape wienerShape;
@@ -800,7 +792,7 @@
     if(level->restitutionMul)
         wienerShapeDef.restitution = 0.2f*level->restitutionMul;
     wienerShapeDef.filter.categoryBits = WIENER;
-    _wienerFixture = wienerBody->CreateFixture(&wienerShapeDef);
+    wienerBody->CreateFixture(&wienerShapeDef);
     
     wienerBody->ApplyForce(b2Vec2(vel.x, vel.y), b2Vec2(wienerBody->GetPosition().x-.3, wienerBody->GetPosition().y+.2));
     
@@ -837,7 +829,7 @@
     wienerBody->SetAwake(false);
 
     //wake up the hot dog after the appear animation is done
-    wakeParameters = [[NSMutableArray alloc] initWithCapacity:2];
+    NSMutableArray *wakeParameters = [[NSMutableArray alloc] initWithCapacity:2];
     NSValue *v = [NSValue valueWithPointer:wienerBody];
     NSNumber *wake = [NSNumber numberWithInt:1];
     [wakeParameters addObject:v];
@@ -944,18 +936,18 @@
     NSMutableArray *notifiers = [PointNotify buildNotifiers];
     
     //create animations for walk, idle, and bobbing head
-    walkAnim = [CCAnimation animationWithFrames:person->walkAnimFrames delay:person->framerate/level->personSpeedMul];
-    _walkAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:walkAnim restoreOriginalFrame:NO]] retain];
+    CCAnimation *walkAnim = [CCAnimation animationWithFrames:person->walkAnimFrames delay:person->framerate/level->personSpeedMul];
+    CCAction *_walkAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:walkAnim restoreOriginalFrame:NO]] retain];
     [_personLower runAction:_walkAction];
 
-    idleAnim = [CCAnimation animationWithFrames:person->idleAnimFrames delay:.2f];
-    _idleAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:idleAnim restoreOriginalFrame:NO]] retain];
+    CCAnimation *idleAnim = [CCAnimation animationWithFrames:person->idleAnimFrames delay:.2f];
+    CCAction *_idleAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:idleAnim restoreOriginalFrame:NO]] retain];
 
-    walkFaceAnim = [CCAnimation animationWithFrames:person->faceWalkAnimFrames delay:person->framerate/level->personSpeedMul];
-    _walkFaceAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:walkFaceAnim restoreOriginalFrame:NO]] retain];
+    CCAnimation *walkFaceAnim = [CCAnimation animationWithFrames:person->faceWalkAnimFrames delay:person->framerate/level->personSpeedMul];
+    CCAction *_walkFaceAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:walkFaceAnim restoreOriginalFrame:NO]] retain];
     [_personUpper runAction:_walkFaceAction];
 
-    walkDogFaceAnim = [CCAnimation animationWithFrames:person->faceDogWalkAnimFrames delay:person->framerate/level->personSpeedMul];
+    CCAnimation *walkDogFaceAnim = [CCAnimation animationWithFrames:person->faceDogWalkAnimFrames delay:person->framerate/level->personSpeedMul];
     CCAction *_walkDogFaceAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:walkDogFaceAnim restoreOriginalFrame:NO]] retain];
     [_personUpperOverlay runAction:_walkDogFaceAction];
     
@@ -977,6 +969,9 @@
         }
     }
         
+    CCAnimation *specialAnim, *specialFaceAnim, *specialAngryFaceAnim, *altFaceWalkAnim, *postStopAnim, *altWalkAnim;
+    CCAction *_altWalkAction, *_altFaceWalkAction, *_specialFaceAction, *_specialAction, *_specialAngryFaceAction;
+    CCFiniteTimeAction *_postStopAction;
     if(person->tag == S_POLICE){
         specialAnim = [CCAnimation animationWithFrames:person->specialAnimFrames delay:.08f];
         _specialAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:specialAnim restoreOriginalFrame:NO] times:1] retain];
@@ -1024,7 +1019,7 @@
         [spriteSheetCharacter addChild:_policeArm z:zIndex-2];
     }
     
-    int moveDelta;
+    int moveDelta, lowerArmAngle, upperArmAngle;
     float rippleXOffset;
     
     //set secondary values based on the direction of the walk
@@ -1100,15 +1095,8 @@
     ud->altAction = _walkFaceAction;
     ud->postStopAction = _postStopAction;
     ud->idleAction = _idleAction;
-    ud->altAnimation = walkFaceAnim;
     ud->collideFilter = _curPersonMaskBits;
     ud->moveDelta = moveDelta*level->personSpeedMul;
-    ud->lowerXOffset = 0;
-    ud->lowerYOffset = 0;
-    ud->aiming = false;
-    ud->animLock = false;
-    ud->hasLeftScreen = false;
-    ud->_person_hasTouchedDog = false;
     ud->pointValue = person->pointValue;
     // point notifiers
     ud->_not_dogContact = (CCFiniteTimeAction *)[(NSValue *)[notifiers objectAtIndex:contactActionIndex] pointerValue];
@@ -1132,8 +1120,6 @@
             ud->_cop_hasShot = false;
             ud->aimFace = @"Cop_Head_Aiming_1.png";
         } else if (person->tag == S_MUNCHR){
-            ud->tickleTimer = 0;
-            ud->_muncher_hasDroppedDog = false;
             ud->dogOnHeadTickleAction = _specialAngryFaceAction;
         }
     }
@@ -1156,7 +1142,7 @@
     personBodyDef.position.Set(xPos.floatValue/PTM_RATIO, yPos/PTM_RATIO);
     personBodyDef.userData = ud;
     personBodyDef.fixedRotation = true;
-    _personBody = _world->CreateBody(&personBodyDef);
+    b2Body *_personBody = _world->CreateBody(&personBodyDef);
 
     //fixture for head hitbox
     b2PolygonShape personShape;
@@ -1171,7 +1157,7 @@
     personShapeDef.userData = fUd1;
     personShapeDef.filter.categoryBits = _curPersonMaskBits;
     personShapeDef.filter.maskBits = WIENER;
-    _personFixture = _personBody->CreateFixture(&personShapeDef);
+    _personBody->CreateFixture(&personShapeDef);
     
     //fixture for body
     b2PolygonShape personBodyShape;
@@ -1187,7 +1173,7 @@
     personBodyShapeDef.filter.categoryBits = BODYBOX;
     personBodyShapeDef.userData = fUd2;
     personBodyShapeDef.filter.maskBits = floorBit.intValue;
-    _personFixture = _personBody->CreateFixture(&personBodyShapeDef);
+    _personBody->CreateFixture(&personBodyShapeDef);
 
     //sensor above heads for point gathering
     b2PolygonShape personHeadSensorShape;
@@ -1198,7 +1184,7 @@
     personHeadSensorShapeDef.isSensor = true;
     personHeadSensorShapeDef.filter.categoryBits = SENSOR;
     personHeadSensorShapeDef.filter.maskBits = WIENER;
-    _personFixture = _personBody->CreateFixture(&personHeadSensorShapeDef);
+    _personBody->CreateFixture(&personHeadSensorShapeDef);
 
     if(person->tag == S_POLICE){
         //create the cop's arm body if we need to
@@ -1208,8 +1194,8 @@
                 [NSString stringWithFormat:@"Cop_Arm_Shoot_%d.png", i]]];
         }
 
-        armShootAnim = [CCAnimation animationWithFrames:armShootAnimFrames delay:.08f];
-        _armShootAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:armShootAnim restoreOriginalFrame:YES] times:1] retain];
+        CCAnimation *armShootAnim = [CCAnimation animationWithFrames:armShootAnimFrames delay:.08f];
+        CCFiniteTimeAction *_armShootAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:armShootAnim restoreOriginalFrame:YES] times:1] retain];
 
         bodyUserData *ud = new bodyUserData();
         ud->sprite1 = _policeArm;
@@ -1220,7 +1206,7 @@
         armBodyDef.position.Set(((_personBody->GetPosition().x*PTM_RATIO)+(_policeArm.contentSize.width/2)+armBodyXOffset)/PTM_RATIO,
                                 ((_personBody->GetPosition().y*PTM_RATIO)+(armBodyYOffset))/PTM_RATIO);
         armBodyDef.userData = ud;
-        _policeArmBody = _world->CreateBody(&armBodyDef);
+        b2Body *_policeArmBody = _world->CreateBody(&armBodyDef);
 
         fixtureUserData *fUd = new fixtureUserData();
         b2PolygonShape armShape;
@@ -1329,10 +1315,6 @@
                 [bgSprites addObject:[NSValue valueWithPointer:bgc->sprite]];
                 [self addChild:bgc->sprite];
             }
-            else if(bgc->label){
-                gravityLabel = bgc->label;
-                [self addChild:gravityLabel z:0];
-            }
         }
         [self addChild:spriteSheetCharacter];
         [self addChild:spriteSheetCommon];
@@ -1374,22 +1356,9 @@
         [spriteSheetLevel addChild:background z:-10];
 #endif
 
-        _overallTime = [standardUserDefaults integerForKey:@"overallTime"];
-
         //basic game/box2d/cocos2d initialization
-        time = 0;
-        _pause = false;
-        _dogHasHitGround = false;
-        _lastTouchTime = 0;
-        _numWorldTouches = 0;
         _curPersonMaskBits = 0x1000;
         _wienerSpawnDelayTime = WIENER_SPAWN_START;
-        _points = 0;
-        _peopleGrumped = 0;
-        _id_counter = 0;
-        _dogsOnscreen = 0;
-        _dogsSaved = 0;
-        _gameOver = false;
         _maxDogsOnScreen = 6;
         _levelMaxDogs = 6;
         if(level->maxDogs){
@@ -1401,10 +1370,6 @@
             _levelSpawnInterval = level->spawnInterval;
         }
         _shootLock = NO;
-        _droppedSpacing = 200;
-        _droppedCount = 0;
-        _hasDroppedDog = false;
-        _currentRayAngle = 0;
 
         //contact listener init
         personDogContactListener = new PersonDogContactListener();
@@ -1414,8 +1379,6 @@
         _color_pink = ccc3(255, 62, 166);
             
         [standardUserDefaults synchronize];
-        
-        allTouchHashes = [[NSMutableArray alloc] init];
 
         //HUD objects
         CCSprite *droppedBG = [CCSprite spriteWithSpriteFrameName:@"DogHud_BG.png"];;
@@ -1434,7 +1397,7 @@
         [spriteSheetCommon addChild:scoreBG z:70];
 
         //labels for score
-        scoreText = [[NSString alloc] initWithFormat:@"%06d", _points];
+        NSString *scoreText = [[NSString alloc] initWithFormat:@"%06d", _points];
         scoreLabel = [CCLabelTTF labelWithString:scoreText fontName:@"LostPet.TTF" fontSize:34];
         [[scoreLabel texture] setAliasTexParameters];
         scoreLabel.color = _color_pink;
@@ -1463,7 +1426,6 @@
         xPositions = [[NSMutableArray alloc] initWithCapacity:2];
         [xPositions addObject:[NSNumber numberWithInt:winSize.width+30]];
         [xPositions addObject:[NSNumber numberWithInt:-30]];
-        movementParameters = [[NSMutableArray alloc] initWithCapacity:2];
         
         // allocate array to hold mouse joints for mutliple touches
         dogTouches = [[NSMutableArray alloc] init];
@@ -1482,22 +1444,22 @@
         groundBoxDef.filter.categoryBits = FLOOR1;
         groundBoxDef.userData = fUd;
         groundBox.Set(b2Vec2(-30,FLOOR1_HT), b2Vec2((winSize.width+60)/PTM_RATIO, FLOOR1_HT));
-        _bottomFixture = _groundBody->CreateFixture(&groundBoxDef);
+        _groundBody->CreateFixture(&groundBoxDef);
 
         _groundBody = _world->CreateBody(&groundBodyDef);
         groundBoxDef.filter.categoryBits = FLOOR2;
         groundBox.Set(b2Vec2(-30,FLOOR2_HT), b2Vec2((winSize.width+60)/PTM_RATIO, FLOOR2_HT));
-        _bottomFixture = _groundBody->CreateFixture(&groundBoxDef);
+        _groundBody->CreateFixture(&groundBoxDef);
 
         _groundBody = _world->CreateBody(&groundBodyDef);
         groundBoxDef.filter.categoryBits = FLOOR3;
         groundBox.Set(b2Vec2(-30,FLOOR3_HT), b2Vec2((winSize.width+60)/PTM_RATIO, FLOOR3_HT));
-        _bottomFixture = _groundBody->CreateFixture(&groundBoxDef);
+        _groundBody->CreateFixture(&groundBoxDef);
 
         _groundBody = _world->CreateBody(&groundBodyDef);
         groundBoxDef.filter.categoryBits = FLOOR4;
         groundBox.Set(b2Vec2(-30,FLOOR4_HT), b2Vec2((winSize.width+60)/PTM_RATIO, FLOOR4_HT));
-        _bottomFixture = _groundBody->CreateFixture(&groundBoxDef);
+        _groundBody->CreateFixture(&groundBoxDef);
 
         fixtureUserData *fUd2 = new fixtureUserData();
         fUd2->tag = F_WALLS;
@@ -1509,7 +1471,7 @@
         b2Vec2 upperRightCorner = b2Vec2(winSize.width/PTM_RATIO, winSize.height/PTM_RATIO);
         b2BodyDef wallsBodyDef;
         wallsBodyDef.position.Set(0,0);
-        _wallsBody = _world->CreateBody(&wallsBodyDef);
+        b2Body *_wallsBody = _world->CreateBody(&wallsBodyDef);
         b2EdgeShape wallsBox;
         b2FixtureDef wallsBoxDef;
         wallsBoxDef.shape = &wallsBox;
@@ -1791,7 +1753,7 @@
                     id delay = [CCDelayTime actionWithDuration:ud->deathDelay];
                     id lockAction = [CCCallFuncND actionWithTarget:self selector:@selector(lockWiener:data:) data:[[NSValue valueWithPointer:ud] retain]];
                     id incAction = [CCCallFuncND actionWithTarget:self selector:@selector(incrementDroppedCount:data:) data:[[NSValue valueWithPointer:dogBody] retain]];
-                    wienerParameters = [[NSMutableArray alloc] initWithCapacity:2];
+                    NSMutableArray *wienerParameters = [[NSMutableArray alloc] initWithCapacity:2];
                     [wienerParameters addObject:[NSValue valueWithPointer:dogBody]];
                     [wienerParameters addObject:[NSNumber numberWithInt:0]];
                     id sleepAction = [CCCallFuncND actionWithTarget:self selector:@selector(setAwake:data:) data:wienerParameters];
@@ -2093,9 +2055,8 @@
                             b2JointEdge *j = b->GetJointList();
                             if(j && j->joint->GetType() == e_revoluteJoint){
                                 b2RevoluteJoint *r = (b2RevoluteJoint *)j->joint;
-                                r->SetMotorSpeed(ud->armSpeed);
+                                r->SetMotorSpeed(8 * cosf(.07 * time));
                             }
-                            ud->armSpeed = 8 * cosf(.07 * time);
                         } else {
                             b2JointEdge *j;
                             b2Body *aimedDog;
@@ -2199,20 +2160,15 @@
                             fixtureUserData *fUd = (fixtureUserData *)f->GetUserData();
                             b2RayCastOutput output;
                             if(fUd->tag == F_DOGCLD){
-                                if(!f->RayCast(&output, input, 0)){
-                                    _rayTouchingDog = false;
-                                    continue;
-                                }
+                                if(!f->RayCast(&output, input, 0)){ continue; }
                                 bodyUserData *dogUd = (bodyUserData *)b->GetUserData();
                                 b2Body *dogBody = b;
                                 if(output.fraction < closestFraction && output.fraction > .1){
                                     if(!_shootLock && !dogUd->grabbed && dogBody->GetPosition().x < winSize.width/PTM_RATIO && dogBody->GetPosition().x > 0){
                                         CCLOG(@"Ray touched dog fixture with fraction %0.2f", output.fraction);
-
                                         _shootLock = YES;
 
                                         closestFraction = output.fraction;
-                                        _rayTouchingDog = true;
                                         intersectionNormal = output.normal;
                                         intersectionPoint = policeRayPoint1 + closestFraction * (policeRayPoint2 - policeRayPoint1);
                                         
@@ -2329,7 +2285,6 @@
     NSNumber *hash;
     
     _numWorldTouches = count;
-    _touchedDog = NO;
     int dogsTouched = 0;
     BOOL touched1 = false, touched2 = false;
     
@@ -2390,7 +2345,6 @@
                             // if the dog is not already grabbed and one of the touches is on it, make the joint
                             if (!ud->grabbed && ((fixture->TestPoint(locationWorld1) && !touched1) || (fixture->TestPoint(locationWorld2) && !touched2))){
                                 dogsTouched++;
-                                _lastTouchTime = time;
                                 
                                 md.bodyB = body;
                                 md.collideConnected = true;
@@ -2516,20 +2470,11 @@
 
     self.personLower = nil;
     self.personUpper = nil;
-    _walkFaceAction = nil;
     self.wiener = nil;
     self.target = nil;
 
-    [scoreText release];
-    [droppedText release];
     [floorBits release];
     [xPositions release];
-    [wienerParameters release];
-    [personParameters release];
-    [movementPatterns release];
-    [movementParameters release];
-    [headParams release];
-    [_shotAction release];
 
     delete personDogContactListener;
 
