@@ -2022,7 +2022,7 @@
                     else
                         [plus100Params addObject:[NSNumber numberWithInt:0]];
                     [plus100Params addObject:[NSValue valueWithPointer:ud]];
-                    [self runAction:[CCCallFuncND actionWithTarget:self selector:@selector(plusOneHundred:data:) data:plus100Params]];
+                    [self plusOneHundred:self data:plus100Params];
                 }
             }
             
