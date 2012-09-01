@@ -445,6 +445,38 @@
     }
 }
 
+-(void)aimAtAimedDog:(NSValue *)body{
+    b2Body *b = (b2Body *)[body pointerValue];
+    bodyUserData *ud = (bodyUserData *)b->GetUserData();
+    b2Body *aimedDog;
+    double dy, dx, a;
+    for(b2Body* aimedBody = _world->GetBodyList(); aimedBody; aimedBody = aimedBody->GetNext()){
+        if(aimedBody->GetUserData() && aimedBody->GetUserData() != (void*)100){
+            bodyUserData *aimedUd = (bodyUserData *)aimedBody->GetUserData();
+            if((aimedUd->sprite1.tag == S_HOTDOG || aimedUd->sprite1.tag == S_SPCDOG) && aimedUd->aimedAt == true){
+                aimedDog = aimedBody;
+                dx = abs(b->GetPosition().x - aimedDog->GetPosition().x);
+                dy = abs(b->GetPosition().y - aimedDog->GetPosition().y);
+                a = acos(dx / sqrt((dx*dx) + (dy*dy)));
+                CCLOG(@"Angle to dog: %0.2f - Upper angle: %d - lower angle: %d", a, upperArmAngle, lowerArmAngle);
+                ud->targetAngle = a;
+                [ud->overlaySprite setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"Target_Dog.png"]];
+                ud->overlaySprite.position = CGPointMake(aimedDog->GetPosition().x*PTM_RATIO, aimedDog->GetPosition().y*PTM_RATIO);
+                ud->overlaySprite.rotation = 6 * (time % 360);
+                break;
+            }
+        }
+    }
+    b2JointEdge *j = b->GetJointList();
+    if(j && j->joint->GetType() == e_revoluteJoint && ud->targetAngle != -1){
+        b2RevoluteJoint *r = (b2RevoluteJoint *)j->joint;
+        if(r->GetJointAngle() < ud->targetAngle)
+            r->SetMotorSpeed(.5);
+        else if(r->GetJointAngle() > ud->targetAngle)
+            r->SetMotorSpeed(-.5);
+    }
+}
+
 -(void)setFace:(NSValue *)body{
     b2Body *b = (b2Body *)[body pointerValue];
     bodyUserData *ud = (bodyUserData *)b->GetUserData();
@@ -2062,6 +2094,7 @@
                         [self setFace:[NSValue valueWithPointer:b]];
                     }
                     if(!(time % 45) && ud->dogsOnHead && !_gameOver){
+                        // get some points if a dog is on a head
                         if(!b) continue;
                         _points += ud->dogsOnHead * 25;
                         _points += ud->spcDogsOnHead * 250;
@@ -2073,14 +2106,13 @@
                         else
                             [plus25Params addObject:[NSNumber numberWithInt:0]];
                         [plus25Params addObject:[NSValue valueWithPointer:ud]];
-                        // TODO - why is this an action instead of a plain function call?
-                        [self runAction:[CCCallFuncND actionWithTarget:self selector:@selector(plusTwentyFive:data:) data:plus25Params]];
+                        [self plusTwentyFive:self data:plus25Params];
                     }
                     if(ud->sprite1.tag == S_POLICE){
                         _policeOnScreen = YES;
                         if(ud->hasLeftScreen)
                             _policeOnScreen = NO;
-                        //cop arm rotation
+                        // cop arm rotation
                         if(!ud->aiming){
                             b2JointEdge *j = b->GetJointList();
                             if(j && j->joint->GetType() == e_revoluteJoint){
@@ -2088,38 +2120,8 @@
                                 r->SetMotorSpeed(8 * cosf(.07 * time));
                             }
                         } else {
-                            b2JointEdge *j;
-                            b2Body *aimedDog;
-                            double dy, dx, a;
-                            for(b2Body* aimedBody = _world->GetBodyList(); aimedBody; aimedBody = aimedBody->GetNext()){
-                                if(aimedBody->GetUserData() && aimedBody->GetUserData() != (void*)100){
-                                    bodyUserData *aimedUd = (bodyUserData *)aimedBody->GetUserData();
-                                    if((aimedUd->sprite1.tag == S_HOTDOG || aimedUd->sprite1.tag == S_SPCDOG) && aimedUd->aimedAt == true){
-                                        aimedDog = aimedBody;
-                                        dx = abs(b->GetPosition().x - aimedDog->GetPosition().x);
-                                        dy = abs(b->GetPosition().y - aimedDog->GetPosition().y);
-                                        a = acos(dx / sqrt((dx*dx) + (dy*dy)));
-                                        CCLOG(@"Angle to dog: %0.2f - Upper angle: %d - lower angle: %d", a, upperArmAngle, lowerArmAngle);
-                                        ud->targetAngle = a;
-                                        [ud->overlaySprite setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"Target_Dog.png"]];
-                                        ud->overlaySprite.position = CGPointMake(aimedDog->GetPosition().x*PTM_RATIO, aimedDog->GetPosition().y*PTM_RATIO);
-                                        ud->overlaySprite.rotation = 6 * (time % 360);
-                                        break;
-                                    }
-                                }
-                            }
-                            
-                            if(!b) continue;
-                            j = b->GetJointList();
-                            if(j){
-                                if(j->joint->GetType() == e_revoluteJoint && ud->targetAngle != -1){
-                                    b2RevoluteJoint *r = (b2RevoluteJoint *)j->joint;
-                                    if(r->GetJointAngle() < ud->targetAngle)
-                                        r->SetMotorSpeed(.5);
-                                    else if(r->GetJointAngle() > ud->targetAngle)
-                                        r->SetMotorSpeed(-.5);
-                                }
-                            }
+                             if(!b) continue;
+                            [self aimAtAimedDog:[NSValue valueWithPointer:b]];
                         }
                     }
                 }
