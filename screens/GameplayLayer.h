@@ -20,6 +20,7 @@
 #import "AchievementReporter.h"
 #import "Firecracker.h"
 #import "Shiba.h"
+#import "SteamVent.h"
 
 #define FLOOR1_HT 0
 #define FLOOR1_Z 42
@@ -37,69 +38,44 @@
     AchievementReporter *reporter;
     levelProps *level;
     GLESDraw *m_debugDraw;
-    b2Body *_wallsBody, *_groundBody, *targetBody, *_personBody, *_policeArmBody;
-    b2Fixture *_bottomFixture, *_wallsFixture, *_wienerFixture, *_targetFixture, *_personFixture, *_policeArmFixture;
+    b2Body *_groundBody;
     CCSprite *_wiener, *_personLower, *_personUpper, *_personUpperOverlay, *_rippleSprite, *_target, *_pauseButton, *background;
-    CCAction *_walkAction, *_walkFaceAction, *_altFaceWalkAction, *_altWalkAction, *_flag1RightAction, *_flag1LeftAction, *_flag2RightAction, *_flag2LeftAction, *_dustAction;
-    CCFiniteTimeAction *_idleAction, *_appearAction, *_hitAction, *_shotAction, *_specialAction, *_armShootAction, *_specialFaceAction, *_specialAngryFaceAction, *_postStopAction;
-    CCAnimation *walkAnim, *idleAnim, *hitAnim, *dogDeathAnim, *dogAppearAnim, *walkFaceAnim, *walkDogFaceAnim;
-    CCAnimation *dogShotAnim, *specialAnim, *armShootAnim, *specialFaceAnim, *specialAngryFaceAnim, *altWalkAnim, *altFaceWalkAnim, *postStopAnim;
+    CCAction *_flag1RightAction, *_flag1LeftAction, *_flag2RightAction, *_flag2LeftAction, *_dustAction; // TODO - DEBT - these should belong to an object in /components
+    CCFiniteTimeAction *_appearAction;
     CCSpriteBatchNode *spriteSheetCommon, *spriteSheetLevel, *spriteSheetCharacter;
-    CCLabelTTF *scoreLabel, *droppedLabel, *gravityLabel;
+    CCLabelTTF *scoreLabel;
     b2Vec2 policeRayPoint1, policeRayPoint2;
     CCLayerColor *_pauseLayer, *_flashLayer;
-    steamVent *vent1, *vent2;
-    NSMutableArray *bgSprites;
+    SteamVent *vent1, *vent2;
+    Firecracker *firecracker;
+    Shiba *shiba;
     CCMenu *_pauseMenu;
-    NSMutableArray *floorBits, *xPositions, *wienerParameters, *headParams, *mouseJoints, *dogTouches;
-    NSMutableArray *personParameters, *wakeParameters, *movementPatterns, *movementParameters, *_touchLocations, *dogIcons, *allTouchHashes;
-    NSString *scoreText, *droppedText;
-    int _points, _droppedCount, _spawnLimiter, time, _curPersonMaskBits, _droppedSpacing, _lastTouchTime, _firstDeathTime, lowerArmAngle, upperArmAngle;
-    int _peopleGrumped, _dogsSaved, _id_counter, _numTouches, _dogsOnscreen, _maxDogsOnScreen, _numWorldTouches, _sfxVol, _levelMaxDogs;
-    float _wienerSpawnDelayTime, _currentRayAngle, _levelSpawnInterval;
-    BOOL _moving, _touchedDog, _rayTouchingDog, _pause, _shootLock, _dogHasHitGround, _dogHasDied, _policeOnScreen, _muncherOnScreen, _gameOver, _ventsOn, _hasDroppedDog;
-    NSString *currentAnimation, *slug;
+    ccColor3B _color_pink;
+    NSMutableArray *bgSprites, *floorBits, *xPositions, *dogTouches, *dogIcons;
+    NSString *slug;
     CGSize winSize;
     CGRect _pauseButtonRect;
     NSUserDefaults *standardUserDefaults;
-    NSInteger _overallTime, _sfxOn;
-    Firecracker *firecracker;
-    Shiba *shiba;
-    CCDelayTime *winUpDelay, *winDownDelay;
-    CCCallFuncN *removeWindow;
-    ccColor3B _color_pink;
+    NSInteger _sfxOn;
+    int _points, _droppedCount, time, _curPersonMaskBits, _peopleGrumped, _dogsSaved, _dogsOnscreen, _maxDogsOnScreen, _numWorldTouches, _levelMaxDogs;
+    float _wienerSpawnDelayTime, _levelSpawnInterval;
+    BOOL _pause, _shootLock, _policeOnScreen, _muncherOnScreen, _gameOver, _hasDroppedDog;
 
     struct bodyUserData {
         CCSprite *sprite1, *sprite2, *angryFace, *ripples, *overlaySprite;
-        float heightOffset2, widthOffset, lengthOffset2, lowerXOffset, lowerYOffset;
-        NSString *_dog_fallSprite, *_dog_riseSprite, *_dog_grabSprite, *_dog_mainSprite, *ogSprite2, *aimFace;
+        float heightOffset2, widthOffset, lowerXOffset, lowerYOffset;
+        NSString *_dog_fallSprite, *_dog_riseSprite, *_dog_grabSprite, *_dog_mainSprite, *aimFace;
         CCAction *altAction, *walkRipple, *idleRipple, *altAction2, *altAction3, *altWalk, *altWalkFace, *idleAction, *defaultAction, *angryFaceWalkAction, *dogOnHeadTickleAction, *deathSeq, *shotSeq;
-        CCAnimation *altAnimation;
         CCFiniteTimeAction *postStopAction, *_not_dogContact, *_not_dogOnHead, *_not_leaveScreen, *_not_leaveScreenFlash, *_not_spcContact, *_not_spcOnHead, *_not_spcLeaveScreen, *_vomitAction;
-        CGRect boundingBox;
-        // end point notifiers
-        float armSpeed, rippleXOffset, rippleYOffset;
-        float deathDelay; // how long a hot dog sits on the ground before dying, in seconds
-        float moveDelta; // the linear velocity of the person
-        int stopTime; // time into walk at which person should pause
-        int stopTimeDelta; // how long the pause should last
-        int timeWalking; // how long has this person been walking
-        int restartTime, pointValue; // how many points is a dog contact on this head worth?
-        BOOL aiming, touched, exploding, touchLock, aimedAt, grabbed, deathSeqLock, animLock, hasLeftScreen;
+        float rippleXOffset, rippleYOffset, deathDelay, moveDelta; // the linear velocity of the person
         double targetAngle;
-        int dogsOnHead, spcDogsOnHead, unique_id, tickleTimer, collideFilter;
+        int stopTime, stopTimeDelta, timeWalking, restartTime, pointValue, dogsOnHead, spcDogsOnHead, tickleTimer, collideFilter;
+        BOOL aiming, touched, exploding, touchLock, aimedAt, grabbed, deathSeqLock, animLock, hasLeftScreen;
         BOOL hasTouchedHead, _dog_isOnHead, _person_hasTouchedDog, _muncher_hasDroppedDog, _cop_hasShot, _busman_willVomit, _busman_isVomiting;
     };
 
     struct fixtureUserData {
-        int tag;
-        int ogCollideFilters;
-    };
-    
-    struct mouseJointUserData {
-        int touch; // the unique identifier for this mouse joint
-        double prevX;
-        double prevY;
+        int tag, ogCollideFilters;
     };
 
     enum _collisionFilters {
