@@ -17,6 +17,7 @@
 #define DEGTORAD 0.0174532
 #define DOG_SPAWN_MINHT 240
 #define COP_RANGE 4
+#define VOMIT_PROBABILITY 200
 #define DOG_COUNTER_HT 295
 #define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 
@@ -550,8 +551,10 @@
 -(NSValue *)createWiener:(id)sender data:(NSMutableArray *)params{
     CGPoint location = [[params objectAtIndex:0] CGPointValue];
     NSNumber *type = [params objectAtIndex:1];
-    
-    NSLog(@"Point: %0.2f x %0.2f", location.x, location.y);
+    CGPoint vel;
+    if([params count] > 2){
+        vel = [[params objectAtIndex:2] CGPointValue];
+    }
     
     NSMutableArray *wienerDeathAnimFrames = [[NSMutableArray alloc] init];
     NSMutableArray *wienerFlashAnimFrames = [[NSMutableArray alloc] init];
@@ -722,15 +725,23 @@
     wienerShapeDef.filter.categoryBits = WIENER;
     _wienerFixture = wienerBody->CreateFixture(&wienerShapeDef);
     
+    wienerBody->ApplyForce(b2Vec2(vel.x, vel.y), b2Vec2(wienerBody->GetPosition().x-.3, wienerBody->GetPosition().y+.2));
+    
     return [NSValue valueWithPointer:wienerBody];
 }
 
--(void)barfDogs:(NSValue *)location{
-    NSMutableArray *parameters = [[NSMutableArray alloc] init];
-    [parameters addObject:location];
-    [parameters addObject:[NSNumber numberWithInt:1]];
-    NSLog(@"Barfing wieners");
-    [self createWiener:self data:parameters];
+-(void)barfDogs:(id)sender data:(NSMutableArray *)a{
+    NSMutableArray *parameters;
+    CGPoint loc = [[a objectAtIndex:0] CGPointValue];
+    NSNumber *xVel = [a objectAtIndex:1];
+    
+    for(int i = 0; i < 4; i++){
+        parameters = [[NSMutableArray alloc] init];
+        [parameters addObject:[NSValue valueWithCGPoint:CGPointMake(loc.x, loc.y+(i*15))]];
+        [parameters addObject:[NSNumber numberWithInt:1]];
+        [parameters addObject:[NSValue valueWithCGPoint:CGPointMake(xVel.intValue, .1)]];
+        [self createWiener:self data:parameters];
+    }
 }
 
 -(void)putDog:(id)sender data:(NSNumber *)type {
@@ -1001,7 +1012,7 @@
         ud->rippleXOffset = rippleXOffset;
         ud->rippleYOffset = person->rippleYOffset;
     }
-    if(person->vomitAnimFrames && arc4random() % 2 == 1){
+    if(person->vomitAnimFrames && arc4random() % VOMIT_PROBABILITY == 1){
         ud->_busman_willVomit = true;
         ud->_vomitAction = _vomitAction;
     }
@@ -1943,8 +1954,9 @@
                                 [ud->ripples stopAllActions];
                                 [ud->angryFace stopAllActions];
                                 if(ud->_busman_willVomit){
+                                    [ud->angryFace setVisible:NO];
+                                    [ud->sprite2 setVisible:YES];
                                     ud->_busman_isVomiting = true;
-                                    [self barfDogs:[NSValue valueWithCGPoint:CGPointMake(b->GetPosition().x*PTM_RATIO, b->GetPosition().y*PTM_RATIO)]];
                                     ud->stopTimeDelta = 250;
                                     ud->heightOffset2 = 2.3;
                                     ud->widthOffset = -.4;
@@ -1953,6 +1965,19 @@
                                     }
                                     [ud->sprite2 runAction:ud->_vomitAction];
                                     [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"BusinessMan_Idle_1.png"]];
+                                    
+                                    float xBarf = b->GetPosition().x*PTM_RATIO - 40, yBarf = b->GetPosition().y*PTM_RATIO + 50, xVel = -70;
+                                    if(ud->sprite1.flipX){
+                                        xBarf = b->GetPosition().x*PTM_RATIO + 40;
+                                        xVel = 70;
+                                    }
+                                    CGPoint barfPosition = CGPointMake(xBarf, yBarf);
+                                    
+                                    NSMutableArray *parameters = [[NSMutableArray alloc] init];
+                                    [parameters addObject:[NSValue valueWithCGPoint:barfPosition]];
+                                    [parameters addObject:[NSNumber numberWithInt:xVel]];
+                                    
+                                    [ud->sprite1 runAction:[CCSequence actions:[CCDelayTime actionWithDuration:2.9], [CCCallFuncND actionWithTarget:self selector:@selector(barfDogs:data:) data:parameters], nil]];
                                 } else {
                                     [ud->sprite1 runAction:ud->idleAction];
                                     [ud->ripples runAction:ud->idleRipple];
