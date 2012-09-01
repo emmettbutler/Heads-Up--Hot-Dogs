@@ -94,7 +94,7 @@
 
 -(BOOL)dogIsInHitbox:(NSValue *)d{
     b2Body *dogBody = (b2Body *)[d pointerValue];
-    if(!self->worldBody) return false;
+    if(!self->worldBody || abs(dogBody->GetLinearVelocity().y) > .3) return false;
     if(self->hitboxSensor->TestPoint(dogBody->GetPosition()))
         return true;
     return false;
