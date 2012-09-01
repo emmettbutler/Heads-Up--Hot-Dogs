@@ -20,8 +20,6 @@
 }
 
 -(DogTouch *)initWithBody:(NSValue *)b andMouseJoint:(NSValue *)j andWorld:(NSValue *)w andHash:(NSValue *)h;
--(b2MouseJoint *)createMouseJoint:(NSValue *)m withWorld:(NSValue *)w;
--(void)destroyMouseJoint:(NSValue *)w;
 -(b2MouseJoint *)getMouseJoint;
 -(NSNumber *)getHash;
 -(void)moveTouch:(NSValue *)l;

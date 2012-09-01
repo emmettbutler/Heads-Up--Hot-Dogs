@@ -107,8 +107,6 @@
         lp->gravity = -25.0f;
         lp->spritesheet = @"sprites_nyc";
         lp->personSpeedMul = .8;
-        lp->vent1X = 140;
-        lp->vent2X = 360;
 
         dd = new spcDogData();
         dd->riseSprite = @"Bagel_Rise.png";
@@ -138,9 +136,6 @@
         }
 
         lp->specialDog = dd;
-        
-        CGPoint vent1Pos = CGPointMake(lp->vent1X, 37);
-        CGPoint vent2Pos = CGPointMake(lp->vent2X, 37);
 
         lp->bgComponents = [[NSMutableArray alloc] init];
         bgc = new bgComponent();
@@ -163,55 +158,6 @@
         bgc->sprite.position = CGPointMake(86, 156);
         bgc->sprite.tag = 1;
         [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
-        bgc = new bgComponent();
-        bgc->sprite = [CCSprite spriteWithSpriteFrameName:@"SteamVent.png"];
-        bgc->sprite.position = vent1Pos;
-        [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
-        bgc = new bgComponent();
-        bgc->sprite = [CCSprite spriteWithSpriteFrameName:@"SteamVent.png"];
-        bgc->sprite.position = vent2Pos;
-        [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
-        
-        lp->activeComponents = [[NSMutableArray alloc] init];
-        steamVent *vent = new steamVent();
-        vent->steamSprite = [CCSprite spriteWithSpriteFrameName:@"Steam_Whole_1.png"];
-        vent->steamSprite.position = CGPointMake(vent1Pos.x-3, vent1Pos.y+110);
-        vent->startAnimFrames = [[NSMutableArray alloc] init];
-        for(int i = 1; i <= 9; i++){
-            [vent->startAnimFrames addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                                   [NSString stringWithFormat:@"Steam_Whole_%d.png", i]]];
-        }
-        vent->loopingAnimFrames = [[NSMutableArray alloc] init];
-        for(int i = 11; i <= 14; i++){
-            [vent->loopingAnimFrames addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                                              [NSString stringWithFormat:@"Steam_Whole_%d.png", i]]];
-        }
-        vent->stopAnimFrames = [[NSMutableArray alloc] init];
-        for(int i = 15; i <= 18; i++){
-            [vent->stopAnimFrames addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                                                [NSString stringWithFormat:@"Steam_Whole_%d.png", i]]];
-        }
-        [lp->activeComponents addObject:[NSValue valueWithPointer:vent]];
-        
-        steamVent *vent2 = new steamVent();
-        vent2->steamSprite = [CCSprite spriteWithSpriteFrameName:@"Steam_Whole_1.png"];
-        vent2->steamSprite.position = CGPointMake(vent2Pos.x-3, vent2Pos.y+110);
-        vent2->startAnimFrames = [[NSMutableArray alloc] init];
-        for(int i = 1; i <= 9; i++){
-            [vent2->startAnimFrames addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                                              [NSString stringWithFormat:@"Steam_Whole_%d.png", i]]];
-        }
-        vent2->loopingAnimFrames = [[NSMutableArray alloc] init];
-        for(int i = 11; i <= 14; i++){
-            [vent2->loopingAnimFrames addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                                                [NSString stringWithFormat:@"Steam_Whole_%d.png", i]]];
-        }
-        vent2->stopAnimFrames = [[NSMutableArray alloc] init];
-        for(int i = 15; i <= 18; i++){
-            [vent2->stopAnimFrames addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                                             [NSString stringWithFormat:@"Steam_Whole_%d.png", i]]];
-        }
-        [lp->activeComponents addObject:[NSValue valueWithPointer:vent2]];
     }
 
     [levelStructs addObject:[NSValue valueWithPointer:lp]];
