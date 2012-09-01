@@ -88,7 +88,7 @@
         BOOL aiming, touched, exploding, touchLock, aimedAt, grabbed, deathSeqLock, animLock, hasLeftScreen;
         double targetAngle;
         int dogsOnHead, spcDogsOnHead, unique_id, tickleTimer, collideFilter;
-        BOOL hasTouchedHead, _dog_isOnHead, _person_hasTouchedDog, _muncher_hasDroppedDog, _cop_hasShot, _busman_willVomit;
+        BOOL hasTouchedHead, _dog_isOnHead, _person_hasTouchedDog, _muncher_hasDroppedDog, _cop_hasShot, _busman_willVomit, _busman_isVomiting;
     };
 
     struct fixtureUserData {

@@ -551,6 +551,8 @@
     CGPoint location = [[params objectAtIndex:0] CGPointValue];
     NSNumber *type = [params objectAtIndex:1];
     
+    NSLog(@"Point: %0.2f x %0.2f", location.x, location.y);
+    
     NSMutableArray *wienerDeathAnimFrames = [[NSMutableArray alloc] init];
     NSMutableArray *wienerFlashAnimFrames = [[NSMutableArray alloc] init];
     NSMutableArray *wienerShotAnimFrames = [[NSMutableArray alloc] init];
@@ -721,6 +723,14 @@
     _wienerFixture = wienerBody->CreateFixture(&wienerShapeDef);
     
     return [NSValue valueWithPointer:wienerBody];
+}
+
+-(void)barfDogs:(NSValue *)location{
+    NSMutableArray *parameters = [[NSMutableArray alloc] init];
+    [parameters addObject:location];
+    [parameters addObject:[NSNumber numberWithInt:1]];
+    NSLog(@"Barfing wieners");
+    [self createWiener:self data:parameters];
 }
 
 -(void)putDog:(id)sender data:(NSNumber *)type {
@@ -1932,7 +1942,9 @@
                                 [ud->sprite1 stopAllActions];
                                 [ud->ripples stopAllActions];
                                 [ud->angryFace stopAllActions];
-                                if(ud->_vomitAction && ud->_busman_willVomit){
+                                if(ud->_busman_willVomit){
+                                    ud->_busman_isVomiting = true;
+                                    [self barfDogs:[NSValue valueWithCGPoint:CGPointMake(b->GetPosition().x*PTM_RATIO, b->GetPosition().y*PTM_RATIO)]];
                                     ud->stopTimeDelta = 250;
                                     ud->heightOffset2 = 2.3;
                                     ud->widthOffset = -.4;
@@ -1949,6 +1961,7 @@
                         }
                         else if((ud->stopTime && ud->timeWalking == ud->stopTime + ud->stopTimeDelta) || ud->timeWalking == ud->restartTime){
                             if(ud->sprite1.tag != S_MUNCHR){
+                                ud->_busman_isVomiting = false;
                                 [ud->sprite1 runAction:ud->defaultAction];
                                 [ud->ripples runAction:ud->walkRipple];
                                 [ud->sprite2 runAction:ud->altAction];
@@ -2009,12 +2022,14 @@
                                     }
                                 }
                             }
-                            if(ud->dogsOnHead == 0){
-                                [ud->angryFace setVisible:NO];
-                                [ud->sprite2 setVisible:YES];
-                            } else {
-                                [ud->angryFace setVisible:YES];
-                                [ud->sprite2 setVisible:NO];
+                            if(!ud->_busman_isVomiting){
+                                if(ud->dogsOnHead == 0){
+                                    [ud->angryFace setVisible:NO];
+                                    [ud->sprite2 setVisible:YES];
+                                } else {
+                                    [ud->angryFace setVisible:YES];
+                                    [ud->sprite2 setVisible:NO];
+                                }
                             }
                         }
                     }
