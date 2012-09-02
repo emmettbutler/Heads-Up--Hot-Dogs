@@ -474,7 +474,7 @@
     } else if(level->slug == @"nyc" && !(time % 19)) {
         [vent1 blowFrank:[NSValue valueWithPointer:b]];
         [vent2 blowFrank:[NSValue valueWithPointer:b]];
-    } else if(level->slug == @"london"){
+    } else if(level->slug == @"china"){
         if(!ud->grabbed && [firecracker explosionHittingDog:[NSValue valueWithPointer:b]]){
             ud->exploding = true;
             b->SetActive(false);

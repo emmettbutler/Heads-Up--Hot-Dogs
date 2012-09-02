@@ -22,11 +22,7 @@
 
 +(NSMutableArray *)buildLevels:(NSNumber *)full{
     levelStructs = [[NSMutableArray alloc] initWithCapacity:NUM_LEVELS];
-    levelProps *lp;
-    spcDogData *dd;
-    bgComponent *bgc;
     BOOL loadFull = [full intValue];
-    CGSize winSize = [CCDirector sharedDirector].winSize;
 
     [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_common.plist"];
     if(loadFull){
@@ -37,408 +33,13 @@
         [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_london.plist"];
     }
 
-    /********************************************************************************
-     * PHILLY LEVEL SETTINGS
-     *******************************************************************************/
-
-    lp = new levelProps();
-    lp->enabled = true;
-    lp->slug = @"philly";
-    lp->name = @"Philly";
-    lp->unlockThreshold = -1;
-    lp->func = @"switchScreenPhilly";
-    lp->thumbnail = @"Philly_Thumb.png";
-
-    if(loadFull){
-        lp->bg = @"bg_philly.png";
-        lp->bgm = @"gameplay 1.mp3";
-        lp->spritesheet = @"sprites_philly";
-        lp->highScore = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"highScore%@", lp->slug]];
-        lp->personSpeedMul = 1;
-
-        dd = new spcDogData();
-        dd->riseSprite = @"Steak_Rise.png";
-        dd->fallSprite = @"Steak_Fall.png";
-        dd->mainSprite = @"Steak.png";
-        dd->grabSprite = @"Steak_Grabbed.png";
-        dd->deathAnimFrames = [[NSMutableArray alloc] init];
-        dd->flashAnimFrames = [[NSMutableArray alloc] init];
-        dd->shotAnimFrames = [[NSMutableArray alloc] init];
-        for(int i = 0; i < 1; i++){
-            [dd->flashAnimFrames addObject:
-            [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-            [NSString stringWithFormat:@"Steak_Die_1.png"]]];
-            [dd->flashAnimFrames addObject:
-            [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-            [NSString stringWithFormat:@"Steak_Die_2.png"]]];
-        }
-        for(int i = 1; i <= 7; i++){
-            [dd->deathAnimFrames addObject:
-            [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-            [NSString stringWithFormat:@"Steak_Die_%d.png", i]]];
-        }
-        for(int i = 1; i <= 9; i++){
-            [dd->shotAnimFrames addObject:
-            [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-            [NSString stringWithFormat:@"Steak_Shot_%d.png", i]]];
-        }
-        lp->specialDog = dd;
-    }
-
-    [levelStructs addObject:[NSValue valueWithPointer:lp]];
-
-
-    /********************************************************************************
-     * NYC LEVEL SETTINGS
-     *******************************************************************************/
-
-    lp = new levelProps();
-    lp->enabled = true;
-    lp->slug = @"nyc";
-    lp->name = @"Big Apple";
-    lp->unlockThreshold = 15000;
-    lp->func = @"switchScreenNYC";
-    lp->thumbnail = @"NYC_Thumb.png";
-    lp->unlockTweet = @"I traveled to the Big Apple for some mischief in @HeadsUpHotDogs";
-
-    if(loadFull){
-        lp->bg = @"BG_NYC.png";
-        lp->bgm = @"gameplay 3.mp3";
-        lp->gravity = -25.0f;
-        lp->spritesheet = @"sprites_nyc";
-        lp->personSpeedMul = .8;
-
-        dd = new spcDogData();
-        dd->riseSprite = @"Bagel_Rise.png";
-        dd->fallSprite = @"Bagel_Fall.png";
-        dd->mainSprite = @"Bagel.png";
-        dd->grabSprite = @"Bagel_Grab.png";
-        dd->deathAnimFrames = [[NSMutableArray alloc] init];
-        dd->shotAnimFrames = [[NSMutableArray alloc] init];
-        dd->flashAnimFrames = [[NSMutableArray alloc] init];
-        for(int i = 0; i < 1; i++){
-            [dd->flashAnimFrames addObject:
-            [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-            [NSString stringWithFormat:@"Bagel_Die_1.png"]]];
-            [dd->flashAnimFrames addObject:
-            [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-            [NSString stringWithFormat:@"Bagel_Die_2.png"]]];
-        }
-        for(int i = 1; i <= 8; i++){
-            [dd->deathAnimFrames addObject:
-            [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-            [NSString stringWithFormat:@"Bagel_Die_%d.png", i]]];
-        }
-        for(int i = 1; i <= 6; i++){
-            [dd->shotAnimFrames addObject:
-         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-          [NSString stringWithFormat:@"Bagel_Shot_%d.png", i]]];
-        }
-
-        lp->specialDog = dd;
-
-        lp->bgComponents = [[NSMutableArray alloc] init];
-        bgc = new bgComponent();
-        bgc->sprite = [CCSprite spriteWithSpriteFrameName:@"Light_One.png"];
-        bgc->sprite.position = CGPointMake(238, 262);
-        bgc->sprite.tag = 1;
-        [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
-        bgc = new bgComponent();
-        bgc->sprite = [CCSprite spriteWithSpriteFrameName:@"Light_Two.png"];
-        bgc->sprite.position = CGPointMake(352, 262);
-        bgc->sprite.tag = 1;
-        [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
-        bgc = new bgComponent();
-        bgc->sprite = [CCSprite spriteWithSpriteFrameName:@"Light_Three.png"];
-        bgc->sprite.position = CGPointMake(380, 156);
-        bgc->sprite.tag = 1;
-        [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
-        bgc = new bgComponent();
-        bgc->sprite = [CCSprite spriteWithSpriteFrameName:@"Light_Three.png"];
-        bgc->sprite.position = CGPointMake(86, 156);
-        bgc->sprite.tag = 1;
-        [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
-    }
-
-    [levelStructs addObject:[NSValue valueWithPointer:lp]];
-    
-    /********************************************************************************
-     * LONDON LEVEL SETTINGS
-     *******************************************************************************/
-    
-    lp = new levelProps();
-    lp->enabled = true;
-    lp->slug = @"london";
-    lp->name = @"London";
-    lp->unlockThreshold = 12000;
-    lp->func = @"switchScreenLondon";
-    lp->thumbnail = @"NYC_Thumb.png";
-    lp->unlockTweet = @"I went to London to conquer some franks in @HeadsUpHotDogs";
-    
-    if(loadFull){
-        lp->bg = @"BG_NYC.png";
-        lp->bgm = @"gameplay 3.mp3";
-        lp->gravity = -22.0f;
-        lp->spritesheet = @"sprites_nyc";
-        lp->personSpeedMul = 1.2;
-        lp->restitutionMul = 1.2;
-        lp->frictionMul = .95;
-        
-        dd = new spcDogData();
-        dd->riseSprite = @"Bagel_Rise.png";
-        dd->fallSprite = @"Bagel_Fall.png";
-        dd->mainSprite = @"Bagel.png";
-        dd->grabSprite = @"Bagel_Grab.png";
-        dd->deathAnimFrames = [[NSMutableArray alloc] init];
-        dd->shotAnimFrames = [[NSMutableArray alloc] init];
-        dd->flashAnimFrames = [[NSMutableArray alloc] init];
-        for(int i = 0; i < 1; i++){
-            [dd->flashAnimFrames addObject:
-             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-              [NSString stringWithFormat:@"Bagel_Die_1.png"]]];
-            [dd->flashAnimFrames addObject:
-             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-              [NSString stringWithFormat:@"Bagel_Die_2.png"]]];
-        }
-        for(int i = 1; i <= 8; i++){
-            [dd->deathAnimFrames addObject:
-             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-              [NSString stringWithFormat:@"Bagel_Die_%d.png", i]]];
-        }
-        for(int i = 1; i <= 6; i++){
-            [dd->shotAnimFrames addObject:
-             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-              [NSString stringWithFormat:@"Bagel_Shot_%d.png", i]]];
-        }
-        
-        lp->specialDog = dd;
-    }
-    
-    [levelStructs addObject:[NSValue valueWithPointer:lp]];
-
-    /********************************************************************************
-     * JAPAN LEVEL SETTINGS
-     *******************************************************************************/
-    
-    lp = new levelProps();
-    lp->enabled = true;
-    lp->slug = @"japan";
-    lp->name = @"Hot Spring";
-    lp->unlockThreshold = 13500;
-    lp->func = @"switchScreenJapan";
-    lp->thumbnail = @"Japan_Thumb.png";
-    lp->unlockTweet = @"I was ready to relax in a calming Japanese hot spring in @HeadsUpHotDogs";
-    
-    if(loadFull){
-        lp->bg = @"Japan_BG.png";
-        lp->bgm = @"gameplay 1.mp3";
-        lp->gravity = -28.0f;
-        lp->spritesheet = @"sprites_japan";
-        lp->dogDeathDelay = .001;
-        lp->personSpeedMul = .7;
-        lp->maxDogs = 7;
-        lp->gravity = -17.0;
-        lp->spawnInterval = 4.0;
-        
-        lp->dogDeathAnimFrames = [[NSMutableArray alloc] init];
-        for(int i = 1; i <= 9; i++){
-            [lp->dogDeathAnimFrames addObject:
-             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-              [NSString stringWithFormat:@"Splash_%d.png", i]]];
-        }
-        
-        dd = new spcDogData();
-        dd->riseSprite = @"Bagel_Rise.png";
-        dd->fallSprite = @"Bagel_Fall.png";
-        dd->mainSprite = @"Bagel.png";
-        dd->grabSprite = @"Bagel_Grab.png";
-        dd->deathAnimFrames = [[NSMutableArray alloc] init];
-        dd->shotAnimFrames = [[NSMutableArray alloc] init];
-        dd->flashAnimFrames = [[NSMutableArray alloc] init];
-        for(int i = 0; i < 1; i++){
-            [dd->flashAnimFrames addObject:
-             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-              [NSString stringWithFormat:@"Bagel_Die_1.png"]]];
-            [dd->flashAnimFrames addObject:
-             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-              [NSString stringWithFormat:@"Bagel_Die_2.png"]]];
-        }
-        for(int i = 1; i <= 8; i++){
-            [dd->deathAnimFrames addObject:
-             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-              [NSString stringWithFormat:@"Bagel_Die_%d.png", i]]];
-        }
-        for(int i = 1; i <= 6; i++){
-            [dd->shotAnimFrames addObject:
-             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-              [NSString stringWithFormat:@"Bagel_Shot_%d.png", i]]];
-        }
-        
-        lp->specialDog = dd;
-    }
-    
-    [levelStructs addObject:[NSValue valueWithPointer:lp]];
-
-    /********************************************************************************
-     * CHICAGO LEVEL SETTINGS
-     *******************************************************************************/
-
-    lp = new levelProps();
-    lp->enabled = true;
-    lp->slug = @"chicago";
-    lp->name = @"Windy City";
-    lp->unlockThreshold = 6500;
-    lp->thumbnail = @"Chicago_Thumb.png";
-    lp->func = @"switchScreenChicago";
-    lp->unlockTweet = @"I traveled to the Windy City in @HeadsUpHotDogs";
-
-    if(loadFull){
-        lp->bg = @"Chicago_BG.png";
-        lp->bgm = @"gameplay 1.mp3";
-        lp->gravity = -27.0f;
-        lp->spritesheet = @"sprites_chicago";
-        lp->personSpeedMul = .85;
-        lp->restitutionMul = 1.3;
-        lp->frictionMul = 1.1;
-        lp->maxDogs = 5;
-        lp->hasShiba = true;
-
-        dd = new spcDogData();
-        dd->riseSprite = @"ChiDog_Rise.png";
-        dd->fallSprite = @"ChiDog_Fall.png";
-        dd->mainSprite = @"ChiDog.png";
-        dd->grabSprite = @"ChiDog_Grab.png";
-        dd->deathAnimFrames = [[NSMutableArray alloc] init];
-        dd->shotAnimFrames = [[NSMutableArray alloc] init];
-        dd->flashAnimFrames = [[NSMutableArray alloc] init];
-        for(int i = 0; i < 1; i++){
-            [dd->flashAnimFrames addObject:
-            [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-            [NSString stringWithFormat:@"ChiDog_Death_1.png"]]];
-            [dd->flashAnimFrames addObject:
-            [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-            [NSString stringWithFormat:@"ChiDog_Death_2.png"]]];
-        }
-        for(int i = 1; i <= 8; i++){
-            [dd->deathAnimFrames addObject:
-            [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-            [NSString stringWithFormat:@"ChiDog_Death_%d.png", i]]];
-        }
-        for(int i = 1; i <= 5; i++){
-            [dd->shotAnimFrames addObject:
-            [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-            [NSString stringWithFormat:@"ChiDog_Shot_%d.png", i]]];
-        }
-
-        lp->specialDog = dd;
-        
-        lp->bgComponents = [[NSMutableArray alloc] init];
-        bgc = new bgComponent();
-        bgc->sprite = [[CCSprite spriteWithSpriteFrameName:@"Flag_Flap_1.png"] retain];
-        bgc->sprite.position = CGPointMake(winSize.width-17, 245);
-        bgc->anim1 = [[NSMutableArray alloc] init];
-        for(int i = 1; i <= 4; i++){
-            [bgc->anim1 addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                                   [NSString stringWithFormat:@"Flag_Flap_%d.png", i]]];
-        }
-        bgc->anim2 = [[NSMutableArray alloc] init];
-        for(int i = 8; i <= 11; i++){
-            [bgc->anim2 addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                                    [NSString stringWithFormat:@"Flag_Flap_%d.png", i]]];
-        }
-        [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
-        bgc = new bgComponent();
-        bgc->sprite = [[CCSprite spriteWithSpriteFrameName:@"Flag_Flap_1.png"] retain];
-        bgc->sprite.position = CGPointMake(19, 267);
-        bgc->anim1 = [[NSMutableArray alloc] init];
-        for(int i = 1; i <= 4; i++){
-            [bgc->anim1 addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                                   [NSString stringWithFormat:@"Flag_Flap_%d.png", i]]];
-        }
-        bgc->anim2 = [[NSMutableArray alloc] init];
-        for(int i = 8; i <= 11; i++){
-            [bgc->anim2 addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                                   [NSString stringWithFormat:@"Flag_Flap_%d.png", i]]];
-        }
-        [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
-        bgc = new bgComponent();
-        bgc->sprite = [[CCSprite spriteWithSpriteFrameName:@"Dust1_1.png"] retain];
-        bgc->sprite.position = CGPointMake(179, 20);
-        bgc->anim1 = [[NSMutableArray alloc] init];
-        for(int i = 1; i <= 6; i++){
-            [bgc->anim1 addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                                   [NSString stringWithFormat:@"Dust1_%d.png", i]]];
-        }
-        [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
-    }
-
-    [levelStructs addObject:[NSValue valueWithPointer:lp]];
-
-
-    /********************************************************************************
-     * SPACE LEVEL SETTINGS
-     *******************************************************************************/
-
-    lp = new levelProps();
-    lp->enabled = false;
-    lp->slug = @"space";
-    lp->name = @"Space Station";
-    lp->unlockThreshold = 16000;
-    lp->thumbnail = @"Space_Thumb.png";
-    lp->func = @"switchScreenSpace";
-    lp->unlockTweet = @"We sent a frankfurter to the moon in @HeadsUpHotDogs";
-
-    if(loadFull){
-        lp->bg = @"SpaceBG.png";
-        lp->bgm = @"gameplay 3.mp3";
-        lp->gravity = -40.0f;
-        lp->spritesheet = @"sprites_space";
-        lp->personSpeedMul = 1.1;
-        lp->restitutionMul = 1.7;
-        lp->frictionMul = 100;
-        lp->hasShiba = true;
-
-        dd = new spcDogData();
-        dd->riseSprite = @"Chips_Rise.png";
-        dd->fallSprite = @"Chips_Fall.png";
-        dd->mainSprite = @"Chips.png";
-        dd->grabSprite = @"Chips_Grab.png";
-        dd->deathAnimFrames = [[NSMutableArray alloc] init];
-        dd->shotAnimFrames = [[NSMutableArray alloc] init];
-        dd->flashAnimFrames = [[NSMutableArray alloc] init];
-        for(int i = 0; i < 1; i++){
-            [dd->flashAnimFrames addObject:
-            [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-            [NSString stringWithFormat:@"Chips_Die_1.png"]]];
-            [dd->flashAnimFrames addObject:
-            [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-            [NSString stringWithFormat:@"Chips_Die_2.png"]]];
-        }
-        for(int i = 1; i <= 8; i++){
-            [dd->deathAnimFrames addObject:
-            [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-            [NSString stringWithFormat:@"Chips_Die_%d.png", i]]];
-        }
-        for(int i = 1; i <= 6; i++){
-            [dd->shotAnimFrames addObject:
-            [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-            [NSString stringWithFormat:@"Chips_Shoot%d.png", i]]];
-        }
-        lp->specialDog = dd;
-
-        lp->bgComponents = [[NSMutableArray alloc] init];
-        int y = 152;
-        for(int i = 2; i <= 10; i++){
-            bgc = new bgComponent();
-            bgc->sprite = [CCSprite spriteWithSpriteFrameName:[NSString stringWithFormat:@"Grav_%d.png", i]];
-            bgc->sprite.position = CGPointMake(329, y+(6*(i-1)));
-            [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
-        }
-    }
-
-    [levelStructs addObject:[NSValue valueWithPointer:lp]];
-
-    /////////////////////////////////////////////////////////////////////////////
+    [levelStructs addObject:[self philly:full]];
+    [levelStructs addObject:[self nyc:full]];
+    [levelStructs addObject:[self london:full]];
+    [levelStructs addObject:[self china:full]];
+    [levelStructs addObject:[self japan:full]];
+    [levelStructs addObject:[self chicago:full]];
+    [levelStructs addObject:[self space:full]];
 
     [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_common.plist"];
     if(loadFull){
@@ -480,7 +81,6 @@
         if(unlocked) l->unlocked = true;
         else l->unlocked = false;
     }
-
     return levelStructs;
 }
 
@@ -649,6 +249,474 @@
 -(void) dealloc{
     free(lStructs);
     [super dealloc];
+}
+
++(NSValue *)philly:(NSNumber *)full{
+    BOOL loadFull = [full boolValue];
+    /********************************************************************************
+     * PHILLY LEVEL SETTINGS
+     *******************************************************************************/
+    
+    levelProps *lp = new levelProps();
+    lp->enabled = true;
+    lp->slug = @"philly";
+    lp->name = @"Philly";
+    lp->unlockThreshold = -1;
+    lp->func = @"switchScreenPhilly";
+    lp->thumbnail = @"Philly_Thumb.png";
+    
+    if(loadFull){
+        lp->bg = @"bg_philly.png";
+        lp->bgm = @"gameplay 1.mp3";
+        lp->spritesheet = @"sprites_philly";
+        lp->highScore = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"highScore%@", lp->slug]];
+        lp->personSpeedMul = 1;
+        
+        spcDogData *dd = new spcDogData();
+        dd->riseSprite = @"Steak_Rise.png";
+        dd->fallSprite = @"Steak_Fall.png";
+        dd->mainSprite = @"Steak.png";
+        dd->grabSprite = @"Steak_Grabbed.png";
+        dd->deathAnimFrames = [[NSMutableArray alloc] init];
+        dd->flashAnimFrames = [[NSMutableArray alloc] init];
+        dd->shotAnimFrames = [[NSMutableArray alloc] init];
+        for(int i = 0; i < 1; i++){
+            [dd->flashAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"Steak_Die_1.png"]]];
+            [dd->flashAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"Steak_Die_2.png"]]];
+        }
+        for(int i = 1; i <= 7; i++){
+            [dd->deathAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"Steak_Die_%d.png", i]]];
+        }
+        for(int i = 1; i <= 9; i++){
+            [dd->shotAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"Steak_Shot_%d.png", i]]];
+        }
+        lp->specialDog = dd;
+    }
+    return [NSValue valueWithPointer:lp];
+}
+
++(NSValue *)nyc:(NSNumber *)full{
+    BOOL loadFull = [full boolValue];
+    /********************************************************************************
+     * NYC LEVEL SETTINGS
+     *******************************************************************************/
+    
+    levelProps *lp = new levelProps();
+    lp->enabled = true;
+    lp->slug = @"nyc";
+    lp->name = @"Big Apple";
+    lp->unlockThreshold = 15000;
+    lp->func = @"switchScreenNYC";
+    lp->thumbnail = @"NYC_Thumb.png";
+    lp->unlockTweet = @"I traveled to the Big Apple for some mischief in @HeadsUpHotDogs";
+    
+    if(loadFull){
+        lp->bg = @"BG_NYC.png";
+        lp->bgm = @"gameplay 3.mp3";
+        lp->gravity = -25.0f;
+        lp->spritesheet = @"sprites_nyc";
+        lp->personSpeedMul = .8;
+        
+        spcDogData *dd = new spcDogData();
+        dd->riseSprite = @"Bagel_Rise.png";
+        dd->fallSprite = @"Bagel_Fall.png";
+        dd->mainSprite = @"Bagel.png";
+        dd->grabSprite = @"Bagel_Grab.png";
+        dd->deathAnimFrames = [[NSMutableArray alloc] init];
+        dd->shotAnimFrames = [[NSMutableArray alloc] init];
+        dd->flashAnimFrames = [[NSMutableArray alloc] init];
+        for(int i = 0; i < 1; i++){
+            [dd->flashAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"Bagel_Die_1.png"]]];
+            [dd->flashAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"Bagel_Die_2.png"]]];
+        }
+        for(int i = 1; i <= 8; i++){
+            [dd->deathAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"Bagel_Die_%d.png", i]]];
+        }
+        for(int i = 1; i <= 6; i++){
+            [dd->shotAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"Bagel_Shot_%d.png", i]]];
+        }
+        
+        lp->specialDog = dd;
+        
+        lp->bgComponents = [[NSMutableArray alloc] init];
+        bgComponent *bgc = new bgComponent();
+        bgc->sprite = [CCSprite spriteWithSpriteFrameName:@"Light_One.png"];
+        bgc->sprite.position = CGPointMake(238, 262);
+        bgc->sprite.tag = 1;
+        [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
+        bgc = new bgComponent();
+        bgc->sprite = [CCSprite spriteWithSpriteFrameName:@"Light_Two.png"];
+        bgc->sprite.position = CGPointMake(352, 262);
+        bgc->sprite.tag = 1;
+        [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
+        bgc = new bgComponent();
+        bgc->sprite = [CCSprite spriteWithSpriteFrameName:@"Light_Three.png"];
+        bgc->sprite.position = CGPointMake(380, 156);
+        bgc->sprite.tag = 1;
+        [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
+        bgc = new bgComponent();
+        bgc->sprite = [CCSprite spriteWithSpriteFrameName:@"Light_Three.png"];
+        bgc->sprite.position = CGPointMake(86, 156);
+        bgc->sprite.tag = 1;
+        [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
+    }
+    return [NSValue valueWithPointer:lp];
+}
+
++(NSValue *)london:(NSNumber *)full{
+    BOOL loadFull = [full boolValue];
+    /********************************************************************************
+     * LONDON LEVEL SETTINGS
+     *******************************************************************************/
+    
+    levelProps *lp = new levelProps();
+    lp->enabled = true;
+    lp->slug = @"london";
+    lp->name = @"London";
+    lp->unlockThreshold = 12000;
+    lp->func = @"switchScreenLondon";
+    lp->thumbnail = @"NYC_Thumb.png";
+    lp->unlockTweet = @"Chinese New Year is a perfect time for franks in @HeadsUpHotDogs";
+    
+    if(loadFull){
+        lp->bg = @"BG_NYC.png";
+        lp->bgm = @"gameplay 3.mp3";
+        lp->gravity = -22.0f;
+        lp->spritesheet = @"sprites_nyc";
+        lp->personSpeedMul = 1.2;
+        lp->restitutionMul = 1.2;
+        lp->frictionMul = .95;
+        
+        spcDogData *dd = new spcDogData();
+        dd->riseSprite = @"Bagel_Rise.png";
+        dd->fallSprite = @"Bagel_Fall.png";
+        dd->mainSprite = @"Bagel.png";
+        dd->grabSprite = @"Bagel_Grab.png";
+        dd->deathAnimFrames = [[NSMutableArray alloc] init];
+        dd->shotAnimFrames = [[NSMutableArray alloc] init];
+        dd->flashAnimFrames = [[NSMutableArray alloc] init];
+        for(int i = 0; i < 1; i++){
+            [dd->flashAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"Bagel_Die_1.png"]]];
+            [dd->flashAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"Bagel_Die_2.png"]]];
+        }
+        for(int i = 1; i <= 8; i++){
+            [dd->deathAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"Bagel_Die_%d.png", i]]];
+        }
+        for(int i = 1; i <= 6; i++){
+            [dd->shotAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"Bagel_Shot_%d.png", i]]];
+        }
+        
+        lp->specialDog = dd;
+    }
+    return [NSValue valueWithPointer:lp];
+}
+
++(NSValue *)china:(NSNumber *)full{
+    BOOL loadFull = [full boolValue];
+    /********************************************************************************
+     * CHINA LEVEL SETTINGS
+     *******************************************************************************/
+    
+    levelProps *lp = new levelProps();
+    lp->enabled = true;
+    lp->slug = @"china";
+    lp->name = @"China";
+    lp->unlockThreshold = 12000;
+    lp->func = @"switchScreenChina";
+    lp->thumbnail = @"NYC_Thumb.png";
+    lp->unlockTweet = @"Chinese New Year is a perfect time for franks in @HeadsUpHotDogs";
+    
+    if(loadFull){
+        lp->bg = @"BG_NYC.png";
+        lp->bgm = @"gameplay 3.mp3";
+        lp->gravity = -22.0f;
+        lp->spritesheet = @"sprites_nyc";
+        lp->personSpeedMul = 1.2;
+        lp->restitutionMul = 1.2;
+        lp->frictionMul = .95;
+        
+        spcDogData *dd = new spcDogData();
+        dd->riseSprite = @"Bagel_Rise.png";
+        dd->fallSprite = @"Bagel_Fall.png";
+        dd->mainSprite = @"Bagel.png";
+        dd->grabSprite = @"Bagel_Grab.png";
+        dd->deathAnimFrames = [[NSMutableArray alloc] init];
+        dd->shotAnimFrames = [[NSMutableArray alloc] init];
+        dd->flashAnimFrames = [[NSMutableArray alloc] init];
+        for(int i = 0; i < 1; i++){
+            [dd->flashAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"Bagel_Die_1.png"]]];
+            [dd->flashAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"Bagel_Die_2.png"]]];
+        }
+        for(int i = 1; i <= 8; i++){
+            [dd->deathAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"Bagel_Die_%d.png", i]]];
+        }
+        for(int i = 1; i <= 6; i++){
+            [dd->shotAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"Bagel_Shot_%d.png", i]]];
+        }
+        
+        lp->specialDog = dd;
+    }
+    return [NSValue valueWithPointer:lp];
+}
+
++(NSValue *)japan:(NSNumber *)full{
+    BOOL loadFull = [full boolValue];
+    /********************************************************************************
+     * JAPAN LEVEL SETTINGS
+     *******************************************************************************/
+    
+    levelProps *lp = new levelProps();
+    lp->enabled = true;
+    lp->slug = @"japan";
+    lp->name = @"Hot Spring";
+    lp->unlockThreshold = 13500;
+    lp->func = @"switchScreenJapan";
+    lp->thumbnail = @"Japan_Thumb.png";
+    lp->unlockTweet = @"I was ready to relax in a calming Japanese hot spring in @HeadsUpHotDogs";
+    
+    if(loadFull){
+        lp->bg = @"Japan_BG.png";
+        lp->bgm = @"gameplay 1.mp3";
+        lp->gravity = -28.0f;
+        lp->spritesheet = @"sprites_japan";
+        lp->dogDeathDelay = .001;
+        lp->personSpeedMul = .7;
+        lp->maxDogs = 7;
+        lp->gravity = -17.0;
+        lp->spawnInterval = 4.0;
+        
+        lp->dogDeathAnimFrames = [[NSMutableArray alloc] init];
+        for(int i = 1; i <= 9; i++){
+            [lp->dogDeathAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"Splash_%d.png", i]]];
+        }
+        
+        spcDogData *dd = new spcDogData();
+        dd->riseSprite = @"Bagel_Rise.png";
+        dd->fallSprite = @"Bagel_Fall.png";
+        dd->mainSprite = @"Bagel.png";
+        dd->grabSprite = @"Bagel_Grab.png";
+        dd->deathAnimFrames = [[NSMutableArray alloc] init];
+        dd->shotAnimFrames = [[NSMutableArray alloc] init];
+        dd->flashAnimFrames = [[NSMutableArray alloc] init];
+        for(int i = 0; i < 1; i++){
+            [dd->flashAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"Bagel_Die_1.png"]]];
+            [dd->flashAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"Bagel_Die_2.png"]]];
+        }
+        for(int i = 1; i <= 8; i++){
+            [dd->deathAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"Bagel_Die_%d.png", i]]];
+        }
+        for(int i = 1; i <= 6; i++){
+            [dd->shotAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"Bagel_Shot_%d.png", i]]];
+        }
+        
+        lp->specialDog = dd;
+    }
+    return [NSValue valueWithPointer:lp];
+}
+    
++(NSValue *)chicago:(NSNumber *)full{
+    BOOL loadFull = [full boolValue];
+    /********************************************************************************
+     * CHICAGO LEVEL SETTINGS
+     *******************************************************************************/
+    
+    levelProps *lp = new levelProps();
+    lp->enabled = true;
+    lp->slug = @"chicago";
+    lp->name = @"Windy City";
+    lp->unlockThreshold = 6500;
+    lp->thumbnail = @"Chicago_Thumb.png";
+    lp->func = @"switchScreenChicago";
+    lp->unlockTweet = @"I traveled to the Windy City in @HeadsUpHotDogs";
+    
+    if(loadFull){
+        lp->bg = @"Chicago_BG.png";
+        lp->bgm = @"gameplay 1.mp3";
+        lp->gravity = -27.0f;
+        lp->spritesheet = @"sprites_chicago";
+        lp->personSpeedMul = .85;
+        lp->restitutionMul = 1.3;
+        lp->frictionMul = 1.1;
+        lp->maxDogs = 5;
+        lp->hasShiba = true;
+        
+        spcDogData *dd = new spcDogData();
+        dd->riseSprite = @"ChiDog_Rise.png";
+        dd->fallSprite = @"ChiDog_Fall.png";
+        dd->mainSprite = @"ChiDog.png";
+        dd->grabSprite = @"ChiDog_Grab.png";
+        dd->deathAnimFrames = [[NSMutableArray alloc] init];
+        dd->shotAnimFrames = [[NSMutableArray alloc] init];
+        dd->flashAnimFrames = [[NSMutableArray alloc] init];
+        for(int i = 0; i < 1; i++){
+            [dd->flashAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"ChiDog_Death_1.png"]]];
+            [dd->flashAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"ChiDog_Death_2.png"]]];
+        }
+        for(int i = 1; i <= 8; i++){
+            [dd->deathAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"ChiDog_Death_%d.png", i]]];
+        }
+        for(int i = 1; i <= 5; i++){
+            [dd->shotAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"ChiDog_Shot_%d.png", i]]];
+        }
+        
+        lp->specialDog = dd;
+        
+        lp->bgComponents = [[NSMutableArray alloc] init];
+        bgComponent *bgc = new bgComponent();
+        bgc->sprite = [[CCSprite spriteWithSpriteFrameName:@"Flag_Flap_1.png"] retain];
+        bgc->sprite.position = CGPointMake([CCDirector sharedDirector].winSize.width-17, 245);
+        bgc->anim1 = [[NSMutableArray alloc] init];
+        for(int i = 1; i <= 4; i++){
+            [bgc->anim1 addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                                   [NSString stringWithFormat:@"Flag_Flap_%d.png", i]]];
+        }
+        bgc->anim2 = [[NSMutableArray alloc] init];
+        for(int i = 8; i <= 11; i++){
+            [bgc->anim2 addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                                   [NSString stringWithFormat:@"Flag_Flap_%d.png", i]]];
+        }
+        [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
+        bgc = new bgComponent();
+        bgc->sprite = [[CCSprite spriteWithSpriteFrameName:@"Flag_Flap_1.png"] retain];
+        bgc->sprite.position = CGPointMake(19, 267);
+        bgc->anim1 = [[NSMutableArray alloc] init];
+        for(int i = 1; i <= 4; i++){
+            [bgc->anim1 addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                                   [NSString stringWithFormat:@"Flag_Flap_%d.png", i]]];
+        }
+        bgc->anim2 = [[NSMutableArray alloc] init];
+        for(int i = 8; i <= 11; i++){
+            [bgc->anim2 addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                                   [NSString stringWithFormat:@"Flag_Flap_%d.png", i]]];
+        }
+        [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
+        bgc = new bgComponent();
+        bgc->sprite = [[CCSprite spriteWithSpriteFrameName:@"Dust1_1.png"] retain];
+        bgc->sprite.position = CGPointMake(179, 20);
+        bgc->anim1 = [[NSMutableArray alloc] init];
+        for(int i = 1; i <= 6; i++){
+            [bgc->anim1 addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                                   [NSString stringWithFormat:@"Dust1_%d.png", i]]];
+        }
+        [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
+    }
+    return [NSValue valueWithPointer:lp];
+}
+
++(NSValue *)space:(NSNumber *)full{
+    BOOL loadFull = [full boolValue];
+    /********************************************************************************
+     * SPACE LEVEL SETTINGS
+     *******************************************************************************/
+    
+    levelProps *lp = new levelProps();
+    lp->enabled = false;
+    lp->slug = @"space";
+    lp->name = @"Space Station";
+    lp->unlockThreshold = 16000;
+    lp->thumbnail = @"Space_Thumb.png";
+    lp->func = @"switchScreenSpace";
+    lp->unlockTweet = @"We sent a frankfurter to the moon in @HeadsUpHotDogs";
+    
+    if(loadFull){
+        lp->bg = @"SpaceBG.png";
+        lp->bgm = @"gameplay 3.mp3";
+        lp->gravity = -40.0f;
+        lp->spritesheet = @"sprites_space";
+        lp->personSpeedMul = 1.1;
+        lp->restitutionMul = 1.7;
+        lp->frictionMul = 100;
+        lp->hasShiba = true;
+        
+        spcDogData *dd = new spcDogData();
+        dd->riseSprite = @"Chips_Rise.png";
+        dd->fallSprite = @"Chips_Fall.png";
+        dd->mainSprite = @"Chips.png";
+        dd->grabSprite = @"Chips_Grab.png";
+        dd->deathAnimFrames = [[NSMutableArray alloc] init];
+        dd->shotAnimFrames = [[NSMutableArray alloc] init];
+        dd->flashAnimFrames = [[NSMutableArray alloc] init];
+        for(int i = 0; i < 1; i++){
+            [dd->flashAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"Chips_Die_1.png"]]];
+            [dd->flashAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"Chips_Die_2.png"]]];
+        }
+        for(int i = 1; i <= 8; i++){
+            [dd->deathAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"Chips_Die_%d.png", i]]];
+        }
+        for(int i = 1; i <= 6; i++){
+            [dd->shotAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"Chips_Shoot%d.png", i]]];
+        }
+        lp->specialDog = dd;
+        
+        lp->bgComponents = [[NSMutableArray alloc] init];
+        int y = 152;
+        bgComponent *bgc;
+        for(int i = 2; i <= 10; i++){
+            bgc = new bgComponent();
+            bgc->sprite = [CCSprite spriteWithSpriteFrameName:[NSString stringWithFormat:@"Grav_%d.png", i]];
+            bgc->sprite.position = CGPointMake(329, y+(6*(i-1)));
+            [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
+        }
+    }
+    return [NSValue valueWithPointer:lp];
 }
 
 @end
