@@ -23,12 +23,12 @@
 
 #ifdef DEBUG
 #define SPAWN_LIMIT_DECREMENT_DELAY 6
-#define SPECIAL_DOG_PROBABILITY 30
+#define SPECIAL_DOG_PROBABILITY 3
 #define DROPPED_MAX 20
 #define WIENER_SPAWN_START 5
 #else
 #define SPAWN_LIMIT_DECREMENT_DELAY 2
-#define SPECIAL_DOG_PROBABILITY 30
+#define SPECIAL_DOG_PROBABILITY 27
 #define DROPPED_MAX 5
 #define WIENER_SPAWN_START 5
 #endif
@@ -846,7 +846,7 @@
     CGPoint location = CGPointMake(arc4random() % (int)(SIDE_BUFFER+(winSize.width-(2*SIDE_BUFFER))), DOG_SPAWN_MINHT+(arc4random() % (int)(winSize.height-DOG_SPAWN_MINHT)));
     
     spcDogData *dd = NULL;
-    if (type.intValue == S_SPCDOG){
+    if (type.intValue == 1){
         dd = level->specialDog;
     }
     
@@ -877,7 +877,7 @@
     wienerBody->SetAwake(false);
 
     NSMutableArray *wienerAppearAnimFrames = [[NSMutableArray alloc] init];
-    if(type.intValue == S_SPCDOG){
+    if(type.intValue == 1){
         for(int i = 1; i <= 6; i++){
             [wienerAppearAnimFrames addObject:
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -1304,7 +1304,7 @@
     CCLOG(@"Dogs onscreen: %d", _dogsOnscreen);
     
     if(_dogsOnscreen < _maxDogsOnScreen && !_gameOver){
-        if(thisType.intValue == S_SPCDOG){
+        if(thisType.intValue == 1){
             id screenLightenAction = [CCCallFuncND actionWithTarget:self selector:@selector(screenFlash:data:) data:[[NSNumber numberWithInt:1] retain]];
             id darkenFGAction = [CCCallFuncND actionWithTarget:self selector:@selector(colorFG:data:) data:[[NSNumber numberWithInt:1] retain]];
             id lightenFGAction = [CCCallFuncND actionWithTarget:self selector:@selector(colorFG:data:) data:[[NSNumber numberWithInt:0] retain]];

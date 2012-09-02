@@ -73,7 +73,7 @@
         }
     }
     //add base sprite to scene
-    self->sprite1 = [CCSprite spriteWithSpriteFrameName:mainSprite];
+    self->sprite1 = [[CCSprite spriteWithSpriteFrameName:mainSprite] retain];
     self->sprite1.position = ccp(location.x, location.y);
     self->sprite1.tag = tag;
     [self->spritesheet addChild:self->sprite1 z:50]; //pass in spritesheetCommon
@@ -124,7 +124,6 @@
     else {
         f = f | FLOOR4 | FLOOR3 | FLOOR2 | FLOOR1;
     }
-    CCLOG(@"F: %x", f);
     fUd2->ogCollideFilters = f;
     fUd2->tag = F_DOGCLD;
     
@@ -192,6 +191,7 @@
 }
 
 -(void)setOffHeadCollisionFilters{
+    // TODO - make this exit early to reduce lag
     b2Body *b = self->worldBody;
     bodyUserData *ud = (bodyUserData *)b->GetUserData();
     for(b2Fixture* fixture = b->GetFixtureList(); fixture; fixture = fixture->GetNext()){
@@ -201,8 +201,6 @@
             // we set the filters to their original value (all people, floor, and walls)
             b2Filter dogFilter = fixture->GetFilterData();
             dogFilter.maskBits = fUd->ogCollideFilters;
-            CCLOG(@"position: %0.2f x %0.2f", b->GetPosition().x, b->GetPosition().y);
-            CCLOG(@"winSize.height/PTM_RATIO: %0.2f", self->winSize.height/PTM_RATIO);
             if(b->GetPosition().y > self->winSize.height/PTM_RATIO)
                 dogFilter.maskBits = 0xfffff000;
             else if(b->GetPosition().y < self->winSize.height/PTM_RATIO)
