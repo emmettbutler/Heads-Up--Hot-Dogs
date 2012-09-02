@@ -182,7 +182,7 @@
         if(_timePlayed > bestTime)
             [standardUserDefaults setInteger:_timePlayed forKey:@"bestTime"];
         
-        if(_score > level->next->unlockThreshold && !level->next->unlocked){
+        if(_score > level->unlockNextThreshold && !level->next->unlocked){
             levelBox = [CCSprite spriteWithSpriteFrameName:@"Lvl_TextBox.png"];
             levelBox.position = ccp(winSize.width/2, (winSize.height/2));
             [self addChild:levelBox];
@@ -213,7 +213,7 @@
         if(_setNewHighScore)
             [tweets addObject:highScoreString];
         
-        if(_score > level->next->unlockThreshold){
+        if(_score > level->unlockNextThreshold){
             [tweets addObject:level->next->unlockTweet];
         }
             

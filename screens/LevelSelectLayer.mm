@@ -9,8 +9,6 @@
 #import "LevelSelectLayer.h"
 #import "GameplayLayer.h"
 
-#define NUM_LEVELS 6
-
 @implementation LevelSelectLayer
 
 +(CCScene *) scene{
@@ -21,17 +19,9 @@
 }
 
 +(NSMutableArray *)buildLevels:(NSNumber *)full{
-    levelStructs = [[NSMutableArray alloc] initWithCapacity:NUM_LEVELS];
-    BOOL loadFull = [full intValue];
-
+    levelStructs = [[NSMutableArray alloc] init];
+    
     [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_common.plist"];
-    if(loadFull){
-        [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_nyc.plist"];
-        [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_philly.plist"];
-        [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_chicago.plist"];
-        [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_space.plist"];
-        [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_london.plist"];
-    }
 
     [levelStructs addObject:[self philly:full]];
     [levelStructs addObject:[self nyc:full]];
@@ -42,13 +32,6 @@
     [levelStructs addObject:[self space:full]];
 
     [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_common.plist"];
-    if(loadFull){
-        [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_nyc.plist"];
-        [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_philly.plist"];
-        [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_chicago.plist"];
-        [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_space.plist"];
-        [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_japan.plist"];
-    }
 
     for(NSValue *v in levelStructs){
         levelProps *l = (levelProps *)[v pointerValue];
@@ -72,7 +55,7 @@
         }
 
         int prevHighScore = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"highScore%@", l->prev->slug]];
-        if(prevHighScore > l->unlockThreshold){
+        if(prevHighScore > l->prev->unlockNextThreshold){
             [standardUserDefaults setInteger:1 forKey:[NSString stringWithFormat:@"unlocked%@", l->slug]];
         }
         [standardUserDefaults synchronize];
@@ -168,7 +151,7 @@
     time++;
     level = (levelProps *)[(NSValue *)[lStructs objectAtIndex:curLevelIndex] pointerValue];
 
-    if(NO_LEVEL_LOCKS || level->unlocked || level->unlockThreshold < 0){
+    if(NO_LEVEL_LOCKS || level->unlocked || level->prev->unlockNextThreshold < 0){
         [thumb setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:level->thumbnail]];
         [nameLabel setString:[NSString stringWithFormat:@"%@", level->name]];
         [scoreLabel setString:[NSString stringWithFormat:@"high score: %06d", level->highScore]];
@@ -176,7 +159,7 @@
     } else {
         [thumb setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"NoLevel.png"]];
         [nameLabel setString:@"??????"];
-        [scoreLabel setString:[NSString stringWithFormat:@"Unlock with %d points", level->unlockThreshold]];
+        [scoreLabel setString:[NSString stringWithFormat:@"Unlock with %d points", level->prev->unlockNextThreshold]];
         [helpLabel setVisible:false];
     }
 }
@@ -265,11 +248,12 @@
     lp->enabled = true;
     lp->slug = @"philly";
     lp->name = @"Philly";
-    lp->unlockThreshold = -1;
+    lp->unlockNextThreshold = -1;
     lp->func = @"switchScreenPhilly";
     lp->thumbnail = @"Philly_Thumb.png";
     
     if(loadFull){
+        [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_philly.plist"];
         lp->bg = @"bg_philly.png";
         lp->bgm = @"gameplay 1.mp3";
         lp->spritesheet = @"sprites_philly";
@@ -303,6 +287,7 @@
               [NSString stringWithFormat:@"Steak_Shot_%d.png", i]]];
         }
         lp->specialDog = dd;
+        [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_philly.plist"];
     }
     return [NSValue valueWithPointer:lp];
 }
@@ -317,12 +302,13 @@
     lp->enabled = true;
     lp->slug = @"nyc";
     lp->name = @"Big Apple";
-    lp->unlockThreshold = 15000;
+    lp->unlockNextThreshold = 15000;
     lp->func = @"switchScreenNYC";
     lp->thumbnail = @"NYC_Thumb.png";
     lp->unlockTweet = @"I traveled to the Big Apple for some mischief in @HeadsUpHotDogs";
     
     if(loadFull){
+        [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_nyc.plist"];
         lp->bg = @"BG_NYC.png";
         lp->bgm = @"gameplay 3.mp3";
         lp->gravity = -25.0f;
@@ -379,6 +365,7 @@
         bgc->sprite.position = CGPointMake(86, 156);
         bgc->sprite.tag = 1;
         [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
+        [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_nyc.plist"];
     }
     return [NSValue valueWithPointer:lp];
 }
@@ -393,16 +380,17 @@
     lp->enabled = true;
     lp->slug = @"london";
     lp->name = @"London";
-    lp->unlockThreshold = 12000;
+    lp->unlockNextThreshold = 12000;
     lp->func = @"switchScreenLondon";
     lp->thumbnail = @"NYC_Thumb.png";
     lp->unlockTweet = @"I went to London to conquer some franks in @HeadsUpHotDogs";
     
     if(loadFull){
-        lp->bg = @"BG_NYC.png";
+        [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_london.plist"];
+        lp->bg = @"Subway_Car.png";
         lp->bgm = @"gameplay 3.mp3";
         lp->gravity = -22.0f;
-        lp->spritesheet = @"sprites_nyc";
+        lp->spritesheet = @"sprites_london";
         lp->personSpeedMul = 1.2;
         lp->restitutionMul = 1.2;
         lp->frictionMul = .95;
@@ -449,7 +437,7 @@
     lp->enabled = true;
     lp->slug = @"china";
     lp->name = @"China";
-    lp->unlockThreshold = 12000;
+    lp->unlockNextThreshold = 12000;
     lp->func = @"switchScreenChina";
     lp->thumbnail = @"NYC_Thumb.png";
     lp->unlockTweet = @"Chinese New Year is a perfect time for franks in @HeadsUpHotDogs";
@@ -505,7 +493,7 @@
     lp->enabled = true;
     lp->slug = @"japan";
     lp->name = @"Hot Spring";
-    lp->unlockThreshold = 13500;
+    lp->unlockNextThreshold = 13500;
     lp->func = @"switchScreenJapan";
     lp->thumbnail = @"Japan_Thumb.png";
     lp->unlockTweet = @"I was ready to relax in a calming Japanese hot spring in @HeadsUpHotDogs";
@@ -554,8 +542,8 @@
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
               [NSString stringWithFormat:@"Bagel_Shot_%d.png", i]]];
         }
-        
         lp->specialDog = dd;
+        [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_japan.plist"];
     }
     return [NSValue valueWithPointer:lp];
 }
@@ -570,12 +558,13 @@
     lp->enabled = true;
     lp->slug = @"chicago";
     lp->name = @"Windy City";
-    lp->unlockThreshold = 6500;
+    lp->unlockNextThreshold = 6500;
     lp->thumbnail = @"Chicago_Thumb.png";
     lp->func = @"switchScreenChicago";
     lp->unlockTweet = @"I traveled to the Windy City in @HeadsUpHotDogs";
     
     if(loadFull){
+        [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_chicago.plist"];
         lp->bg = @"Chicago_BG.png";
         lp->bgm = @"gameplay 1.mp3";
         lp->gravity = -27.0f;
@@ -653,6 +642,7 @@
                                    [NSString stringWithFormat:@"Dust1_%d.png", i]]];
         }
         [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
+        [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_chicago.plist"];
     }
     return [NSValue valueWithPointer:lp];
 }
@@ -667,12 +657,13 @@
     lp->enabled = false;
     lp->slug = @"space";
     lp->name = @"Space Station";
-    lp->unlockThreshold = 16000;
+    lp->unlockNextThreshold = 16000;
     lp->thumbnail = @"Space_Thumb.png";
     lp->func = @"switchScreenSpace";
     lp->unlockTweet = @"We sent a frankfurter to the moon in @HeadsUpHotDogs";
     
     if(loadFull){
+        [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_space.plist"];
         lp->bg = @"SpaceBG.png";
         lp->bgm = @"gameplay 3.mp3";
         lp->gravity = -40.0f;
@@ -719,6 +710,7 @@
             bgc->sprite.position = CGPointMake(329, y+(6*(i-1)));
             [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
         }
+        [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_space.plist"];
     }
     return [NSValue valueWithPointer:lp];
 }
