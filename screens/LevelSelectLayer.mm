@@ -230,6 +230,10 @@
     [self switchScreenStartWithSlug:@"london"];
 }
 
+-(void)switchScreenChina{
+    [self switchScreenStartWithSlug:@"china"];
+}
+
 -(void)switchScreenChicago{
     [self switchScreenStartWithSlug:@"chicago"];
 }
@@ -392,7 +396,7 @@
     lp->unlockThreshold = 12000;
     lp->func = @"switchScreenLondon";
     lp->thumbnail = @"NYC_Thumb.png";
-    lp->unlockTweet = @"Chinese New Year is a perfect time for franks in @HeadsUpHotDogs";
+    lp->unlockTweet = @"I went to London to conquer some franks in @HeadsUpHotDogs";
     
     if(loadFull){
         lp->bg = @"BG_NYC.png";

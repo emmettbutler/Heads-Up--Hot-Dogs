@@ -24,12 +24,12 @@
 
 #ifdef DEBUG
 #define SPAWN_LIMIT_DECREMENT_DELAY 6
-#define SPECIAL_DOG_PROBABILITY 3
+#define SPECIAL_DOG_PROBABILITY 29
 #define DROPPED_MAX 20
 #define WIENER_SPAWN_START 5
 #else
 #define SPAWN_LIMIT_DECREMENT_DELAY 2
-#define SPECIAL_DOG_PROBABILITY 27
+#define SPECIAL_DOG_PROBABILITY 29
 #define DROPPED_MAX 5
 #define WIENER_SPAWN_START 5
 #endif
@@ -523,6 +523,13 @@
     }
 }
 
+-(void)flipFGDark{
+    if(_fgIsDark)
+        _fgIsDark = false;
+    else
+        _fgIsDark = true;
+}
+
 -(void)movePerson:(NSValue *)body{
     b2Body *b = (b2Body *)[body pointerValue];
     bodyUserData *ud = (bodyUserData *)b->GetUserData();
@@ -559,7 +566,22 @@
                     [parameters addObject:[NSValue valueWithCGPoint:barfPosition]];
                     [parameters addObject:[NSNumber numberWithInt:xVel]];
                     
-                    [ud->sprite1 runAction:[CCSequence actions:[CCDelayTime actionWithDuration:2.9], [CCCallFuncND actionWithTarget:self selector:@selector(barfDogs:data:) data:parameters], nil]];
+                    id screenFlashAction = [CCSequence actions:
+                                      [CCCallFuncND actionWithTarget:self selector:@selector(screenFlash:data:) data:[NSNumber numberWithInt:1]],
+                                      [CCCallFuncND actionWithTarget:self selector:@selector(screenFlash:data:) data:[NSNumber numberWithInt:0]], nil];
+                    id colorBGAction = [CCCallFuncND actionWithTarget:self selector:@selector(colorBG:data:) data:[NSNumber numberWithBool:true]];
+                    id unColorBGAction = [CCCallFuncND actionWithTarget:self selector:@selector(colorBG:data:) data:[NSNumber numberWithBool:false]];
+                    NSMutableArray *colorParams = [[NSMutableArray alloc] init];
+                    [colorParams addObject:[NSNumber numberWithInt:1]];
+                    [colorParams addObject:body];
+                    id colorFGAction = [CCCallFuncND actionWithTarget:self selector:@selector(colorFG:data:) data:colorParams];
+                    colorParams = [[NSMutableArray alloc] init];
+                    [colorParams addObject:[NSNumber numberWithInt:0]]; // 137, 0, 0 
+                    [colorParams addObject:[NSValue valueWithPointer:NULL]];
+                    id unColorFGAction = [CCCallFuncND actionWithTarget:self selector:@selector(colorFG:data:) data:colorParams];
+                    id flipDarkAction = [CCCallFunc actionWithTarget:self selector:@selector(flipFGDark)];
+                    
+                    [ud->sprite1 runAction:[CCSequence actions:screenFlashAction, flipDarkAction, colorBGAction, colorFGAction, [CCDelayTime actionWithDuration:2.9], [CCCallFuncND actionWithTarget:self selector:@selector(barfDogs:data:) data:parameters], flipDarkAction, unColorBGAction, unColorFGAction, screenFlashAction, nil]];
                 } else {
                     [ud->sprite1 runAction:ud->idleAction];
                     [ud->ripples runAction:ud->idleRipple];
@@ -645,19 +667,32 @@
     }
 }
 
--(void)colorFG:(id)sender data:(NSNumber *)dark{
+-(void)colorBG:(id)sender data:(NSNumber *)color{
+    if([color boolValue]){
+        [background setColor:satanColor];
+    } else {
+        [background setColor:ccc3(255, 255, 255)];
+    }
+}
+
+-(void)colorFG:(id)sender data:(NSMutableArray *)params{
+    NSNumber *color = [params objectAtIndex:0];
+    NSValue *excludeBody = [params objectAtIndex:1];
     for(b2Body* b = _world->GetBodyList(); b; b = b->GetNext()){
         if(b->GetUserData() && b->GetUserData() != (void*)100){
+            if([excludeBody pointerValue] == b) continue;
             bodyUserData *ud = (bodyUserData*)b->GetUserData();
             if((ud->sprite1.tag >= S_BUSMAN && ud->sprite1.tag <= S_TOPPSN) || ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG || ud->sprite1.tag == S_COPARM){
-                if(dark.intValue == 1){
-                    [ud->sprite1 setColor:ccc3(80,80,80)];
-                    [ud->sprite2 setColor:ccc3(80,80,80)];
-                    [ud->overlaySprite setColor:ccc3(80,80,80)];
+                if(color.intValue == 1){
+                    [ud->sprite1 setColor:spcDogFlashColor];
+                    [ud->sprite2 setColor:spcDogFlashColor];
+                    [ud->angryFace setColor:spcDogFlashColor];
+                    [ud->overlaySprite setColor:spcDogFlashColor];
                 }
                 else {
                     [ud->sprite1 setColor:ccc3(255,255,255)];
                     [ud->sprite2 setColor:ccc3(255,255,255)];
+                    [ud->angryFace setColor:ccc3(255, 255, 255)];
                     [ud->overlaySprite setColor:ccc3(255,255,255)];
                 }
             }
@@ -1190,7 +1225,14 @@
         }
     }
     ud->restartTime = ud->stopTime + ud->stopTimeDelta;
-
+    
+    if(_fgIsDark){
+        [ud->sprite1 setColor:spcDogFlashColor];
+        [ud->sprite2 setColor:spcDogFlashColor];
+        [ud->angryFace setColor:spcDogFlashColor];
+        [ud->overlaySprite setColor:spcDogFlashColor];
+    }
+        
     int fTag = person->fTag;
     
     fixtureUserData *fUd1 = new fixtureUserData();
@@ -1306,9 +1348,16 @@
     
     if(_dogsOnscreen < _maxDogsOnScreen && !_gameOver){
         if(thisType.intValue == 1){
+            NSMutableArray *params = [[NSMutableArray alloc] init];
+            
             id screenLightenAction = [CCCallFuncND actionWithTarget:self selector:@selector(screenFlash:data:) data:[[NSNumber numberWithInt:1] retain]];
-            id darkenFGAction = [CCCallFuncND actionWithTarget:self selector:@selector(colorFG:data:) data:[[NSNumber numberWithInt:1] retain]];
-            id lightenFGAction = [CCCallFuncND actionWithTarget:self selector:@selector(colorFG:data:) data:[[NSNumber numberWithInt:0] retain]];
+            [params addObject:[NSNumber numberWithInt:1]];
+            [params addObject:[NSValue valueWithPointer:NULL]];
+            id darkenFGAction = [CCCallFuncND actionWithTarget:self selector:@selector(colorFG:data:) data:params];
+            params = [[NSMutableArray alloc] init];
+            [params addObject:[NSNumber numberWithInt:0]];
+            [params addObject:[NSValue valueWithPointer:NULL]];
+            id lightenFGAction = [CCCallFuncND actionWithTarget:self selector:@selector(colorFG:data:) data:params];
             id screenDarkenAction = [CCCallFuncND actionWithTarget:self selector:@selector(screenFlash:data:) data:[[NSNumber numberWithInt:0] retain]];
             id delay2 = [CCDelayTime actionWithDuration:.2];
             id sequence2 = [CCSequence actions: screenLightenAction, darkenFGAction, delay2, lightenFGAction, screenDarkenAction, nil];
@@ -1443,6 +1492,8 @@
         
         // color definitions
         _color_pink = ccc3(255, 62, 166);
+        spcDogFlashColor = ccc3(80, 80, 80);
+        satanColor = ccc3(137, 0, 0);
             
         [standardUserDefaults synchronize];
 
@@ -1643,7 +1694,7 @@
         } if(!(time % [vent2 getInterval])){
             [vent2 startBlowing];
         }
-    } else if(level->slug == @"london"){
+    } else if(level->slug == @"china"){
         if(!(time % 250) && arc4random() % 2  == 1){
             firecracker = [[Firecracker alloc] init:[NSValue valueWithPointer:_world] withSpritesheet:[NSValue valueWithPointer:spriteSheetCommon]];
             [firecracker runSequence];

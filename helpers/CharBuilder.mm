@@ -41,6 +41,18 @@
     return levelArray;
 }
 
++(NSMutableArray *)china{
+    NSMutableArray *levelArray = [[[NSMutableArray alloc] init] retain];;
+    
+    [levelArray addObject:[NSValue valueWithPointer:[self businessman]]];
+    [levelArray addObject:[NSValue valueWithPointer:[self professor]]];
+    [levelArray addObject:[NSValue valueWithPointer:[self youngPro]]];
+    [levelArray addObject:[NSValue valueWithPointer:[self police]]];
+    [levelArray addObject:[NSValue valueWithPointer:[self dogMuncher]]];
+    
+    return levelArray;
+}
+
 +(NSMutableArray *)london{
     NSMutableArray *levelArray = [[[NSMutableArray alloc] init] retain];;
     
