@@ -60,7 +60,7 @@
     NSUserDefaults *standardUserDefaults;
     NSInteger _sfxOn;
     int _points, _droppedCount, time, _curPersonMaskBits, _peopleGrumped, _dogsSaved, _dogsOnscreen, _maxDogsOnScreen, _numWorldTouches, _levelMaxDogs;
-    float _wienerSpawnDelayTime, _levelSpawnInterval;
+    float _wienerSpawnDelayTime, _levelSpawnInterval, _subwayForce;
     BOOL _pause, _shootLock, _policeOnScreen, _muncherOnScreen, _gameOver, _hasDroppedDog, _fgIsDark;
 
     struct bodyUserData {

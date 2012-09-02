@@ -474,6 +474,17 @@
     } else if(level->slug == @"nyc" && !(time % 19)) {
         [vent1 blowFrank:[NSValue valueWithPointer:b]];
         [vent2 blowFrank:[NSValue valueWithPointer:b]];
+    } else if(level->slug == @"london"){
+        if(!ud->grabbed){
+            if(_subwayForce && abs(_subwayForce) < 2){
+                if(b->GetLinearVelocity().x != b->GetLinearVelocity().x+_subwayForce)
+                b->SetLinearVelocity(b2Vec2(b->GetLinearVelocity().x+_subwayForce, b->GetLinearVelocity().y));
+                if(_subwayForce > 0)
+                    _subwayForce += .1;
+                else
+                    _subwayForce -= .1;
+            } else _subwayForce = 0;
+        }
     } else if(level->slug == @"china"){
         if(!ud->grabbed && [firecracker explosionHittingDog:[NSValue valueWithPointer:b]]){
             ud->exploding = true;
@@ -766,6 +777,10 @@
 
 -(void)playParticles:(id)sender data:(NSValue *)particles{
     [self addChild:(CCParticleSystem *)[particles pointerValue] z:100];
+}
+
+-(void)setSubwayForce:(id)sender data:(NSNumber *)force {
+    _subwayForce = force.floatValue;
 }
 
 -(void)counterExplode:(id)sender data:(NSNumber *)increment{
@@ -1454,8 +1469,10 @@
             anim = [CCAnimation animationWithFrames:bgc->anim1 delay:.1f];
             _dustAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO]] retain];
         } else if (level->slug == @"london"){
+            id startForceAction = [CCCallFuncND actionWithTarget:self selector:@selector(setSubwayForce:data:) data:[[NSNumber numberWithFloat:1.0] retain]];
+            id stopForceAction = [CCCallFuncND actionWithTarget:self selector:@selector(setSubwayForce:data:) data:[[NSNumber numberWithFloat:-1.0] retain]];
             bgComponent *bgc = (bgComponent *)[[level->bgComponents objectAtIndex:0] pointerValue];
-            window1CycleAction = [[CCSequence actions:bgc->startingAction, bgc->loopingAction, bgc->stoppingAction, nil] retain];
+            window1CycleAction = [[CCSequence actions:startForceAction, bgc->startingAction, bgc->loopingAction, stopForceAction, bgc->stoppingAction, nil] retain];
             bgc = (bgComponent *)[[level->bgComponents objectAtIndex:1] pointerValue];
             window2CycleAction = [[CCSequence actions:bgc->startingAction, bgc->loopingAction, bgc->stoppingAction, nil] retain];
             bgc = (bgComponent *)[[level->bgComponents objectAtIndex:2] pointerValue];
@@ -2192,7 +2209,7 @@
     UITouch *touch1 = [[allTouches allObjects] objectAtIndex:0];
     CGPoint touchLocation1 = [touch1 locationInView: [touch1 view]];
     touchLocation1 = [[CCDirector sharedDirector] convertToGL: touchLocation1];
-    NSLog(@"Touching point %0.2f x %0.2f", touchLocation1.x, touchLocation1.y);
+    CCLOG(@"Touching point %0.2f x %0.2f", touchLocation1.x, touchLocation1.y);
     locationWorld1 = b2Vec2(touchLocation1.x/PTM_RATIO, touchLocation1.y/PTM_RATIO);
     
     if(count > 1){
