@@ -16,8 +16,9 @@
 
 #define DEGTORAD 0.0174532
 #define DOG_SPAWN_MINHT 240
+#define VOMIT_VEL 666 // diego thinks this should be 666, i think 66.6 makes more sense
 #define COP_RANGE 4
-#define VOMIT_PROBABILITY 200
+#define VOMIT_PROBABILITY 250
 #define DOG_COUNTER_HT 295
 #define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 
@@ -547,10 +548,10 @@
                     [ud->sprite2 runAction:ud->_vomitAction];
                     [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"BusinessMan_Idle_1.png"]];
                     
-                    float xBarf = b->GetPosition().x*PTM_RATIO - 40, yBarf = b->GetPosition().y*PTM_RATIO + 30, xVel = -70;
+                    float xBarf = b->GetPosition().x*PTM_RATIO - 40, yBarf = b->GetPosition().y*PTM_RATIO + 30, xVel = -1*VOMIT_VEL;
                     if(ud->sprite1.flipX){
                         xBarf = b->GetPosition().x*PTM_RATIO + 40;
-                        xVel = 70;
+                        xVel = VOMIT_VEL;
                     }
                     CGPoint barfPosition = CGPointMake(xBarf, yBarf);
                     
