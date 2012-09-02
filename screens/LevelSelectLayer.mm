@@ -421,8 +421,50 @@
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
               [NSString stringWithFormat:@"Bagel_Shot_%d.png", i]]];
         }
-        
         lp->specialDog = dd;
+        
+        lp->bgComponents = [[NSMutableArray alloc] init];
+        bgComponent *bgc;
+        for(int i = 1; i <= 4; i++){
+            bgc = new bgComponent();
+            bgc->sprite = [[CCSprite spriteWithSpriteFrameName:[NSString stringWithFormat:@"Window_%d_Start_1.png", i]] retain];
+            int xPos;
+            switch(i){
+                case 1: xPos = 59; break;
+                case 2: xPos = 145; break;
+                case 3: xPos = 330; break;
+                case 4: xPos = 473; break;
+                default: break;
+            }
+            bgc->sprite.position = CGPointMake(xPos, 212);
+            bgc->anim1 = [[NSMutableArray alloc] init];
+            for(int j = 1; j <= 13; j++){
+                [bgc->anim1 addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                                       [NSString stringWithFormat:@"Window_%d_Start_%d.png", i, j]]];
+            }
+            CCAnimation *anim = [CCAnimation animationWithFrames:bgc->anim1 delay:.12f];
+            bgc->startingAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO] times:1] retain];
+            bgc->anim2 = [[NSMutableArray alloc] init];
+            for(int j = 1; j <= 7; j++){
+                if(i != 4){
+                    [bgc->anim2 addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                                           [NSString stringWithFormat:@"Window_%d_Loop_%d.png", i, j]]];
+                } else {
+                    [bgc->anim2 addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                                           [NSString stringWithFormat:@"Window_%d_Loop.png", i]]];
+                }
+            }
+            anim = [CCAnimation animationWithFrames:bgc->anim2 delay:.12f];
+            bgc->loopingAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO] times:10] retain];
+            bgc->anim3 = [[NSMutableArray alloc] init];
+            for(int j = 1; j <= 10; j++){
+                [bgc->anim3 addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                                       [NSString stringWithFormat:@"Window_%d_Stop_%d.png", i, j]]];
+            }
+            anim = [CCAnimation animationWithFrames:bgc->anim3 delay:.12f];
+            bgc->stoppingAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO] times:1] retain];
+            [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
+        }
     }
     return [NSValue valueWithPointer:lp];
 }
@@ -493,7 +535,7 @@
     lp->enabled = true;
     lp->slug = @"japan";
     lp->name = @"Hot Spring";
-    lp->unlockNextThreshold = 13500;
+    lp->unlockNextThreshold = 6500;
     lp->func = @"switchScreenJapan";
     lp->thumbnail = @"Japan_Thumb.png";
     lp->unlockTweet = @"I was ready to relax in a calming Japanese hot spring in @HeadsUpHotDogs";

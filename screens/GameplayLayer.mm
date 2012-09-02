@@ -1453,6 +1453,15 @@
             bgc = (bgComponent *)[[level->bgComponents objectAtIndex:2] pointerValue];
             anim = [CCAnimation animationWithFrames:bgc->anim1 delay:.1f];
             _dustAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO]] retain];
+        } else if (level->slug == @"london"){
+            bgComponent *bgc = (bgComponent *)[[level->bgComponents objectAtIndex:0] pointerValue];
+            window1CycleAction = [[CCSequence actions:bgc->startingAction, bgc->loopingAction, bgc->stoppingAction, nil] retain];
+            bgc = (bgComponent *)[[level->bgComponents objectAtIndex:1] pointerValue];
+            window2CycleAction = [[CCSequence actions:bgc->startingAction, bgc->loopingAction, bgc->stoppingAction, nil] retain];
+            bgc = (bgComponent *)[[level->bgComponents objectAtIndex:2] pointerValue];
+            window3CycleAction = [[CCSequence actions:bgc->startingAction, bgc->loopingAction, bgc->stoppingAction, nil] retain];
+            bgc = (bgComponent *)[[level->bgComponents objectAtIndex:3] pointerValue];
+            window4CycleAction = [[CCSequence actions:bgc->startingAction, bgc->loopingAction, bgc->stoppingAction, nil] retain];
         }
 
         background = [CCSprite spriteWithSpriteFrameName:level->bg];
@@ -1693,6 +1702,17 @@
             [vent1 startBlowing];
         } if(!(time % [vent2 getInterval])){
             [vent2 startBlowing];
+        }
+    } else if (level->slug == @"london" && !(time % 500)){
+        bgComponent *bgc = (bgComponent *)[[level->bgComponents objectAtIndex:0] pointerValue];
+        if([bgc->sprite numberOfRunningActions] == 0){
+            [bgc->sprite runAction:window1CycleAction];
+            bgc = (bgComponent *)[[level->bgComponents objectAtIndex:1] pointerValue];
+            [bgc->sprite runAction:window2CycleAction];
+            bgc = (bgComponent *)[[level->bgComponents objectAtIndex:2] pointerValue];
+            [bgc->sprite runAction:window3CycleAction];
+            bgc = (bgComponent *)[[level->bgComponents objectAtIndex:3] pointerValue];
+            [bgc->sprite runAction:window4CycleAction];
         }
     } else if(level->slug == @"china"){
         if(!(time % 250) && arc4random() % 2  == 1){
@@ -2172,6 +2192,7 @@
     UITouch *touch1 = [[allTouches allObjects] objectAtIndex:0];
     CGPoint touchLocation1 = [touch1 locationInView: [touch1 view]];
     touchLocation1 = [[CCDirector sharedDirector] convertToGL: touchLocation1];
+    NSLog(@"Touching point %0.2f x %0.2f", touchLocation1.x, touchLocation1.y);
     locationWorld1 = b2Vec2(touchLocation1.x/PTM_RATIO, touchLocation1.y/PTM_RATIO);
     
     if(count > 1){

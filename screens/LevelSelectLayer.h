@@ -23,8 +23,9 @@ static NSUserDefaults *standardUserDefaults;
     struct bgComponent{
         CCLabelTTF *label; // one or the other
         CCSprite *sprite;
-        NSMutableArray *anim1, *anim2;
+        NSMutableArray *anim1, *anim2, *anim3;
         CGPoint position;
+        CCFiniteTimeAction *startingAction, *loopingAction, *stoppingAction;
     };
     
     struct levelProps{
