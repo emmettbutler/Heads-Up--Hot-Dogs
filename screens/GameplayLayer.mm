@@ -428,44 +428,6 @@
     body->SetTransform(pos, angle.intValue);
 }
 
--(void)setOffHeadCollisionFilters:(NSValue *)body{
-    b2Body *b = (b2Body *)[body pointerValue];
-    bodyUserData *ud = (bodyUserData *)b->GetUserData();
-    for(b2Fixture* fixture = b->GetFixtureList(); fixture; fixture = fixture->GetNext()){
-        fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
-        if(fUd->tag == F_DOGCLD){
-            // this is the case in which a dog is not on a person's head.
-            // we set the filters to their original value (all people, floor, and walls)
-            b2Filter dogFilter = fixture->GetFilterData();
-            dogFilter.maskBits = fUd->ogCollideFilters;
-            if(b->GetPosition().y > winSize.height/PTM_RATIO)
-                dogFilter.maskBits = 0xfffff000;
-            else if(b->GetPosition().y < winSize.height/PTM_RATIO)
-                dogFilter.maskBits = dogFilter.maskBits | WALLS;
-            fixture->SetFilterData(dogFilter);
-            ud->collideFilter = dogFilter.maskBits;
-            break;
-        }
-    }
-}
-
--(void)setOnHeadCollisionFilters:(NSValue *)body{
-    b2Body *b = (b2Body *)[body pointerValue];
-    bodyUserData *ud = (bodyUserData *)b->GetUserData();
-    for(b2Fixture* fixture = b->GetFixtureList(); fixture; fixture = fixture->GetNext()){
-        fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
-        if(fUd->tag == F_DOGCLD){
-            // this is the case in which a dog is not on a person's head.
-            // we set the filters to their original value (all people, floor, and walls)
-            b2Filter dogFilter = fixture->GetFilterData();
-            dogFilter.maskBits = dogFilter.maskBits & 0xffef;
-            fixture->SetFilterData(dogFilter);
-            ud->collideFilter = dogFilter.maskBits;
-            break;
-        }
-    }
-}
-
 -(void)aimAtAimedDog:(NSValue *)body{
     b2Body *b = (b2Body *)[body pointerValue];
     bodyUserData *ud = (bodyUserData *)b->GetUserData();
@@ -479,7 +441,6 @@
                 dx = abs(b->GetPosition().x - aimedDog->GetPosition().x);
                 dy = abs(b->GetPosition().y - aimedDog->GetPosition().y);
                 a = acos(dx / sqrt((dx*dx) + (dy*dy)));
-                CCLOG(@"Angle to dog: %0.2f - Upper angle: %d - lower angle: %d", a, upperArmAngle, lowerArmAngle);
                 ud->targetAngle = a;
                 [ud->overlaySprite setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"Target_Dog.png"]];
                 ud->overlaySprite.position = CGPointMake(aimedDog->GetPosition().x*PTM_RATIO, aimedDog->GetPosition().y*PTM_RATIO);
@@ -586,7 +547,7 @@
                     [ud->sprite2 runAction:ud->_vomitAction];
                     [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"BusinessMan_Idle_1.png"]];
                     
-                    float xBarf = b->GetPosition().x*PTM_RATIO - 40, yBarf = b->GetPosition().y*PTM_RATIO + 50, xVel = -70;
+                    float xBarf = b->GetPosition().x*PTM_RATIO - 40, yBarf = b->GetPosition().y*PTM_RATIO + 30, xVel = -70;
                     if(ud->sprite1.flipX){
                         xBarf = b->GetPosition().x*PTM_RATIO + 40;
                         xVel = 70;
@@ -700,24 +661,6 @@
                 }
             }
         }
-    }
-}
-
--(void)setDogDisplayFrame:(NSValue *)body{
-    b2Body *b = (b2Body *)[body pointerValue];
-    bodyUserData *ud = (bodyUserData *)b->GetUserData();
-    if(!ud->grabbed){
-        if(!ud->aimedAt && !ud->exploding){
-            if(b->GetLinearVelocity().y > 1.5){
-                [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:ud->_dog_riseSprite]];
-            } else if (b->GetLinearVelocity().y < -1.5){
-                [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:ud->_dog_fallSprite]];
-            } else {
-                [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:ud->_dog_mainSprite]];
-            }
-        }
-    } else { // this is breaking because aimedAt never gets turned false
-        [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:ud->_dog_grabSprite]];
     }
 }
 
@@ -871,190 +814,30 @@
     }
 }
 
--(NSValue *)createWiener:(id)sender data:(NSMutableArray *)params{
-    CGPoint location = [[params objectAtIndex:0] CGPointValue];
-    NSNumber *type = [params objectAtIndex:1];
-    CGPoint vel;
-    if([params count] > 2){
-        vel = [[params objectAtIndex:2] CGPointValue];
-    }
-    
-    NSMutableArray *wienerDeathAnimFrames = [[NSMutableArray alloc] init];
-    NSMutableArray *wienerFlashAnimFrames = [[NSMutableArray alloc] init];
-    NSMutableArray *wienerShotAnimFrames = [[NSMutableArray alloc] init];
-    NSMutableArray *wienerAppearAnimFrames = [[NSMutableArray alloc] init];
-    NSString *fallSprite, *riseSprite, *mainSprite, *grabSprite;
-    int floor, f, tag;
-    float deathDelay;
-    
-    spcDogData *dd = (spcDogData *)level->specialDog;
-    
-    switch(type.intValue){
-        case S_SPCDOG:
-            riseSprite = dd->riseSprite;
-            fallSprite = dd->fallSprite;
-            mainSprite = dd->mainSprite;
-            grabSprite = dd->grabSprite;
-            deathDelay = .1;
-            tag = S_SPCDOG;
-            wienerDeathAnimFrames = dd->deathAnimFrames;
-            wienerShotAnimFrames = dd->shotAnimFrames;
-            wienerFlashAnimFrames = dd->flashAnimFrames;
-            for(int i = 1; i <= 6; i++){
-                [wienerAppearAnimFrames addObject:
-                 [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                  [NSString stringWithFormat:@"BonusAppear%d.png", i]]];
-            }
-            break;
-        default:
-            riseSprite = @"Dog_Rise.png";
-            fallSprite = @"Dog_Fall.png";
-            mainSprite = @"dog54x12.png";
-            grabSprite = @"Dog_Grabbed.png";
-            deathDelay = 1.9;
-            if(level->dogDeathDelay)
-                deathDelay = level->dogDeathDelay;
-            tag = S_HOTDOG;
-            if(level->dogDeathAnimFrames){
-                for(int i = 0; i < [level->dogDeathAnimFrames count]; i++){
-                    [wienerDeathAnimFrames addObject:[level->dogDeathAnimFrames objectAtIndex:i]];
-                }
-                wienerFlashAnimFrames = NULL;
-            } else {
-                for(int i = 0; i < 8; i++){
-                    [wienerFlashAnimFrames addObject:
-                     [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                      [NSString stringWithFormat:@"Dog_Die_1.png"]]];
-                    [wienerFlashAnimFrames addObject:
-                     [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                      [NSString stringWithFormat:@"Dog_Die_2.png"]]];
-                }
-                for(int i = 1; i <= 7; i++){
-                    [wienerDeathAnimFrames addObject:
-                     [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                      [NSString stringWithFormat:@"Dog_Die_%d.png", i]]];
-                }
-            }
-            for(int i = 1; i <= 5; i++){
-                [wienerShotAnimFrames addObject:
-                 [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                  [NSString stringWithFormat:@"Dog_Shot_%d.png", i]]];
-            }
-            for(int i = 1; i <= 10; i++){
-                [wienerAppearAnimFrames addObject:
-                 [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                  [NSString stringWithFormat:@"Dog_Appear_%d.png", i]]];
-            }
-            break;
-    }
-    //add base sprite to scene
-    self.wiener = [CCSprite spriteWithSpriteFrameName:mainSprite];
-    _wiener.position = ccp(location.x, location.y);
-    _wiener.tag = tag;
-    [spriteSheetCommon addChild:_wiener z:50];
-    
-    CCAction *_flashAction;
-    if(wienerFlashAnimFrames){
-        CCAnimation *dogFlashAnim = [CCAnimation animationWithFrames:wienerFlashAnimFrames delay:.1f];
-        _flashAction = [[CCAnimate alloc] initWithAnimation:dogFlashAnim];
-    }
-    
-    CCAnimation *dogDeathAnim = [CCAnimation animationWithFrames:wienerDeathAnimFrames delay:.1f];
-    CCAction *_deathAction = [[CCAnimate alloc] initWithAnimation:dogDeathAnim];
-    
-    CCAnimation *dogAppearAnim = [CCAnimation animationWithFrames:wienerAppearAnimFrames delay:.08f];
-    _appearAction = [CCAnimate actionWithAnimation:dogAppearAnim];
-    
-    CCAnimation *dogShotAnim = [CCAnimation animationWithFrames:wienerShotAnimFrames delay:.1f ];
-    CCFiniteTimeAction *_shotAction = [[CCAnimate alloc] initWithAnimation:dogShotAnim restoreOriginalFrame:NO];
-    
-    //set up the userdata structures
-    bodyUserData *ud = new bodyUserData();
-    ud->sprite1 = _wiener;
-    ud->_dog_fallSprite = fallSprite;
-    ud->_dog_riseSprite = riseSprite;
-    ud->_dog_mainSprite = mainSprite;
-    ud->_dog_grabSprite = grabSprite;
-    ud->altAction = _deathAction;
-    ud->altAction2 = _shotAction;
-    if(wienerFlashAnimFrames)
-        ud->altAction3 = _flashAction;
-    ud->deathDelay = deathDelay;
-    ud->deathSeq = NULL;
-    
-    fixtureUserData *fUd1 = new fixtureUserData();
-    fUd1->ogCollideFilters = 0;
-    fUd1->tag = F_DOGGRB;
-    
-    //for the collision fixture userdata struct, randomly assign floor
-    fixtureUserData *fUd2 = new fixtureUserData();
-    floor = arc4random() % 4;
-    f =  WALLS;
-    if(floor == 1){
-        f = f | FLOOR1;
-    }
-    else if(floor == 2){
-        f = f | FLOOR2 | FLOOR1;
-    }
-    else if(floor == 3){
-        f = f | FLOOR3 | FLOOR2 | FLOOR1;
-    }
-    else {
-        f = f | FLOOR4 | FLOOR3 | FLOOR2 | FLOOR1;
-    }
-    fUd2->ogCollideFilters = f;
-    fUd2->tag = F_DOGCLD;
-    
-    //create the body
-    b2BodyDef wienerBodyDef;
-    wienerBodyDef.type = b2_dynamicBody;
-    wienerBodyDef.position.Set(location.x/PTM_RATIO, location.y/PTM_RATIO);
-    wienerBodyDef.userData = ud;
-    b2Body *wienerBody = _world->CreateBody(&wienerBodyDef);
-    
-    //create the grab box fixture
-    b2PolygonShape wienerGrabShape;
-    wienerGrabShape.SetAsBox((_wiener.contentSize.width+50)/PTM_RATIO/2, (_wiener.contentSize.height+50)/PTM_RATIO/2);
-    b2FixtureDef wienerGrabShapeDef;
-    wienerGrabShapeDef.shape = &wienerGrabShape;
-    wienerGrabShapeDef.filter.categoryBits = WIENER;
-    wienerGrabShapeDef.filter.maskBits = 0x0000;
-    wienerGrabShapeDef.userData = fUd1;
-    wienerBody->CreateFixture(&wienerGrabShapeDef);
-    
-    //create the collision fixture
-    b2PolygonShape wienerShape;
-    wienerShape.SetAsBox(_wiener.contentSize.width/PTM_RATIO/2, _wiener.contentSize.height/PTM_RATIO/2);
-    b2FixtureDef wienerShapeDef;
-    wienerShapeDef.shape = &wienerShape;
-    wienerShapeDef.density = 0.5f;
-    wienerShapeDef.friction = 1.0f;
-    if(level->frictionMul)
-        wienerShapeDef.friction = 1.0f*level->frictionMul;
-    wienerShapeDef.userData = fUd2;
-    wienerShapeDef.filter.maskBits = f;
-    wienerShapeDef.restitution = 0.2f;
-    if(level->restitutionMul)
-        wienerShapeDef.restitution = 0.2f*level->restitutionMul;
-    wienerShapeDef.filter.categoryBits = WIENER;
-    wienerBody->CreateFixture(&wienerShapeDef);
-    
-    wienerBody->ApplyForce(b2Vec2(vel.x, vel.y), b2Vec2(wienerBody->GetPosition().x-.3, wienerBody->GetPosition().y+.2));
-    
-    return [NSValue valueWithPointer:wienerBody];
-}
-
 -(void)barfDogs:(id)sender data:(NSMutableArray *)a{
-    NSMutableArray *parameters;
     CGPoint loc = [[a objectAtIndex:0] CGPointValue];
     NSNumber *xVel = [a objectAtIndex:1];
     
+    float friction = 1, restitution = 1, delay = 1.9; // TODO - this is a blatant violation of DRY
+    if(level->frictionMul)
+        friction = level->frictionMul;
+    if(level->restitutionMul){
+        restitution = level->restitutionMul;
+    }
+    if(level->dogDeathDelay){
+        delay = level->dogDeathDelay;
+    }
+    
     for(int i = 0; i < 4; i++){
-        parameters = [[NSMutableArray alloc] init];
-        [parameters addObject:[NSValue valueWithCGPoint:CGPointMake(loc.x, loc.y+(i*15))]];
-        [parameters addObject:[NSNumber numberWithInt:1]];
-        [parameters addObject:[NSValue valueWithCGPoint:CGPointMake(xVel.intValue, .1)]];
-        [self createWiener:self data:parameters];
+        [[HotDog alloc] init:[NSValue valueWithPointer:spriteSheetCommon]
+                                 withWorld:[NSValue valueWithPointer:_world]
+                              withLocation:[NSValue valueWithCGPoint:CGPointMake(loc.x, loc.y+(i*15))]
+                                withSpcDog:[NSValue valueWithPointer:NULL]
+                                   withVel:[NSValue valueWithCGPoint:CGPointMake(xVel.intValue, .1)]
+                            withDeathDelay:[NSNumber numberWithFloat:delay]
+                             withDeathAnim:level->dogDeathAnimFrames
+                           withFrictionMul:[NSNumber numberWithFloat:friction]
+                        withRestitutionMul:[NSNumber numberWithFloat:restitution]];
     }
 }
 
@@ -1062,17 +845,54 @@
     int SIDE_BUFFER = 40;
     CGPoint location = CGPointMake(arc4random() % (int)(SIDE_BUFFER+(winSize.width-(2*SIDE_BUFFER))), DOG_SPAWN_MINHT+(arc4random() % (int)(winSize.height-DOG_SPAWN_MINHT)));
     
-    NSMutableArray *parameters = [[NSMutableArray alloc] init];
-    [parameters addObject:[NSValue valueWithCGPoint:location]];
-    [parameters addObject:type];
-    NSValue *b = [self createWiener:self data:parameters];
-    b2Body *wienerBody = (b2Body *)[b pointerValue];
+    spcDogData *dd = NULL;
+    if (type.intValue == S_SPCDOG){
+        dd = level->specialDog;
+    }
     
+    float friction = 1, restitution = 1, delay = 1.9;
+    if(level->frictionMul)
+        friction = level->frictionMul;
+    if(level->restitutionMul){
+        restitution = level->restitutionMul;
+    }
+    if(level->dogDeathDelay){
+        delay = level->dogDeathDelay;
+    }
+    
+    HotDog *dog = [[HotDog alloc] init:[NSValue valueWithPointer:spriteSheetCommon]
+                             withWorld:[NSValue valueWithPointer:_world]
+                          withLocation:[NSValue valueWithCGPoint:location]
+                            withSpcDog:[NSValue valueWithPointer:dd] // must be NULL sometimes
+                               withVel:[NSValue valueWithCGPoint:CGPointMake(0, 0)] // must be NULL sometimes
+                        withDeathDelay:[NSNumber numberWithFloat:delay]
+                         withDeathAnim:level->dogDeathAnimFrames
+                       withFrictionMul:[NSNumber numberWithFloat:friction]
+                    withRestitutionMul:[NSNumber numberWithFloat:restitution]];
+    
+    b2Body *wienerBody = (b2Body *)[[dog getBody] pointerValue];
     bodyUserData *ud = (bodyUserData *)wienerBody->GetUserData();
     CCSprite *sprite = (CCSprite *)ud->sprite1;
     
     wienerBody->SetAwake(false);
 
+    NSMutableArray *wienerAppearAnimFrames = [[NSMutableArray alloc] init];
+    if(type.intValue == S_SPCDOG){
+        for(int i = 1; i <= 6; i++){
+            [wienerAppearAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"BonusAppear%d.png", i]]];
+        }
+    } else {
+        for(int i = 1; i <= 10; i++){
+            [wienerAppearAnimFrames addObject:
+             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+              [NSString stringWithFormat:@"Dog_Appear_%d.png", i]]];
+        }
+    }
+    CCAnimation *dogAppearAnim = [CCAnimation animationWithFrames:wienerAppearAnimFrames delay:.08f];
+    _appearAction = [CCAnimate actionWithAnimation:dogAppearAnim];
+    
     //wake up the hot dog after the appear animation is done
     NSMutableArray *wakeParameters = [[NSMutableArray alloc] initWithCapacity:2];
     NSValue *v = [NSValue valueWithPointer:wienerBody];
@@ -2156,6 +1976,7 @@
                     }
                 }
                 else if(ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG){
+                    HotDog *dog = [[HotDog alloc] initWithBody:[NSValue valueWithPointer:b]];
                     if(ud->sprite1.position.x > 0 && ud->sprite1.position.x < winSize.width)
                         _dogsOnscreen++;
                     if(_numWorldTouches <= 0){
@@ -2165,7 +1986,7 @@
                     if(!b) continue;
                     //things for hot dogs
                     if(b->IsAwake()){
-                        [self setDogDisplayFrame:[NSValue valueWithPointer:b]];
+                        [dog setDogDisplayFrame];
                         // a hacky way to ensure that dogs are registered as not on a head
                         // this works because it measures when a dog is below the level of the lowest head
                         // and then flips the _dog_isOnHead bit - however it does make the design more brittle
@@ -2174,9 +1995,9 @@
                         if(b->GetPosition().y - 1 < FLOOR4_HT)
                             ud->_dog_isOnHead = false;
                         if(ud->_dog_isOnHead)
-                            [self setOnHeadCollisionFilters:[NSValue valueWithPointer:b]];
+                            [dog setOnHeadCollisionFilters];
                         else
-                            [self setOffHeadCollisionFilters:[NSValue valueWithPointer:b]];
+                            [dog setOffHeadCollisionFilters];
                         [self perFrameLevelDogEffects:[NSValue valueWithPointer:b]];
                         
                         if([shiba dogIsInHitbox:[NSValue valueWithPointer:b]] && ![shiba hasEatenDog]){

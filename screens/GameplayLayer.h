@@ -20,6 +20,7 @@
 #import "AchievementReporter.h"
 #import "Firecracker.h"
 #import "Shiba.h"
+#import "HotDog.h"
 #import "SteamVent.h"
 
 #define FLOOR1_HT 0
