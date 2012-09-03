@@ -663,14 +663,11 @@
             if(ud->timeWalking == ud->stopTime + (ud->stopTimeDelta - ([ud->postStopAction duration]*60.0))){
                 ud->_muncher_hasDroppedDog = true;
                 ud->lowerYOffset = 9;
-                ud->rippleYOffset = -1.225;
                 if(ud->sprite1.flipX){
                     ud->lowerXOffset = -12;
-                    ud->rippleXOffset = 7.0/PTM_RATIO;
                 }
                 else {
                     ud->lowerXOffset = 11;
-                    ud->rippleXOffset = -6.0/PTM_RATIO;
                 }
                 NSMutableArray *animParams = [[NSMutableArray alloc] init];
                 [animParams addObject:[NSValue valueWithPointer:ud->sprite1]];
@@ -2286,7 +2283,7 @@
                                         [ud->angryFace runAction:ud->dogOnHeadTickleAction];
                                     }
                                     
-                                    ud->rippleYOffset = -1.225;
+                                    ud->rippleYOffset = -1.325;
                                     if(ud->sprite1.flipX){
                                         ud->rippleXOffset = 7.0/PTM_RATIO;
                                     }
