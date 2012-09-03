@@ -85,6 +85,10 @@
         CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"Splash_BG_clean.png"];
         sprite.anchorPoint = CGPointZero;
         [self addChild:sprite z:-1];
+        
+        sprite = [CCSprite spriteWithSpriteFrameName:@"Lvl_Band.png"];
+        sprite.position = ccp(winSize.width/2, winSize.height/2);
+        [self addChild:sprite];
 
         CCLabelTTF *label = [CCLabelTTF labelWithString:@"SELECT LEVEL" fontName:@"LostPet.TTF" fontSize:50.0];
         [[label texture] setAliasTexParameters];

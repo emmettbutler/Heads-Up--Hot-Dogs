@@ -15,6 +15,7 @@
     b2Body *body;
     CCSprite *sprite;
     CCAction *action;
+    CGSize winSize;
 }
 
 -(Overlay *)initWithDogBody:(NSValue *)b andSpriteSheet:(NSValue *)s;

@@ -17,7 +17,7 @@
     self->sprite = [CCSprite spriteWithSpriteFrameName:@"Drag_Overlay_1.png"];
     self->spritesheet = (CCSpriteBatchNode *)[s pointerValue];
     self->sprite.position = CGPointMake(self->body->GetPosition().x*PTM_RATIO, self->body->GetPosition().y*PTM_RATIO);
-    [self->spritesheet addChild:self->sprite];
+    [self->spritesheet addChild:self->sprite z:1000];
     
     [self->sprite setVisible:false];
     
@@ -39,7 +39,10 @@
     self->sprite = [CCSprite spriteWithSpriteFrameName:@"Drop_Overlay_1.png"];
     self->spritesheet = (CCSpriteBatchNode *)[s pointerValue];
     self->sprite.position = CGPointMake(self->body->GetPosition().x*PTM_RATIO, self->body->GetPosition().y*PTM_RATIO);
-    [self->spritesheet addChild:self->sprite];
+    [self->spritesheet addChild:self->sprite z:1000];
+    
+    [self->sprite setVisible:false];
+    self->winSize = [CCDirector sharedDirector].winSize;
     
     NSMutableArray *frames = [[NSMutableArray alloc] init];
     for(int i = 1; i <= 12; i++){
@@ -59,7 +62,9 @@
     self->sprite = [CCSprite spriteWithSpriteFrameName:@"Rub_Overlay_1.png"];
     self->spritesheet = (CCSpriteBatchNode *)[s pointerValue];
     self->sprite.position = CGPointMake(self->body->GetPosition().x*PTM_RATIO, self->body->GetPosition().y*PTM_RATIO);
-    [self->spritesheet addChild:self->sprite];
+    [self->spritesheet addChild:self->sprite z:1000];
+    
+    [self->sprite setVisible:false];
     
     NSMutableArray *frames = [[NSMutableArray alloc] init];
     for(int i = 1; i <= 12; i++){
@@ -107,8 +112,7 @@
     if(self->body){
         int xOff = 0, yOff = 0;
         bodyUserData *ud = (bodyUserData *)body->GetUserData();
-        
-        if(![numTouches boolValue] || body->GetPosition().x == 0){
+        if(![numTouches boolValue]){
             [self->sprite setVisible:false];
         } else {
             [self->sprite setVisible:true];
@@ -121,8 +125,6 @@
             yOff = ud->howToPlaySpriteYOffset;
         }
         self->sprite.position = CGPointMake((self->body->GetPosition().x*PTM_RATIO)+xOff, (self->body->GetPosition().y*PTM_RATIO)+yOff);
-    } else {
-        [self dealloc];
     }
 }
 

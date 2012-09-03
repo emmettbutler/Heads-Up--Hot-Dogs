@@ -1222,7 +1222,7 @@
     ud->collideFilter = _curPersonMaskBits;
     ud->moveDelta = moveDelta*level->personSpeedMul;
     ud->pointValue = person->pointValue;
-    ud->howToPlaySpriteYOffset = 180;
+    ud->howToPlaySpriteYOffset = 195;
     // point notifiers
     ud->_not_dogContact = (CCFiniteTimeAction *)[(NSValue *)[notifiers objectAtIndex:contactActionIndex] pointerValue];
     ud->_not_dogOnHead = (CCFiniteTimeAction *)[(NSValue *)[notifiers objectAtIndex:3] pointerValue];
@@ -1245,8 +1245,8 @@
             ud->_cop_hasShot = false;
             ud->aimFace = @"Cop_Head_Aiming_1.png";
         } else if (person->tag == S_MUNCHR){
-            ud->howToPlaySpriteXOffset = 40;
-            ud->howToPlaySpriteYOffset = 20;
+            //ud->howToPlaySpriteXOffset = 40;
+            //ud->howToPlaySpriteYOffset = 20;
             ud->dogOnHeadTickleAction = _specialAngryFaceAction;
         }
     }
@@ -1984,6 +1984,9 @@
                 if(ud->overlaySprite != NULL){
                     [ud->overlaySprite removeFromParentAndCleanup:YES];
                 }
+                if(ud->howToPlaySprite != NULL){
+                    [ud->howToPlaySprite removeFromParentAndCleanup:YES];
+                }
                 _world->DestroyBody(b);
                 ud = NULL;
                 continue;
@@ -2096,13 +2099,15 @@
                 }
                 else if(ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG){
                     Overlay *overlay;
-                    if(!ud->howToPlaySprite && _peopleGrumped <= OVERLAYS_STOP){
-                        overlay = [[Overlay alloc] initWithDogBody:[NSValue valueWithPointer:b] andSpriteSheet:[NSValue valueWithPointer:spriteSheetCommon]];
-                        ud->howToPlaySprite = [overlay getSprite];
-                    } else {
-                        overlay = [[Overlay alloc] initWithSprite:[NSValue valueWithPointer:ud->howToPlaySprite] andBody:[NSValue valueWithPointer:b]];
-                        [overlay updatePosition];
-                    }
+                    if(_peopleGrumped <= OVERLAYS_STOP){
+                        if(!ud->howToPlaySprite){
+                            overlay = [[Overlay alloc] initWithDogBody:[NSValue valueWithPointer:b] andSpriteSheet:[NSValue valueWithPointer:spriteSheetCommon]];
+                            ud->howToPlaySprite = [overlay getSprite];
+                        } else {
+                            overlay = [[Overlay alloc] initWithSprite:[NSValue valueWithPointer:ud->howToPlaySprite] andBody:[NSValue valueWithPointer:b]];
+                            [overlay updatePosition];
+                        }
+                    } else { [ud->howToPlaySprite setVisible:false]; }
                     HotDog *dog = [[HotDog alloc] initWithBody:[NSValue valueWithPointer:b]];
                     if(ud->sprite1.position.x > 0 && ud->sprite1.position.x < winSize.width)
                         _dogsOnscreen++;

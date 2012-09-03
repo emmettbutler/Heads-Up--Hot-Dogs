@@ -77,6 +77,7 @@
 -(id) init{
     if ((self = [super init])){
         touchLock = false;
+        CGSize winSize = [CCDirector sharedDirector].winSize;
         self.isTouchEnabled = YES;
         
         reporter = [[AchievementReporter alloc] init];
@@ -92,9 +93,13 @@
         spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_menus.png"];
         [self addChild:spriteSheet];
         
-        CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"GameEnd_BG"];
+        CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"Splash_BG_clean.png"];
         sprite.anchorPoint = CGPointZero;
         [self addChild:sprite z:-1];
+        
+        sprite = [CCSprite spriteWithSpriteFrameName:@"GameEnd_Overlay.png"];
+        sprite.position = CGPointMake(winSize.width/2-17, winSize.height/2);
+        [spriteSheet addChild:sprite];
         
         scoreLine = [CCLabelTTF labelWithString:@"Total points: 0" fontName:@"LostPet.TTF" fontSize:26.0];
         [scoreLine setPosition:ccp(-10, -10)];
