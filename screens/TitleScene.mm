@@ -133,11 +133,12 @@
 - (void)switchSceneStart{
     NSInteger introDone = [standardUserDefaults integerForKey:@"introDone"];
     NSLog(@"introDone: %d", introDone);
-    if(introDone == 1)
+    // removing the tutorial for Turner build
+    //if(introDone == 1)
         [[CCDirector sharedDirector] replaceScene:[LevelSelectLayer scene]];
-    else if(introDone == 0){
-        [[CCDirector sharedDirector] replaceScene:[TutorialLayer sceneWithFrom:@"title"]];
-    }
+    //else if(introDone == 0){
+    //    [[CCDirector sharedDirector] replaceScene:[TutorialLayer sceneWithFrom:@"title"]];
+    //}
 }
 
 - (void)switchSceneOptions{
