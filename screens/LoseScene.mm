@@ -96,31 +96,26 @@
         scoreLine = [CCLabelTTF labelWithString:@"Total points: 0" fontName:@"LostPet.TTF" fontSize:26.0];
         [scoreLine setPosition:ccp(-10, -10)];
         scoreLine.color = _color_blue;
-        [[scoreLine texture] setAliasTexParameters];
         [self addChild:scoreLine];
         
         timeLine = [CCLabelTTF labelWithString:@"Time lasted: 0" fontName:@"LostPet.TTF" fontSize:26.0];
         [timeLine setPosition:ccp(-10, -10)];
         timeLine.color = _color_blue;
-        [[timeLine texture] setAliasTexParameters];
         [self addChild:timeLine];
         
         dogsLine = [CCLabelTTF labelWithString:@"Hot Dogs saved: 0" fontName:@"LostPet.TTF" fontSize:26.0];
         [dogsLine setPosition:ccp(-10, -10)];
         dogsLine.color = _color_blue;
-        [[dogsLine texture] setAliasTexParameters];
         [self addChild:dogsLine];
         
         peopleLine = [CCLabelTTF labelWithString:@"People Grumped: 0" fontName:@"LostPet.TTF" fontSize:26.0];
         [peopleLine setPosition:ccp(-10, -10)];
         peopleLine.color = _color_blue;
-        [[peopleLine texture] setAliasTexParameters];
         [self addChild:peopleLine];
         
         highScoreLine = [CCLabelTTF labelWithString:@"HIGH SCORE: 0" fontName:@"LostPet.TTF" fontSize:26.0];
         [highScoreLine setPosition:ccp(-10, -10)];
         highScoreLine.color = _color_darkblue;
-        [[highScoreLine texture] setAliasTexParameters];
         [self addChild:highScoreLine];
         
         CCSprite *restartButton = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
@@ -240,6 +235,12 @@
         [dogsLine setPosition:ccp(62+(dogsLine.contentSize.width/2), 165)];
         [peopleLine setPosition:ccp(62+(peopleLine.contentSize.width/2), 135)];
         [highScoreLine setPosition:ccp(389-(highScoreLine.contentSize.width/2), 70)];
+        
+        [[scoreLine texture] setAliasTexParameters];
+        [[timeLine texture] setAliasTexParameters];
+        [[dogsLine texture] setAliasTexParameters];
+        [[peopleLine texture] setAliasTexParameters];
+        [[highScoreLine texture] setAliasTexParameters];
     }
 }
 

@@ -2092,7 +2092,6 @@
                         // this works because it measures when a dog is below the level of the lowest head
                         // and then flips the _dog_isOnHead bit - however it does make the design more brittle
                         // since it breaks when we make very short characters
-                        
                         if(b->GetPosition().y - 1 < FLOOR4_HT)
                             ud->_dog_isOnHead = false;
                         if(ud->_dog_isOnHead)
