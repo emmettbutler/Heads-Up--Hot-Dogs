@@ -657,14 +657,21 @@
             ud->restartTime = ud->timeWalking + 1;
             ud->stopTimeDelta = 0;
             ud->touched = false;
+            ud->rippleYOffset = ud->ogRippleYOffset;
+            ud->rippleXOffset = ud->ogRippleXOffset;
         } else{
             if(ud->timeWalking == ud->stopTime + (ud->stopTimeDelta - ([ud->postStopAction duration]*60.0))){
                 ud->_muncher_hasDroppedDog = true;
                 ud->lowerYOffset = 9;
-                if(ud->sprite1.flipX)
+                ud->rippleYOffset = -1.225;
+                if(ud->sprite1.flipX){
                     ud->lowerXOffset = -12;
-                else
+                    ud->rippleXOffset = 7.0/PTM_RATIO;
+                }
+                else {
                     ud->lowerXOffset = 11;
+                    ud->rippleXOffset = -6.0/PTM_RATIO;
+                }
                 NSMutableArray *animParams = [[NSMutableArray alloc] init];
                 [animParams addObject:[NSValue valueWithPointer:ud->sprite1]];
                 [animParams addObject:[NSValue valueWithPointer:ud->altWalk]];
@@ -1196,7 +1203,9 @@
         ud->walkRipple = _rippleWalkAction;
         ud->idleRipple = _rippleIdleAction;
         ud->rippleXOffset = rippleXOffset;
+        ud->ogRippleXOffset = rippleXOffset;
         ud->rippleYOffset = person->rippleYOffset;
+        ud->ogRippleYOffset = person->rippleYOffset;
     }
     if(person->vomitAnimFrames && arc4random() % VOMIT_PROBABILITY == 1){
         ud->_busman_willVomit = true;
@@ -2277,6 +2286,13 @@
                                         [ud->angryFace runAction:ud->dogOnHeadTickleAction];
                                     }
                                     
+                                    ud->rippleYOffset = -1.225;
+                                    if(ud->sprite1.flipX){
+                                        ud->rippleXOffset = 7.0/PTM_RATIO;
+                                    }
+                                    else {
+                                        ud->rippleXOffset = -6.0/PTM_RATIO;
+                                    }
                                     [ud->ripples stopAllActions];
                                     if([ud->ripples numberOfRunningActions] == 0){
                                         [ud->ripples runAction:ud->idleRipple];

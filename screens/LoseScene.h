@@ -24,7 +24,7 @@
     ALuint sting;
     AchievementReporter *reporter;
     BOOL touchLock, _setNewHighScore;
-    CGRect _twitterRect;
+    CGRect _twitterRect, _replayRect, _quitRect;
     NSString *slug;
     NSMutableArray *tweets;
     ccColor3B _color_pink, _color_blue, _color_darkblue;
