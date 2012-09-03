@@ -375,7 +375,7 @@
     lp->name = @"London";
     lp->unlockNextThreshold = 12000;
     lp->func = @"switchScreenLondon";
-    lp->thumbnail = @"NYC_Thumb.png";
+    lp->thumbnail = @"London_Thumb.png";
     lp->unlockTweet = @"I went to London to conquer some franks in @HeadsUpHotDogs";
     
     if(loadFull){
@@ -471,7 +471,7 @@
     levelProps *lp = new levelProps();
     lp->enabled = true;
     lp->slug = @"china";
-    lp->name = @"China";
+    lp->name = @"Chinese New Year";
     lp->unlockNextThreshold = 12000;
     lp->func = @"switchScreenChina";
     lp->thumbnail = @"NYC_Thumb.png";
