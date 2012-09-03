@@ -10,6 +10,7 @@
 #import "GameplayLayer.h"
 #import "TitleScene.h"
 #import "TestFlight.h"
+#import "Clouds.h"
 #import <GameKit/GameKit.h>
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
@@ -85,6 +86,8 @@
         _color_pink = ccc3(255, 62, 166);
         _color_blue = ccc3(6, 110, 163);
         _color_darkblue = ccc3(14, 168, 248);
+        
+        [[Clouds alloc] initWithLayer:[NSValue valueWithPointer:self]];
         
         spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_menus.png"];
         [self addChild:spriteSheet];
@@ -168,8 +171,6 @@
         NSInteger overallTime = [standardUserDefaults integerForKey:@"overallTime"];
         _lock = 1;
         
-        
-
         if(_score > highScore){
             _setNewHighScore = true;
             [standardUserDefaults setInteger:_score forKey:[NSString stringWithFormat:@"highScore%@", level->slug]];

@@ -8,6 +8,7 @@
 
 #import "LevelSelectLayer.h"
 #import "GameplayLayer.h"
+#import "Clouds.h"
 
 @implementation LevelSelectLayer
 
@@ -75,11 +76,13 @@
         curLevelIndex = 0;
 
         _color_pink = ccc3(255, 62, 166);
+        
+        [[Clouds alloc] initWithLayer:[NSValue valueWithPointer:self]];
 
         spritesheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_menus.png"];
         [self addChild:spritesheet];
 
-        CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"LvlBG.png"];
+        CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"Splash_BG_clean.png"];
         sprite.anchorPoint = CGPointZero;
         [self addChild:sprite z:-1];
 
