@@ -99,6 +99,7 @@
     ud->_dog_grabSprite = grabSprite;
     ud->altAction = _deathAction;
     ud->altAction2 = _shotAction;
+    ud->howToPlaySpriteYOffset = 60;
     if(wienerFlashAnimFrames)
         ud->altAction3 = _flashAction;
     ud->deathDelay = deathDelay;

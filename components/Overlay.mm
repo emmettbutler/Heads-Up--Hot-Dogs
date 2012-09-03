@@ -27,6 +27,7 @@
     }
     CCAnimation *anim = [CCAnimation animationWithFrames:frames delay:.12];
     self->action = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO]];
+    [self->sprite runAction:self->action];
     
     return self;
 }
@@ -46,6 +47,7 @@
     }
     CCAnimation *anim = [CCAnimation animationWithFrames:frames delay:.12];
     self->action = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO]];
+    [self->sprite runAction:self->action];
     
     return self;
 }
@@ -65,12 +67,40 @@
     }
     CCAnimation *anim = [CCAnimation animationWithFrames:frames delay:.12];
     self->action = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO]];
+    [self->sprite runAction:self->action];
     
     return self;
 }
 
+-(Overlay *)initWithSprite:(NSValue *)s andBody:(NSValue *)b{
+    self->body = (b2Body *)[b pointerValue];
+    self->sprite = (CCSprite *)[s pointerValue];
+    return self;
+}
+
 -(void)updatePosition{
-    self->sprite.position = CGPointMake(self->body->GetPosition().x*PTM_RATIO, self->body->GetPosition().y*PTM_RATIO);
+    if(self->body){
+        int xOff = 0, yOff = 0;
+        bodyUserData *ud = (bodyUserData *)body->GetUserData();
+        if(ud->howToPlaySpriteXOffset){
+            xOff = ud->howToPlaySpriteXOffset;
+        }
+        if(ud->howToPlaySpriteYOffset){
+            yOff = ud->howToPlaySpriteYOffset;
+        }
+        self->sprite.position = CGPointMake((self->body->GetPosition().x*PTM_RATIO)+xOff, (self->body->GetPosition().y*PTM_RATIO)+yOff);
+    } else {
+        [self dealloc];
+    }
+}
+
+-(CCSprite *)getSprite{
+    return self->sprite;
+}
+
+-(void)dealloc{
+    [self->sprite removeFromParentAndCleanup:YES];
+    [super dealloc];
 }
 
 @end

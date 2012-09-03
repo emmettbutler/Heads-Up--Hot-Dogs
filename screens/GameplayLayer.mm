@@ -13,6 +13,7 @@
 #import "LevelSelectLayer.h"
 #import "PointNotify.h"
 #import "DogTouch.h"
+#import "Overlay.h"
 
 #define DEGTORAD 0.0174532
 #define DOG_SPAWN_MINHT 240
@@ -847,6 +848,7 @@
         dogBody->SetAwake(false);
         [dogSprite stopAllActions];
         [dogSprite removeFromParentAndCleanup:YES];
+        [ud->howToPlaySprite removeFromParentAndCleanup:YES];
         [ud->overlaySprite removeFromParentAndCleanup:YES];
         _world->DestroyBody(dogBody);
 #ifdef DEBUG
@@ -1219,6 +1221,7 @@
     ud->collideFilter = _curPersonMaskBits;
     ud->moveDelta = moveDelta*level->personSpeedMul;
     ud->pointValue = person->pointValue;
+    ud->howToPlaySpriteYOffset = 50;
     // point notifiers
     ud->_not_dogContact = (CCFiniteTimeAction *)[(NSValue *)[notifiers objectAtIndex:contactActionIndex] pointerValue];
     ud->_not_dogOnHead = (CCFiniteTimeAction *)[(NSValue *)[notifiers objectAtIndex:3] pointerValue];
@@ -1241,6 +1244,8 @@
             ud->_cop_hasShot = false;
             ud->aimFace = @"Cop_Head_Aiming_1.png";
         } else if (person->tag == S_MUNCHR){
+            ud->howToPlaySpriteXOffset = 40;
+            ud->howToPlaySpriteYOffset = 20;
             ud->dogOnHeadTickleAction = _specialAngryFaceAction;
         }
     }
@@ -1413,6 +1418,7 @@
         reporter = [[AchievementReporter alloc] init];
         [reporter loadAchievements];
         
+        _introDone = [standardUserDefaults integerForKey:@"introDone"];
         [standardUserDefaults setInteger:1 forKey:@"introDone"];
         
         NSMutableArray *levelStructs = [LevelSelectLayer buildLevels:[NSNumber numberWithInt:1]];
@@ -2077,6 +2083,14 @@
                     }
                 }
                 else if(ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG){
+                    Overlay *overlay;
+                    if(!ud->howToPlaySprite){
+                        overlay = [[Overlay alloc] initWithDogBody:[NSValue valueWithPointer:b] andSpriteSheet:[NSValue valueWithPointer:spriteSheetCommon]];
+                        ud->howToPlaySprite = [overlay getSprite];
+                    } else {
+                        overlay = [[Overlay alloc] initWithSprite:[NSValue valueWithPointer:ud->howToPlaySprite] andBody:[NSValue valueWithPointer:b]];
+                        [overlay updatePosition];
+                    }
                     HotDog *dog = [[HotDog alloc] initWithBody:[NSValue valueWithPointer:b]];
                     if(ud->sprite1.position.x > 0 && ud->sprite1.position.x < winSize.width)
                         _dogsOnscreen++;

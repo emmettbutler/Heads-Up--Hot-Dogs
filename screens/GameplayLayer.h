@@ -58,20 +58,20 @@
     CGSize winSize;
     CGRect _pauseButtonRect;
     NSUserDefaults *standardUserDefaults;
-    NSInteger _sfxOn;
+    NSInteger _sfxOn, _introDone;
     int _points, _droppedCount, time, _curPersonMaskBits, _peopleGrumped, _dogsSaved, _dogsOnscreen, _maxDogsOnScreen, _numWorldTouches, _levelMaxDogs;
     float _wienerSpawnDelayTime, _levelSpawnInterval, _subwayForce;
     BOOL _pause, _shootLock, _policeOnScreen, _muncherOnScreen, _gameOver, _hasDroppedDog, _fgIsDark;
 
     struct bodyUserData {
-        CCSprite *sprite1, *sprite2, *angryFace, *ripples, *overlaySprite;
+        CCSprite *sprite1, *sprite2, *angryFace, *ripples, *overlaySprite, *howToPlaySprite;
         float heightOffset2, widthOffset, lowerXOffset, lowerYOffset;
         NSString *_dog_fallSprite, *_dog_riseSprite, *_dog_grabSprite, *_dog_mainSprite, *aimFace;
         CCAction *altAction, *walkRipple, *idleRipple, *altAction2, *altAction3, *altWalk, *altWalkFace, *idleAction, *defaultAction, *angryFaceWalkAction, *dogOnHeadTickleAction, *deathSeq, *shotSeq;
         CCFiniteTimeAction *postStopAction, *_not_dogContact, *_not_dogOnHead, *_not_leaveScreen, *_not_leaveScreenFlash, *_not_spcContact, *_not_spcOnHead, *_not_spcLeaveScreen, *_vomitAction;
         float rippleXOffset, ogRippleXOffset, rippleYOffset, ogRippleYOffset, deathDelay, moveDelta; // the linear velocity of the person
         double targetAngle;
-        int stopTime, stopTimeDelta, timeWalking, restartTime, pointValue, dogsOnHead, spcDogsOnHead, tickleTimer, collideFilter;
+        int stopTime, stopTimeDelta, timeWalking, restartTime, pointValue, dogsOnHead, spcDogsOnHead, tickleTimer, collideFilter, howToPlaySpriteXOffset, howToPlaySpriteYOffset;
         BOOL aiming, touched, exploding, touchLock, aimedAt, grabbed, deathSeqLock, animLock, hasLeftScreen;
         BOOL hasTouchedHead, _dog_isOnHead, _person_hasTouchedDog, _muncher_hasDroppedDog, _cop_hasShot, _busman_willVomit, _busman_isVomiting;
     };

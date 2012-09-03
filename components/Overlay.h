@@ -21,5 +21,7 @@
 -(Overlay *)initWithPersonBody:(NSValue *)b andSpriteSheet:(NSValue *)s;
 -(Overlay *)initWithMuncherBody:(NSValue *)b andSpriteSheet:(NSValue *)s;
 -(void)updatePosition;
+-(CCSprite *)getSprite;
+-(Overlay *)initWithSprite:(NSValue *)s andBody:(NSValue *)b;
 
 @end
