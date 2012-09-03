@@ -1146,7 +1146,7 @@
             _personLower.flipX = YES;
             _personUpper.flipX = YES;
             _personUpperOverlay.flipX = YES;
-        } else { _rippleSprite.flipX = YES; }
+        } else { /*_rippleSprite.flipX = YES;*/ }
         if(person->tag == S_POLICE){
             lowerArmAngle = 132;
             upperArmAngle = 175;
@@ -1156,8 +1156,7 @@
             _policeArm.flipX = YES;
             _policeArm.flipY = YES;
         }
-    }
-    else {
+    } else {
         moveDelta = person->moveDelta;
         rippleXOffset = -1 * person->rippleXOffset;
         if(!person->flipSprites){
