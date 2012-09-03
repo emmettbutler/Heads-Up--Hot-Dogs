@@ -12,6 +12,7 @@
 #import "OptionsLayer.h"
 #import "TestFlight.h"
 #import "LevelSelectLayer.h"
+#import "Clouds.h"
 
 #define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 
@@ -56,21 +57,7 @@
         // color definitions
         _color_pink = ccc3(255, 62, 166);
         
-        cloud1 = [CCSprite spriteWithSpriteFrameName:@"Cloud_1.png"];
-        cloud1.position = ccp(size.width, size.height/2-50);
-        [spriteSheet addChild:cloud1];
-        
-        cloud2 = [CCSprite spriteWithSpriteFrameName:@"Cloud_2.png"];
-        cloud2.position = ccp(0, size.height);
-        [spriteSheet addChild:cloud2];
-        
-        cloud3 = [CCSprite spriteWithSpriteFrameName:@"Cloud_3.png"];
-        cloud3.position = ccp(0, 50);
-        [spriteSheet addChild:cloud3];
-        
-        [cloud1 runAction:[CCMoveTo actionWithDuration:90 position:CGPointMake(0, cloud1.position.y)]];
-        [cloud2 runAction:[CCMoveTo actionWithDuration:80 position:CGPointMake(size.width, cloud2.position.y)]];
-        [cloud3 runAction:[CCMoveTo actionWithDuration:100 position:CGPointMake(size.width, cloud3.position.y)]];
+        [[Clouds alloc] initWithSpritesheet:[NSValue valueWithPointer:spriteSheet]];
         
         CCLabelTTF *label = [CCLabelTTF labelWithString:@"BETA v0.5" fontName:@"LostPet.TTF" fontSize:30.0];
         [[label texture] setAliasTexParameters];

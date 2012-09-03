@@ -30,17 +30,7 @@
         background.anchorPoint = CGPointZero;
         [spriteSheet addChild:background z:-10];
         
-        cloud1 = [CCSprite spriteWithSpriteFrameName:@"Cloud_1.png"];
-        cloud1.position = ccp(winSize.width, winSize.height/2-50);
-        [spriteSheet addChild:cloud1];
-        
-        cloud2 = [CCSprite spriteWithSpriteFrameName:@"Cloud_2.png"];
-        cloud2.position = ccp(0, winSize.height);
-        [spriteSheet addChild:cloud2];
-        
-        cloud3 = [CCSprite spriteWithSpriteFrameName:@"Cloud_3.png"];
-        cloud3.position = ccp(0, 50);
-        [spriteSheet addChild:cloud3];
+        [[Clouds alloc] initWithSpritesheet:[NSValue valueWithPointer:spriteSheet]];
         
         logoBG = [CCSprite spriteWithSpriteFrameName:@"Logo_Cloud.png"];
         cloudAnchor = CGPointMake(winSize.width/2-10, winSize.height/2+20);
@@ -50,10 +40,6 @@
         mainLogo = [CCSprite spriteWithSpriteFrameName:@"ASg_Logo.png"];
         mainLogo.position = ccp(winSize.width/2, winSize.height/2);
         [spriteSheet addChild:mainLogo];
-        
-        [cloud1 runAction:[CCMoveTo actionWithDuration:90 position:CGPointMake(0, cloud1.position.y)]];
-        [cloud2 runAction:[CCMoveTo actionWithDuration:80 position:CGPointMake(winSize.width, cloud2.position.y)]];
-        [cloud3 runAction:[CCMoveTo actionWithDuration:100 position:CGPointMake(winSize.width, cloud3.position.y)]];
         
         [self schedule: @selector(tick:)];
     }

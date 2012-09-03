@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "cocos2d.h"
 #import "TitleScene.h"
+#import "Clouds.h"
 
 @interface Splashes : CCLayer {
     CCSpriteBatchNode *spriteSheet;
