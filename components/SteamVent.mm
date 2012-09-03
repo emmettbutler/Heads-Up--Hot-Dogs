@@ -81,6 +81,7 @@
             if(b->GetLinearVelocity().y != b->GetLinearVelocity().y+self->force){
                 b->SetLinearVelocity(b2Vec2(b->GetLinearVelocity().x+((((float) rand() / RAND_MAX) * 2) - 1), b->GetLinearVelocity().y+self->force));
                 [ud->sprite1 stopAllActions];
+                ud->deathSeqLock = false;
             }
         }
     }
