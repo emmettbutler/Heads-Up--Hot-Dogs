@@ -133,6 +133,7 @@
         CCMenu *menu = [CCMenu menuWithItems:button, nil];
         [menu setPosition:ccp(110, 26)];
         [self addChild:menu z:11];
+        _replayRect = CGRectMake((restartButton.position.x-(restartButton.contentSize.width)/2), (restartButton.position.y-(restartButton.contentSize.height)/2), (restartButton.contentSize.width+70), restartButton.contentSize.height+70);
         
         CCSprite *quitButton = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
         quitButton.position = ccp(370, 27);
@@ -144,6 +145,7 @@
         menu = [CCMenu menuWithItems:button, nil];
         [menu setPosition:ccp(370, 26)];
         [self addChild:menu z:11];
+        _quitRect = CGRectMake((quitButton.position.x-(quitButton.contentSize.width)/2), (quitButton.position.y-(quitButton.contentSize.height)/2), (quitButton.contentSize.width+70), (quitButton.contentSize.height+70));
         
         CCSprite *twitterButton = [CCSprite spriteWithSpriteFrameName:@"twitter.png"];
         twitterButton.position = ccp(83, 78);
