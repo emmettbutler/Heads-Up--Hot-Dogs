@@ -1481,8 +1481,8 @@
             anim = [CCAnimation animationWithFrames:bgc->anim1 delay:.1f];
             _dustAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO]] retain];
         } else if (level->slug == @"london"){
-            id startForceAction = [CCCallFuncND actionWithTarget:self selector:@selector(setSubwayForce:data:) data:[[NSNumber numberWithFloat:1.0] retain]];
-            id stopForceAction = [CCCallFuncND actionWithTarget:self selector:@selector(setSubwayForce:data:) data:[[NSNumber numberWithFloat:-1.0] retain]];
+            id startForceAction = [CCCallFuncND actionWithTarget:self selector:@selector(setSubwayForce:data:) data:[[NSNumber numberWithFloat:-1.0] retain]];
+            id stopForceAction = [CCCallFuncND actionWithTarget:self selector:@selector(setSubwayForce:data:) data:[[NSNumber numberWithFloat:1.0] retain]];
             bgComponent *bgc = (bgComponent *)[[level->bgComponents objectAtIndex:0] pointerValue];
             window1CycleAction = [[CCSequence actions:startForceAction, bgc->startingAction, bgc->loopingAction, stopForceAction, bgc->stoppingAction, nil] retain];
             bgc = (bgComponent *)[[level->bgComponents objectAtIndex:1] pointerValue];
