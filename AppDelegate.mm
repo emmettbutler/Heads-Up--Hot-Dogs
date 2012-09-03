@@ -142,8 +142,6 @@
     [standardUserDefaults setInteger:1 forKey:@"unlockedlondon"];
     [standardUserDefaults setInteger:1 forKey:@"unlockedchicago"];
     [standardUserDefaults setInteger:1 forKey:@"unlockedspace"];
-    
-    [standardUserDefaults synchronize];
 #else
     [[SimpleAudioEngine sharedEngine] preloadEffect:@"menu intro.mp3"];
     [[SimpleAudioEngine sharedEngine] preloadEffect:@"pause 3.mp3"];
@@ -155,6 +153,9 @@
     [[SimpleAudioEngine sharedEngine] preloadEffect:@"hot dog on head.mp3"];
     [[SimpleAudioEngine sharedEngine] preloadEffect:@"game over sting.mp3"];
 #endif
+    NSInteger timesPlayed = [standardUserDefaults integerForKey:@"timesPlayed"];
+    [standardUserDefaults setInteger:++timesPlayed forKey:@"timesPlayed"];
+    [standardUserDefaults synchronize];
     
     [CCTexture2D setDefaultAlphaPixelFormat:kTexture2DPixelFormat_RGBA4444];
     
