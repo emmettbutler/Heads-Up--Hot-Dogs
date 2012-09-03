@@ -12,9 +12,11 @@
 
 @implementation Clouds
 
--(Clouds *)initWithSpritesheet:(NSValue *)s{
+-(Clouds *)initWithLayer:(NSValue *)s{
     CGSize size = [CCDirector sharedDirector].winSize;
-    self->spritesheet = (CCSpriteBatchNode *)[s pointerValue];
+    CCLayer *parent = (CCLayer *)[s pointerValue];
+    self->spritesheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_menus.png"];
+    [parent addChild:self->spritesheet];
     
     self->cloud1 = [CCSprite spriteWithSpriteFrameName:@"Cloud_1.png"];
     self->cloud1.position = ccp(size.width, size.height/2-50);

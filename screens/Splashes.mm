@@ -22,15 +22,16 @@
 -(id) init{
     if ((self = [super init])){
         NSLog(@"Splash screens start");
+        
         winSize = [CCDirector sharedDirector].winSize;
         spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_menus.png"];
         [self addChild:spriteSheet];
         
+        [[Clouds alloc] initWithLayer:[NSValue valueWithPointer:self]];
+        
         CCSprite *background = [CCSprite spriteWithSpriteFrameName:@"Splash_BG_clean.png"];
         background.anchorPoint = CGPointZero;
         [spriteSheet addChild:background z:-10];
-        
-        [[Clouds alloc] initWithSpritesheet:[NSValue valueWithPointer:spriteSheet]];
         
         logoBG = [CCSprite spriteWithSpriteFrameName:@"Logo_Cloud.png"];
         cloudAnchor = CGPointMake(winSize.width/2-10, winSize.height/2+20);

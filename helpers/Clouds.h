@@ -15,6 +15,6 @@
     CCSprite *cloud1, *cloud2, *cloud3;
 }
 
--(Clouds *)initWithSpritesheet:(NSValue *)s;
+-(Clouds *)initWithLayer:(NSValue *)s;
 
 @end

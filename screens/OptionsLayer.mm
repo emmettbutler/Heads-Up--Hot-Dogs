@@ -12,6 +12,7 @@
 #import "TestFlight.h"
 #import "LevelSelectLayer.h"
 #import "TutorialLayer.h"
+#import "Clouds.h"
 
 #define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 
@@ -191,11 +192,13 @@
         
         float imgScale = 1.8;
         
+        [[Clouds alloc] initWithLayer:[NSValue valueWithPointer:self]];
+        
         [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_common.plist"];
         spriteSheetCommon = [CCSpriteBatchNode batchNodeWithFile:@"sprites_common.png"];
         [self addChild:spriteSheetCommon];
         
-        CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"blank_bg.png"];
+        CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"Splash_BG_clean.png"];
         sprite.anchorPoint = CGPointZero;
         [self addChild:sprite z:-1];
         

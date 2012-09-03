@@ -51,13 +51,13 @@
             [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"menu 2.mp3" loop:YES];
 #endif
         
+        [[Clouds alloc] initWithLayer:[NSValue valueWithPointer:self]];
+        
         spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_menus.png"];
         [self addChild:spriteSheet];
         
         // color definitions
         _color_pink = ccc3(255, 62, 166);
-        
-        [[Clouds alloc] initWithSpritesheet:[NSValue valueWithPointer:spriteSheet]];
         
         CCLabelTTF *label = [CCLabelTTF labelWithString:@"BETA v0.5" fontName:@"LostPet.TTF" fontSize:30.0];
         [[label texture] setAliasTexParameters];
