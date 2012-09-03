@@ -98,7 +98,7 @@
         [self addChild:sprite z:-1];
         
         sprite = [CCSprite spriteWithSpriteFrameName:@"GameEnd_Overlay.png"];
-        sprite.position = CGPointMake(winSize.width/2-17, winSize.height/2);
+        sprite.position = CGPointMake(winSize.width/2-17, winSize.height/2+6);
         [spriteSheet addChild:sprite];
         
         scoreLine = [CCLabelTTF labelWithString:@"Total points: 0" fontName:@"LostPet.TTF" fontSize:26.0];

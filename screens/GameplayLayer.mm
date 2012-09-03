@@ -2099,7 +2099,7 @@
                 }
                 else if(ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG){
                     Overlay *overlay;
-                    if(_peopleGrumped <= OVERLAYS_STOP){
+                    if(_peopleGrumped <= OVERLAYS_STOP && level->slug != @"japan"){
                         if(!ud->howToPlaySprite){
                             overlay = [[Overlay alloc] initWithDogBody:[NSValue valueWithPointer:b] andSpriteSheet:[NSValue valueWithPointer:spriteSheetCommon]];
                             ud->howToPlaySprite = [overlay getSprite];
