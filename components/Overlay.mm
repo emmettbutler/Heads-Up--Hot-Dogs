@@ -19,6 +19,8 @@
     self->sprite.position = CGPointMake(self->body->GetPosition().x*PTM_RATIO, self->body->GetPosition().y*PTM_RATIO);
     [self->spritesheet addChild:self->sprite];
     
+    [self->sprite setVisible:false];
+    
     NSMutableArray *frames = [[NSMutableArray alloc] init];
     for(int i = 1; i <= 12; i++){
         [frames addObject:
@@ -82,6 +84,36 @@
     if(self->body){
         int xOff = 0, yOff = 0;
         bodyUserData *ud = (bodyUserData *)body->GetUserData();
+        
+        if(ud->grabbed || ud->_dog_isOnHead || !ud->hasTouchedGround){
+            [self->sprite setVisible:false];
+        } else {
+            [self->sprite setVisible:true];
+        }
+        
+        if(ud->howToPlaySpriteXOffset){
+            xOff = ud->howToPlaySpriteXOffset;
+        }
+        if(ud->howToPlaySpriteYOffset){
+            yOff = ud->howToPlaySpriteYOffset;
+        }
+        self->sprite.position = CGPointMake((self->body->GetPosition().x*PTM_RATIO)+xOff, (self->body->GetPosition().y*PTM_RATIO)+yOff);
+    } else {
+        [self dealloc];
+    }
+}
+
+-(void)updatePosition:(NSNumber *)numTouches{
+    if(self->body){
+        int xOff = 0, yOff = 0;
+        bodyUserData *ud = (bodyUserData *)body->GetUserData();
+        
+        if(![numTouches boolValue] || body->GetPosition().x == 0){
+            [self->sprite setVisible:false];
+        } else {
+            [self->sprite setVisible:true];
+        }
+        
         if(ud->howToPlaySpriteXOffset){
             xOff = ud->howToPlaySpriteXOffset;
         }

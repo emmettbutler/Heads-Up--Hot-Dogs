@@ -21,6 +21,7 @@
 #define COP_RANGE 4
 #define VOMIT_PROBABILITY 250
 #define DOG_COUNTER_HT 295
+#define OVERLAYS_STOP 2
 #define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 
 #ifdef DEBUG
@@ -1221,7 +1222,7 @@
     ud->collideFilter = _curPersonMaskBits;
     ud->moveDelta = moveDelta*level->personSpeedMul;
     ud->pointValue = person->pointValue;
-    ud->howToPlaySpriteYOffset = 50;
+    ud->howToPlaySpriteYOffset = 180;
     // point notifiers
     ud->_not_dogContact = (CCFiniteTimeAction *)[(NSValue *)[notifiers objectAtIndex:contactActionIndex] pointerValue];
     ud->_not_dogOnHead = (CCFiniteTimeAction *)[(NSValue *)[notifiers objectAtIndex:3] pointerValue];
@@ -1899,6 +1900,7 @@
                 // dog is definitely not on a head if it's touching the floor
                 ud->_dog_isOnHead = false;
                 ud->hasTouchedHead = false;
+                ud->hasTouchedGround = true;
                 ud->touchLock = false;
                 //ud->grabbed = false;
                 if(ud->shotSeq && !ud->touchLock)
@@ -2042,6 +2044,16 @@
                     input.p2 = policeRayPoint2;
                     input.maxFraction = 1;
                 } else if(ud->sprite1.tag >= S_BUSMAN && ud->sprite1.tag <= S_TOPPSN){
+                    if(_peopleGrumped <= OVERLAYS_STOP){
+                        Overlay *overlay;
+                        if(!ud->howToPlaySprite){
+                            overlay = [[Overlay alloc] initWithPersonBody:[NSValue valueWithPointer:b] andSpriteSheet:[NSValue valueWithPointer:spriteSheetCommon]];
+                            ud->howToPlaySprite = [overlay getSprite];
+                        } else {
+                            overlay = [[Overlay alloc] initWithSprite:[NSValue valueWithPointer:ud->howToPlaySprite] andBody:[NSValue valueWithPointer:b]];
+                            [overlay updatePosition:[NSNumber numberWithInt:[dogTouches count]]];
+                        }
+                    }
                     ud->dogsOnHead = 0;
                     ud->spcDogsOnHead = 0;
                     ud->timeWalking++;
@@ -2084,7 +2096,7 @@
                 }
                 else if(ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG){
                     Overlay *overlay;
-                    if(!ud->howToPlaySprite){
+                    if(!ud->howToPlaySprite && _peopleGrumped <= OVERLAYS_STOP){
                         overlay = [[Overlay alloc] initWithDogBody:[NSValue valueWithPointer:b] andSpriteSheet:[NSValue valueWithPointer:spriteSheetCommon]];
                         ud->howToPlaySprite = [overlay getSprite];
                     } else {
