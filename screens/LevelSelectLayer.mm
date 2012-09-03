@@ -31,9 +31,10 @@
     [levelStructs addObject:[self china:full]];
     [levelStructs addObject:[self japan:full]];
     [levelStructs addObject:[self space:full]];
-
+   
     [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_common.plist"];
 
+    NSLog(@"Loading levels...");
     for(NSValue *v in levelStructs){
         levelProps *l = (levelProps *)[v pointerValue];
         l->highScore = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"highScore%@", l->slug]];
@@ -43,28 +44,19 @@
         int prevIndex = [levelStructs indexOfObject:v] - 1;
         if(prevIndex == -1)
             prevIndex++;
-        levelProps *nextLevel = (levelProps *)[(NSValue *)[levelStructs objectAtIndex:nextIndex] pointerValue];
-        l->next = nextLevel;
-        levelProps *prevLevel = (levelProps *)[(NSValue *)[levelStructs objectAtIndex:prevIndex] pointerValue];
-        l->prev = prevLevel;
-        l->characters = [CharBuilder buildCharacters:l->slug];
+        l->next = (levelProps *)[(NSValue *)[levelStructs objectAtIndex:nextIndex] pointerValue];
+        l->prev = (levelProps *)[(NSValue *)[levelStructs objectAtIndex:prevIndex] pointerValue];
 
-        l->characterProbSum = 0;
-        for(NSValue *v in l->characters){
-            personStruct *p = (personStruct *)[v pointerValue];
-            l->characterProbSum += p->frequency;
-        }
-
-        int prevHighScore = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"highScore%@", l->prev->slug]];
+        int unlocked, prevHighScore = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"highScore%@", l->prev->slug]];
         if(prevHighScore > l->prev->unlockNextThreshold){
             [standardUserDefaults setInteger:1 forKey:[NSString stringWithFormat:@"unlocked%@", l->slug]];
+            unlocked = 1;
         }
         [standardUserDefaults synchronize];
 
-        int unlocked = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"unlocked%@", l->slug]];
         if(unlocked) l->unlocked = true;
-        else l->unlocked = false;
     }
+    NSLog(@"Done");
     return levelStructs;
 }
 
@@ -118,7 +110,7 @@
         sprite.position = ccp(52, winSize.height/2);
         [self addChild:sprite];
 
-        leftArrowRect = CGRectMake((sprite.position.x-(sprite.contentSize.width)/2), (sprite.position.y-(sprite.contentSize.height)/2), (sprite.contentSize.width+10), (sprite.contentSize.height+10));
+        leftArrowRect = CGRectMake((sprite.position.x-(sprite.contentSize.width)/2), (sprite.position.y-(sprite.contentSize.height)/2), (sprite.contentSize.width+20), (sprite.contentSize.height+100));
 
         //right
         sprite = [CCSprite spriteWithSpriteFrameName:@"LvlArrow.png"];
@@ -126,7 +118,7 @@
         sprite.flipX = true;
         [self addChild:sprite];
 
-        rightArrowRect = CGRectMake((sprite.position.x-(sprite.contentSize.width)/2), (sprite.position.y-(sprite.contentSize.height)/2), (sprite.contentSize.width+10), (sprite.contentSize.height+10));
+        rightArrowRect = CGRectMake((sprite.position.x-(sprite.contentSize.width)/2), (sprite.position.y-(sprite.contentSize.height)/2), (sprite.contentSize.width+20), (sprite.contentSize.height+100));
 
         thumb = [CCSprite spriteWithSpriteFrameName:@"Philly_Thumb.png"];
         thumb.position = ccp(winSize.width/2, winSize.height/2+20);

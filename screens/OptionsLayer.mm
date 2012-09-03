@@ -288,6 +288,7 @@
         CCMenu *menu = [CCMenu menuWithItems:button, nil];
         [menu setPosition:ccp(110, 26)];
         [self addChild:menu z:11];
+        _startRect = CGRectMake((restartButton.position.x-(restartButton.contentSize.width)/2), (restartButton.position.y-(restartButton.contentSize.height)/2), (restartButton.contentSize.width+20), (restartButton.contentSize.height+20));
         
         CCSprite *quitButton = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
         quitButton.position = ccp(370, 27);
@@ -299,6 +300,7 @@
         menu = [CCMenu menuWithItems:button, nil];
         [menu setPosition:ccp(370, 26)];
         [self addChild:menu z:11];
+        _titleRect = CGRectMake((quitButton.position.x-(quitButton.contentSize.width)/2), (quitButton.position.y-(quitButton.contentSize.height)/2), (quitButton.contentSize.width+20), (quitButton.contentSize.height+20));
         
         [TestFlight passCheckpoint:@"Options Screen"];
         
@@ -345,6 +347,10 @@
         [self clearScoresWindow];
     } else if(CGRectContainsPoint(_sfxRect, touchLocation1)){
         [self flipSFX];
+    } else if(CGRectContainsPoint(_startRect, touchLocation1)){
+        [self switchSceneStart];
+    } else if(CGRectContainsPoint(_titleRect, touchLocation1)){
+        [self switchSceneTitleScreen];
     }
 }
 

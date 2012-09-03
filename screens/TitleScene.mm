@@ -29,6 +29,7 @@
 
 -(id) init{
     if ((self = [super init])){
+        self.isTouchEnabled = true;
         CGSize size = [[CCDirector sharedDirector] winSize];
         standardUserDefaults = [NSUserDefaults standardUserDefaults];
 #ifdef DEBUG
@@ -68,6 +69,7 @@
         CCMenu *menu = [CCMenu menuWithItems:button, nil];
         [menu setPosition:ccp(110, 26)];
         [self addChild:menu z:11];
+        _startRect = CGRectMake((startButton.position.x-(startButton.contentSize.width)/2), (startButton.position.y-(startButton.contentSize.height)/2), (startButton.contentSize.width+70), (startButton.contentSize.height+70));
         
         CCSprite *otherButton = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
         otherButton.position = ccp(370, 27);
@@ -79,6 +81,7 @@
         CCMenu *otherMenu = [CCMenu menuWithItems:otherTextButton, nil];
         [otherMenu setPosition:ccp(370, 26)];
         [self addChild:otherMenu z:11];
+        _optionsRect = CGRectMake((otherButton.position.x-(otherButton.contentSize.width)/2), (otherButton.position.y-(otherButton.contentSize.height)/2), (otherButton.contentSize.width+70), (otherButton.contentSize.height+70));
         
         background = [CCSprite spriteWithSpriteFrameName:@"blank_bg.png"];
         background.anchorPoint = CGPointZero;
@@ -124,6 +127,12 @@
     UITouch *myTouch = [touches anyObject];
     CGPoint location = [myTouch locationInView:[myTouch view]];
     location = [[CCDirector sharedDirector] convertToGL:location];
+    
+    if(CGRectContainsPoint(_startRect, location)){
+        [self switchSceneStart];
+    } else if(CGRectContainsPoint(_optionsRect, location)){
+        [self switchSceneOptions];
+    }
 }
 
 - (void)switchSceneStart{

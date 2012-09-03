@@ -1417,6 +1417,13 @@
             }
         }
         
+        level->characters = [CharBuilder buildCharacters:level->slug];
+        level->characterProbSum = 0;
+        for(NSValue *v in level->characters){
+            personStruct *p = (personStruct *)[v pointerValue];
+            level->characterProbSum += p->frequency;
+        }
+        
         b2Vec2 gravity;
         gravity = b2Vec2(0.0f, -30.0);
         if(level->gravity)

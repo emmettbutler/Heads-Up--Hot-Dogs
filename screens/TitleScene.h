@@ -15,7 +15,7 @@
     CCAnimation *titleAnim;
     CCAction *titleAnimAction;
     CCSprite *background;
-    CGRect screen;
+    CGRect screen, _startRect, _optionsRect;
     ccColor3B _color_pink;
     NSUserDefaults *standardUserDefaults;
     float introSoundLen;
