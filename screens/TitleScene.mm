@@ -53,7 +53,7 @@
         spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_menus.png"];
         [self addChild:spriteSheet];
         
-        CCLabelTTF *label = [CCLabelTTF labelWithString:@"BETA v0.4" fontName:@"LostPet.TTF" fontSize:30.0];
+        CCLabelTTF *label = [CCLabelTTF labelWithString:@"BETA v0.5" fontName:@"LostPet.TTF" fontSize:30.0];
         [[label texture] setAliasTexParameters];
         label.color = _color_pink;
         label.position = ccp((label.contentSize.width/2)+6, size.height-(label.contentSize.height/2)-5);
