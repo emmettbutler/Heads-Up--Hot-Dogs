@@ -70,7 +70,7 @@
     bodyUserData *ud = (bodyUserData *)body->GetUserData();
     
     ud->grabbed = false;
-    body->SetLinearVelocity(b2Vec2(0, 0));
+    body->SetLinearVelocity(b2Vec2(body->GetLinearVelocity().x/5.0, body->GetLinearVelocity().y/5.0));
     body->SetFixedRotation(false);
     
     if(body->GetPosition().y < .8 && body->GetPosition().x < .5)

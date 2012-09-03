@@ -14,8 +14,9 @@
     CCSpriteBatchNode *spriteSheet;
     CCAnimation *titleAnim;
     CCAction *titleAnimAction;
-    CCSprite *background;
+    CCSprite *background, *cloud1, *cloud2, *cloud3, *dogLogo, *swooshLogo;
     CGRect screen, _startRect, _optionsRect;
+    CGPoint dogLogoAnchor, swooshLogoAnchor;
     ccColor3B _color_pink;
     NSUserDefaults *standardUserDefaults;
     float introSoundLen;

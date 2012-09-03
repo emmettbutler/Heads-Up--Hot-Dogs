@@ -32,6 +32,13 @@
         self.isTouchEnabled = true;
         CGSize size = [[CCDirector sharedDirector] winSize];
         standardUserDefaults = [NSUserDefaults standardUserDefaults];
+        NSInteger introDone = [[NSUserDefaults standardUserDefaults] integerForKey:@"introDone"];
+        if(!introDone){
+            [[NSUserDefaults standardUserDefaults] setInteger:1 forKey:@"sfxon"];
+            [[NSUserDefaults standardUserDefaults] synchronize];
+        }
+        
+        [TestFlight passCheckpoint:@"Title Screen"];
 #ifdef DEBUG
         NSLog(@"DEBUG MODE ON");
         CCLabelTTF *dlabel = [CCLabelTTF labelWithString:@"DEBUG" fontName:@"LostPet.TTF" fontSize:30.0];
@@ -43,15 +50,27 @@
             [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"menu 2.mp3" loop:YES];
 #endif
         
+        spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_menus.png"];
+        [self addChild:spriteSheet];
+        
         // color definitions
         _color_pink = ccc3(255, 62, 166);
         
-        [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_menus.plist"];
+        cloud1 = [CCSprite spriteWithSpriteFrameName:@"Cloud_1.png"];
+        cloud1.position = ccp(size.width, size.height/2-50);
+        [spriteSheet addChild:cloud1];
         
-        [[CCDirector sharedDirector] setDisplayFPS:NO];
+        cloud2 = [CCSprite spriteWithSpriteFrameName:@"Cloud_2.png"];
+        cloud2.position = ccp(0, size.height);
+        [spriteSheet addChild:cloud2];
         
-        spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_menus.png"];
-        [self addChild:spriteSheet];
+        cloud3 = [CCSprite spriteWithSpriteFrameName:@"Cloud_3.png"];
+        cloud3.position = ccp(0, 50);
+        [spriteSheet addChild:cloud3];
+        
+        [cloud1 runAction:[CCMoveTo actionWithDuration:90 position:CGPointMake(0, cloud1.position.y)]];
+        [cloud2 runAction:[CCMoveTo actionWithDuration:80 position:CGPointMake(size.width, cloud2.position.y)]];
+        [cloud3 runAction:[CCMoveTo actionWithDuration:100 position:CGPointMake(size.width, cloud3.position.y)]];
         
         CCLabelTTF *label = [CCLabelTTF labelWithString:@"BETA v0.5" fontName:@"LostPet.TTF" fontSize:30.0];
         [[label texture] setAliasTexParameters];
@@ -83,35 +102,21 @@
         [self addChild:otherMenu z:11];
         _optionsRect = CGRectMake((otherButton.position.x-(otherButton.contentSize.width)/2), (otherButton.position.y-(otherButton.contentSize.height)/2), (otherButton.contentSize.width+70), (otherButton.contentSize.height+70));
         
-        background = [CCSprite spriteWithSpriteFrameName:@"blank_bg.png"];
+        background = [CCSprite spriteWithSpriteFrameName:@"Splash_BG_clean.png"];
         background.anchorPoint = CGPointZero;
         [self addChild:background z:-10];
         
-        NSMutableArray *titleAnimFrames = [[NSMutableArray alloc] initWithCapacity:13];
-        [titleAnimFrames addObject:
-         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"blank_bg.png"]];
-        for(int i = 2; i <= 13; i++){
-            [titleAnimFrames addObject:
-             [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-              [NSString stringWithFormat:@"TitleAnim_%d.png", i]]];
-        }
-        titleAnim = [CCAnimation animationWithFrames:titleAnimFrames delay:.07f];
-        self.titleAnimAction = [[CCAnimate alloc] initWithAnimation:titleAnim restoreOriginalFrame:NO];
-        [titleAnimFrames release];
+        dogLogo = [CCSprite spriteWithSpriteFrameName:@"HotDogs.png"];
+        dogLogo.position = ccp(size.width/2, size.height + 100);
+        [spriteSheet addChild:dogLogo];
+        dogLogoAnchor = CGPointMake(dogLogo.position.x, size.height/2-20);
         
-        screen = CGRectMake(0, 0, size.width, size.height);
+        swooshLogo = [CCSprite spriteWithSpriteFrameName:@"HeadsUp.png"];
+        swooshLogo.position = ccp(-1*(swooshLogo.contentSize.width), size.height/2+80);
+        [spriteSheet addChild:swooshLogo];
         
-        time = 0;
-        
-        NSInteger introDone = [[NSUserDefaults standardUserDefaults] integerForKey:@"introDone"];
-        if(!introDone){
-            [[NSUserDefaults standardUserDefaults] setInteger:1 forKey:@"sfxon"];
-            [[NSUserDefaults standardUserDefaults] synchronize];
-        }
-        
-        [background runAction:_titleAnimAction];
-        
-        [TestFlight passCheckpoint:@"Title Screen"];
+        [swooshLogo runAction:[CCMoveTo actionWithDuration:.4 position:CGPointMake(size.width/2, swooshLogo.position.y)]];
+        [dogLogo runAction:[CCEaseOut actionWithAction:[CCMoveTo actionWithDuration:.6 position:dogLogoAnchor] rate:.5]];
         
         [self schedule: @selector(tick:)];
     }
@@ -121,6 +126,9 @@
 -(void) tick: (ccTime) dt {
     //CGSize size = [[CCDirector sharedDirector] winSize];
     time++;
+    
+    if([dogLogo numberOfRunningActions] == 0)
+        dogLogo.position = CGPointMake(dogLogo.position.x, dogLogoAnchor.y + (3 * sinf(time * .03)));
 }
 
 - (void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {

@@ -15,6 +15,7 @@
 		<string>Icon_Head.png</string>
 		<string>Icon_Head_big.png</string>
 		<string>Default.png</string>
+		<string>Default@2x.png</string>
 	</array>
 	<key>CFBundleIcons</key>
 	<dict>
@@ -25,6 +26,7 @@
 				<string>Icon_Head.png</string>
 				<string>Icon_Head_big.png</string>
 				<string>Default.png</string>
+				<string>Default@2x.png</string>
 			</array>
 			<key>UIPrerenderedIcon</key>
 			<true/>

@@ -10,7 +10,7 @@
 
 #import "AppDelegate.h"
 #import "GameConfig.h"
-#import "TitleScene.h"
+#import "Splashes.h"
 #import "TestFlight.h" 
 #import "RootViewController.h"
 #import <GameKit/GameKit.h>
@@ -162,8 +162,11 @@
     if( ! [CCDirector setDirectorType:kCCDirectorTypeDisplayLink] )
         [CCDirector setDirectorType:kCCDirectorTypeMainLoop];
     
+    [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_menus.plist"];
+    [[CCDirector sharedDirector] setDisplayFPS:NO];
+    
 	// Run the intro Scene
-	[[CCDirector sharedDirector] runWithScene: [TitleLayer scene]];
+	[[CCDirector sharedDirector] runWithScene:[Splashes scene]];
 }
 
 
