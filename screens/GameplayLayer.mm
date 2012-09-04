@@ -904,7 +904,7 @@
     CGPoint location = CGPointMake(arc4random() % (int)(SIDE_BUFFER+(winSize.width-(2*SIDE_BUFFER))), DOG_SPAWN_MINHT+(arc4random() % (int)(winSize.height-DOG_SPAWN_MINHT)));
     
     spcDogData *dd = NULL;
-    if (type.intValue == 1){
+    if (type.intValue == 1 && _peopleGrumped > 2){
         dd = level->specialDog;
     }
     
