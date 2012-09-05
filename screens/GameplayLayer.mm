@@ -481,7 +481,7 @@
     bodyUserData *ud = (bodyUserData *)b->GetUserData();
     // per-level dog movement changes
     if(level->slug == @"chicago" && !(time % 19) && b->GetPosition().y > FLOOR4_HT+.5){
-        if(ud->sprite1.position.x > 10 && ud->sprite1.position.x < winSize.width - 10){
+        if(ud->sprite1.position.x > 40 && ud->sprite1.position.x < winSize.width - 40){
             if(![ud->shotSeq isDone]){
                 if(b->GetLinearVelocity().x != b->GetLinearVelocity().x+windForce.x)
                     b->SetLinearVelocity(b2Vec2(b->GetLinearVelocity().x+windForce.x, b->GetLinearVelocity().y));
