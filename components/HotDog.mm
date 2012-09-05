@@ -33,11 +33,15 @@
         fallSprite = dd->fallSprite;
         mainSprite = dd->mainSprite;
         grabSprite = dd->grabSprite;
-        deathDelay = .1;
+        deathDelay = .001;
         tag = S_SPCDOG;
         wienerDeathAnimFrames = dd->deathAnimFrames;
-        wienerShotAnimFrames = dd->shotAnimFrames;
         wienerFlashAnimFrames = dd->flashAnimFrames;
+        if(deathAnimFrames){
+            wienerDeathAnimFrames = deathAnimFrames;
+            wienerFlashAnimFrames = NULL;
+        }
+        wienerShotAnimFrames = dd->shotAnimFrames;
     }
     else {
         riseSprite = @"Dog_Rise.png";
