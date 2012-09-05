@@ -8,7 +8,7 @@
 
 #import "LoseScene.h"
 #import "GameplayLayer.h"
-#import "TitleScene.h"
+#import "LevelSelectLayer.h"
 #import "TestFlight.h"
 #import "Clouds.h"
 #import <GameKit/GameKit.h>
@@ -141,10 +141,10 @@
         CCSprite *quitButton = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
         quitButton.position = ccp(370, 27);
         [self addChild:quitButton z:10];
-        label = [CCLabelTTF labelWithString:@"     Quit     " fontName:@"LostPet.TTF" fontSize:22.0];
+        label = [CCLabelTTF labelWithString:@"     Levels     " fontName:@"LostPet.TTF" fontSize:22.0];
         [[label texture] setAliasTexParameters];
         label.color = _color_pink;
-        button = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(switchSceneQuit)];
+        button = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(switchSceneLevel)];
         menu = [CCMenu menuWithItems:button, nil];
         [menu setPosition:ccp(370, 26)];
         [self addChild:menu z:11];
@@ -254,8 +254,8 @@
     [[CCDirector sharedDirector] replaceScene:[GameplayLayer sceneWithSlug:slug]];
 }
 
-- (void)switchSceneQuit{
-    [[CCDirector sharedDirector] replaceScene:[TitleLayer scene]];
+- (void)switchSceneLevel{
+    [[CCDirector sharedDirector] replaceScene:[LevelSelectLayer scene]];
 }
 
 - (void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
