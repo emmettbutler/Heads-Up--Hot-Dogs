@@ -49,8 +49,9 @@ static NSUserDefaults *standardUserDefaults;
     BOOL NO_LEVEL_LOCKS;
     CGRect leftArrowRect;
     CGRect thumbnailRect;
+    CGSize winSize;
     CCSprite *thumb;
-    CCLabelTTF *scoreLabel;
+    CCLabelTTF *scoreLabel, *loading;
     CCLabelTTF *nameLabel, *helpLabel;
 }
 

@@ -64,7 +64,7 @@
 -(id) init{
     if ((self = [super init])){
         standardUserDefaults = [NSUserDefaults standardUserDefaults];
-        CGSize winSize = [[CCDirector sharedDirector] winSize];
+        winSize = [[CCDirector sharedDirector] winSize];
         [[CCDirector sharedDirector] setDisplayFPS:NO];
         
         // TODO: for testing only - don't lock the levels
@@ -196,9 +196,19 @@
     }
     else if(CGRectContainsPoint(thumbnailRect, location)){
         SEL levelMethod = NSSelectorFromString(level->func);
+        CCSequence *seq = [CCSequence actions:[CCCallFunc actionWithTarget:self selector:@selector(addLoading)], [CCDelayTime actionWithDuration:.5], [CCCallFunc actionWithTarget:self selector:levelMethod], nil];
+        
         if(NO_LEVEL_LOCKS || level->unlocked)
-            [self performSelector:levelMethod];
+            [self runAction:seq];
     }
+}
+
+-(void)addLoading{
+    loading = [[CCLabelTTF labelWithString:@"Loading..." fontName:@"LostPet.TTF" fontSize:30.0] retain];
+    loading.color = _color_pink;
+    loading.position = ccp(winSize.width/2, winSize.height/2);
+    [[loading texture] setAliasTexParameters];
+    [self addChild:loading];
 }
 
 -(void)switchScreenPhilly{
