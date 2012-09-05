@@ -20,7 +20,7 @@
 }
 
 +(NSMutableArray *)buildLevels:(NSNumber *)full{
-    levelStructs = [[NSMutableArray alloc] init];
+    NSMutableArray *levelStructs = [[NSMutableArray alloc] init];
     
     [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_common.plist"];
 
@@ -37,6 +37,7 @@
 
     NSLog(@"Loading levels...");
     for(NSValue *v in levelStructs){
+        NSLog(@"Processing level...");
         levelProps *l = (levelProps *)[v pointerValue];
         l->highScore = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"highScore%@", l->slug]];
         int nextIndex = [levelStructs indexOfObject:v] + 1;
@@ -139,7 +140,7 @@
 
         thumbnailRect = CGRectMake((thumb.position.x-(thumb.contentSize.width)/2), (thumb.position.y-(thumb.contentSize.height)/2), (thumb.contentSize.width+10), (thumb.contentSize.height+10));
 
-        lStructs = [LevelSelectLayer buildLevels:[NSNumber numberWithInt:0]];
+        lStructs = [[LevelSelectLayer buildLevels:[NSNumber numberWithInt:0]] retain];
 
         [self schedule: @selector(tick:)];
     }
@@ -196,7 +197,7 @@
     }
     else if(CGRectContainsPoint(thumbnailRect, location)){
         SEL levelMethod = NSSelectorFromString(level->func);
-        CCSequence *seq = [CCSequence actions:[CCCallFunc actionWithTarget:self selector:@selector(addLoading)], [CCDelayTime actionWithDuration:.5], [CCCallFunc actionWithTarget:self selector:levelMethod], nil];
+        CCSequence *seq = [CCSequence actions:[CCCallFunc actionWithTarget:self selector:@selector(addLoading)], [CCDelayTime actionWithDuration:.1], [CCCallFunc actionWithTarget:self selector:levelMethod], nil];
         
         if(NO_LEVEL_LOCKS || level->unlocked)
             [self runAction:seq];
@@ -204,7 +205,11 @@
 }
 
 -(void)addLoading{
-    loading = [[CCLabelTTF labelWithString:@"Loading..." fontName:@"LostPet.TTF" fontSize:30.0] retain];
+    CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"Lvl_TextBox.png"];
+    sprite.position = ccp(winSize.width/2, (winSize.height/2));
+    [self addChild:sprite];
+    
+    loading = [[CCLabelTTF labelWithString:@"Loading..." fontName:@"LostPet.TTF" fontSize:40.0] retain];
     loading.color = _color_pink;
     loading.position = ccp(winSize.width/2, winSize.height/2);
     [[loading texture] setAliasTexParameters];
@@ -244,7 +249,7 @@
 }
 
 -(void) dealloc{
-    free(lStructs);
+    [lStructs release];
     [super dealloc];
 }
 

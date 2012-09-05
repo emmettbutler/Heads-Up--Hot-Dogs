@@ -10,8 +10,6 @@
 #import "cocos2d.h"
 #import "CharBuilder.h"
 
-
-static NSMutableArray *levelStructs;
 static NSUserDefaults *standardUserDefaults;
 
 @interface LevelSelectLayer : CCLayer {

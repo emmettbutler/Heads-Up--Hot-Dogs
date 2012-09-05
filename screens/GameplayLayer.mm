@@ -121,15 +121,20 @@
 
 -(void)restartScene{
     if(_pause){
-        [self resumeGame];
+        [self unschedule:@selector(tick:)];
+        [self removeAllChildrenWithCleanup:YES];
+        [[CCDirector sharedDirector] resume];
     }
     [[CCDirector sharedDirector] replaceScene:[GameplayLayer sceneWithSlug:level->slug]];
 }
 
 -(void)levelSelect{
     if(_pause){
-        [self resumeGame];
+        [self unschedule:@selector(tick:)];
+        [self removeAllChildrenWithCleanup:YES];
+        [[CCDirector sharedDirector] resume];
     }
+    // sometimes this causes a crash but I'm not sure why
     [[CCDirector sharedDirector] replaceScene:[LevelSelectLayer scene]];
 }
 
