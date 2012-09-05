@@ -119,9 +119,18 @@
     _pause = false;
 }
 
--(IBAction)launchFeedback{
-    [TestFlight passCheckpoint:@"Feedback Clicked"];
-    [TestFlight openFeedbackView];
+-(void)restartScene{
+    if(_pause){
+        [self resumeGame];
+    }
+    [[CCDirector sharedDirector] replaceScene:[GameplayLayer sceneWithSlug:level->slug]];
+}
+
+-(void)levelSelect{
+    if(_pause){
+        [self resumeGame];
+    }
+    [[CCDirector sharedDirector] replaceScene:[LevelSelectLayer scene]];
 }
 
 -(void) pauseButton{
@@ -175,10 +184,10 @@
         CCSprite *otherButton = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
         otherButton.position = ccp((winSize.width-otherButton.contentSize.width+33), 208);
         [_pauseLayer addChild:otherButton z:81];
-        label = [CCLabelTTF labelWithString:@"     TITLE     " fontName:@"LostPet.TTF" fontSize:23.0];
+        label = [CCLabelTTF labelWithString:@"     RESTART    " fontName:@"LostPet.TTF" fontSize:23.0];
         [[label texture] setAliasTexParameters];
         label.color = _color_pink;
-        CCMenuItem *title = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(titleScene)];
+        CCMenuItem *title = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(restartScene)];
         
         otherButton = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
         otherButton.position = ccp((winSize.width-otherButton.contentSize.width+33), 162);
@@ -191,14 +200,14 @@
         otherButton = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
         otherButton.position = ccp((winSize.width-otherButton.contentSize.width+33), 116);
         [_pauseLayer addChild:otherButton z:81];
-        label = [CCLabelTTF labelWithString:@"   FEEDBACK   " fontName:@"LostPet.TTF" fontSize:23.0];
+        label = [CCLabelTTF labelWithString:@"   LEVEL   " fontName:@"LostPet.TTF" fontSize:23.0];
         [[label texture] setAliasTexParameters];
         label.color = _color_pink;
-        CCMenuItem *feedback = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(launchFeedback)];
+        CCMenuItem *feedback = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(levelSelect)];
         
         CCMenu *quitButton = [CCMenu menuWithItems:cont, title, feedback, nil];
         [quitButton alignItemsVerticallyWithPadding:22];
-        quitButton.position = ccp((winSize.width-label.contentSize.width+53), winSize.height/2);
+        quitButton.position = ccp((winSize.width-89), winSize.height/2);
         [_pauseLayer addChild:quitButton z:82];
 
         _pauseMenu = [CCMenu menuWithItems: score, timeItem, peopleItem, savedItem, totalTimeItem, nil];
