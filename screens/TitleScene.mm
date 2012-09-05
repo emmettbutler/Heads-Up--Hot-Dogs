@@ -8,7 +8,6 @@
 
 #import "TitleScene.h"
 #import "GameplayLayer.h"
-#import "TutorialLayer.h"
 #import "OptionsLayer.h"
 #import "TestFlight.h"
 #import "LevelSelectLayer.h"
@@ -133,12 +132,7 @@
 - (void)switchSceneStart{
     NSInteger introDone = [standardUserDefaults integerForKey:@"introDone"];
     NSLog(@"introDone: %d", introDone);
-    // removing the tutorial for Turner build
-    //if(introDone == 1)
-        [[CCDirector sharedDirector] replaceScene:[LevelSelectLayer scene]];
-    //else if(introDone == 0){
-    //    [[CCDirector sharedDirector] replaceScene:[TutorialLayer sceneWithFrom:@"title"]];
-    //}
+    [[CCDirector sharedDirector] replaceScene:[LevelSelectLayer scene]];
 }
 
 - (void)switchSceneOptions{

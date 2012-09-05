@@ -197,7 +197,7 @@
     }
     else if(CGRectContainsPoint(thumbnailRect, location)){
         SEL levelMethod = NSSelectorFromString(level->func);
-        CCSequence *seq = [CCSequence actions:[CCCallFunc actionWithTarget:self selector:@selector(addLoading)], [CCDelayTime actionWithDuration:.1], [CCCallFunc actionWithTarget:self selector:levelMethod], nil];
+        CCSequence *seq = [CCSequence actions:[CCCallFunc actionWithTarget:self selector:@selector(addLoading)], [CCDelayTime actionWithDuration:.001], [CCCallFunc actionWithTarget:self selector:levelMethod], nil];
         
         if(NO_LEVEL_LOCKS || level->unlocked)
             [self runAction:seq];

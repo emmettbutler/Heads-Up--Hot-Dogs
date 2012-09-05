@@ -11,7 +11,6 @@
 #import "OptionsLayer.h"
 #import "TestFlight.h"
 #import "LevelSelectLayer.h"
-#import "TutorialLayer.h"
 #import "Clouds.h"
 
 #define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
@@ -37,10 +36,6 @@
 
 -(void)emmettSocial{
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"http://emmettbutler.com"]];
-}
-
--(void)playTutorial{
-    [[CCDirector sharedDirector] replaceScene:[TutorialLayer sceneWithFrom:@"options"]];
 }
 
 -(void)flipSFX{
@@ -236,22 +231,8 @@
         [m setPosition:ccp(320, 190)];
         [self addChild:m z:11];
         
-        CCSprite *tutorialButton = [CCSprite spriteWithSpriteFrameName:@"YakisobaPan.png"];
-        tutorialButton.position = ccp(120, 130);
-        tutorialButton.scale = imgScale;
-        [[tutorialButton texture] setAliasTexParameters];
-        [self addChild:tutorialButton z:10];
-        _tutRect = CGRectMake((tutorialButton.position.x-(tutorialButton.contentSize.width)/2), (tutorialButton.position.y-(tutorialButton.contentSize.height)/2), (tutorialButton.contentSize.width+10), (tutorialButton.contentSize.height+10));
-        label = [CCLabelTTF labelWithString:@"Tutorial" fontName:@"LostPet.TTF" fontSize:22.0];
-        [[label texture] setAliasTexParameters];
-        label.color = _color_pink;
-        b = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(playTutorial)];
-        m = [CCMenu menuWithItems:b, nil];
-        [m setPosition:ccp(120, 90)];
-        [self addChild:m z:11];
-        
         CCSprite *scoresButton = [CCSprite spriteWithSpriteFrameName:@"Taco.png"];
-        scoresButton.position = ccp(240, 130);
+        scoresButton.position = ccp(170, 130);
         scoresButton.scale = imgScale;
         [[scoresButton texture] setAliasTexParameters];
         [self addChild:scoresButton z:10];
@@ -261,11 +242,11 @@
         label.color = _color_pink;
         b = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(clearScoresWindow)];
         m = [CCMenu menuWithItems:b, nil];
-        [m setPosition:ccp(240, 90)];
+        [m setPosition:ccp(170, 90)];
         [self addChild:m z:11];
         
         CCSprite *sfxButton = [CCSprite spriteWithSpriteFrameName:@"ChiDog.png"];
-        sfxButton.position = ccp(360, 130);
+        sfxButton.position = ccp(320, 130);
         sfxButton.scale = imgScale;
         [[sfxButton texture] setAliasTexParameters];
         [self addChild:sfxButton z:10];
@@ -278,7 +259,7 @@
         sfxLabel.color = _color_pink;
         b = [CCMenuItemLabel itemWithLabel:sfxLabel target:self selector:@selector(flipSFX)];
         m = [CCMenu menuWithItems:b, nil];
-        [m setPosition:ccp(360, 90)];
+        [m setPosition:ccp(320, 90)];
         [self addChild:m z:11];
         
         CCSprite *restartButton = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
@@ -318,11 +299,7 @@
 - (void)switchSceneStart{
     NSInteger introDone = [[NSUserDefaults standardUserDefaults] integerForKey:@"introDone"];
     CCLOG(@"introDone: %d", introDone);
-    if(introDone == 1)
-        [[CCDirector sharedDirector] replaceScene:[LevelSelectLayer scene]];
-    else if(introDone == 0){
-        [[CCDirector sharedDirector] replaceScene:[TutorialLayer sceneWithFrom:@"title"]];
-    }
+    [[CCDirector sharedDirector] replaceScene:[LevelSelectLayer scene]];
 }
 
 - (void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -344,8 +321,6 @@
         [self openHomepage];
     } else if(CGRectContainsPoint(_creditsRect, touchLocation1)){
         [self showCredits];
-    } else if(CGRectContainsPoint(_tutRect, touchLocation1)){
-        [self playTutorial];
     } else if(CGRectContainsPoint(_scoresRect, touchLocation1)){
         [self clearScoresWindow];
     } else if(CGRectContainsPoint(_sfxRect, touchLocation1)){

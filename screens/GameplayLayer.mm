@@ -2479,9 +2479,7 @@
     [xPositions release];
 
     delete personDogContactListener;
-
     delete _world;
-    _world = NULL;
 
     [super dealloc];
 }
