@@ -1389,7 +1389,7 @@
     CCLOG(@"Dogs onscreen: %d", _dogsOnscreen);
     
     if(_dogsOnscreen < _maxDogsOnScreen && !_gameOver){
-        if(thisType.intValue == 1){
+        if(thisType.intValue == 1 && _peopleGrumped > 2){
             NSMutableArray *params = [[NSMutableArray alloc] init];
             
             id screenLightenAction = [CCCallFuncND actionWithTarget:self selector:@selector(screenFlash:data:) data:[[NSNumber numberWithInt:1] retain]];
