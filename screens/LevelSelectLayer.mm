@@ -67,6 +67,11 @@
         standardUserDefaults = [NSUserDefaults standardUserDefaults];
         winSize = [[CCDirector sharedDirector] winSize];
         [[CCDirector sharedDirector] setDisplayFPS:NO];
+#ifdef DEBUG
+#else
+        if(![[SimpleAudioEngine sharedEngine] isBackgroundMusicPlaying])
+            [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"menu 2.mp3" loop:YES];
+#endif
         
         // TODO: for testing only - don't lock the levels
         // this completely bypasses the storage of level unlock userDefaults and simply shows all levels as available
