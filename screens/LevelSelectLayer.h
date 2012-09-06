@@ -48,7 +48,7 @@ static NSUserDefaults *standardUserDefaults;
     CGRect leftArrowRect;
     CGRect thumbnailRect;
     CGSize winSize;
-    CCSprite *thumb;
+    CCSprite *thumb, *background;
     CCLabelTTF *scoreLabel, *loading;
     CCLabelTTF *nameLabel, *helpLabel;
 }

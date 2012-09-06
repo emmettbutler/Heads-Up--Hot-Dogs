@@ -88,11 +88,11 @@
         spritesheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_menus.png"];
         [self addChild:spritesheet];
 
-        CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"Splash_BG_clean.png"];
-        sprite.anchorPoint = CGPointZero;
-        [self addChild:sprite z:-1];
+        background = [CCSprite spriteWithSpriteFrameName:@"Splash_BG_clean.png"];
+        background.anchorPoint = CGPointZero;
+        [self addChild:background z:-1];
         
-        sprite = [CCSprite spriteWithSpriteFrameName:@"Lvl_Band.png"];
+        CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"Lvl_Band.png"];
         sprite.position = ccp(winSize.width/2, winSize.height/2);
         [self addChild:sprite];
 
@@ -210,6 +210,8 @@
 }
 
 -(void)addLoading{
+    [background setColor:ccc3(160, 160, 160)];
+    
     CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"Lvl_TextBox.png"];
     sprite.position = ccp(winSize.width/2, (winSize.height/2));
     [self addChild:sprite];
