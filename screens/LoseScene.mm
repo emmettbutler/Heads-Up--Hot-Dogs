@@ -205,7 +205,7 @@
         }
         
         tweets = [[NSMutableArray alloc] init];
-        [tweets addObject:[NSString stringWithFormat:@"I just scored %d points in @HeadsUpHotDogs beta!", _score]];
+        [tweets addObject:[NSString stringWithFormat:@"I just scored %d points in @HeadsUpHotDogs!", _score]];
         [tweets addObject:[NSString stringWithFormat:@"I just dropped hot dogs on %d people's heads in @HeadsUpHotDogs beta!", _peopleGrumped]];
         [tweets addObject:[NSString stringWithFormat:@"I just saved %d hot dogs from destruction in @HeadsUpHotDogs beta!", _dogsSaved]];
         [tweets addObject:[NSString stringWithFormat:@"I just saved %d inches of meat from destruction in @HeadsUpHotDogs beta!", _dogsSaved * 12]];
@@ -276,6 +276,10 @@
     
     if(CGRectContainsPoint(_twitterRect,location)){
         [self tweetButtonPressed:self];
+    } else if(CGRectContainsPoint(_quitRect, location)){
+        [self switchSceneLevel];
+    } else if(CGRectContainsPoint(_replayRect, location)){
+        [self switchSceneRestart];
     }
 }
 
