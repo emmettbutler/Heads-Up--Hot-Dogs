@@ -122,6 +122,7 @@
 -(void)restartScene{
     if(_pause){
         [self unschedule:@selector(tick:)];
+        [self stopAllActions];
         [self removeAllChildrenWithCleanup:YES];
         [[CCDirector sharedDirector] resume];
     }
@@ -131,6 +132,7 @@
 -(void)levelSelect{
     if(_pause){
         [self unschedule:@selector(tick:)];
+        [self stopAllActions];
         [self removeAllChildrenWithCleanup:YES];
         [[CCDirector sharedDirector] resume];
     }
@@ -2464,6 +2466,10 @@
 }
 
 - (void) dealloc {
+    [self unschedule:@selector(tick:)];
+    [self stopAllActions];
+    [self removeAllChildrenWithCleanup:YES];
+    
     [[CCTextureCache sharedTextureCache] removeUnusedTextures];
     [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_common.plist"];
     [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_characters.plist"];

@@ -512,7 +512,7 @@
     c->hitboxHeight = .0001;
     c->hitboxCenterX = 0;
     c->hitboxCenterY = 4.0;
-    c->moveDelta = 2;
+    c->moveDelta = 2.7;
     c->sensorHeight = 2.0f;
     c->sensorWidth = 1.5f;
     c->restitution = .5f;
