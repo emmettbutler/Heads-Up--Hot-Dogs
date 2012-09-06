@@ -15,7 +15,7 @@
     CCSpriteBatchNode *spriteSheet;
     CCSprite *mainLogo, *logoBG, *cloud1, *cloud2, *cloud3;
     int time;
-    CGPoint cloudAnchor;
+    CGPoint cloudAnchor, logoAnchor;
     CGRect screen;
     CGSize winSize;
 }

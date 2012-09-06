@@ -19,15 +19,15 @@
     [parent addChild:self->spritesheet];
     
     self->cloud1 = [CCSprite spriteWithSpriteFrameName:@"Cloud_1.png"];
-    self->cloud1.position = ccp(size.width, size.height/2-50);
+    self->cloud1.position = ccp(size.width+24, size.height/2-71);
     [self->spritesheet addChild:self->cloud1];
     
-    self->cloud2 = [CCSprite spriteWithSpriteFrameName:@"Cloud_2.png"];
-    self->cloud2.position = ccp(0, size.height);
+    self->cloud2 = [CCSprite spriteWithSpriteFrameName:@"Cloud_3.png"];
+    self->cloud2.position = ccp(42, size.height);
     [self->spritesheet addChild:self->cloud2];
     
-    self->cloud3 = [CCSprite spriteWithSpriteFrameName:@"Cloud_3.png"];
-    self->cloud3.position = ccp(0, 50);
+    self->cloud3 = [CCSprite spriteWithSpriteFrameName:@"Cloud_2.png"];
+    self->cloud3.position = ccp(-6, 17);
     [self->spritesheet addChild:self->cloud3];
     
     [self->cloud1 runAction:[CCMoveTo actionWithDuration:90 position:CGPointMake(0, self->cloud1.position.y)]];

@@ -34,12 +34,13 @@
         [spriteSheet addChild:background z:-10];
         
         logoBG = [CCSprite spriteWithSpriteFrameName:@"Logo_Cloud.png"];
-        cloudAnchor = CGPointMake(winSize.width/2-10, winSize.height/2+20);
+        cloudAnchor = CGPointMake(winSize.width/2+4, winSize.height/2+8);
         logoBG.position = ccp(cloudAnchor.x, cloudAnchor.y);
         [spriteSheet addChild:logoBG];
         
         mainLogo = [CCSprite spriteWithSpriteFrameName:@"ASg_Logo.png"];
-        mainLogo.position = ccp(winSize.width/2, winSize.height/2);
+        logoAnchor = CGPointMake(winSize.width/2+16, winSize.height/2-15);
+        mainLogo.position = ccp(logoAnchor.x, logoAnchor.y);
         [spriteSheet addChild:mainLogo];
         
         [self schedule: @selector(tick:)];
@@ -55,10 +56,9 @@
         [logoBG runAction:[CCFadeOut actionWithDuration:1]];
         [self runAction:[CCSequence actions:[CCDelayTime actionWithDuration:1], [CCCallFunc actionWithTarget:self selector:@selector(switchSceneTitle)], nil]];
     }
-    
-    //NSLog(@"sine: %0.2f", sinf(time * .01));
+
     [logoBG setPosition:CGPointMake(cloudAnchor.x + (5 * sinf(time * .01)), cloudAnchor.y)];
-    [mainLogo setPosition:CGPointMake(winSize.width/2 + (6 * sinf(time * .03)), winSize.height/2 + (3 * cosf(time * .02)))];
+    [mainLogo setPosition:CGPointMake(logoAnchor.x + (6 * sinf(time * .03)), logoAnchor.y + (3 * cosf(time * .02)))];
 }
 
 -(void)switchSceneTitle{

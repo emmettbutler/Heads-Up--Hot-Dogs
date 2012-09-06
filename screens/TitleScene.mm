@@ -114,7 +114,7 @@
     time++;
     
     if([dogLogo numberOfRunningActions] == 0)
-        dogLogo.position = CGPointMake(dogLogo.position.x, dogLogoAnchor.y + (3 * sinf(time * .03)));
+        dogLogo.position = CGPointMake(dogLogo.position.x, dogLogoAnchor.y + (5 * sinf(time * .03)));
 }
 
 - (void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
