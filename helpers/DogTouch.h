@@ -14,6 +14,7 @@
     NSValue *dog;
     b2Vec2 location;
     b2MouseJoint *mouseJoint;
+    NSValue *mj;
     NSNumber *hash;
     BOOL toDeleteFlag;
     NSValue *world;

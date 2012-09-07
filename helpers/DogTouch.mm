@@ -34,6 +34,7 @@
     
     b2World *_world = (b2World *)[self->world pointerValue];
     self->mouseJoint = (b2MouseJoint *)_world->CreateJoint(mdstar);
+    self->mj = [[NSValue valueWithPointer:self->mouseJoint] retain];
 
     return self;
 }
@@ -43,7 +44,9 @@
     
     b2Vec2 *locationW = (b2Vec2 *)[l pointerValue];
     b2Vec2 locationWorld = *locationW;
-    self->mouseJoint->SetTarget(locationWorld);
+    //self->mouseJoint->SetTarget(locationWorld);
+    b2MouseJoint *joint = (b2MouseJoint *)[self->mj pointerValue];
+    joint->SetTarget(locationWorld);
     
     bodyUserData *ud = (bodyUserData *)body->GetUserData();
     [ud->sprite1 stopAllActions];
@@ -79,7 +82,8 @@
         body->SetTransform(b2Vec2(1.5, body->GetPosition().y), 0);
     
     b2World *_world = (b2World *)[self->world pointerValue];
-    _world->DestroyJoint(self->mouseJoint);
+    b2MouseJoint *joint = (b2MouseJoint *)[self->mj pointerValue];
+    _world->DestroyJoint(joint);
     
     for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
         fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
@@ -97,7 +101,7 @@
 }
 
 -(b2MouseJoint *)getMouseJoint{
-    return self->mouseJoint;
+    return (b2MouseJoint *)[self->mj pointerValue];
 }
 
 -(NSNumber *)getHash{
