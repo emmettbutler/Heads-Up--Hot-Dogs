@@ -131,13 +131,14 @@
 
 -(void)presentNewHighScoreNotify{
     NSLog(@"New high score!");
+    
     CCLabelTTF *label = [CCLabelTTF labelWithString:@"New Record!" fontName:@"LostPet.TTF" fontSize:30.0];
-    label.position = ccp(0 - label.contentSize.width/2, winSize.height-label.contentSize.height/2);
+    label.position = ccp(0 - label.contentSize.width/2, winSize.height/2+60);
     label.color = _color_pink;
     [self addChild:label];
     
     [label runAction:[CCSequence actions:[CCMoveTo actionWithDuration:.6 position:ccp(label.contentSize.width/2 + 10, label.position.y)],
-                      [CCDelayTime actionWithDuration:1], [CCMoveTo actionWithDuration:.6 position:ccp(0 - label.contentSize.width/2, label.position.y)], nil]];
+                      [CCDelayTime actionWithDuration:1], [CCMoveTo actionWithDuration:.6 position:ccp(0 - label.contentSize.width/2, label.position.y)], [CCCallFuncN actionWithTarget:label selector:@selector(removeFromParentAndCleanup:)], nil]];
 }
 
 -(void)levelSelect{
