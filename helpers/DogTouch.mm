@@ -116,4 +116,11 @@
     self->toDeleteFlag = true;
 }
 
+-(void)dealloc{
+    b2World *_world = (b2World *)[self->world pointerValue];
+    b2MouseJoint *joint = (b2MouseJoint *)[self->mj pointerValue];
+    _world->DestroyJoint(joint);
+    [super dealloc];
+}
+
 @end
