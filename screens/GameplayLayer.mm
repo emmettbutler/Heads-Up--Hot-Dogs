@@ -2130,6 +2130,10 @@
                             [overlay updatePosition];
                         }
                     } else { [ud->howToPlaySprite setVisible:false]; }
+                    if(b->GetPosition().x > winSize.width/PTM_RATIO || b->GetPosition().x < 0){
+                        [ud->howToPlaySprite setVisible:false];
+                    }
+                        
                     HotDog *dog = [[HotDog alloc] initWithBody:[NSValue valueWithPointer:b]];
                     if(ud->sprite1.position.x > 0 && ud->sprite1.position.x < winSize.width)
                         _dogsOnscreen++;
