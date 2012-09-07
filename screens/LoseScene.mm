@@ -35,12 +35,13 @@
 }
 
 -(void)showGameCenterLeaderboard{
-    NSLog(@"GC button pressed");
     GKLeaderboardViewController *leaderboardController = [[GKLeaderboardViewController alloc] init];
     if (leaderboardController != nil){
         UIViewController *myController = [[UIViewController alloc] init];
         leaderboardController.leaderboardDelegate = self;
-        [myController presentModalViewController: leaderboardController animated: YES];
+        [myController presentModalViewController:leaderboardController animated:YES];
+    } else {
+        NSLog(@"Game center view not found");
     }
 }
 

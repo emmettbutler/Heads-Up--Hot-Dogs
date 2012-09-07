@@ -129,6 +129,17 @@
     [[CCDirector sharedDirector] replaceScene:[GameplayLayer sceneWithSlug:level->slug]];
 }
 
+-(void)presentNewHighScoreNotify{
+    NSLog(@"New high score!");
+    CCLabelTTF *label = [CCLabelTTF labelWithString:@"New Record!" fontName:@"LostPet.TTF" fontSize:30.0];
+    label.position = ccp(0 - label.contentSize.width/2, winSize.height-label.contentSize.height/2);
+    label.color = _color_pink;
+    [self addChild:label];
+    
+    [label runAction:[CCSequence actions:[CCMoveTo actionWithDuration:.6 position:ccp(label.contentSize.width/2 + 10, label.position.y)],
+                      [CCDelayTime actionWithDuration:1], [CCMoveTo actionWithDuration:.6 position:ccp(0 - label.contentSize.width/2, label.position.y)], nil]];
+}
+
 -(void)levelSelect{
     if(_pause){
         [self unschedule:@selector(tick:)];
@@ -1453,6 +1464,8 @@
             level->characterProbSum += p->frequency;
         }
         
+        _savedHighScore = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"highScore%@", level->slug]];
+        
         b2Vec2 gravity;
         gravity = b2Vec2(0.0f, -30.0);
         if(level->gravity)
@@ -1676,6 +1689,11 @@
 -(void) tick: (ccTime) dt {
     int32 velocityIterations = 2;
     int32 positionIterations = 1;
+    
+    if(!_scoreNotifyLock && _savedHighScore > 0 && _savedHighScore < _points){
+        _scoreNotifyLock = true;
+        [self presentNewHighScoreNotify];
+    }
     
     for(int i = 0; i < [dogTouches count]; i++){
         DogTouch *dt = (DogTouch *)[[dogTouches objectAtIndex:i] pointerValue];
