@@ -2385,6 +2385,15 @@
                                     touched2 = true;
                                 }
                                 
+                                BOOL b = false;
+                                for(NSValue *t in dogTouches){
+                                    DogTouch *touch = (DogTouch *)[t pointerValue];
+                                    if([touch getHash].intValue == hash.intValue){
+                                        b = true;
+                                    }
+                                }
+                                if(b) break;
+                                
                                 DogTouch *touch = [[DogTouch alloc] initWithBody:[[NSValue valueWithPointer:body]retain] andMouseJoint:[NSValue valueWithPointer:&md] andWorld:[[NSValue valueWithPointer:_world]retain] andHash:hash];
                                 [dogTouches addObject:[NSValue valueWithPointer:touch]];
 
@@ -2421,16 +2430,14 @@
         locations[1] = locationWorld2;
     }
     
-    int index;
     for(NSValue *v in dogTouches){
         DogTouch *dt = (DogTouch *)[v pointerValue];
         NSNumber *hash = [[dt getHash] retain];
         if(hash.intValue == [touch1 hash]){
-            index = 0;
-        } else if(touch2 && hash.intValue == [touch2 hash]){
-            index = 1;
+            [dt moveTouch:[[NSValue valueWithPointer:&locations[0]]retain]];
+        } else if(count >= 2 && touch2 && hash.intValue == [touch2 hash]){
+            [dt moveTouch:[[NSValue valueWithPointer:&locations[1]]retain]];
         }
-        [dt moveTouch:[[NSValue valueWithPointer:&locations[index]]retain]];
     }
     
     for (b2Body *body = _world->GetBodyList(); body; body = body->GetNext()){
