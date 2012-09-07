@@ -1733,18 +1733,6 @@
             }
         }
     }
-
-    if(_pause){
-        CCLabelTTF *label = [CCLabelTTF labelWithString:@"Pause" fontName:@"LostPet.TTF" fontSize:18.0];
-        CCMenuItem *button = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(pause)];
-        label = [CCLabelTTF labelWithString:@"Menu" fontName:@"LostPet.TTF" fontSize:18.0];
-        CCMenuItem *debug = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(debugDraw)];
-        CCMenu *menu = [CCMenu menuWithItems:button, debug, nil];
-        [menu setPosition:ccp(40, winSize.height-30)];
-        [menu alignItemsVertically];
-        [self addChild:menu];
-        return;
-    }
     
     if(_flashLayer){
         [_flashLayer setOpacity:255 - (190+((5*time) % 255))];
