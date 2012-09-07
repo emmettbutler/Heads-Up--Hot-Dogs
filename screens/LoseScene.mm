@@ -34,6 +34,16 @@
     }];
 }
 
+-(void)showGameCenterLeaderboard{
+    NSLog(@"GC button pressed");
+    GKLeaderboardViewController *leaderboardController = [[GKLeaderboardViewController alloc] init];
+    if (leaderboardController != nil){
+        UIViewController *myController = [[UIViewController alloc] init];
+        leaderboardController.leaderboardDelegate = self;
+        [myController presentModalViewController: leaderboardController animated: YES];
+    }
+}
+
 - (IBAction)tweetButtonPressed:(id)sender{
     TWTweetComposeViewController *tweetSheet = [[TWTweetComposeViewController alloc] init];
 
@@ -157,6 +167,13 @@
         [self addChild:twitterButton z:10];
         _twitterRect = CGRectMake((twitterButton.position.x-(twitterButton.contentSize.width)/2), (twitterButton.position.y-(twitterButton.contentSize.height)/2), (twitterButton.contentSize.width+10), (twitterButton.contentSize.height+10));
         
+        CCSprite *gcButton = [CCSprite spriteWithSpriteFrameName:@"game-center-logo-tiny.png"];
+        gcButton.position = ccp(125, 78);
+        gcButton.scale = 1;
+        [[gcButton texture] setAliasTexParameters];
+        [self addChild:gcButton z:10];
+        _gcRect = CGRectMake((gcButton.position.x-(gcButton.contentSize.width)/2), (gcButton.position.y-(gcButton.contentSize.height)/2), (gcButton.contentSize.width+10), (gcButton.contentSize.height+10));
+        
         _lock = 0;
         
         [TestFlight passCheckpoint:@"Game Over Screen"];
@@ -180,6 +197,9 @@
             _setNewHighScore = true;
             [standardUserDefaults setInteger:_score forKey:[NSString stringWithFormat:@"highScore%@", level->slug]];
             highScore = _score;
+            // max 6 digits
+            if(highScore > 999999)
+                highScore = 999999;
             [self reportScore:highScore forCategory:level->slug];
         }
         if(_timePlayed > bestTime)
@@ -276,11 +296,14 @@
     
     if(CGRectContainsPoint(_twitterRect,location)){
         [self tweetButtonPressed:self];
+    } else if(CGRectContainsPoint(_gcRect, location)){
+        [self showGameCenterLeaderboard];
     } else if(CGRectContainsPoint(_quitRect, location)){
         [self switchSceneLevel];
     } else if(CGRectContainsPoint(_replayRect, location)){
         [self switchSceneRestart];
     }
+    
 }
 
 -(void) dealloc{

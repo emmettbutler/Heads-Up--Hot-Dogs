@@ -37,7 +37,6 @@
 
     NSLog(@"Loading levels...");
     for(NSValue *v in levelStructs){
-        NSLog(@"Processing level...");
         levelProps *l = (levelProps *)[v pointerValue];
         l->highScore = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"highScore%@", l->slug]];
         int nextIndex = [levelStructs indexOfObject:v] + 1;

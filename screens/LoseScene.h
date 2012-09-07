@@ -12,7 +12,7 @@
 #import <Twitter/Twitter.h>
 #import "AchievementReporter.h"
 
-@interface LoseLayer : CCLayer
+@interface LoseLayer : CCLayer <GKLeaderboardViewControllerDelegate>
 {
     int _score, _timePlayed, _peopleGrumped, _dogsSaved, _lock;
     CCLabelTTF *scoreLine, *timeLine, *dogsLine, *peopleLine, *highScoreLine;
@@ -24,7 +24,7 @@
     ALuint sting;
     AchievementReporter *reporter;
     BOOL touchLock, _setNewHighScore;
-    CGRect _twitterRect, _replayRect, _quitRect;
+    CGRect _twitterRect, _replayRect, _quitRect, _gcRect;
     NSString *slug;
     NSMutableArray *tweets;
     ccColor3B _color_pink, _color_blue, _color_darkblue;
