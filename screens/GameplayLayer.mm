@@ -132,13 +132,20 @@
 -(void)presentNewHighScoreNotify{
     NSLog(@"New high score!");
     
-    CCLabelTTF *label = [CCLabelTTF labelWithString:@"New Record!" fontName:@"LostPet.TTF" fontSize:30.0];
-    label.position = ccp(0 - label.contentSize.width/2, winSize.height/2+60);
-    label.color = _color_pink;
-    [self addChild:label];
+    NSMutableArray *frames = [[NSMutableArray alloc] init];
+    for(int i = 1; i < 15; i++){
+        [frames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithFormat:@"new_record_%d.png", i]]];
+    }
+    CCAnimation *anim = [CCAnimation animationWithFrames:frames delay:.08f];
+    CCFiniteTimeAction *action = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO] times:1] retain];
     
-    [label runAction:[CCSequence actions:[CCMoveTo actionWithDuration:.6 position:ccp(label.contentSize.width/2 + 10, label.position.y)],
-                      [CCDelayTime actionWithDuration:1], [CCMoveTo actionWithDuration:.6 position:ccp(0 - label.contentSize.width/2, label.position.y)], [CCCallFuncN actionWithTarget:label selector:@selector(removeFromParentAndCleanup:)], nil]];
+    CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"new_record_1.png"];
+    sprite.position = ccp(winSize.width-sprite.contentSize.width/2, winSize.height-70);
+    [spriteSheetCommon addChild:sprite];
+    
+    [sprite runAction:[CCSequence actions:action, [CCCallFuncN actionWithTarget:sprite selector:@selector(removeFromParentAndCleanup:)], nil]];
 }
 
 -(void)levelSelect{
