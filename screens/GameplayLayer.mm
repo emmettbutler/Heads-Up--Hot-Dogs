@@ -1352,7 +1352,6 @@
     if(person->tag == S_BUSMAN){
         ud->stopTime = 100 + (arc4random() % 80);
         ud->stopTimeDelta = 100 + (arc4random() % 80);
-        
     } else if(person->tag == S_TWLMAN && arc4random() % 2 == 1){ // only have the towel guy drop his towel half of the time
         ud->stopTimeDelta = 117;
         ud->stopTime = 100 + (arc4random() % 80);
