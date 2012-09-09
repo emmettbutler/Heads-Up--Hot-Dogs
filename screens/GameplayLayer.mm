@@ -1349,12 +1349,13 @@
     ud->_not_spcContact = (CCFiniteTimeAction *)[(NSValue *)[notifiers objectAtIndex:6] pointerValue];
     ud->_not_spcOnHead = (CCFiniteTimeAction *)[(NSValue *)[notifiers objectAtIndex:7] pointerValue];
     ud->_not_spcLeaveScreen = (CCFiniteTimeAction *)[(NSValue *)[notifiers objectAtIndex:8] pointerValue];
-    if(person->tag == S_BUSMAN || person->tag == S_TWLMAN){
+    if(person->tag == S_BUSMAN){
         ud->stopTime = 100 + (arc4random() % 80);
         ud->stopTimeDelta = 100 + (arc4random() % 80);
-        if(person->tag == S_TWLMAN){
-            ud->stopTimeDelta = 117;
-        }
+        
+    } else if(person->tag == S_TWLMAN && arc4random() % 2 == 1){ // only have the towel guy drop his towel half of the time
+        ud->stopTimeDelta = 117;
+        ud->stopTime = 100 + (arc4random() % 80);
     }
     if(person->tag == S_POLICE || person->tag == S_MUNCHR || person->tag == S_TWLMAN){
         ud->altAction2 = _specialAction;
