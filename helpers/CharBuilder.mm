@@ -608,14 +608,14 @@
     c->hitboxHeight = .0001;
     c->hitboxCenterX = 0;
     c->hitboxCenterY = 3.7;
-    c->moveDelta = 2.9;
+    c->moveDelta = 3.7;
     c->sensorHeight = 2.0f;
     c->sensorWidth = 1.5f;
     c->restitution = .8f;
     c->friction = 0.15f;
     c->framerate = .06f;
     c->pointValue = 25;
-    c->frequency = 5;
+    c->frequency = 4;
     c->fTag = F_PNKHED;
     c->heightOffset = 2.7f;
     c->rippleXOffset = .047;
@@ -625,6 +625,7 @@
     c->faceWalkAnimFrames = [[NSMutableArray alloc] init];
     c->faceDogWalkAnimFrames = [[NSMutableArray alloc] init];
     c->specialAnimFrames = [[NSMutableArray alloc] init];
+    c->postStopAnimFrames = [[NSMutableArray alloc] init];
     c->rippleWalkAnimFrames = [[NSMutableArray alloc] init];
     c->rippleIdleAnimFrames = [[NSMutableArray alloc] init];
     for(int i = 1; i <= 8; i++){
@@ -632,10 +633,10 @@
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
           [NSString stringWithFormat:@"Nudie_Walk_%d.png", i]]];
     }
-    for(int i = 1; i <= 1; i++){
-        [c->idleAnimFrames addObject:
+    for(int i = 10; i <= 17; i++){
+        [c->specialAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-          [NSString stringWithFormat:@"Nudie_Walk_%d.png", i]]];
+          [NSString stringWithFormat:@"Nudie_towelDrop_%d.png", i]]];
     }
     for(int i = 1; i <= 4; i++){
         [c->faceWalkAnimFrames addObject:
@@ -647,20 +648,23 @@
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
           [NSString stringWithFormat:@"Nudie_Head_Dog_%d.png", i]]];
     }
-    for(int i = 1; i <= 17; i++){
-        [c->specialAnimFrames addObject:
+    for(int i = 1; i <= 9; i++){
+        [c->postStopAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
           [NSString stringWithFormat:@"Nudie_towelDrop_%d.png", i]]];
     }
+    // this frame should be in twice
+    [c->postStopAnimFrames addObject:
+     [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"Nudie_towelDrop_9.png"]];
     for(int i = 1; i <= 8; i++){
         [c->rippleWalkAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
           [NSString stringWithFormat:@"Nudie_Ripple_Walk_%d.png", i]]];
     }
-    for(int i = 1; i <= 4; i++){
+    for(int i = 1; i <= 17; i++){
         [c->rippleIdleAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-          [NSString stringWithFormat:@"Nudie_Ripple_Walk_%d.png", i]]];
+          [NSString stringWithFormat:@"nudie_towelDrop_ripple_%d.png", i]]];
     }
     
     return c;
