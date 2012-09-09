@@ -112,7 +112,10 @@
     if(self->body){
         int xOff = 0, yOff = 0;
         bodyUserData *ud = (bodyUserData *)body->GetUserData();
-        if(![numTouches boolValue]){
+        if(ud->sprite1.tag != S_MUNCHR){
+            if(![numTouches boolValue])
+                [self->sprite setVisible:false];
+        } else if(ud->_muncher_hasDroppedDog){
             [self->sprite setVisible:false];
         } else {
             [self->sprite setVisible:true];

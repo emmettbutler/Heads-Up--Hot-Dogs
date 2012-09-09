@@ -776,10 +776,13 @@
                 [animParams addObject:[NSValue valueWithPointer:ud->sprite1]];
                 [animParams addObject:[NSValue valueWithPointer:ud->altWalk]];
                 [ud->sprite1 runAction:[CCSequence actions:ud->postStopAction, [CCCallFuncND actionWithTarget:self selector:@selector(spriteRunAnim:data:) data:animParams], [CCCallFuncND actionWithTarget:self selector:@selector(clearLowerOffsets:data:) data:[[NSValue valueWithPointer:ud] retain]], nil]];
+                _player_hasTickled = true;
                 [ud->sprite2 stopAllActions];
                 [ud->angryFace stopAllActions];
                 [ud->sprite2 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"DogEater_DogGone_Head1.png"]];
                 [ud->angryFace setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"DogEater_DogGone_Head1.png"]];
+                
+                [ud->howToPlaySprite setVisible:false];
             }
         }
     }
@@ -1367,9 +1370,9 @@
                 ud->_cop_hasShot = false;
                 ud->aimFace = @"Cop_Head_Aiming_1.png";
             } else if (person->tag == S_MUNCHR){
-                //ud->howToPlaySpriteXOffset = 40;
-                //ud->howToPlaySpriteYOffset = 20;
                 ud->dogOnHeadTickleAction = _specialAngryFaceAction;
+                ud->howToPlaySpriteXOffset = 90;
+                ud->howToPlaySpriteYOffset = 80;
             }
         }
     }
@@ -1443,7 +1446,11 @@
     personHeadSensorShapeDef.filter.maskBits = WIENER;
     _personBody->CreateFixture(&personHeadSensorShapeDef);
 
-    if(person->tag == S_POLICE){
+    if(person->tag == S_MUNCHR){
+        Overlay *overlay = [[Overlay alloc] initWithMuncherBody:[NSValue valueWithPointer:_personBody] andSpriteSheet:[NSValue valueWithPointer:spriteSheetCommon]];
+        ud->howToPlaySprite = [overlay getSprite];
+    }
+    else if(person->tag == S_POLICE){
         //create the cop's arm body if we need to
         for(int i = 1; i <= 2; i++){
             [armShootAnimFrames addObject:
@@ -2165,7 +2172,7 @@
                     input.p2 = policeRayPoint2;
                     input.maxFraction = 1;
                 } else if(ud->sprite1.tag >= S_BUSMAN && ud->sprite1.tag <= S_TOPPSN){
-                    if(_peopleGrumped <= OVERLAYS_STOP){
+                    if(_peopleGrumped <= OVERLAYS_STOP || (ud->sprite1.tag == S_MUNCHR && !_player_hasTickled)){
                         Overlay *overlay;
                         if(!ud->howToPlaySprite){
                             overlay = [[Overlay alloc] initWithPersonBody:[NSValue valueWithPointer:b] andSpriteSheet:[NSValue valueWithPointer:spriteSheetCommon]];

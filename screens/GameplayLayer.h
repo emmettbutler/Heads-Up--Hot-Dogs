@@ -61,7 +61,7 @@
     NSInteger _sfxOn, _introDone, _savedHighScore;
     int _points, _droppedCount, time, _curPersonMaskBits, _peopleGrumped, _dogsSaved, _dogsOnscreen, _maxDogsOnScreen, _numWorldTouches, _levelMaxDogs;
     float _wienerSpawnDelayTime, _levelSpawnInterval, _subwayForce;
-    BOOL _pause, _shootLock, _policeOnScreen, _muncherOnScreen, _gameOver, _hasDroppedDog, _fgIsDark, _scoreNotifyLock;
+    BOOL _pause, _shootLock, _policeOnScreen, _muncherOnScreen, _gameOver, _hasDroppedDog, _fgIsDark, _scoreNotifyLock, _player_hasTickled;
 
     struct bodyUserData {
         CCSprite *sprite1, *sprite2, *angryFace, *ripples, *overlaySprite, *howToPlaySprite;
@@ -71,7 +71,7 @@
         CCFiniteTimeAction *postStopAction, *_not_dogContact, *_not_dogOnHead, *_not_leaveScreen, *_not_leaveScreenFlash, *_not_spcContact, *_not_spcOnHead, *_not_spcLeaveScreen, *_vomitAction;
         float rippleXOffset, ogRippleXOffset, rippleYOffset, ogRippleYOffset, deathDelay, moveDelta; // the linear velocity of the person
         double targetAngle;
-        int stopTime, stopTimeDelta, timeWalking, restartTime, pointValue, dogsOnHead, spcDogsOnHead, tickleTimer, collideFilter, howToPlaySpriteXOffset, howToPlaySpriteYOffset, ogCollideFilters;
+        int stopTime, stopTimeDelta, timeWalking, restartTime, pointValue, dogsOnHead, spcDogsOnHead, tickleTimer, collideFilter, howToPlaySpriteXOffset, howToPlaySpriteYOffset, ogCollideFilters, _muncher_howToPlaySpriteXOffset, _muncher_howToPlaySpriteYOffset;
         BOOL aiming, touched, exploding, touchLock, aimedAt, grabbed, deathSeqLock, animLock, hasLeftScreen;
         BOOL hasTouchedHead, _dog_isOnHead, _person_hasTouchedDog, _muncher_hasDroppedDog, _cop_hasShot, _busman_willVomit, _busman_isVomiting, hasTouchedGround, _nudie_isStopped;
     };
