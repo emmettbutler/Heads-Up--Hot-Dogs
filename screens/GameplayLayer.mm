@@ -571,12 +571,93 @@
         _fgIsDark = true;
 }
 
+-(void)vomit:(NSValue *)body{
+    b2Body *b = (b2Body *)[body pointerValue];
+    bodyUserData *ud = (bodyUserData *)b->GetUserData();
+    
+    [ud->angryFace setVisible:NO];
+    [ud->sprite2 setVisible:YES];
+    ud->_busman_isVomiting = true;
+    ud->stopTimeDelta = 250;
+    ud->heightOffset2 = 2.3;
+    ud->widthOffset = -.4;
+    if(ud->sprite1.flipX){
+        ud->widthOffset *= -1;
+    }
+    [ud->sprite2 runAction:ud->_vomitAction];
+    [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"BusinessMan_Idle_1.png"]];
+    
+    float xBarf = b->GetPosition().x*PTM_RATIO - 40, yBarf = b->GetPosition().y*PTM_RATIO + 30, xVel = -1*VOMIT_VEL;
+    if(ud->sprite1.flipX){
+        xBarf = b->GetPosition().x*PTM_RATIO + 40;
+        xVel = VOMIT_VEL;
+    }
+    CGPoint barfPosition = CGPointMake(xBarf, yBarf);
+    
+    NSMutableArray *parameters = [[NSMutableArray alloc] init];
+    [parameters addObject:[NSValue valueWithCGPoint:barfPosition]];
+    [parameters addObject:[NSNumber numberWithInt:xVel]];
+    
+    id screenFlashAction = [CCSequence actions:
+                            [CCCallFuncND actionWithTarget:self selector:@selector(screenFlash:data:) data:[NSNumber numberWithInt:1]],
+                            [CCCallFuncND actionWithTarget:self selector:@selector(screenFlash:data:) data:[NSNumber numberWithInt:0]], nil];
+    id colorBGAction = [CCCallFuncND actionWithTarget:self selector:@selector(colorBG:data:) data:[NSNumber numberWithBool:true]];
+    id unColorBGAction = [CCCallFuncND actionWithTarget:self selector:@selector(colorBG:data:) data:[NSNumber numberWithBool:false]];
+    NSMutableArray *colorParams = [[NSMutableArray alloc] init];
+    [colorParams addObject:[NSNumber numberWithInt:1]];
+    [colorParams addObject:body];
+    id colorFGAction = [CCCallFuncND actionWithTarget:self selector:@selector(colorFG:data:) data:colorParams];
+    colorParams = [[NSMutableArray alloc] init];
+    [colorParams addObject:[NSNumber numberWithInt:0]];
+    [colorParams addObject:[NSValue valueWithPointer:NULL]];
+    id unColorFGAction = [CCCallFuncND actionWithTarget:self selector:@selector(colorFG:data:) data:colorParams];
+    id flipDarkAction = [CCCallFunc actionWithTarget:self selector:@selector(flipFGDark)];
+    
+    [ud->sprite1 runAction:[CCSequence actions:screenFlashAction, flipDarkAction, colorBGAction, colorFGAction, [CCDelayTime actionWithDuration:2.9], [CCCallFuncND actionWithTarget:self selector:@selector(barfDogs:data:) data:parameters], flipDarkAction, unColorBGAction, unColorFGAction, screenFlashAction, nil]];
+}
+
+-(void)setHeadNoCollide:(id)sender data:(NSValue *)body{
+    b2Body *b = (b2Body *)[body pointerValue];
+    bodyUserData *ud = (bodyUserData *)b->GetUserData();
+    
+    b2Filter filter;
+    for(b2Fixture* fixture = b->GetFixtureList(); fixture; fixture = fixture->GetNext()){
+        fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
+        if(fUd->tag >= F_BUSHED && fUd->tag <=F_TOPHED){
+            filter = fixture->GetFilterData();
+            filter.maskBits = 0x0000;
+            fixture->SetFilterData(filter);
+            break;
+        }
+    }
+}
+
+-(void)dropTowel:(NSValue *)body{
+    b2Body *b = (b2Body *)[body pointerValue];
+    bodyUserData *ud = (bodyUserData *)b->GetUserData();
+    
+    CCSequence *seq = [CCSequence actions:ud->postStopAction, [CCCallFuncND actionWithTarget:self selector:@selector(setHeadNoCollide:data:) data:[[NSValue valueWithPointer:b] retain]], (CCFiniteTimeAction *)ud->altAction2, nil];
+    
+    [ud->sprite2 setVisible:false];
+    [ud->angryFace setVisible:false];
+    ud->lowerYOffset = 40;
+    if(ud->sprite1.flipX)
+        ud->rippleXOffset = -4.2/PTM_RATIO;
+    else
+        ud->rippleXOffset = 4.2/PTM_RATIO;
+    ud->rippleYOffset += 2.0/PTM_RATIO;
+    
+    [ud->sprite1 runAction:seq];
+    [ud->ripples runAction:ud->idleRipple];
+}
+
 -(void)movePerson:(NSValue *)body{
     b2Body *b = (b2Body *)[body pointerValue];
     bodyUserData *ud = (bodyUserData *)b->GetUserData();
     // move person across screen at the appropriate speed
     if((ud->timeWalking <= ud->stopTime || ud->timeWalking >= ud->stopTime + ud->stopTimeDelta)){
         if(b->GetLinearVelocity().x != ud->moveDelta){ b->SetLinearVelocity(b2Vec2(ud->moveDelta, 0)); }
+        // stop the person
         if(ud->timeWalking == ud->stopTime){
             if(ud->sprite1.tag != S_POLICE && ud->sprite1.tag != S_MUNCHR){
                 [ud->sprite2 stopAllActions];
@@ -584,51 +665,17 @@
                 [ud->ripples stopAllActions];
                 [ud->angryFace stopAllActions];
                 if(ud->_busman_willVomit){
-                    [ud->angryFace setVisible:NO];
-                    [ud->sprite2 setVisible:YES];
-                    ud->_busman_isVomiting = true;
-                    ud->stopTimeDelta = 250;
-                    ud->heightOffset2 = 2.3;
-                    ud->widthOffset = -.4;
-                    if(ud->sprite1.flipX){
-                        ud->widthOffset *= -1;
-                    }
-                    [ud->sprite2 runAction:ud->_vomitAction];
-                    [ud->sprite1 setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"BusinessMan_Idle_1.png"]];
-                    
-                    float xBarf = b->GetPosition().x*PTM_RATIO - 40, yBarf = b->GetPosition().y*PTM_RATIO + 30, xVel = -1*VOMIT_VEL;
-                    if(ud->sprite1.flipX){
-                        xBarf = b->GetPosition().x*PTM_RATIO + 40;
-                        xVel = VOMIT_VEL;
-                    }
-                    CGPoint barfPosition = CGPointMake(xBarf, yBarf);
-                    
-                    NSMutableArray *parameters = [[NSMutableArray alloc] init];
-                    [parameters addObject:[NSValue valueWithCGPoint:barfPosition]];
-                    [parameters addObject:[NSNumber numberWithInt:xVel]];
-                    
-                    id screenFlashAction = [CCSequence actions:
-                                      [CCCallFuncND actionWithTarget:self selector:@selector(screenFlash:data:) data:[NSNumber numberWithInt:1]],
-                                      [CCCallFuncND actionWithTarget:self selector:@selector(screenFlash:data:) data:[NSNumber numberWithInt:0]], nil];
-                    id colorBGAction = [CCCallFuncND actionWithTarget:self selector:@selector(colorBG:data:) data:[NSNumber numberWithBool:true]];
-                    id unColorBGAction = [CCCallFuncND actionWithTarget:self selector:@selector(colorBG:data:) data:[NSNumber numberWithBool:false]];
-                    NSMutableArray *colorParams = [[NSMutableArray alloc] init];
-                    [colorParams addObject:[NSNumber numberWithInt:1]];
-                    [colorParams addObject:body];
-                    id colorFGAction = [CCCallFuncND actionWithTarget:self selector:@selector(colorFG:data:) data:colorParams];
-                    colorParams = [[NSMutableArray alloc] init];
-                    [colorParams addObject:[NSNumber numberWithInt:0]]; // 137, 0, 0 
-                    [colorParams addObject:[NSValue valueWithPointer:NULL]];
-                    id unColorFGAction = [CCCallFuncND actionWithTarget:self selector:@selector(colorFG:data:) data:colorParams];
-                    id flipDarkAction = [CCCallFunc actionWithTarget:self selector:@selector(flipFGDark)];
-                    
-                    [ud->sprite1 runAction:[CCSequence actions:screenFlashAction, flipDarkAction, colorBGAction, colorFGAction, [CCDelayTime actionWithDuration:2.9], [CCCallFuncND actionWithTarget:self selector:@selector(barfDogs:data:) data:parameters], flipDarkAction, unColorBGAction, unColorFGAction, screenFlashAction, nil]];
+                    [self vomit:[NSValue valueWithPointer:b]];
+                } else if(ud->sprite1.tag == S_TWLMAN) {
+                    ud->_nudie_isStopped = true;
+                    [self dropTowel:[NSValue valueWithPointer:b]];
                 } else {
                     [ud->sprite1 runAction:ud->idleAction];
                     [ud->ripples runAction:ud->idleRipple];
                 }
             }
         }
+        // restart the person after idling
         else if((ud->stopTime && ud->timeWalking == ud->stopTime + ud->stopTimeDelta) || ud->timeWalking == ud->restartTime){
             if(ud->sprite1.tag != S_MUNCHR){
                 ud->_busman_isVomiting = false;
@@ -639,12 +686,31 @@
                     if([ud->sprite2 numberOfRunningActions] == 0)
                         [ud->sprite2 runAction:ud->altAction];
                 }
+                if(ud->sprite1.tag == S_TWLMAN){
+                    ud->_nudie_isStopped = false;
+                    [ud->sprite2 setVisible:true];
+                    [ud->angryFace setVisible:true];
+                    ud->lowerYOffset = 0;
+                    ud->rippleXOffset = ud->ogRippleXOffset;
+                    ud->rippleYOffset = ud->ogRippleYOffset;
+                    b2Filter filter;
+                    for(b2Fixture* fixture = b->GetFixtureList(); fixture; fixture = fixture->GetNext()){
+                        fixtureUserData *fUd = (fixtureUserData *)fixture->GetUserData();
+                        if(fUd->tag >= F_BUSHED && fUd->tag <=F_TOPHED){
+                            filter = fixture->GetFilterData();
+                            filter.maskBits = WIENER;
+                            fixture->SetFilterData(filter);
+                            break;
+                        }
+                    }
+                }
                 if(ud->_busman_willVomit){
                     ud->heightOffset2 = 2.9;
                     ud->widthOffset = 0;
                 }
             } else {
                 if(ud->timeWalking == ud->stopTime + ud->stopTimeDelta){
+                    [ud->ripples stopAllActions];
                     [ud->ripples runAction:ud->walkRipple];
                     [ud->sprite2 runAction:ud->altWalkFace];
                     [ud->angryFace runAction:ud->angryFaceWalkAction];
@@ -1086,6 +1152,19 @@
 
     NSMutableArray *notifiers = [PointNotify buildNotifiers];
     
+    float spcDelay, postStopDelay, idleDelay;
+    if(person->tag == S_MUNCHR){
+        spcDelay = .1f;
+        idleDelay = .1f;
+        postStopDelay = .07f;
+    } else if(person->tag == S_TWLMAN){
+        spcDelay = .1f;
+        postStopDelay = .1;
+        idleDelay = .1f;
+    } else {
+        idleDelay = .2f;
+    }
+    
     //create animations for walk, idle, and bobbing head
     CCAnimation *walkAnim = [CCAnimation animationWithFrames:person->walkAnimFrames delay:person->framerate/level->personSpeedMul];
     CCAction *_walkAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:walkAnim restoreOriginalFrame:NO]] retain];
@@ -1115,7 +1194,7 @@
             [_rippleSprite runAction:_rippleWalkAction];
         }
         if(person->rippleIdleAnimFrames){
-            CCAnimation *rippleIdleAction = [CCAnimation animationWithFrames:person->rippleIdleAnimFrames delay:.2];
+            CCAnimation *rippleIdleAction = [CCAnimation animationWithFrames:person->rippleIdleAnimFrames delay:idleDelay];
             _rippleIdleAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:rippleIdleAction restoreOriginalFrame:NO]] retain];
         }
     }
@@ -1133,24 +1212,28 @@
         target = [CCSprite spriteWithSpriteFrameName:person->targetSprite];
         [spriteSheetCharacter addChild:target z:100];
     }
-    else if(person->tag == S_MUNCHR){
-        specialAnim = [CCAnimation animationWithFrames:person->specialAnimFrames delay:.1f];
-        _specialAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:specialAnim restoreOriginalFrame:NO]] retain];
+    else if(person->tag == S_MUNCHR || person->tag == S_TWLMAN){
+        specialAnim = [CCAnimation animationWithFrames:person->specialAnimFrames delay:spcDelay];
+        _specialAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:specialAnim restoreOriginalFrame:NO] times:1] retain];
         
-        specialFaceAnim = [CCAnimation animationWithFrames:person->specialFaceAnimFrames delay:.1f];
-        _specialFaceAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:specialFaceAnim restoreOriginalFrame:NO]] retain];
-        
-        specialAngryFaceAnim = [CCAnimation animationWithFrames:person->specialFaceAnimFrames delay:.1f];
-        _specialAngryFaceAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:specialAngryFaceAnim restoreOriginalFrame:NO]] retain];
-        
-        altWalkAnim = [CCAnimation animationWithFrames:person->altWalkAnimFrames delay:.1f];
-        _altWalkAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:altWalkAnim restoreOriginalFrame:NO]] retain];
-        
-        altFaceWalkAnim = [CCAnimation animationWithFrames:person->altFaceWalkAnimFrames delay:.1f];
-        _altFaceWalkAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:altFaceWalkAnim restoreOriginalFrame:NO]] retain];
-        
-        postStopAnim = [CCAnimation animationWithFrames:person->postStopAnimFrames delay:.07f];
+        postStopAnim = [CCAnimation animationWithFrames:person->postStopAnimFrames delay:postStopDelay];
         _postStopAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:postStopAnim restoreOriginalFrame:NO] times:1] retain];
+        
+        if(person->tag == S_MUNCHR){
+            _specialAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:specialAnim restoreOriginalFrame:NO]] retain];
+            
+            specialFaceAnim = [CCAnimation animationWithFrames:person->specialFaceAnimFrames delay:.1f];
+            _specialFaceAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:specialFaceAnim restoreOriginalFrame:NO]] retain];
+        
+            specialAngryFaceAnim = [CCAnimation animationWithFrames:person->specialFaceAnimFrames delay:.1f];
+            _specialAngryFaceAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:specialAngryFaceAnim restoreOriginalFrame:NO]] retain];
+        
+            altWalkAnim = [CCAnimation animationWithFrames:person->altWalkAnimFrames delay:person->framerate/level->personSpeedMul];
+            _altWalkAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:altWalkAnim restoreOriginalFrame:NO]] retain];
+        
+            altFaceWalkAnim = [CCAnimation animationWithFrames:person->altFaceWalkAnimFrames delay:person->framerate/level->personSpeedMul];
+            _altFaceWalkAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:altFaceWalkAnim restoreOriginalFrame:NO]] retain];
+        }
     }
 
     //put the sprites in place
@@ -1247,6 +1330,7 @@
     ud->postStopAction = _postStopAction;
     ud->idleAction = _idleAction;
     ud->collideFilter = _curPersonMaskBits;
+    ud->ogCollideFilters = _curPersonMaskBits;
     ud->moveDelta = moveDelta*level->personSpeedMul;
     ud->pointValue = person->pointValue;
     ud->howToPlaySpriteYOffset = 195;
@@ -1258,23 +1342,28 @@
     ud->_not_spcContact = (CCFiniteTimeAction *)[(NSValue *)[notifiers objectAtIndex:6] pointerValue];
     ud->_not_spcOnHead = (CCFiniteTimeAction *)[(NSValue *)[notifiers objectAtIndex:7] pointerValue];
     ud->_not_spcLeaveScreen = (CCFiniteTimeAction *)[(NSValue *)[notifiers objectAtIndex:8] pointerValue];
-    if(person->tag == S_BUSMAN){
+    if(person->tag == S_BUSMAN || person->tag == S_TWLMAN){
         ud->stopTime = 100 + (arc4random() % 80);
         ud->stopTimeDelta = 100 + (arc4random() % 80);
+        if(person->tag == S_TWLMAN){
+            ud->stopTimeDelta = 117;
+        }
     }
-    else if(person->tag == S_POLICE || person->tag == S_MUNCHR){
+    if(person->tag == S_POLICE || person->tag == S_MUNCHR || person->tag == S_TWLMAN){
         ud->altAction2 = _specialAction;
-        ud->altAction3 = _specialFaceAction;
-        ud->stopTime = 9999; // huge number init so that cops don't freeze on enter
-        if(person->tag == S_POLICE){
-            ud->overlaySprite = target;
-            ud->stopTimeDelta = 60; // frames
-            ud->_cop_hasShot = false;
-            ud->aimFace = @"Cop_Head_Aiming_1.png";
-        } else if (person->tag == S_MUNCHR){
-            //ud->howToPlaySpriteXOffset = 40;
-            //ud->howToPlaySpriteYOffset = 20;
-            ud->dogOnHeadTickleAction = _specialAngryFaceAction;
+        if(person->tag != S_TWLMAN){
+            ud->altAction3 = _specialFaceAction;
+            ud->stopTime = 9999; // huge number init so that cops don't freeze on enter
+            if(person->tag == S_POLICE){
+                ud->overlaySprite = target;
+                ud->stopTimeDelta = 60; // frames
+                ud->_cop_hasShot = false;
+                ud->aimFace = @"Cop_Head_Aiming_1.png";
+            } else if (person->tag == S_MUNCHR){
+                //ud->howToPlaySpriteXOffset = 40;
+                //ud->howToPlaySpriteYOffset = 20;
+                ud->dogOnHeadTickleAction = _specialAngryFaceAction;
+            }
         }
     }
     ud->restartTime = ud->stopTime + ud->stopTimeDelta;
@@ -2084,7 +2173,7 @@
                     ud->timeWalking++;
                     [self movePerson:[NSValue valueWithPointer:b]];
                     [self countDogsOnHead:[NSValue valueWithPointer:b]];
-                    if(!ud->_busman_isVomiting){
+                    if(!ud->_busman_isVomiting && !ud->_nudie_isStopped){
                         [self setFace:[NSValue valueWithPointer:b]];
                     }
                     if(!(time % 40) && ud->dogsOnHead && !_gameOver){
