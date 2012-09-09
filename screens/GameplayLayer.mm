@@ -1131,7 +1131,6 @@
         _specialFaceAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:specialFaceAnim restoreOriginalFrame:NO] times:1] retain];
 
         target = [CCSprite spriteWithSpriteFrameName:person->targetSprite];
-        target.tag = S_CRSHRS;
         [spriteSheetCharacter addChild:target z:100];
     }
     else if(person->tag == S_MUNCHR){
@@ -1181,7 +1180,7 @@
             _personLower.flipX = YES;
             _personUpper.flipX = YES;
             _personUpperOverlay.flipX = YES;
-        } else { /*_rippleSprite.flipX = YES;*/ }
+        }
         if(person->tag == S_POLICE){
             lowerArmAngle = 132;
             upperArmAngle = 175;
