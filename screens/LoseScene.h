@@ -14,11 +14,23 @@
 
 @interface LoseLayer : CCLayer <GKLeaderboardViewControllerDelegate>
 {
+    struct face{
+        NSString *speechBubble;
+        CCAction *faceAction;
+    };
+    
+    struct endResult{
+        NSString *trophy;
+        CCSprite *head;
+        int grade;
+        face *f;
+    };
+    
     int _score, _timePlayed, _peopleGrumped, _dogsSaved, _lock;
     CCLabelTTF *scoreLine, *timeLine, *dogsLine, *peopleLine, *highScoreLine;
     CCLabelTTF *scoreNotify, *timeNotify;
     CCSpriteBatchNode *spriteSheet;
-    CCSprite *levelBox;
+    CCSprite *levelBox, *bubble, *charFace, *trophy;
     CCLabelTTF *levelLabel1, *levelLabel2;
     NSInteger highScore;
     ALuint sting;

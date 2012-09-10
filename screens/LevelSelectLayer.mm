@@ -269,7 +269,7 @@
     lp->enabled = true;
     lp->slug = @"philly";
     lp->name = @"Philly";
-    lp->unlockNextThreshold = -1;
+    lp->unlockNextThreshold = 16000;
     lp->func = @"switchScreenPhilly";
     lp->thumbnail = @"Philly_Thumb.png";
     
