@@ -21,6 +21,7 @@
     
     struct endResult{
         NSString *trophy;
+        NSString *dogName;
         CCSprite *head;
         int grade;
         face *f;
@@ -28,7 +29,7 @@
     
     int _score, _timePlayed, _peopleGrumped, _dogsSaved, _lock;
     CCLabelTTF *scoreLine, *timeLine, *dogsLine, *peopleLine, *highScoreLine;
-    CCLabelTTF *scoreNotify, *timeNotify;
+    CCLabelTTF *scoreNotify, *timeNotify, *summary;
     CCSpriteBatchNode *spriteSheet;
     CCSprite *levelBox, *bubble, *charFace, *trophy;
     CCLabelTTF *levelLabel1, *levelLabel2;

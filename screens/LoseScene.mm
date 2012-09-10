@@ -96,7 +96,7 @@
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
           [NSString stringWithFormat:@"GameEnd_%@_%d.png", characterName, i]]];
     }
-    CCAnimation *anim = [CCAnimation animationWithFrames:frames delay:.5f];
+    CCAnimation *anim = [CCAnimation animationWithFrames:frames delay:.2f];
     f->faceAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO]] retain];
     f->speechBubble = speech;
     return f;
@@ -143,14 +143,19 @@
     
     if(grade.floatValue > 1.0){
         res->trophy = @"Trophy_Gold.png";
+        res->dogName = @"GOLD DOG";
     } else if(grade.floatValue > .5){
         res->trophy = @"Trophy_Silver.png";
+        res->dogName = @"SILVER DOG";
     } else if(grade.floatValue > 0){
         res->trophy = @"Trophy_Bronze.png";
+        res->dogName = @"BRONZE DOG";
     } else if(grade.floatValue > -.5){
         res->trophy = @"Trophy_Wood.png";
+        res->dogName = @"WOODEN DOG";
     } else {
         res->trophy = @"Trophy_Cardboard.png";
+        res->dogName = @"CARDBOARD DOG";
     }
     
     res->head = [CCSprite spriteWithSpriteFrameName:@"GameEnd_Business_1.png"];
@@ -197,46 +202,55 @@
         [self addChild:bubble];
         
         charFace = [CCSprite spriteWithSpriteFrameName:@"GameEnd_Cop_1.png"];
-        charFace.position = ccp(winSize.width/2+125, winSize.height/2-62);
+        charFace.position = ccp(winSize.width/2+125, winSize.height/2-57);
         [self addChild:charFace];
         
         trophy = [CCSprite spriteWithSpriteFrameName:@"Trophy_Cardboard.png"];
-        trophy.position = ccp(winSize.width/2-100, winSize.height/2+40);
+        trophy.position = ccp(winSize.width/2-90, winSize.height/2+40);
         [self addChild:trophy];
         
+        summary = [CCLabelTTF labelWithString:@"" dimensions:CGSizeMake(180, 150) alignment:UITextAlignmentCenter fontName:@"LostPet.TTF" fontSize:20.0];
+        [summary setPosition:ccp(winSize.width/2+75, winSize.height/2+10)];
+        summary.color = _color_pink;
+        [self addChild:summary];
+        
         CCSprite *restartButton = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
-        restartButton.position = ccp(110, 27);
+        restartButton.position = ccp(110, 22);
         [self addChild:restartButton z:10];
         label = [CCLabelTTF labelWithString:@"     Try Again     " fontName:@"LostPet.TTF" fontSize:22.0];
         [[label texture] setAliasTexParameters];
         label.color = _color_pink;
         CCMenuItem *button = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(switchSceneRestart)];
         CCMenu *menu = [CCMenu menuWithItems:button, nil];
-        [menu setPosition:ccp(110, 26)];
+        [menu setPosition:ccp(110, 21)];
         [self addChild:menu z:11];
         _replayRect = CGRectMake((restartButton.position.x-(restartButton.contentSize.width)/2), (restartButton.position.y-(restartButton.contentSize.height)/2), (restartButton.contentSize.width+70), restartButton.contentSize.height+70);
         
         CCSprite *quitButton = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
-        quitButton.position = ccp(370, 27);
+        quitButton.position = ccp(370, 22);
         [self addChild:quitButton z:10];
         label = [CCLabelTTF labelWithString:@"     Levels     " fontName:@"LostPet.TTF" fontSize:22.0];
         [[label texture] setAliasTexParameters];
         label.color = _color_pink;
         button = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(switchSceneLevel)];
         menu = [CCMenu menuWithItems:button, nil];
-        [menu setPosition:ccp(370, 26)];
+        [menu setPosition:ccp(370, 21)];
         [self addChild:menu z:11];
         _quitRect = CGRectMake((quitButton.position.x-(quitButton.contentSize.width)/2), (quitButton.position.y-(quitButton.contentSize.height)/2), (quitButton.contentSize.width+70), (quitButton.contentSize.height+70));
         
+        CCSprite *box = [CCSprite spriteWithSpriteFrameName:@"GameEnd_Social_Overlay.png"];
+        box.position = CGPointMake(winSize.width-box.contentSize.width/2-5, winSize.height-box.contentSize.height/2-3);
+        [self addChild:box];
+        
         CCSprite *twitterButton = [CCSprite spriteWithSpriteFrameName:@"twitter.png"];
-        twitterButton.position = ccp(twitterButton.contentSize.width/2+15, winSize.height-twitterButton.contentSize.height/2-13);
+        twitterButton.position = ccp(winSize.width-twitterButton.contentSize.width/2-12, winSize.height-twitterButton.contentSize.height/2-13);
         twitterButton.scale = 1;
         [[twitterButton texture] setAliasTexParameters];
         [self addChild:twitterButton z:10];
         _twitterRect = CGRectMake((twitterButton.position.x-(twitterButton.contentSize.width)/2), (twitterButton.position.y-(twitterButton.contentSize.height)/2), (twitterButton.contentSize.width+10), (twitterButton.contentSize.height+10));
         
         CCSprite *gcButton = [CCSprite spriteWithSpriteFrameName:@"game-center-logo-tiny.png"];
-        gcButton.position = ccp(gcButton.contentSize.width/2+20, winSize.height-gcButton.contentSize.height/2-twitterButton.contentSize.height-28);
+        gcButton.position = ccp(winSize.width-gcButton.contentSize.width/2-18, winSize.height-gcButton.contentSize.height/2-twitterButton.contentSize.height-20);
         gcButton.scale = 1;
         [[gcButton texture] setAliasTexParameters];
         [self addChild:gcButton z:10];
@@ -266,12 +280,16 @@
         NSLog(@"Trophy: %@", res->trophy);
         [trophy setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:res->trophy]];
         
-        CCLabelTTF *speech = [CCLabelTTF labelWithString:res->f->speechBubble dimensions:CGSizeMake(bubble.contentSize.width, 50) alignment:UITextAlignmentCenter fontName:@"LostPet.TTF" fontSize:20.0];
+        CCLabelTTF *speech = [CCLabelTTF labelWithString:res->f->speechBubble dimensions:CGSizeMake(bubble.contentSize.width-40, 50) alignment:UITextAlignmentCenter fontName:@"LostPet.TTF" fontSize:20.0];
         speech.color = _color_pink;
-        speech.position = bubble.position;
+        speech.position = CGPointMake(bubble.position.x-3, bubble.position.y);
         [[speech texture] setAliasTexParameters];
         [self addChild:speech];
         [charFace runAction:res->f->faceAction];
+        
+        int seconds = _timePlayed/60;
+        int minutes = seconds/60;
+        [summary setString:[NSString stringWithFormat:@"You lasted %02d:%02d and scored %d points. You have earned %@", minutes, seconds%60, _score, res->dogName]];
         
         if(_score > highScore){
             _setNewHighScore = true;
@@ -326,27 +344,6 @@
         [standardUserDefaults synchronize];
         
         [reporter reportAchievementIdentifier:@"totaltime_1" percentComplete:newOverallTime/432000]; // two hours
-    
-        [scoreLine setString:[NSString stringWithFormat:@"Total points: %06d", _score]];
-    
-        int seconds = _timePlayed/60;
-        int minutes = seconds/60;
-        [timeLine setString:[NSString stringWithFormat:@"Time lasted: %02d:%02d", minutes, seconds%60]];
-        [dogsLine setString:[NSString stringWithFormat:@"Dogs saved: %d", _dogsSaved]];
-        [peopleLine setString:[NSString stringWithFormat:@"People grumped: %d", _peopleGrumped]];
-        [highScoreLine setString:[NSString stringWithFormat:@"HIGH SCORE: %d", highScore]];
-    
-        [scoreLine setPosition:ccp(62+(scoreLine.contentSize.width/2), 225)];
-        [timeLine setPosition:ccp(62+(timeLine.contentSize.width/2), 195)];
-        [dogsLine setPosition:ccp(62+(dogsLine.contentSize.width/2), 165)];
-        [peopleLine setPosition:ccp(62+(peopleLine.contentSize.width/2), 135)];
-        [highScoreLine setPosition:ccp(389-(highScoreLine.contentSize.width/2), 70)];
-        
-        [[scoreLine texture] setAliasTexParameters];
-        [[timeLine texture] setAliasTexParameters];
-        [[dogsLine texture] setAliasTexParameters];
-        [[peopleLine texture] setAliasTexParameters];
-        [[highScoreLine texture] setAliasTexParameters];
     }
 }
 
