@@ -44,7 +44,6 @@
     levelProps *level;
 }
 
-+(CCScene *) sceneWithData:(void*)data;
-
++(CCScene *)sceneWithData:(void *)data;
 
 @end

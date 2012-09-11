@@ -611,7 +611,7 @@
     c->moveDelta = 3.7;
     c->sensorHeight = 2.0f;
     c->sensorWidth = 1.5f;
-    c->restitution = .8f;
+    c->restitution = .5f;
     c->friction = 0.15f;
     c->framerate = .06f;
     c->pointValue = 25;

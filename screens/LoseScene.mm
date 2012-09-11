@@ -58,7 +58,7 @@
     [myController presentModalViewController:tweetSheet animated:YES];
 }
 
-+(CCScene *) sceneWithData:(void*)data
++(CCScene *)sceneWithData:(void *)data
 {
 	CCScene *scene = [CCScene node];
     CCLOG(@"in scenewithData");
@@ -258,8 +258,6 @@
         [self addChild:gcButton z:10];
         _gcRect = CGRectMake((gcButton.position.x-(gcButton.contentSize.width)/2), (gcButton.position.y-(gcButton.contentSize.height)/2), (gcButton.contentSize.width+10), (gcButton.contentSize.height+10));
         
-        _lock = 0;
-        
         [TestFlight passCheckpoint:@"Game Over Screen"];
         
         [self schedule: @selector(tick:)];
@@ -327,11 +325,12 @@
         }
         
         tweets = [[NSMutableArray alloc] init];
-        [tweets addObject:[NSString stringWithFormat:@"I just scored %d points in @HeadsUpHotDogs!", _score]];
-        [tweets addObject:[NSString stringWithFormat:@"I just dropped hot dogs on %d people's heads in @HeadsUpHotDogs beta!", _peopleGrumped]];
-        [tweets addObject:[NSString stringWithFormat:@"I just saved %d hot dogs from destruction in @HeadsUpHotDogs beta!", _dogsSaved]];
-        [tweets addObject:[NSString stringWithFormat:@"I just saved %d inches of meat from destruction in @HeadsUpHotDogs beta!", _dogsSaved * 12]];
-        [tweets addObject:@"I am the new savior of franks in @HeadsUpHotDogs beta!"];
+        [tweets addObject:[NSString stringWithFormat:@"I just scored %d points in %@ in @HeadsUpHotDogs!", _score, level->name]];
+        [tweets addObject:[NSString stringWithFormat:@"I just dropped hot dogs on %d people's heads in @HeadsUpHotDogs!", _peopleGrumped]];
+        [tweets addObject:[NSString stringWithFormat:@"I just saved %d hot dogs from destruction in %@ in @HeadsUpHotDogs!", _dogsSaved, level->name]];
+        [tweets addObject:[NSString stringWithFormat:@"I just saved %d inches of meat from destruction in @HeadsUpHotDogs!", _dogsSaved * 12]];
+        [tweets addObject:@"I am the new savior of franks in @HeadsUpHotDogs!"];
+        [tweets addObject:[NSString stringWithFormat:@"I just earned the %@ in %@ in @HeadsUpHotDogs!", res->dogName, level->name]];
         
         NSString *highScoreString = [NSString stringWithFormat:@"I just set a new high score in @HeadsUpHotDogs beta: %d points!", _score];
         
