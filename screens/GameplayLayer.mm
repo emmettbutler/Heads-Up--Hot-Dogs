@@ -2179,7 +2179,7 @@
                             ud->howToPlaySprite = [overlay getSprite];
                         } else {
                             overlay = [[Overlay alloc] initWithSprite:[NSValue valueWithPointer:ud->howToPlaySprite] andBody:[NSValue valueWithPointer:b]];
-                            [overlay updatePosition:[NSNumber numberWithInt:[dogTouches count]]];
+                            [overlay updatePosition:[NSNumber numberWithInt:[dogTouches count]] withDroppedCount:[NSNumber numberWithInt:_droppedCount]];
                         }
                     }
                     ud->dogsOnHead = 0;

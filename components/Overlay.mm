@@ -108,7 +108,7 @@
     }
 }
 
--(void)updatePosition:(NSNumber *)numTouches{
+-(void)updatePosition:(NSNumber *)numTouches withDroppedCount:(NSNumber *)count{
     if(self->body){
         int xOff = 0, yOff = 0;
         bodyUserData *ud = (bodyUserData *)body->GetUserData();
@@ -118,8 +118,13 @@
             [self->sprite setVisible:true];
         }
         
-        if(ud->sprite1.tag == S_MUNCHR && !ud->_muncher_hasDroppedDog){
-            [self->sprite setVisible:true];
+        if(ud->sprite1.tag == S_MUNCHR){
+            if(!ud->_muncher_hasDroppedDog){
+                [self->sprite setVisible:true];
+            }
+            if(count.intValue == 0){
+                [self->sprite setVisible:false];
+            }
         }
         
         if(ud->howToPlaySpriteXOffset){
