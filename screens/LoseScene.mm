@@ -203,10 +203,12 @@
         
         charFace = [CCSprite spriteWithSpriteFrameName:@"GameEnd_Cop_1.png"];
         charFace.position = ccp(winSize.width/2+125, winSize.height/2-57);
+        charFace.visible = false;
         [self addChild:charFace];
         
         trophy = [CCSprite spriteWithSpriteFrameName:@"Trophy_Cardboard.png"];
         trophy.position = ccp(winSize.width/2-90, winSize.height/2+40);
+        trophy.visible = false;
         [self addChild:trophy];
         
         summary = [CCLabelTTF labelWithString:@"" dimensions:CGSizeMake(180, 150) alignment:UITextAlignmentCenter fontName:@"LostPet.TTF" fontSize:20.0];
@@ -279,6 +281,7 @@
         
         NSLog(@"Trophy: %@", res->trophy);
         [trophy setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:res->trophy]];
+        [trophy setVisible:true];
         
         CCLabelTTF *speech = [CCLabelTTF labelWithString:res->f->speechBubble dimensions:CGSizeMake(bubble.contentSize.width-40, 50) alignment:UITextAlignmentCenter fontName:@"LostPet.TTF" fontSize:20.0];
         speech.color = _color_pink;
@@ -286,6 +289,7 @@
         [[speech texture] setAliasTexParameters];
         [self addChild:speech];
         [charFace runAction:res->f->faceAction];
+        [charFace setVisible:true];
         
         int seconds = _timePlayed/60;
         int minutes = seconds/60;

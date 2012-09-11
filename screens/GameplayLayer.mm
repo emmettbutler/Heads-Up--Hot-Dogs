@@ -578,6 +578,8 @@
         _fgIsDark = true;
 }
 
+// stop special appear anims from happening on normal dogs
+
 -(void)vomit:(NSValue *)body{
     b2Body *b = (b2Body *)[body pointerValue];
     bodyUserData *ud = (bodyUserData *)b->GetUserData();
