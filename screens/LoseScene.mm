@@ -85,7 +85,7 @@
 	return scene;
 }
 
--(face *)buildFace:(NSString *)characterName withText:(NSString *)speech{
+-(face *)buildFace:(NSString *)characterName{
     NSMutableArray *frames;
     face *f;
     
@@ -98,21 +98,48 @@
     }
     CCAnimation *anim = [CCAnimation animationWithFrames:frames delay:.2f];
     f->faceAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO]] retain];
-    f->speechBubble = speech;
+    f->speechBubble = [self makeComment];
     return f;
+}
+
+-(NSString *)makeComment{
+    int metricChoice = arc4random() % 2;
+    NSString *firstHalf, *secondHalf;
+    
+    switch (metricChoice){
+        case 1:
+            firstHalf = [NSString stringWithFormat:@"You saved %d hot dogs!", _dogsSaved];
+            // probably, this should be semi-random. Add certain phrases on the condition of the relative size of the metric
+            if(_dogsSaved > 150){
+                secondHalf = @"How is that even possible!?";
+            } else {
+                secondHalf = @"Pretty good, but keep trying!";
+            }
+            break;
+        default:
+            firstHalf = [NSString stringWithFormat:@"You topped %d noggins!", _peopleGrumped];
+            if(_peopleGrumped > 150){
+                secondHalf = @"You're a legend!";
+            } else {
+                secondHalf = @"So many dogless domes...";
+            }
+            break;
+    }
+
+    return [NSString stringWithFormat:@"%@ %@", firstHalf, secondHalf];
 }
 
 -(NSMutableArray *)buildFaces{
     NSMutableArray *faces = [[NSMutableArray alloc] init];
     
-    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Business" withText:@"I'm the businessman!"]]];
-    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Cop" withText:@"I'm the cop!"]]];
-    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"CrustPunk" withText:@"I'm the punk!"]]];
-    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Jogger" withText:@"I'm the jogger!"]]];
-    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Nudie" withText:@"I'm the towel guy!"]]];
-    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Rubber" withText:@"I'm the dog eater!"]]];
-    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Shiba" withText:@"bark bark bark bark bark bark bark"]]];
-    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"YoungProfesh" withText:@"I'm the young pro!"]]];
+    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Business"]]];
+    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Cop"]]];
+    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"CrustPunk"]]];
+    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Jogger"]]];
+    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Nudie"]]];
+    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Rubber"]]];
+    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Shiba"]]];
+    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"YoungProfesh"]]];
     
     return faces;
 }
@@ -281,7 +308,7 @@
         [trophy setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:res->trophy]];
         [trophy setVisible:true];
         
-        CCLabelTTF *speech = [CCLabelTTF labelWithString:res->f->speechBubble dimensions:CGSizeMake(bubble.contentSize.width-40, 50) alignment:UITextAlignmentCenter fontName:@"LostPet.TTF" fontSize:20.0];
+        CCLabelTTF *speech = [CCLabelTTF labelWithString:res->f->speechBubble dimensions:CGSizeMake(bubble.contentSize.width-40, 60) alignment:UITextAlignmentCenter fontName:@"LostPet.TTF" fontSize:20.0];
         speech.color = _color_pink;
         speech.position = CGPointMake(bubble.position.x-3, bubble.position.y);
         [[speech texture] setAliasTexParameters];
