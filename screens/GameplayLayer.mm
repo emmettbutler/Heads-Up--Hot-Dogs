@@ -578,8 +578,6 @@
         _fgIsDark = true;
 }
 
-// stop special appear anims from happening on normal dogs
-
 -(void)vomit:(NSValue *)body{
     b2Body *b = (b2Body *)[body pointerValue];
     bodyUserData *ud = (bodyUserData *)b->GetUserData();
@@ -627,7 +625,6 @@
 
 -(void)setHeadNoCollide:(id)sender data:(NSValue *)body{
     b2Body *b = (b2Body *)[body pointerValue];
-    bodyUserData *ud = (bodyUserData *)b->GetUserData();
     
     b2Filter filter;
     for(b2Fixture* fixture = b->GetFixtureList(); fixture; fixture = fixture->GetNext()){
@@ -2174,8 +2171,8 @@
                     input.p2 = policeRayPoint2;
                     input.maxFraction = 1;
                 } else if(ud->sprite1.tag >= S_BUSMAN && ud->sprite1.tag <= S_TOPPSN){
+                    Overlay *overlay;
                     if(_peopleGrumped <= OVERLAYS_STOP || (ud->sprite1.tag == S_MUNCHR && !_player_hasTickled)){
-                        Overlay *overlay;
                         if(!ud->howToPlaySprite){
                             overlay = [[Overlay alloc] initWithPersonBody:[NSValue valueWithPointer:b] andSpriteSheet:[NSValue valueWithPointer:spriteSheetCommon]];
                             ud->howToPlaySprite = [overlay getSprite];
@@ -2183,6 +2180,9 @@
                             overlay = [[Overlay alloc] initWithSprite:[NSValue valueWithPointer:ud->howToPlaySprite] andBody:[NSValue valueWithPointer:b]];
                             [overlay updatePosition:[NSNumber numberWithInt:[dogTouches count]] withDroppedCount:[NSNumber numberWithInt:_droppedCount]];
                         }
+                    } else if(ud->howToPlaySprite){
+                        // fix to: "overlay sprites freeze on screen when first condition is false and there are >1 touches"
+                        [ud->howToPlaySprite setVisible:false];
                     }
                     ud->dogsOnHead = 0;
                     ud->spcDogsOnHead = 0;
