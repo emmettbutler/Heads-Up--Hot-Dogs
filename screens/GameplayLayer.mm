@@ -1007,7 +1007,7 @@
     CGPoint location = CGPointMake(arc4random() % (int)(SIDE_BUFFER+(winSize.width-(2*SIDE_BUFFER))), DOG_SPAWN_MINHT+(arc4random() % (int)(winSize.height-DOG_SPAWN_MINHT)));
     
     spcDogData *dd = NULL;
-    if (type.intValue == 1 && _peopleGrumped > 2){
+    if (type.intValue == 1 && _peopleGrumped > OVERLAYS_STOP){
         dd = level->specialDog;
     }
     
@@ -1038,7 +1038,7 @@
     wienerBody->SetAwake(false);
 
     NSMutableArray *wienerAppearAnimFrames = [[NSMutableArray alloc] init];
-    if(type.intValue == 1){
+    if(type.intValue == 1 && _peopleGrumped > OVERLAYS_STOP){
         for(int i = 1; i <= 6; i++){
             [wienerAppearAnimFrames addObject:
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -1502,7 +1502,7 @@
     CCLOG(@"Dogs onscreen: %d", _dogsOnscreen);
     
     if(_dogsOnscreen < _maxDogsOnScreen && !_gameOver){
-        if(thisType.intValue == 1 && _peopleGrumped > 2){
+        if(thisType.intValue == 1 && _peopleGrumped > OVERLAYS_STOP){
             NSMutableArray *params = [[NSMutableArray alloc] init];
             
             id screenLightenAction = [CCCallFuncND actionWithTarget:self selector:@selector(screenFlash:data:) data:[[NSNumber numberWithInt:1] retain]];
