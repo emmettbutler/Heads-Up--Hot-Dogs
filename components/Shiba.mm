@@ -94,9 +94,12 @@
 
 -(BOOL)dogIsInHitbox:(NSValue *)d{
     b2Body *dogBody = (b2Body *)[d pointerValue];
+    bodyUserData *ud = (bodyUserData *)dogBody->GetUserData();
     if(!self->worldBody || abs(dogBody->GetLinearVelocity().y) > .3) return false;
-    if(self->hitboxSensor->TestPoint(dogBody->GetPosition()))
+    if(self->hitboxSensor->TestPoint(dogBody->GetPosition())){
+        ud->touchLock = true;
         return true;
+    }
     return false;
 }
 
@@ -137,7 +140,7 @@
     [self->mainSprite stopAllActions];
     [self->mainSprite runAction:self->eatAction];
     [self->mainSprite runAction:[CCSequence actions:[CCDelayTime actionWithDuration:2], [CCCallFunc actionWithTarget:self selector:@selector(playWalkAnim)], [CCMoveTo actionWithDuration:distanceRemaining/self->speed position:ccp(self->destination, self->mainSprite.position.y)], [CCCallFunc actionWithTarget:self selector:@selector(removeSprite)], nil]];
-    
+
     [ud->sprite1 runAction:[CCSequence actions:[CCDelayTime actionWithDuration:.7], [CCCallFuncND actionWithTarget:self selector:@selector(destroyBody:data:) data:[[NSValue valueWithPointer:dogBody] retain]], nil]];
     
     return true;
