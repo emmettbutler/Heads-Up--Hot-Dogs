@@ -100,6 +100,9 @@ value. In this way, collisions between dogs riding heads are avoided, modulo the
 occasional case in which two people with the same collision filter occupy the screen
 at once. These cases are rare enough to not constitute a high priority bug.
 
+Touch Sensing
+-------------
+
 Early implementations
 ---------------------
 
@@ -150,9 +153,11 @@ idling characters) is used to control the specific movement patterns. This still
 a significant amount of processing time over the forces method.
 
 
-Technical Lessons
------------------
+Technical / Development Lessons
+-------------------------------
 
 The project as a whole has taught me:
 
 - the value of beginning with a simple, naive implementation and then quickly iterating and optimizing.
+
+- Touch hashes
