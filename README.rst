@@ -43,7 +43,7 @@ has two attached fixtures:
 and is set to collide with people and walls. This is also the fixture at which
 the cop character aims his gun.
 - The other fixture (the "grab" fixture) does not collide with anything, and is
- about five times taller and wider than the dog's sprite.
+about five times taller and wider than the dog's sprite.
 It's used to detect touches on the hot dog. This fixture was added since grabbing
 dogs by their relatively small collide filter proved to be annoyingly
 difficult.
@@ -118,8 +118,7 @@ dogs' motion - an impossibility in an action game about bouncing franks.
 However, box2d uses a single 32-bit integer for its collision filtering,
 meaning in practice that there can only exist 32 collision
 filtering categories. A few of these were taken up by the walls, floors, hot
-dogs, person "walking" fixture A few of these were taken up by the walls,
-floors, hot dogs, and person "walking" fixtures.
+dogs, person "walking" fixtures.
 
 Another challenge that eventually led to major slowdown in early versions was the
 logic for moving characters across the screen. My decreasingly naive understanding
@@ -156,5 +155,4 @@ Technical Lessons
 
 The project as a whole has taught me:
 
-- the value of beginning with a simple, naive
-implementation and then quickly iterating and optimizing.
+- the value of beginning with a simple, naive implementation and then quickly iterating and optimizing.
