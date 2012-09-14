@@ -113,20 +113,23 @@
         [self addChild:label];
 
         sprite = [CCSprite spriteWithSpriteFrameName:@"Lvl_TextBox.png"];
-        sprite.position = ccp(winSize.width/2, (sprite.contentSize.height/2)+40);
+        sprite.position = ccp(winSize.width/2, (winSize.height/5));
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            sprite.scaleX = IPAD_SCALE_FACTOR_X;
+            sprite.scaleY = IPAD_SCALE_FACTOR_Y;
+        }
         [self addChild:sprite];
-
-        nameLabel = [CCLabelTTF labelWithString:@"philadelphia" fontName:@"LostPet.TTF" fontSize:20.0];
+        
+        float fontSize = 20.0;
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            fontSize = 45.0;
+        }
+        
+        nameLabel = [CCLabelTTF labelWithString:@"philadelphia\nhigh score: ######" dimensions:CGSizeMake(sprite.contentSize.width*sprite.scaleX, sprite.contentSize.height*sprite.scaleY) alignment:UITextAlignmentCenter fontName:@"LostPet.TTF" fontSize:fontSize];
         [[nameLabel texture] setAliasTexParameters];
         nameLabel.color = _color_pink;
-        nameLabel.position = ccp(winSize.width/2, sprite.position.y+(label.contentSize.height/2)-17);
+        nameLabel.position = ccp(sprite.position.x, sprite.position.y-4*sprite.scaleY);
         [self addChild:nameLabel];
-
-        scoreLabel = [CCLabelTTF labelWithString:@"high score: ######" fontName:@"LostPet.TTF" fontSize:20.0];
-        [[scoreLabel texture] setAliasTexParameters];
-        scoreLabel.color = _color_pink;
-        scoreLabel.position = ccp(winSize.width/2, sprite.position.y+(label.contentSize.height/2)-35);
-        [self addChild:scoreLabel];
 
         //left
         sprite = [CCSprite spriteWithSpriteFrameName:@"LvlArrow.png"];
@@ -167,7 +170,7 @@
         helpLabel = [CCLabelTTF labelWithString:@"Tap to start" fontName:@"LostPet.TTF" fontSize:22.0];
         [[helpLabel texture] setAliasTexParameters];
         helpLabel.color = _color_pink;
-        helpLabel.position = ccp(winSize.width/2, thumb.position.y-(thumb.contentSize.height/2)+6);
+        helpLabel.position = ccp(winSize.width/2, thumb.position.y-((thumb.contentSize.height*thumb.scaleY)/2)+6);
         [self addChild:helpLabel];
 
         thumbnailRect = CGRectMake((thumb.position.x-(thumb.contentSize.width)/2), (thumb.position.y-(thumb.contentSize.height)/2), (thumb.contentSize.width+10), (thumb.contentSize.height+10));
@@ -186,15 +189,14 @@
 
     if(NO_LEVEL_LOCKS || level->unlocked || level->prev->unlockNextThreshold < 0){
         [thumb setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:level->thumbnail]];
-        [nameLabel setString:[NSString stringWithFormat:@"%@", level->name]];
-        [scoreLabel setString:[NSString stringWithFormat:@"high score: %06d", level->highScore]];
+        [nameLabel setString:[NSString stringWithFormat:@"%@\nhigh score: %06d", level->name, level->highScore]];
         [helpLabel setVisible:true];
     } else {
         [thumb setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"NoLevel.png"]];
-        [nameLabel setString:@"??????"];
-        [scoreLabel setString:[NSString stringWithFormat:@"Unlock with %d points", level->prev->unlockNextThreshold]];
+        [nameLabel setString:[NSString stringWithFormat:@"??????\nunlock with %d points", level->prev->unlockNextThreshold]];
         [helpLabel setVisible:false];
     }
+    [[nameLabel texture] setAliasTexParameters];
 }
 
 - (void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
