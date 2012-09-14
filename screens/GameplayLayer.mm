@@ -1351,10 +1351,10 @@
         ud->ripples = _rippleSprite;
         ud->walkRipple = _rippleWalkAction;
         ud->idleRipple = _rippleIdleAction;
-        ud->rippleXOffset = rippleXOffset;
-        ud->ogRippleXOffset = rippleXOffset;
-        ud->rippleYOffset = person->rippleYOffset;
-        ud->ogRippleYOffset = person->rippleYOffset;
+        ud->rippleXOffset = rippleXOffset*scale;
+        ud->ogRippleXOffset = rippleXOffset*scale;
+        ud->rippleYOffset = person->rippleYOffset*scale;
+        ud->ogRippleYOffset = person->rippleYOffset*scale;
     }
     if(person->vomitAnimFrames && arc4random() % VOMIT_PROBABILITY == 1){
         ud->_busman_willVomit = true;
@@ -1596,10 +1596,11 @@
             level->characterProbSum += p->frequency;
         }
         
-        spriteScale = 1, pointNotifyScale = 1;
+        spriteScaleX = 1, spriteScaleY = 1, pointNotifyScale = 1;
         if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
-            spriteScale = IPAD_SCALE_FACTOR_X;
-            pointNotifyScale = spriteScale * .6;
+            spriteScaleX = IPAD_SCALE_FACTOR_X;
+            pointNotifyScale = spriteScaleX * .6;
+            spriteScaleY = IPAD_SCALE_FACTOR_Y;
         }
         _savedHighScore = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"highScore%@", level->slug]];
         
@@ -1932,7 +1933,7 @@
             [bgc->sprite runAction:window4CycleAction];
         }
     } else if(level->slug == @"china"){
-        if(!(time % 150) && arc4random() % 2  == 1){
+        if(!(time % 250) && arc4random() % 2  == 1){
             firecracker = [[Firecracker alloc] init:[NSValue valueWithPointer:_world] withSpritesheet:[NSValue valueWithPointer:spriteSheetCommon]];
             [firecracker runSequence];
         }
@@ -2137,8 +2138,8 @@
             }
             
             //destroy any sprite/body pair that's offscreen
-            if(ud->sprite1.position.x > winSize.width + 80 || ud->sprite1.position.x < -80 ||
-               ud->sprite1.position.y > winSize.height + 700 || ud->sprite1.position.y < -40){
+            if(ud->sprite1.position.x > winSize.width + 80*spriteScaleX || ud->sprite1.position.x < -80*spriteScaleX ||
+               ud->sprite1.position.y > winSize.height + 700*spriteScaleY || ud->sprite1.position.y < -40){
                 [ud->sprite1 stopAllActions];
                 [ud->sprite2 stopAllActions];
                 [ud->overlaySprite stopAllActions];
@@ -2223,7 +2224,7 @@
                 if(!b) continue;
                 if(ud->sprite1.tag == S_COPARM){
                     policeRayPoint1 = b->GetPosition();
-                    policeRayPoint2 = policeRayPoint1 + rayLength * spriteScale * b2Vec2(cosf(b->GetAngle()), sinf(b->GetAngle()));
+                    policeRayPoint2 = policeRayPoint1 + rayLength * spriteScaleX * b2Vec2(cosf(b->GetAngle()), sinf(b->GetAngle()));
                     input.p1 = policeRayPoint1;
                     input.p2 = policeRayPoint2;
                     input.maxFraction = 1;
