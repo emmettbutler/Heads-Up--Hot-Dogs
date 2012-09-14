@@ -94,19 +94,22 @@
         [self addChild:background z:-10];
         
         dogLogo = [CCSprite spriteWithSpriteFrameName:@"HotDogs.png"];
-        dogLogo.position = ccp(size.width/2, size.height + 100);
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            dogLogo.scale = 2;
+        }
+        dogLogo.position = ccp(size.width/2, size.height+100);
         [spriteSheet addChild:dogLogo];
-        dogLogoAnchor = CGPointMake(dogLogo.position.x, size.height/2-20);
+        dogLogoAnchor = CGPointMake(dogLogo.position.x, 4*(size.height/10));
         
         swooshLogo = [CCSprite spriteWithSpriteFrameName:@"HeadsUp.png"];
-        swooshLogo.position = ccp(-1*(swooshLogo.contentSize.width), size.height/2+80);
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            swooshLogo.scale = 2;
+        }
+        swooshLogo.position = ccp(-1*(swooshLogo.contentSize.width), 15*(size.height/20));
         [spriteSheet addChild:swooshLogo];
         
         [swooshLogo runAction:[CCMoveTo actionWithDuration:.4 position:CGPointMake(size.width/2, swooshLogo.position.y)]];
         [dogLogo runAction:[CCEaseOut actionWithAction:[CCMoveTo actionWithDuration:.6 position:dogLogoAnchor] rate:.5]];
-        
-        NSLog(@"width: %0.2f", [CCDirector sharedDirector].winSize.width);
-        NSLog(@"height: %0.2f", [CCDirector sharedDirector].winSize.height);
         
         [self schedule: @selector(tick:)];
     }

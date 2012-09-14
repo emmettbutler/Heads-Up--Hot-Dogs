@@ -173,7 +173,7 @@
         helpLabel.position = ccp(winSize.width/2, thumb.position.y-((thumb.contentSize.height*thumb.scaleY)/2)+6);
         [self addChild:helpLabel];
 
-        thumbnailRect = CGRectMake((thumb.position.x-(thumb.contentSize.width)/2), (thumb.position.y-(thumb.contentSize.height)/2), (thumb.contentSize.width+10), (thumb.contentSize.height+10));
+        thumbnailRect = CGRectMake((thumb.position.x-((thumb.contentSize.width*thumb.scaleX))/2), (thumb.position.y-(thumb.contentSize.height*thumb.scaleY)/2), ((thumb.contentSize.width*thumb.scaleX)+10), ((thumb.contentSize.height*thumb.scaleY)+10));
 
         lStructs = [[LevelSelectLayer buildLevels:[NSNumber numberWithInt:0]] retain];
 

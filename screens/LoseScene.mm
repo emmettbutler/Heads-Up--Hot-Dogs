@@ -212,66 +212,77 @@
         spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_menus.png"];
         [self addChild:spriteSheet];
         
+        float headerFontSize = IPHONE_HEADER_TEXT_SIZE;
+        
         CCSprite *background = [CCSprite spriteWithSpriteFrameName:@"Splash_BG_clean.png"];
         background.anchorPoint = CGPointZero;
         if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
             background.scaleX = IPAD_SCALE_FACTOR_X;
             background.scaleY = IPAD_SCALE_FACTOR_Y;
+            headerFontSize = IPAD_HEADER_TEXT_SiZE;
         }
         [self addChild:background z:-1];
         
         CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"GameEnd_Overlayer.png"];
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            sprite.scaleX = IPAD_SCALE_FACTOR_X;
+            sprite.scaleY = IPAD_SCALE_FACTOR_Y;
+        }
         sprite.position = CGPointMake(winSize.width/2, winSize.height/2+19);
         [spriteSheet addChild:sprite];
     
-        CCLabelTTF *label = [CCLabelTTF labelWithString:@"GAME END!" fontName:@"LostPet.TTF" fontSize:50.0];
+        CCLabelTTF *label = [CCLabelTTF labelWithString:@"GAME END!" fontName:@"LostPet.TTF" fontSize:headerFontSize];
         [[label texture] setAliasTexParameters];
         label.color = _color_pink;
-        label.position = ccp(winSize.width/2, winSize.height-(label.contentSize.height/2)-9);
+        label.position = ccp(winSize.width/2, sprite.position.y+((sprite.contentSize.height*sprite.scaleY)/2)-label.contentSize.height/2);
         [self addChild:label];
         
+        elmtScale = 1.0;
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            elmtScale = 2.0;
+        }
+        
         bubble = [CCSprite spriteWithSpriteFrameName:@"GameEnd_Bubble.png"];
-        bubble.position = ccp(winSize.width/2-40, winSize.height/2-70);
+        bubble.scale = elmtScale;
+        bubble.position = ccp(sprite.position.x-((sprite.contentSize.width*sprite.scaleX)/10), sprite.position.y-((sprite.contentSize.height*sprite.scaleY)/4)-(bubble.contentSize.height*bubble.scaleY/5));
         [self addChild:bubble];
         
         charFace = [CCSprite spriteWithSpriteFrameName:@"GameEnd_Cop_1.png"];
-        charFace.position = ccp(winSize.width/2+125, winSize.height/2-57);
+        charFace.scale = elmtScale;
+        charFace.position = ccp(sprite.position.x+((sprite.contentSize.width*sprite.scaleX)/3), sprite.position.y-((sprite.contentSize.height*sprite.scaleY)/4));
         charFace.visible = false;
         [self addChild:charFace];
         
         trophy = [CCSprite spriteWithSpriteFrameName:@"Trophy_Cardboard.png"];
-        trophy.position = ccp(winSize.width/2-90, winSize.height/2+40);
+        trophy.scale = elmtScale*1.15;
+        trophy.position = ccp(sprite.position.x-((sprite.contentSize.width*sprite.scaleX)/4), sprite.position.y+((sprite.contentSize.height*sprite.scaleY)/7));
         trophy.visible = false;
         [self addChild:trophy];
         
-        summary = [CCLabelTTF labelWithString:@"" dimensions:CGSizeMake(180, 150) alignment:UITextAlignmentCenter fontName:@"LostPet.TTF" fontSize:20.0];
-        [summary setPosition:ccp(winSize.width/2+75, winSize.height/2+10)];
+        summary = [CCLabelTTF labelWithString:@"" dimensions:CGSizeMake(180*elmtScale, 100*elmtScale) alignment:UITextAlignmentCenter fontName:@"LostPet.TTF" fontSize:20.0*elmtScale];
+        [summary setPosition:ccp(sprite.position.x+((sprite.contentSize.width*sprite.scaleX)/5), sprite.position.y+((sprite.contentSize.height*sprite.scaleY)/7))];
         summary.color = _color_pink;
         [self addChild:summary];
         
-        CCSprite *restartButton = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
-        restartButton.position = ccp(110, 22);
-        [self addChild:restartButton z:10];
-        label = [CCLabelTTF labelWithString:@"     Try Again     " fontName:@"LostPet.TTF" fontSize:22.0];
+        CCSprite *button1 = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
+        button1.position = ccp(winSize.width/4, button1.contentSize.height);
+        [self addChild:button1 z:10];
+        label = [CCLabelTTF labelWithString:@"Try Again" fontName:@"LostPet.TTF" fontSize:22.0];
         [[label texture] setAliasTexParameters];
         label.color = _color_pink;
-        CCMenuItem *button = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(switchSceneRestart)];
-        CCMenu *menu = [CCMenu menuWithItems:button, nil];
-        [menu setPosition:ccp(110, 21)];
-        [self addChild:menu z:11];
-        _replayRect = CGRectMake((restartButton.position.x-(restartButton.contentSize.width)/2), (restartButton.position.y-(restartButton.contentSize.height)/2), (restartButton.contentSize.width+70), restartButton.contentSize.height+70);
+        label.position = ccp(button1.position.x, button1.position.y-1);
+        [self addChild:label z:11];
+        _replayRect = CGRectMake((button1.position.x-(button1.contentSize.width)/2), (button1.position.y-(button1.contentSize.height)/2), (button1.contentSize.width+70), (button1.contentSize.height+70));
         
-        CCSprite *quitButton = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
-        quitButton.position = ccp(370, 22);
-        [self addChild:quitButton z:10];
-        label = [CCLabelTTF labelWithString:@"     Levels     " fontName:@"LostPet.TTF" fontSize:22.0];
-        [[label texture] setAliasTexParameters];
-        label.color = _color_pink;
-        button = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(switchSceneLevel)];
-        menu = [CCMenu menuWithItems:button, nil];
-        [menu setPosition:ccp(370, 21)];
-        [self addChild:menu z:11];
-        _quitRect = CGRectMake((quitButton.position.x-(quitButton.contentSize.width)/2), (quitButton.position.y-(quitButton.contentSize.height)/2), (quitButton.contentSize.width+70), (quitButton.contentSize.height+70));
+        CCSprite *button2 = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
+        button2.position = ccp(3*(winSize.width/4), button1.contentSize.height);
+        [self addChild:button2 z:10];
+        CCLabelTTF *otherLabel = [CCLabelTTF labelWithString:@"Levels" fontName:@"LostPet.TTF" fontSize:22.0];
+        [[otherLabel texture] setAliasTexParameters];
+        otherLabel.color = _color_pink;
+        otherLabel.position = ccp(button2.position.x, button2.position.y-1);
+        [self addChild:otherLabel z:11];
+        _quitRect = CGRectMake((button2.position.x-(button2.contentSize.width)/2), (button2.position.y-(button2.contentSize.height)/2), (button2.contentSize.width+70), (button2.contentSize.height+70));
         
         CCSprite *box = [CCSprite spriteWithSpriteFrameName:@"GameEnd_Social_Overlay.png"];
         box.position = CGPointMake(winSize.width-box.contentSize.width/2-5, winSize.height-box.contentSize.height/2-3);
@@ -314,7 +325,7 @@
         [trophy setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:res->trophy]];
         [trophy setVisible:true];
         
-        CCLabelTTF *speech = [CCLabelTTF labelWithString:res->f->speechBubble dimensions:CGSizeMake(bubble.contentSize.width-40, 60) alignment:UITextAlignmentCenter fontName:@"LostPet.TTF" fontSize:20.0];
+        CCLabelTTF *speech = [CCLabelTTF labelWithString:res->f->speechBubble dimensions:CGSizeMake(((bubble.contentSize.width*bubble.scaleX)-40), 60*elmtScale) alignment:UITextAlignmentCenter fontName:@"LostPet.TTF" fontSize:20.0*elmtScale];
         speech.color = _color_pink;
         speech.position = CGPointMake(bubble.position.x-3, bubble.position.y);
         [[speech texture] setAliasTexParameters];

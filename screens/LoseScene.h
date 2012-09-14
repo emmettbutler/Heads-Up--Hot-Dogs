@@ -35,6 +35,7 @@
     CCLabelTTF *levelLabel1, *levelLabel2;
     NSInteger highScore;
     ALuint sting;
+    float elmtScale;
     AchievementReporter *reporter;
     BOOL touchLock, _setNewHighScore;
     CGRect _twitterRect, _replayRect, _quitRect, _gcRect;
