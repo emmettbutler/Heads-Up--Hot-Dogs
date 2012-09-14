@@ -659,9 +659,10 @@
     
     CCSequence *seq = [CCSequence actions:ud->postStopAction, [CCCallFuncND actionWithTarget:self selector:@selector(setHeadNoCollide:data:) data:[[NSValue valueWithPointer:b] retain]], (CCFiniteTimeAction *)ud->altAction2, nil];
     
+    // TODO - this is jumpy on ipad
     [ud->sprite2 setVisible:false];
     [ud->angryFace setVisible:false];
-    ud->lowerYOffset = 40;
+    ud->lowerYOffset = 40*spriteScaleX*.75;
     if(ud->sprite1.flipX)
         ud->rippleXOffset = -4.2/PTM_RATIO;
     else
