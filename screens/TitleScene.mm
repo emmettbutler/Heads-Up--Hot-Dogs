@@ -58,7 +58,7 @@
         // color definitions
         _color_pink = ccc3(255, 62, 166);
         
-        CCLabelTTF *label = [CCLabelTTF labelWithString:@"BETA v0.5" fontName:@"LostPet.TTF" fontSize:30.0];
+        CCLabelTTF *label = [CCLabelTTF labelWithString:@"GOLD CANDIDATE 1" fontName:@"LostPet.TTF" fontSize:30.0];
         [[label texture] setAliasTexParameters];
         label.color = _color_pink;
         label.position = ccp((label.contentSize.width/2)+6, size.height-(label.contentSize.height/2)-5);
@@ -88,7 +88,11 @@
         [self addChild:otherMenu z:11];
         _optionsRect = CGRectMake((otherButton.position.x-(otherButton.contentSize.width)/2), (otherButton.position.y-(otherButton.contentSize.height)/2), (otherButton.contentSize.width+70), (otherButton.contentSize.height+70));
         
-        background = [CCSprite spriteWithSpriteFrameName:@"Splash_BG_clean.png"];
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            background = [CCSprite spriteWithSpriteFrameName:@"Splash_BG_clean-hd.png"];
+        } else {
+            background = [CCSprite spriteWithSpriteFrameName:@"Splash_BG_clean.png"];
+        }
         background.anchorPoint = CGPointZero;
         [self addChild:background z:-10];
         
@@ -103,6 +107,9 @@
         
         [swooshLogo runAction:[CCMoveTo actionWithDuration:.4 position:CGPointMake(size.width/2, swooshLogo.position.y)]];
         [dogLogo runAction:[CCEaseOut actionWithAction:[CCMoveTo actionWithDuration:.6 position:dogLogoAnchor] rate:.5]];
+        
+        NSLog(@"width: %0.2f", [CCDirector sharedDirector].winSize.width);
+        NSLog(@"height: %0.2f", [CCDirector sharedDirector].winSize.height);
         
         [self schedule: @selector(tick:)];
     }
