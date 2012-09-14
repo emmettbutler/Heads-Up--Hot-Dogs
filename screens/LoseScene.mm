@@ -265,7 +265,7 @@
         [self addChild:summary];
         
         CCSprite *button1 = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
-        button1.position = ccp(winSize.width/4, button1.contentSize.height);
+        button1.position = ccp(winSize.width/4, (float)button1.contentSize.height/1.5);
         [self addChild:button1 z:10];
         label = [CCLabelTTF labelWithString:@"Try Again" fontName:@"LostPet.TTF" fontSize:22.0];
         [[label texture] setAliasTexParameters];
@@ -275,7 +275,7 @@
         _replayRect = CGRectMake((button1.position.x-(button1.contentSize.width*button1.scaleX)/2), (button1.position.y-(button1.contentSize.height*button1.scaleY)/2), (button1.contentSize.width*button1.scaleX+70), (button1.contentSize.height*button1.scaleY+70));
         
         CCSprite *button2 = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
-        button2.position = ccp(3*(winSize.width/4), button1.contentSize.height);
+        button2.position = ccp(3*(winSize.width/4), (float)button1.contentSize.height/1.5);
         [self addChild:button2 z:10];
         CCLabelTTF *otherLabel = [CCLabelTTF labelWithString:@"Levels" fontName:@"LostPet.TTF" fontSize:22.0];
         [[otherLabel texture] setAliasTexParameters];
