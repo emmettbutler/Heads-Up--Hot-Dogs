@@ -13,10 +13,16 @@
 
 -(Shiba *)init:(NSValue *)s withWorld:(NSValue *)w {
     winSize = [[CCDirector sharedDirector] winSize];
+    float scale = 1;
+    if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+        scale = IPAD_SCALE_FACTOR_X;
+    }
 
     self->world = (b2World *)[w pointerValue];
     self->spritesheet = (CCSpriteBatchNode *)[s pointerValue];
     self->mainSprite = [CCSprite spriteWithSpriteFrameName:@"Shiba_Walk_1.png"];
+    self->mainSprite.scale = scale;
+    [[self->mainSprite texture] setAliasTexParameters];
     
     self->speed = 50;
     
@@ -67,7 +73,7 @@
     
     //create the grab box fixture
     b2PolygonShape sensorShape;
-    sensorShape.SetAsBox(20.0/PTM_RATIO, 15.0/PTM_RATIO);
+    sensorShape.SetAsBox((scale*20.0)/PTM_RATIO, (scale*15.0)/PTM_RATIO);
     b2FixtureDef sensorShapeDef;
     sensorShapeDef.shape = &sensorShape;
     sensorShapeDef.filter.categoryBits = 0x0000;

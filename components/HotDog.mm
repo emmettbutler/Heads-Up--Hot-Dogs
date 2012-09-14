@@ -23,7 +23,7 @@
     
     float scale = 1;
     if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
-        scale = IPAD_SCALE_FACTOR_X;
+        scale = IPAD_SCALE_FACTOR_X*.75;
     }
     
     self->spritesheet = (CCSpriteBatchNode *)[s pointerValue];

@@ -17,7 +17,6 @@
 #import "UIDefs.h"
 
 #define DEGTORAD 0.0174532
-#define DOG_SPAWN_MINHT 240
 #define VOMIT_VEL 666 // diego thinks this should be 666, i think 66.6 makes more sense
 #define COP_RANGE 4
 #define VOMIT_PROBABILITY 250
@@ -1019,7 +1018,7 @@
 }
 
 -(void)putDog:(id)sender data:(NSNumber *)type {
-    int SIDE_BUFFER = 40;
+    int SIDE_BUFFER = 40, DOG_SPAWN_MINHT = 2*(winSize.height/3);
     CGPoint location = CGPointMake(arc4random() % (int)(SIDE_BUFFER+(winSize.width-(2*SIDE_BUFFER))), DOG_SPAWN_MINHT+(arc4random() % (int)(winSize.height-DOG_SPAWN_MINHT)));
     
     spcDogData *dd = NULL;
@@ -1142,12 +1141,25 @@
 
     density = 10;
     
+    float scale = 1;
+    if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+        scale = 3*(IPAD_SCALE_FACTOR_X/4);
+    }
+    
     self.personLower = [CCSprite spriteWithSpriteFrameName:person->lowerSprite];
+    _personLower.scale = scale;
+    [[_personLower texture] setAliasTexParameters];
     self.personUpper = [CCSprite spriteWithSpriteFrameName:person->upperSprite];
+    _personUpper.scale = scale;
+    [[_personUpper texture] setAliasTexParameters];
     self.personUpperOverlay = [CCSprite spriteWithSpriteFrameName:person->upperOverlaySprite];
+    _personUpperOverlay.scale = scale;
+    [[_personUpperOverlay texture] setAliasTexParameters];
     if(person->rippleSprite){
         self.rippleSprite = [CCSprite spriteWithSpriteFrameName:person->rippleSprite];
         _rippleSprite.tag = person->tag;
+        _rippleSprite.scale = scale;
+        [[_rippleSprite texture] setAliasTexParameters];
     }
     _personLower.tag = person->tag;
     _personUpper.tag = person->tag;
@@ -1155,6 +1167,8 @@
     if(person->tag == 4){
         self.policeArm = [CCSprite spriteWithSpriteFrameName:person->armSprite];
         _policeArm.tag = person->armTag;
+        _policeArm.scale = scale;
+        [[_policeArm texture] setAliasTexParameters];
         armShootAnimFrames = [[NSMutableArray alloc] init];
     }
     
@@ -1350,7 +1364,7 @@
     ud->angryFaceWalkAction = _walkDogFaceAction;
     ud->altWalk = _altWalkAction;
     ud->altWalkFace = _altFaceWalkAction;
-    ud->heightOffset2 = person->heightOffset;
+    ud->heightOffset2 = person->heightOffset*scale;
     ud->altAction = _walkFaceAction;
     ud->postStopAction = _postStopAction;
     ud->idleAction = _idleAction;
@@ -1358,7 +1372,7 @@
     ud->ogCollideFilters = _curPersonMaskBits;
     ud->moveDelta = moveDelta*level->personSpeedMul;
     ud->pointValue = person->pointValue;
-    ud->howToPlaySpriteYOffset = 195;
+    ud->howToPlaySpriteYOffset = 195*scale;
     // point notifiers
     ud->_not_dogContact = (CCFiniteTimeAction *)[(NSValue *)[notifiers objectAtIndex:contactActionIndex] pointerValue];
     ud->_not_dogOnHead = (CCFiniteTimeAction *)[(NSValue *)[notifiers objectAtIndex:3] pointerValue];
@@ -1421,7 +1435,7 @@
 
     //fixture for head hitbox
     b2PolygonShape personShape;
-    personShape.SetAsBox(person->hitboxWidth/PTM_RATIO, person->hitboxHeight/PTM_RATIO, b2Vec2(person->hitboxCenterX, person->hitboxCenterY), 0);
+    personShape.SetAsBox((scale*person->hitboxWidth)/PTM_RATIO, (scale*person->hitboxHeight)/PTM_RATIO, b2Vec2(scale*person->hitboxCenterX, scale*person->hitboxCenterY), 0);
     b2FixtureDef personShapeDef;
     personShapeDef.shape = &personShape;
     personShapeDef.density = 0;
@@ -1437,9 +1451,9 @@
     //fixture for body
     b2PolygonShape personBodyShape;
     if(person->tag != S_MUNCHR)
-        personBodyShape.SetAsBox(_personLower.contentSize.width/PTM_RATIO/2,(_personLower.contentSize.height)/PTM_RATIO/2);
+        personBodyShape.SetAsBox((scale*_personLower.contentSize.width)/PTM_RATIO/2,((scale*_personLower.contentSize.height))/PTM_RATIO/2);
     else 
-        personBodyShape.SetAsBox((_personLower.contentSize.width+30)/PTM_RATIO/2,(_personLower.contentSize.height)/PTM_RATIO/2);
+        personBodyShape.SetAsBox(((scale*_personLower.contentSize.width)+30)/PTM_RATIO/2,((scale*_personLower.contentSize.height))/PTM_RATIO/2);
     b2FixtureDef personBodyShapeDef;
     personBodyShapeDef.shape = &personBodyShape;
     personBodyShapeDef.density = density;
@@ -1452,7 +1466,7 @@
 
     //sensor above heads for point gathering
     b2PolygonShape personHeadSensorShape;
-    personHeadSensorShape.SetAsBox(person->sensorWidth,person->sensorHeight,b2Vec2(person->hitboxCenterX, person->hitboxCenterY+(person->sensorHeight/2)), 0);
+    personHeadSensorShape.SetAsBox(scale*person->sensorWidth,scale*person->sensorHeight,b2Vec2(scale*person->hitboxCenterX, scale*(person->hitboxCenterY+(person->sensorHeight/2))), 0);
     b2FixtureDef personHeadSensorShapeDef;
     personHeadSensorShapeDef.shape = &personHeadSensorShape;
     personHeadSensorShapeDef.userData = fUd3;
@@ -1482,14 +1496,14 @@
 
         b2BodyDef armBodyDef;
         armBodyDef.type = b2_dynamicBody;
-        armBodyDef.position.Set(((_personBody->GetPosition().x*PTM_RATIO)+(_policeArm.contentSize.width/2)+armBodyXOffset)/PTM_RATIO,
-                                ((_personBody->GetPosition().y*PTM_RATIO)+(armBodyYOffset))/PTM_RATIO);
+        armBodyDef.position.Set(((_personBody->GetPosition().x*PTM_RATIO)+(scale*_policeArm.contentSize.width/2)+scale*armBodyXOffset)/PTM_RATIO,
+                                ((_personBody->GetPosition().y*PTM_RATIO)+(scale*armBodyYOffset))/PTM_RATIO);
         armBodyDef.userData = ud;
         b2Body *_policeArmBody = _world->CreateBody(&armBodyDef);
 
         fixtureUserData *fUd = new fixtureUserData();
         b2PolygonShape armShape;
-        armShape.SetAsBox(_policeArm.contentSize.width/PTM_RATIO/2, _policeArm.contentSize.height/PTM_RATIO/2);
+        armShape.SetAsBox((_policeArm.contentSize.width*scale)/PTM_RATIO/2, (scale*_policeArm.contentSize.height)/PTM_RATIO/2);
         b2FixtureDef armShapeDef;
         armShapeDef.shape = &armShape;
         armShapeDef.density = 1;
@@ -1502,7 +1516,7 @@
         b2RevoluteJointDef armJointDef;
         armJointDef.Initialize(_personBody, _policeArmBody,
                                 b2Vec2(_personBody->GetPosition().x,
-                                        ((_personBody->GetPosition().y*PTM_RATIO)+armJointYOffset)/PTM_RATIO));
+                                        ((_personBody->GetPosition().y*PTM_RATIO)+scale*armJointYOffset)/PTM_RATIO));
         armJointDef.enableMotor = true;
         armJointDef.enableLimit = true;
         armJointDef.motorSpeed = 0.0f;
@@ -1582,6 +1596,11 @@
             level->characterProbSum += p->frequency;
         }
         
+        spriteScale = 1, pointNotifyScale = 1;
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            spriteScale = IPAD_SCALE_FACTOR_X;
+            pointNotifyScale = spriteScale * .6;
+        }
         _savedHighScore = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"highScore%@", level->slug]];
         
         b2Vec2 gravity;
@@ -2026,7 +2045,7 @@
                 if(!ud->hasTouchedHead && !_gameOver){
                     NSMutableArray *plusPointsParams = [[NSMutableArray alloc] initWithCapacity:4];
                     [plusPointsParams addObject:[NSNumber numberWithInt:pBody->GetPosition().x*PTM_RATIO]];
-                    [plusPointsParams addObject:[NSNumber numberWithInt:(pBody->GetPosition().y+4.7)*PTM_RATIO]];
+                    [plusPointsParams addObject:[NSNumber numberWithInt:pointNotifyScale*(pBody->GetPosition().y+4.7)*PTM_RATIO]];
                     int p;
                     if(ud->sprite1.tag == S_SPCDOG)
                         p = 100;
@@ -2086,11 +2105,11 @@
                     NSMutableArray *plus100Params = [[NSMutableArray alloc] initWithCapacity:4];
                     if(ud->sprite1.position.x > winSize.width/2){
                         [plus100Params addObject:[NSNumber numberWithInt:winSize.width-(oneHundred.contentSize.width/2)-10]];
-                        [plus100Params addObject:[NSNumber numberWithInt:(b->GetPosition().y+4.7)*PTM_RATIO]];
+                        [plus100Params addObject:[NSNumber numberWithInt:pointNotifyScale*(b->GetPosition().y+4.7)*PTM_RATIO]];
                     }
                     else{
                         [plus100Params addObject:[NSNumber numberWithInt:(oneHundred.contentSize.width/2)]];
-                        [plus100Params addObject:[NSNumber numberWithInt:(b->GetPosition().y+4.7)*PTM_RATIO]];
+                        [plus100Params addObject:[NSNumber numberWithInt:pointNotifyScale*(b->GetPosition().y+4.7)*PTM_RATIO]];
                     }
                     if(ud->spcDogsOnHead > 0)
                         [plus100Params addObject:[NSNumber numberWithInt:1]];
@@ -2188,7 +2207,7 @@
                 if(!b) continue;
                 if(ud->sprite1.tag == S_COPARM){
                     policeRayPoint1 = b->GetPosition();
-                    policeRayPoint2 = policeRayPoint1 + rayLength * b2Vec2(cosf(b->GetAngle()), sinf(b->GetAngle()));
+                    policeRayPoint2 = policeRayPoint1 + rayLength * spriteScale * b2Vec2(cosf(b->GetAngle()), sinf(b->GetAngle()));
                     input.p1 = policeRayPoint1;
                     input.p2 = policeRayPoint2;
                     input.maxFraction = 1;
@@ -2221,7 +2240,7 @@
                         _points += ud->spcDogsOnHead * 250;
                         NSMutableArray *plus25Params = [[NSMutableArray alloc] initWithCapacity:4];
                         [plus25Params addObject:[NSNumber numberWithInt:b->GetPosition().x*PTM_RATIO]];
-                        [plus25Params addObject:[NSNumber numberWithInt:(b->GetPosition().y+4.7)*PTM_RATIO]];
+                        [plus25Params addObject:[NSNumber numberWithInt:pointNotifyScale*(b->GetPosition().y+4.7)*PTM_RATIO]];
                         if(ud->spcDogsOnHead > 0)
                             [plus25Params addObject:[NSNumber numberWithInt:1]];
                         else
