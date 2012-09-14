@@ -2437,13 +2437,13 @@
                 [self resumeGame];
             }
             return;
-        } else if(CGRectContainsPoint(_resumeRect, touchLocation1)){
+        } else if(_pause && CGRectContainsPoint(_resumeRect, touchLocation1)){
             [self resumeGame];
             return;
-        } else if(CGRectContainsPoint(_restartRect, touchLocation1)){
+        } else if(_pause && CGRectContainsPoint(_restartRect, touchLocation1)){
             [self restartScene];
             return;
-        } else if(CGRectContainsPoint(_levelRect, touchLocation1)){
+        } else if(_pause && CGRectContainsPoint(_levelRect, touchLocation1)){
             [self levelSelect];
             return;
         }
