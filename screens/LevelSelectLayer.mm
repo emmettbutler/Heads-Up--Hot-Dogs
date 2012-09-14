@@ -140,7 +140,7 @@
             sprite.position = ccp(sprite.position.x + 30, sprite.position.y);
         }
         [self addChild:sprite];
-        leftArrowRect = CGRectMake((sprite.position.x-(sprite.contentSize.width)/2), (sprite.position.y-(sprite.contentSize.height)/2), (sprite.contentSize.width+20), (sprite.contentSize.height+300));
+        leftArrowRect = CGRectMake((sprite.position.x-(sprite.contentSize.width*sprite.scaleX)/2), (sprite.position.y-(sprite.contentSize.height*sprite.scaleY)/2), (sprite.contentSize.width*sprite.scaleX+20), (sprite.contentSize.height*sprite.scaleY+300));
 
         //right
         sprite = [CCSprite spriteWithSpriteFrameName:@"LvlArrow.png"];
@@ -153,7 +153,7 @@
         sprite.flipX = true;
         [self addChild:sprite];
 
-        rightArrowRect = CGRectMake((sprite.position.x-(sprite.contentSize.width)/2), (sprite.position.y-(sprite.contentSize.height)/2), (sprite.contentSize.width+20), (sprite.contentSize.height+300));
+        rightArrowRect = CGRectMake((sprite.position.x-(sprite.contentSize.width*sprite.scaleX)/2), (sprite.position.y-(sprite.contentSize.height*sprite.scaleY)/2), (sprite.contentSize.width*sprite.scaleX+20), (sprite.contentSize.height*sprite.scaleY+300));
 
         float scale = 1;
         if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){

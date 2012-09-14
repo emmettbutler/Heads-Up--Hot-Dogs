@@ -259,7 +259,7 @@
         trophy.visible = false;
         [self addChild:trophy];
         
-        summary = [CCLabelTTF labelWithString:@"" dimensions:CGSizeMake(180*elmtScale, 100*elmtScale) alignment:UITextAlignmentCenter fontName:@"LostPet.TTF" fontSize:20.0*elmtScale];
+        summary = [CCLabelTTF labelWithString:@"" dimensions:CGSizeMake(170*elmtScale, 100*elmtScale) alignment:UITextAlignmentCenter fontName:@"LostPet.TTF" fontSize:20.0*elmtScale];
         [summary setPosition:ccp(sprite.position.x+((sprite.contentSize.width*sprite.scaleX)/5), sprite.position.y+((sprite.contentSize.height*sprite.scaleY)/7))];
         summary.color = _color_pink;
         [self addChild:summary];
@@ -336,7 +336,7 @@
         
         int seconds = _timePlayed/60;
         int minutes = seconds/60;
-        [summary setString:[NSString stringWithFormat:@"You lasted %02d:%02d and scored %d points. You have earned %@", minutes, seconds%60, _score, res->dogName]];
+        [summary setString:[NSString stringWithFormat:@"You lasted %02d:%02d and scored %d points.\nYou earned %@", minutes, seconds%60, _score, res->dogName]];
         [[summary texture] setAliasTexParameters];
         
         if(_score > highScore){

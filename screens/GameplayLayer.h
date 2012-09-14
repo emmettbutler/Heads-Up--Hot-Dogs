@@ -56,7 +56,7 @@
     NSMutableArray *bgSprites, *floorBits, *xPositions, *dogTouches, *dogIcons;
     NSString *slug;
     CGSize winSize;
-    CGRect _pauseButtonRect;
+    CGRect _pauseButtonRect, _resumeRect, _restartRect, _levelRect;
     NSUserDefaults *standardUserDefaults;
     NSInteger _sfxOn, _introDone, _savedHighScore;
     int _points, _droppedCount, time, _curPersonMaskBits, _peopleGrumped, _dogsSaved, _dogsOnscreen, _maxDogsOnScreen, _numWorldTouches, _levelMaxDogs;

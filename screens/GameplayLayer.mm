@@ -172,13 +172,21 @@
         [self addChild:_pauseLayer z:80];
         
         CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"Pause_BG.png"];
-        sprite.position = ccp((sprite.contentSize.width/2)+10, winSize.height/2);
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            sprite.scale = 1.7;
+        }
+        sprite.position = ccp(winSize.width/2-((sprite.contentSize.width*sprite.scaleX)/4), winSize.height/2);
         [_pauseLayer addChild:sprite z:81];
 
-        CCLabelTTF *label = [CCLabelTTF labelWithString:@"Paused" fontName:@"LostPet.TTF" fontSize:27.0];
+        float fontSize = 24.0;
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            fontSize = 44.0;
+        }
+        
+        CCLabelTTF *label = [CCLabelTTF labelWithString:@"Paused" fontName:@"LostPet.TTF" fontSize:fontSize+3.0];
         label.color = _color_pink;
         CCMenuItem *pauseTitle = [CCMenuItemLabel itemWithLabel:label];
-        pauseTitle.position = ccp((sprite.position.x+3), (sprite.position.y+sprite.contentSize.height/2)-20);
+        pauseTitle.position = ccp((sprite.position.x), (sprite.position.y+(float)(sprite.contentSize.height*sprite.scaleY)/2.5));
         [_pauseLayer addChild:pauseTitle z:81];
 
         NSInteger _overallTime = [standardUserDefaults integerForKey:@"overallTime"];
@@ -188,53 +196,61 @@
         int totalMinutes = totalTime/60;
         int totalHours = totalMinutes/60;
 
-        label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"Score: %d", _points] fontName:@"LostPet.TTF" fontSize:24.0];
+        label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"Score: %d", _points] fontName:@"LostPet.TTF" fontSize:fontSize];
         label.color = _color_pink;
         label.anchorPoint = ccp(90,90);
         CCMenuItem *score = [CCMenuItemLabel itemWithLabel:label];
         int seconds = time/60;
         int minutes = seconds/60;
-        label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"Time: %02d:%02d", minutes, seconds%60] fontName:@"LostPet.TTF" fontSize:24.0];
+        label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"Time: %02d:%02d", minutes, seconds%60] fontName:@"LostPet.TTF" fontSize:fontSize];
         label.color = _color_pink;
         CCMenuItem *timeItem = [CCMenuItemLabel itemWithLabel:label];
-        label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"Total playtime: %02d:%02d:%02d", totalHours, totalMinutes%60, totalTime%60] fontName:@"LostPet.TTF" fontSize:24.0];
+        label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"Total playtime: %02d:%02d:%02d", totalHours, totalMinutes%60, totalTime%60] fontName:@"LostPet.TTF" fontSize:fontSize];
         label.color = _color_pink;
         CCMenuItem *totalTimeItem = [CCMenuItemLabel itemWithLabel:label];
-        label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"People grumped: %d", _peopleGrumped] fontName:@"LostPet.TTF" fontSize:24.0];
+        label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"People grumped: %d", _peopleGrumped] fontName:@"LostPet.TTF" fontSize:fontSize];
         label.color = _color_pink;
         CCMenuItem *peopleItem = [CCMenuItemLabel itemWithLabel:label];
-        label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"Franks saved: %d", _dogsSaved] fontName:@"LostPet.TTF" fontSize:24.0];
+        label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"Franks saved: %d", _dogsSaved] fontName:@"LostPet.TTF" fontSize:fontSize];
         label.color = _color_pink;
         CCMenuItem *savedItem = [CCMenuItemLabel itemWithLabel:label];
+        
+        CCSprite *button1 = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
+        
+        float scale = 1.3;
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            scale = IPAD_SCALE_FACTOR_X;
+        }
+        float buttonsX = winSize.width/2+button1.contentSize.width*scale;
+        
+        button1.position = ccp(buttonsX, winSize.height/2);
+        [_pauseLayer addChild:button1 z:81];
+        CCLabelTTF *otherLabel = [CCLabelTTF labelWithString:@"RESTART" fontName:@"LostPet.TTF" fontSize:23.0];
+        [[otherLabel texture] setAliasTexParameters];
+        otherLabel.color = _color_pink;
+        otherLabel.position = ccp(button1.position.x, button1.position.y-1);
+        [_pauseLayer addChild:otherLabel z:82];
+        _restartRect = CGRectMake((button1.position.x-(button1.contentSize.width*button1.scaleX)/2), (button1.position.y-(button1.contentSize.height*button1.scaleY)/2), (button1.contentSize.width*button1.scaleX+70), (button1.contentSize.height*button1.scaleY+70));
 
-        CCSprite *otherButton = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
-        otherButton.position = ccp((winSize.width-otherButton.contentSize.width+33), 208);
-        [_pauseLayer addChild:otherButton z:81];
-        label = [CCLabelTTF labelWithString:@"     RESTART    " fontName:@"LostPet.TTF" fontSize:23.0];
-        [[label texture] setAliasTexParameters];
-        label.color = _color_pink;
-        CCMenuItem *title = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(restartScene)];
+        CCSprite *button2 = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
+        button2.position = ccp(buttonsX, winSize.height/2+button2.contentSize.height*button2.scaleX*1.5);
+        [_pauseLayer addChild:button2 z:81];
+        otherLabel = [CCLabelTTF labelWithString:@"CONTINUE" fontName:@"LostPet.TTF" fontSize:23.0];
+        [[otherLabel texture] setAliasTexParameters];
+        otherLabel.color = _color_pink;
+        otherLabel.position = ccp(button2.position.x, button2.position.y-1);
+        [_pauseLayer addChild:otherLabel z:82];
+        _resumeRect = CGRectMake((button2.position.x-(button2.contentSize.width*button2.scaleX)/2), (button2.position.y-(button2.contentSize.height*button2.scaleY)/2), (button2.contentSize.width*button2.scaleX+70), (button2.contentSize.height*button2.scaleY+70));
         
-        otherButton = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
-        otherButton.position = ccp((winSize.width-otherButton.contentSize.width+33), 162);
-        [_pauseLayer addChild:otherButton z:81];
-        label = [CCLabelTTF labelWithString:@"     CONTINUE     " fontName:@"LostPet.TTF" fontSize:23.0];
-        [[label texture] setAliasTexParameters];
-        label.color = _color_pink;
-        CCMenuItem *cont = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(resumeGame)];
-        
-        otherButton = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
-        otherButton.position = ccp((winSize.width-otherButton.contentSize.width+33), 116);
-        [_pauseLayer addChild:otherButton z:81];
-        label = [CCLabelTTF labelWithString:@"   LEVEL   " fontName:@"LostPet.TTF" fontSize:23.0];
-        [[label texture] setAliasTexParameters];
-        label.color = _color_pink;
-        CCMenuItem *feedback = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(levelSelect)];
-        
-        CCMenu *quitButton = [CCMenu menuWithItems:cont, title, feedback, nil];
-        [quitButton alignItemsVerticallyWithPadding:22];
-        quitButton.position = ccp((winSize.width-89), winSize.height/2);
-        [_pauseLayer addChild:quitButton z:82];
+        CCSprite *button3 = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
+        button3.position = ccp(buttonsX, winSize.height/2-button3.contentSize.height*button3.scaleX*1.5);
+        [_pauseLayer addChild:button3 z:81];
+        otherLabel = [CCLabelTTF labelWithString:@"LEVELS" fontName:@"LostPet.TTF" fontSize:23.0];
+        [[otherLabel texture] setAliasTexParameters];
+        otherLabel.color = _color_pink;
+        otherLabel.position = ccp(button3.position.x, button3.position.y-1);
+        [_pauseLayer addChild:otherLabel z:82];
+        _levelRect = CGRectMake((button3.position.x-(button3.contentSize.width*button3.scaleX)/2), (button3.position.y-(button3.contentSize.height*button3.scaleY)/2), (button3.contentSize.width*button3.scaleX+70), (button3.contentSize.height*button3.scaleY+70));
 
         _pauseMenu = [CCMenu menuWithItems: score, timeItem, peopleItem, savedItem, totalTimeItem, nil];
         [_pauseMenu setPosition:ccp(sprite.position.x, winSize.height/2-10)];
@@ -2420,6 +2436,15 @@
             else{
                 [self resumeGame];
             }
+            return;
+        } else if(CGRectContainsPoint(_resumeRect, touchLocation1)){
+            [self resumeGame];
+            return;
+        } else if(CGRectContainsPoint(_restartRect, touchLocation1)){
+            [self restartScene];
+            return;
+        } else if(CGRectContainsPoint(_levelRect, touchLocation1)){
+            [self levelSelect];
             return;
         }
         for(int i = 0; i < count; i++){ // for each touch
