@@ -10,6 +10,7 @@
 #import "cocos2d.h"
 #import "Box2D.h"
 #import "GameplayLayer.h"
+#import "UIDefs.h"
 
 @interface HotDog : NSObject {
     b2World *world;

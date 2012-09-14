@@ -21,6 +21,11 @@
     int floor, f, tag;
     float deathDelay;
     
+    float scale = 1;
+    if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+        scale = IPAD_SCALE_FACTOR_X;
+    }
+    
     self->spritesheet = (CCSpriteBatchNode *)[s pointerValue];
     self->world = (b2World *)[w pointerValue];
     self->winSize = [CCDirector sharedDirector].winSize; // this needs to happen in initWithBody also probably
@@ -78,6 +83,8 @@
     }
     //add base sprite to scene
     self->sprite1 = [[CCSprite spriteWithSpriteFrameName:mainSprite] retain];
+    self->sprite1.scale = scale;
+    [[self->sprite1 texture] setAliasTexParameters];
     self->sprite1.position = ccp(location.x, location.y);
     self->sprite1.tag = tag;
     [self->spritesheet addChild:self->sprite1 z:50]; //pass in spritesheetCommon
@@ -141,7 +148,7 @@
     
     //create the grab box fixture
     b2PolygonShape wienerGrabShape;
-    wienerGrabShape.SetAsBox((self->sprite1.contentSize.width+50)/PTM_RATIO/2, (self->sprite1.contentSize.height+50)/PTM_RATIO/2);
+    wienerGrabShape.SetAsBox((self->sprite1.contentSize.width*self->sprite1.scaleX+50)/PTM_RATIO/2, (self->sprite1.contentSize.height*self->sprite1.scaleY+50)/PTM_RATIO/2);
     b2FixtureDef wienerGrabShapeDef;
     wienerGrabShapeDef.shape = &wienerGrabShape;
     wienerGrabShapeDef.filter.categoryBits = WIENER;
@@ -151,7 +158,7 @@
     
     //create the collision fixture
     b2PolygonShape wienerShape;
-    wienerShape.SetAsBox(self->sprite1.contentSize.width/PTM_RATIO/2, self->sprite1.contentSize.height/PTM_RATIO/2);
+    wienerShape.SetAsBox((self->sprite1.scaleX*self->sprite1.contentSize.width)/PTM_RATIO/2, (self->sprite1.contentSize.height*self->sprite1.scaleY)/PTM_RATIO/2);
     b2FixtureDef wienerShapeDef;
     wienerShapeDef.shape = &wienerShape;
     wienerShapeDef.density = 0.5f;
