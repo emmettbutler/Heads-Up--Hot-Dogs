@@ -476,18 +476,26 @@
         
         lp->bgComponents = [[NSMutableArray alloc] init];
         bgComponent *bgc;
+        CGSize winSize = [CCDirector sharedDirector].winSize;
+        float scaleX = 1, scaleY = 1;
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            scaleX = IPAD_SCALE_FACTOR_X;
+            scaleY = IPAD_SCALE_FACTOR_Y;
+        }
         for(int i = 1; i <= 4; i++){
             bgc = new bgComponent();
             bgc->sprite = [[CCSprite spriteWithSpriteFrameName:[NSString stringWithFormat:@"Window_%d_Start_1.png", i]] retain];
             int xPos;
+            bgc->sprite.scaleX = scaleX;
+            bgc->sprite.scaleY = scaleY;
             switch(i){
-                case 1: xPos = 59; break;
-                case 2: xPos = 145; break;
-                case 3: xPos = 330; break;
-                case 4: xPos = 473; break;
+                case 1: xPos = winSize.width/8; break;
+                case 2: xPos = 30.5*((float)winSize.width/100); break;
+                case 3: xPos = 68.5*((float)winSize.width/100); break;
+                case 4: xPos = winSize.width-(bgc->sprite.scaleX*(bgc->sprite.contentSize.width/1.7)); break;
                 default: break;
             }
-            bgc->sprite.position = CGPointMake(xPos, 212);
+            bgc->sprite.position = CGPointMake(xPos, 2*(winSize.height/3));
             bgc->anim1 = [[NSMutableArray alloc] init];
             for(int j = 1; j <= 13; j++){
                 [bgc->anim1 addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -794,13 +802,19 @@
         }
         lp->specialDog = dd;
         
+        CGSize winSize = [CCDirector sharedDirector].winSize;
+        
         lp->bgComponents = [[NSMutableArray alloc] init];
-        int y = 152;
+        int y = 152.5*(winSize.height/320);
         bgComponent *bgc;
         for(int i = 2; i <= 10; i++){
             bgc = new bgComponent();
             bgc->sprite = [CCSprite spriteWithSpriteFrameName:[NSString stringWithFormat:@"Grav_%d.png", i]];
-            bgc->sprite.position = CGPointMake(329, y+(6*(i-1)));
+            if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+                bgc->sprite.scaleX = IPAD_SCALE_FACTOR_X;
+                bgc->sprite.scaleY = IPAD_SCALE_FACTOR_Y;
+            }
+            bgc->sprite.position = CGPointMake(219.5*((float)winSize.width/320), y+((bgc->sprite.scaleY*(bgc->sprite.contentSize.height+.8*IPAD_SCALE_FACTOR_Y))*(i-1)));
             [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
         }
         [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_space.plist"];
