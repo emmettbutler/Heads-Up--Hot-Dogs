@@ -13,12 +13,21 @@
 
 -(SteamVent *)init:(NSValue *)s_common withLevelSpriteSheet:(NSValue *)s_level withPosition:(NSValue *)pos{
     winSize = [[CCDirector sharedDirector] winSize];
+    float scaleX = 1, scaleY = 1;
+    if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+        scaleX = IPAD_SCALE_FACTOR_X;
+        scaleY = IPAD_SCALE_FACTOR_Y;
+    }
 
     self->common_sheet = (CCSpriteBatchNode *)[s_common pointerValue];
     self->level_sheet = (CCSpriteBatchNode *)[s_level pointerValue];
     self->position = [pos CGPointValue];
     self->mainSprite = [CCSprite spriteWithSpriteFrameName:@"Steam_Whole_1.png"];
+    self->mainSprite.scaleX = scaleX;
+    self->mainSprite.scaleY = scaleY;
     self->grateSprite = [CCSprite spriteWithSpriteFrameName:@"SteamVent.png"];
+    self->grateSprite.scaleX = scaleX;
+    self->grateSprite.scaleY = scaleY;
     self->blowInterval = (arc4random() % 650) + 400;
     self->force = 8;
     
@@ -48,7 +57,7 @@
     
     self->combinedAction = [[CCSequence actions:startAction, flipBlowing, loopAction, flipBlowing, endAction, nil] retain];
     
-    [self->mainSprite setPosition:CGPointMake(self->position.x-3, self->position.y+110)];
+    [self->mainSprite setPosition:CGPointMake(self->position.x-(self->grateSprite.contentSize.width*self->grateSprite.scaleX)/20, self->position.y+39*(self->mainSprite.contentSize.height*self->mainSprite.scaleY)/100)];
     [self->grateSprite setPosition:self->position];
     [self->common_sheet addChild:self->mainSprite];
     [self->level_sheet addChild:self->grateSprite];
@@ -77,7 +86,7 @@
     b2Body *b = (b2Body *)[body pointerValue];
     bodyUserData *ud = (bodyUserData*)b->GetUserData();
     if(ud->sprite1.position.y < winSize.height - 40){
-        if((ud->sprite1.position.x > self->position.x - 30 && ud->sprite1.position.x < self->position.x + 30)){
+        if((ud->sprite1.position.x > self->position.x - self->mainSprite.contentSize.width*self->mainSprite.scaleX && ud->sprite1.position.x < self->position.x + self->mainSprite.contentSize.width*self->mainSprite.scaleX)){
             if(b->GetLinearVelocity().y != b->GetLinearVelocity().y+self->force){
                 b->SetLinearVelocity(b2Vec2(b->GetLinearVelocity().x+((((float) rand() / RAND_MAX) * 2) - 1), b->GetLinearVelocity().y+self->force));
                 [ud->sprite1 stopAllActions];

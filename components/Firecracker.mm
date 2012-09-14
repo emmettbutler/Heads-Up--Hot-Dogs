@@ -13,10 +13,17 @@
 
 -(Firecracker *)init:(NSValue *)w withSpritesheet:(NSValue *)s {
     winSize = [[CCDirector sharedDirector] winSize];
+    float scaleX = 1, scaleY = 1;
+    if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+        scaleX = IPAD_SCALE_FACTOR_X;
+        scaleY = IPAD_SCALE_FACTOR_Y;
+    }
     
     self->world = (b2World *)[w pointerValue];
     self->spritesheet = (CCSpriteBatchNode *)[s pointerValue];
     self->mainSprite = [CCSprite spriteWithSpriteFrameName:@"fireCracker_1.png"];
+    self->mainSprite.scaleX = scaleX;
+    self->mainSprite.scaleY = scaleY;
     self->position = b2Vec2(arc4random() % (int)(winSize.width/PTM_RATIO), (winSize.height+self->mainSprite.contentSize.height)/PTM_RATIO);
     self->riseSprite = @"fireCracker_28.png";
     self->fallSprite = @"fireCracker_1.png";
@@ -54,7 +61,7 @@
     
     //create the grab box fixture
     b2PolygonShape sensorShape;
-    sensorShape.SetAsBox((self->mainSprite.contentSize.width+10)/PTM_RATIO/2, (self->mainSprite.contentSize.height)/PTM_RATIO/2);
+    sensorShape.SetAsBox(((self->mainSprite.scaleX*self->mainSprite.contentSize.width))/PTM_RATIO/2, ((self->mainSprite.scaleY*self->mainSprite.contentSize.height))/PTM_RATIO/2);
     b2FixtureDef sensorShapeDef;
     sensorShapeDef.shape = &sensorShape;
     sensorShapeDef.filter.categoryBits = 0x0000;
@@ -64,7 +71,7 @@
 }
 
 -(void)dropDown{
-    CCFiniteTimeAction *moveAction = [CCMoveTo actionWithDuration:.6 position:ccp(self->mainSprite.position.x, winSize.height - self->mainSprite.contentSize.height/2)];
+    CCFiniteTimeAction *moveAction = [CCMoveTo actionWithDuration:.6 position:ccp(self->mainSprite.position.x, winSize.height - (self->mainSprite.contentSize.height*self->mainSprite.scaleY)/2)];
     [self->mainSprite runAction:[CCSequence actions:moveAction, [CCCallFunc actionWithTarget:self selector:@selector(createHitbox)], [CCCallFunc actionWithTarget:self selector:@selector(setStillSprite)], nil]];
 }
 
@@ -86,7 +93,7 @@
 
 -(void)pullUp{
     self->isNowExploding = false;
-    CCFiniteTimeAction *moveAction = [CCMoveTo actionWithDuration:.6 position:ccp(self->mainSprite.position.x, winSize.height + self->mainSprite.contentSize.height/2)];
+    CCFiniteTimeAction *moveAction = [CCMoveTo actionWithDuration:.6 position:ccp(self->mainSprite.position.x, winSize.height + (self->mainSprite.contentSize.height*self->mainSprite.scaleY)/2)];
     [self->mainSprite runAction:[CCSequence actions:[CCCallFunc actionWithTarget:self selector:@selector(setPullUpSprite)], moveAction, nil]];
 }
 

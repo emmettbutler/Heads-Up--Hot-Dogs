@@ -1616,8 +1616,8 @@
         [self addChild:spriteSheetCommon];
         
         if(level->slug == @"nyc"){
-            vent1 = [[SteamVent alloc] init:[NSValue valueWithPointer:spriteSheetCommon] withLevelSpriteSheet:[NSValue valueWithPointer:spriteSheetLevel] withPosition:[NSValue valueWithCGPoint:CGPointMake(340, 37)]];
-            vent2 = [[SteamVent alloc] init:[NSValue valueWithPointer:spriteSheetCommon] withLevelSpriteSheet:[NSValue valueWithPointer:spriteSheetLevel] withPosition:[NSValue valueWithCGPoint:CGPointMake(140, 37)]];
+            vent1 = [[SteamVent alloc] init:[NSValue valueWithPointer:spriteSheetCommon] withLevelSpriteSheet:[NSValue valueWithPointer:spriteSheetLevel] withPosition:[NSValue valueWithCGPoint:CGPointMake(winSize.width/4, winSize.height/8)]];
+            vent2 = [[SteamVent alloc] init:[NSValue valueWithPointer:spriteSheetCommon] withLevelSpriteSheet:[NSValue valueWithPointer:spriteSheetLevel] withPosition:[NSValue valueWithCGPoint:CGPointMake(3*(winSize.width/4), winSize.height/8)]];
         } else if(level->slug == @"chicago"){
             bgComponent *bgc = (bgComponent *)[[level->bgComponents objectAtIndex:0] pointerValue];
             CCAnimation *anim = [CCAnimation animationWithFrames:bgc->anim1 delay:.1f];
@@ -1897,7 +1897,7 @@
             [bgc->sprite runAction:window4CycleAction];
         }
     } else if(level->slug == @"china"){
-        if(!(time % 250) && arc4random() % 2  == 1){
+        if(!(time % 150) && arc4random() % 2  == 1){
             firecracker = [[Firecracker alloc] init:[NSValue valueWithPointer:_world] withSpritesheet:[NSValue valueWithPointer:spriteSheetCommon]];
             [firecracker runSequence];
         }
@@ -2441,9 +2441,11 @@
             [self resumeGame];
             return;
         } else if(_pause && CGRectContainsPoint(_restartRect, touchLocation1)){
+            _gameOver = true;
             [self restartScene];
             return;
         } else if(_pause && CGRectContainsPoint(_levelRect, touchLocation1)){
+            _gameOver = true;
             [self levelSelect];
             return;
         }
