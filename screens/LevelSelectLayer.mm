@@ -9,6 +9,7 @@
 #import "LevelSelectLayer.h"
 #import "GameplayLayer.h"
 #import "Clouds.h"
+#import "UIDefs.h"
 
 @implementation LevelSelectLayer
 
@@ -79,6 +80,7 @@
         self.isTouchEnabled = true;
 
         curLevelIndex = 0;
+        float largeFontSize = IPHONE_HEADER_TEXT_SIZE;
 
         _color_pink = ccc3(255, 62, 166);
         
@@ -89,13 +91,22 @@
 
         background = [CCSprite spriteWithSpriteFrameName:@"Splash_BG_clean.png"];
         background.anchorPoint = CGPointZero;
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            background.scaleX = IPAD_SCALE_FACTOR_X;
+            background.scaleY = IPAD_SCALE_FACTOR_Y;
+            largeFontSize = IPAD_HEADER_TEXT_SiZE;
+        }
         [self addChild:background z:-1];
         
         CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"Lvl_Band.png"];
         sprite.position = ccp(winSize.width/2, winSize.height/2);
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            sprite.scaleX = IPAD_SCALE_FACTOR_X;
+            sprite.scaleY = IPAD_SCALE_FACTOR_Y;
+        }
         [self addChild:sprite];
 
-        CCLabelTTF *label = [CCLabelTTF labelWithString:@"SELECT LEVEL" fontName:@"LostPet.TTF" fontSize:50.0];
+        CCLabelTTF *label = [CCLabelTTF labelWithString:@"SELECT LEVEL" fontName:@"LostPet.TTF" fontSize:largeFontSize];
         [[label texture] setAliasTexParameters];
         label.color = _color_pink;
         label.position = ccp(winSize.width/2, winSize.height-(label.contentSize.height/2)-9);
@@ -119,21 +130,38 @@
 
         //left
         sprite = [CCSprite spriteWithSpriteFrameName:@"LvlArrow.png"];
-        sprite.position = ccp(52, winSize.height/2);
+        sprite.position = ccp(sprite.contentSize.width, winSize.height/2);
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            sprite.scaleX = IPAD_SCALE_FACTOR_X;
+            sprite.scaleY = IPAD_SCALE_FACTOR_Y;
+            sprite.position = ccp(sprite.position.x + 30, sprite.position.y);
+        }
         [self addChild:sprite];
-
-        leftArrowRect = CGRectMake((sprite.position.x-(sprite.contentSize.width)/2), (sprite.position.y-(sprite.contentSize.height)/2), (sprite.contentSize.width+20), (sprite.contentSize.height+100));
+        leftArrowRect = CGRectMake((sprite.position.x-(sprite.contentSize.width)/2), (sprite.position.y-(sprite.contentSize.height)/2), (sprite.contentSize.width+20), (sprite.contentSize.height+300));
 
         //right
         sprite = [CCSprite spriteWithSpriteFrameName:@"LvlArrow.png"];
-        sprite.position = ccp(winSize.width-52, winSize.height/2);
+        sprite.position = ccp(winSize.width-sprite.contentSize.width, winSize.height/2);
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            sprite.scaleX = IPAD_SCALE_FACTOR_X;
+            sprite.scaleY = IPAD_SCALE_FACTOR_Y;
+            sprite.position = ccp(sprite.position.x - 30, sprite.position.y);
+        }
         sprite.flipX = true;
         [self addChild:sprite];
 
-        rightArrowRect = CGRectMake((sprite.position.x-(sprite.contentSize.width)/2), (sprite.position.y-(sprite.contentSize.height)/2), (sprite.contentSize.width+20), (sprite.contentSize.height+100));
+        rightArrowRect = CGRectMake((sprite.position.x-(sprite.contentSize.width)/2), (sprite.position.y-(sprite.contentSize.height)/2), (sprite.contentSize.width+20), (sprite.contentSize.height+300));
 
+        float scale = 1;
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            scale = IPAD_SCALE_FACTOR_Y;
+        }
         thumb = [CCSprite spriteWithSpriteFrameName:@"Philly_Thumb.png"];
-        thumb.position = ccp(winSize.width/2, winSize.height/2+20);
+        thumb.position = ccp(winSize.width/2, winSize.height/2+(20*scale));
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            thumb.scaleX = IPAD_SCALE_FACTOR_X;
+            thumb.scaleY = IPAD_SCALE_FACTOR_Y;
+        }
         [self addChild:thumb];
 
         helpLabel = [CCLabelTTF labelWithString:@"Tap to start" fontName:@"LostPet.TTF" fontSize:22.0];

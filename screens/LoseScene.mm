@@ -11,6 +11,8 @@
 #import "LevelSelectLayer.h"
 #import "TestFlight.h"
 #import "Clouds.h"
+#import "UIDefs.h"
+
 #import <GameKit/GameKit.h>
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
@@ -210,11 +212,15 @@
         spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_menus.png"];
         [self addChild:spriteSheet];
         
-        CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"Splash_BG_clean.png"];
-        sprite.anchorPoint = CGPointZero;
-        [self addChild:sprite z:-1];
+        CCSprite *background = [CCSprite spriteWithSpriteFrameName:@"Splash_BG_clean.png"];
+        background.anchorPoint = CGPointZero;
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            background.scaleX = IPAD_SCALE_FACTOR_X;
+            background.scaleY = IPAD_SCALE_FACTOR_Y;
+        }
+        [self addChild:background z:-1];
         
-        sprite = [CCSprite spriteWithSpriteFrameName:@"GameEnd_Overlayer.png"];
+        CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"GameEnd_Overlayer.png"];
         sprite.position = CGPointMake(winSize.width/2, winSize.height/2+19);
         [spriteSheet addChild:sprite];
     

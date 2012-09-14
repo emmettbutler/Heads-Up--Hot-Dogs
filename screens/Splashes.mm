@@ -31,6 +31,10 @@
         
         CCSprite *background = [CCSprite spriteWithSpriteFrameName:@"Splash_BG_clean.png"];
         background.anchorPoint = CGPointZero;
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            background.scaleX = 2.1333333;
+            background.scaleY = 2.4;
+        }
         [spriteSheet addChild:background z:-10];
         
         logoBG = [CCSprite spriteWithSpriteFrameName:@"Logo_Cloud.png"];

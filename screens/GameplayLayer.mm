@@ -14,6 +14,7 @@
 #import "PointNotify.h"
 #import "DogTouch.h"
 #import "Overlay.h"
+#import "UIDefs.h"
 
 #define DEGTORAD 0.0174532
 #define DOG_SPAWN_MINHT 240
@@ -1632,6 +1633,11 @@
         }
 
         background = [CCSprite spriteWithSpriteFrameName:level->bg];
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            background.scaleX = IPAD_SCALE_FACTOR_X;
+            background.scaleY = IPAD_SCALE_FACTOR_Y;
+            [[background texture] setAliasTexParameters];
+        }
         background.anchorPoint = CGPointZero;
         
 #ifdef DEBUG

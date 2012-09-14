@@ -12,6 +12,7 @@
 #import "TestFlight.h"
 #import "LevelSelectLayer.h"
 #import "Clouds.h"
+#import "UIDefs.h"
 
 #define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 
@@ -64,36 +65,32 @@
         label.position = ccp((label.contentSize.width/2)+6, size.height-(label.contentSize.height/2)-5);
         [self addChild:label];
 
-        CCSprite *startButton = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
-        startButton.position = ccp(110, 27);
-        [self addChild:startButton z:10];
-        label = [CCLabelTTF labelWithString:@"     Start     " fontName:@"LostPet.TTF" fontSize:22.0];
+        CCSprite *button1 = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
+        button1.position = ccp(size.width/4, button1.contentSize.height);
+        [self addChild:button1 z:10];
+        label = [CCLabelTTF labelWithString:@"Start" fontName:@"LostPet.TTF" fontSize:22.0];
         [[label texture] setAliasTexParameters];
         label.color = _color_pink;
-        CCMenuItem *button = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(switchSceneStart)];
-        CCMenu *menu = [CCMenu menuWithItems:button, nil];
-        [menu setPosition:ccp(110, 26)];
-        [self addChild:menu z:11];
-        _startRect = CGRectMake((startButton.position.x-(startButton.contentSize.width)/2), (startButton.position.y-(startButton.contentSize.height)/2), (startButton.contentSize.width+70), (startButton.contentSize.height+70));
+        label.position = ccp(button1.position.x, button1.position.y-1);
+        [self addChild:label z:11];
+        _startRect = CGRectMake((button1.position.x-(button1.contentSize.width)/2), (button1.position.y-(button1.contentSize.height)/2), (button1.contentSize.width+70), (button1.contentSize.height+70));
         
-        CCSprite *otherButton = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
-        otherButton.position = ccp(370, 27);
-        [self addChild:otherButton z:10];
-        CCLabelTTF *otherLabel = [CCLabelTTF labelWithString:@"      Options      " fontName:@"LostPet.TTF" fontSize:22.0];
+        CCSprite *button2 = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
+        button2.position = ccp(3*(size.width/4), button1.contentSize.height);
+        [self addChild:button2 z:10];
+        CCLabelTTF *otherLabel = [CCLabelTTF labelWithString:@"Options" fontName:@"LostPet.TTF" fontSize:22.0];
         [[otherLabel texture] setAliasTexParameters];
         otherLabel.color = _color_pink;
-        CCMenuItem *otherTextButton = [CCMenuItemLabel itemWithLabel:otherLabel target:self selector:@selector(switchSceneOptions)];
-        CCMenu *otherMenu = [CCMenu menuWithItems:otherTextButton, nil];
-        [otherMenu setPosition:ccp(370, 26)];
-        [self addChild:otherMenu z:11];
-        _optionsRect = CGRectMake((otherButton.position.x-(otherButton.contentSize.width)/2), (otherButton.position.y-(otherButton.contentSize.height)/2), (otherButton.contentSize.width+70), (otherButton.contentSize.height+70));
+        otherLabel.position = ccp(button2.position.x, button2.position.y-1);
+        [self addChild:otherLabel z:11];
+        _optionsRect = CGRectMake((button2.position.x-(button2.contentSize.width)/2), (button2.position.y-(button2.contentSize.height)/2), (button2.contentSize.width+70), (button2.contentSize.height+70));
         
-        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
-            background = [CCSprite spriteWithSpriteFrameName:@"Splash_BG_clean-hd.png"];
-        } else {
-            background = [CCSprite spriteWithSpriteFrameName:@"Splash_BG_clean.png"];
-        }
+        background = [CCSprite spriteWithSpriteFrameName:@"Splash_BG_clean.png"];
         background.anchorPoint = CGPointZero;
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            background.scaleX = IPAD_SCALE_FACTOR_X;
+            background.scaleY = IPAD_SCALE_FACTOR_Y;
+        }
         [self addChild:background z:-10];
         
         dogLogo = [CCSprite spriteWithSpriteFrameName:@"HotDogs.png"];

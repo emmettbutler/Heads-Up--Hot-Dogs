@@ -12,6 +12,7 @@
 #import "TestFlight.h"
 #import "LevelSelectLayer.h"
 #import "Clouds.h"
+#import "UIDefs.h"
 
 #define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 
@@ -185,7 +186,7 @@
         
         _color_pink = ccc3(255, 62, 166);
         
-        float imgScale = 1.8;
+        float imgScale = 1.8, fontSize = IPHONE_HEADER_TEXT_SIZE;
         
         [[Clouds alloc] initWithLayer:[NSValue valueWithPointer:self]];
         
@@ -193,11 +194,16 @@
         spriteSheetCommon = [CCSpriteBatchNode batchNodeWithFile:@"sprites_common.png"];
         [self addChild:spriteSheetCommon];
         
-        CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"Splash_BG_clean.png"];
-        sprite.anchorPoint = CGPointZero;
-        [self addChild:sprite z:-1];
+        CCSprite *background = [CCSprite spriteWithSpriteFrameName:@"Splash_BG_clean.png"];
+        background.anchorPoint = CGPointZero;
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            background.scaleX = IPAD_SCALE_FACTOR_X;
+            background.scaleY = IPAD_SCALE_FACTOR_Y;
+            fontSize = IPAD_HEADER_TEXT_SiZE;
+        }
+        [self addChild:background z:-1];
         
-        CCLabelTTF *label = [CCLabelTTF labelWithString:@"OPTIONS" fontName:@"LostPet.TTF" fontSize:50.0];
+        CCLabelTTF *label = [CCLabelTTF labelWithString:@"OPTIONS" fontName:@"LostPet.TTF" fontSize:fontSize];
         [[label texture] setAliasTexParameters];
         label.color = _color_pink;
         label.position = ccp(winSize.width/2, winSize.height-(label.contentSize.height/2)-5);
@@ -262,29 +268,25 @@
         [m setPosition:ccp(320, 90)];
         [self addChild:m z:11];
         
-        CCSprite *restartButton = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
-        restartButton.position = ccp(110, 27);
-        [self addChild:restartButton z:10];
-        label = [CCLabelTTF labelWithString:@"     Start     " fontName:@"LostPet.TTF" fontSize:22.0];
+        CCSprite *button1 = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
+        button1.position = ccp(winSize.width/4, button1.contentSize.height);
+        [self addChild:button1 z:10];
+        label = [CCLabelTTF labelWithString:@"Start" fontName:@"LostPet.TTF" fontSize:22.0];
         [[label texture] setAliasTexParameters];
         label.color = _color_pink;
-        CCMenuItem *button = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(switchSceneStart)];
-        CCMenu *menu = [CCMenu menuWithItems:button, nil];
-        [menu setPosition:ccp(110, 26)];
-        [self addChild:menu z:11];
-        _startRect = CGRectMake((restartButton.position.x-(restartButton.contentSize.width)/2), (restartButton.position.y-(restartButton.contentSize.height)/2), (restartButton.contentSize.width+20), (restartButton.contentSize.height+20));
+        label.position = ccp(button1.position.x, button1.position.y-1);
+        [self addChild:label z:11];
+        _startRect = CGRectMake((button1.position.x-(button1.contentSize.width)/2), (button1.position.y-(button1.contentSize.height)/2), (button1.contentSize.width+70), (button1.contentSize.height+70));
         
-        CCSprite *quitButton = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
-        quitButton.position = ccp(370, 27);
-        [self addChild:quitButton z:10];
-        label = [CCLabelTTF labelWithString:@"     Title     " fontName:@"LostPet.TTF" fontSize:22.0];
-        [[label texture] setAliasTexParameters];
-        label.color = _color_pink;
-        button = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(switchSceneTitleScreen)];
-        menu = [CCMenu menuWithItems:button, nil];
-        [menu setPosition:ccp(370, 26)];
-        [self addChild:menu z:11];
-        _titleRect = CGRectMake((quitButton.position.x-(quitButton.contentSize.width)/2), (quitButton.position.y-(quitButton.contentSize.height)/2), (quitButton.contentSize.width+20), (quitButton.contentSize.height+20));
+        CCSprite *button2 = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
+        button2.position = ccp(3*(winSize.width/4), button1.contentSize.height);
+        [self addChild:button2 z:10];
+        CCLabelTTF *otherLabel = [CCLabelTTF labelWithString:@"Title" fontName:@"LostPet.TTF" fontSize:22.0];
+        [[otherLabel texture] setAliasTexParameters];
+        otherLabel.color = _color_pink;
+        otherLabel.position = ccp(button2.position.x, button2.position.y-1);
+        [self addChild:otherLabel z:11];
+        _titleRect = CGRectMake((button2.position.x-(button2.contentSize.width)/2), (button2.position.y-(button2.contentSize.height)/2), (button2.contentSize.width+70), (button2.contentSize.height+70));
         
         [TestFlight passCheckpoint:@"Options Screen"];
         
@@ -297,8 +299,6 @@
 }
 
 - (void)switchSceneStart{
-    NSInteger introDone = [[NSUserDefaults standardUserDefaults] integerForKey:@"introDone"];
-    CCLOG(@"introDone: %d", introDone);
     [[CCDirector sharedDirector] replaceScene:[LevelSelectLayer scene]];
 }
 
