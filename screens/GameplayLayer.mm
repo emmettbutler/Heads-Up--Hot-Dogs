@@ -21,7 +21,6 @@
 #define VOMIT_VEL 666 // diego thinks this should be 666, i think 66.6 makes more sense
 #define COP_RANGE 4
 #define VOMIT_PROBABILITY 250
-#define DOG_COUNTER_HT 295
 #define OVERLAYS_STOP 2
 #define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 
@@ -143,7 +142,7 @@
     CCFiniteTimeAction *action = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO] times:1] retain];
     
     CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"new_record_1.png"];
-    sprite.position = ccp(winSize.width-sprite.contentSize.width/2, winSize.height-70);
+    sprite.position = ccp(winSize.width-sprite.contentSize.width/2, scoreLabel.position.y-sprite.contentSize.height*3);
     [spriteSheetCommon addChild:sprite];
     
     [sprite runAction:[CCSequence actions:action, [CCCallFuncN actionWithTarget:sprite selector:@selector(removeFromParentAndCleanup:)], nil]];
@@ -1681,18 +1680,19 @@
 
         //HUD objects
         CCSprite *droppedBG = [CCSprite spriteWithSpriteFrameName:@"DogHud_BG.png"];;
-        droppedBG.position = ccp(winSize.width/2-5, DOG_COUNTER_HT);
+        droppedBG.position = ccp(winSize.width/2-5, winSize.height-droppedBG.contentSize.height);
         [spriteSheetCommon addChild:droppedBG z:70];
         dogIcons = [[NSMutableArray alloc] initWithCapacity:DROPPED_MAX+1];
-        for(int i = 200; i < 200+(23*DROPPED_MAX); i += 23){
+        int hudX = droppedBG.position.x-(float)droppedBG.contentSize.width/4.5;
+        for(int i = hudX; i < hudX+(23*DROPPED_MAX); i += 23){
             CCSprite *dogIcon = [CCSprite spriteWithSpriteFrameName:@"DogHud_Dog.png"];
-            dogIcon.position = ccp(winSize.width-i, DOG_COUNTER_HT);
+            dogIcon.position = ccp(winSize.width-i, winSize.height-droppedBG.contentSize.height);
             [spriteSheetCommon addChild:dogIcon z:70];
             [dogIcons addObject:[NSValue valueWithPointer:dogIcon]];
         }
 
         CCSprite *scoreBG = [CCSprite spriteWithSpriteFrameName:@"Score_BG.png"];;
-        scoreBG.position = ccp(winSize.width-80, DOG_COUNTER_HT);
+        scoreBG.position = ccp(winSize.width-80, winSize.height-scoreBG.contentSize.height);
         [spriteSheetCommon addChild:scoreBG z:70];
 
         //labels for score
@@ -1700,7 +1700,7 @@
         scoreLabel = [CCLabelTTF labelWithString:scoreText fontName:@"LostPet.TTF" fontSize:34];
         [[scoreLabel texture] setAliasTexParameters];
         scoreLabel.color = _color_pink;
-        scoreLabel.position = ccp(winSize.width-80, DOG_COUNTER_HT-3);
+        scoreLabel.position = ccp(winSize.width-80, winSize.height-scoreBG.contentSize.height-3);
         [self addChild: scoreLabel z:72];
 
         NSInteger highScore = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"highScore%@", level->slug]];
@@ -1709,11 +1709,11 @@
         CCLabelTTF *highScoreLabel = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"HI: %d", highScore] fontName:@"LostPet.TTF" fontSize:18.0];
         highScoreLabel.color = _color_pink;
         [[highScoreLabel texture] setAliasTexParameters];
-        highScoreLabel.position = ccp(winSize.width-50, 268);
+        highScoreLabel.position = ccp(winSize.width-highScoreLabel.contentSize.width, scoreBG.position.y-highScoreLabel.contentSize.height*1.4);
         [self addChild: highScoreLabel];
 
         _pauseButton = [CCSprite spriteWithSpriteFrameName:@"Pause_Button.png"];;
-        _pauseButton.position = ccp(20, 305);
+        _pauseButton.position = ccp(_pauseButton.contentSize.width, winSize.height-_pauseButton.contentSize.height);
         [spriteSheetCommon addChild:_pauseButton z:70];
         _pauseButtonRect = CGRectMake((_pauseButton.position.x-(_pauseButton.contentSize.width)/2), (_pauseButton.position.y-(_pauseButton.contentSize.height)/2), (_pauseButton.contentSize.width+10), (_pauseButton.contentSize.height+10));
 
@@ -1784,8 +1784,6 @@
         _wallsBody->CreateFixture(&wallsBoxDef);
 
         [TestFlight passCheckpoint:@"Game Started"];
-        
-        _droppedCount = 4;
         
         //schedule callbacks for dogs, people, and game value decrements
         [self spawnCallback];

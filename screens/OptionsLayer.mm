@@ -276,7 +276,7 @@
         label.color = _color_pink;
         label.position = ccp(button1.position.x, button1.position.y-1);
         [self addChild:label z:11];
-        _startRect = CGRectMake((button1.position.x-(button1.contentSize.width)/2), (button1.position.y-(button1.contentSize.height)/2), (button1.contentSize.width+70), (button1.contentSize.height+70));
+        _startRect = CGRectMake((button1.position.x-(button1.contentSize.width*button1.scaleX)/2), (button1.position.y-(button1.contentSize.height*button1.scaleY)/2), (button1.contentSize.width*button1.scaleX+70), (button1.contentSize.height*button1.scaleY+70));
         
         CCSprite *button2 = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
         button2.position = ccp(3*(winSize.width/4), button1.contentSize.height);
@@ -286,7 +286,7 @@
         otherLabel.color = _color_pink;
         otherLabel.position = ccp(button2.position.x, button2.position.y-1);
         [self addChild:otherLabel z:11];
-        _titleRect = CGRectMake((button2.position.x-(button2.contentSize.width)/2), (button2.position.y-(button2.contentSize.height)/2), (button2.contentSize.width+70), (button2.contentSize.height+70));
+        _titleRect = CGRectMake((button2.position.x-(button2.contentSize.width*button2.scaleX)/2), (button2.position.y-(button2.contentSize.height*button2.scaleY)/2), (button2.contentSize.width*button2.scaleX+70), (button2.contentSize.height*button2.scaleY+70));
         
         [TestFlight passCheckpoint:@"Options Screen"];
         
