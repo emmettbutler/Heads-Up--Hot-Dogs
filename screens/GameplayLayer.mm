@@ -1767,6 +1767,22 @@
         fixtureUserData *fUd = new fixtureUserData();
         fUd->tag = F_GROUND;
 
+        FLOOR1_HT = 0;
+        FLOOR2_HT = .4;
+        FLOOR3_HT = .8;
+        FLOOR4_HT = 1.2;
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            FLOOR1_HT *= IPAD_SCALE_FACTOR_Y;
+            FLOOR2_HT *= IPAD_SCALE_FACTOR_Y;
+            FLOOR3_HT *= IPAD_SCALE_FACTOR_Y;
+            FLOOR4_HT *= IPAD_SCALE_FACTOR_Y;
+        }
+        floorHeights = [[[NSMutableArray alloc] init] retain];
+        [floorHeights addObject:[NSNumber numberWithFloat:FLOOR1_HT*PTM_RATIO]];
+        [floorHeights addObject:[NSNumber numberWithFloat:FLOOR2_HT*PTM_RATIO]];
+        [floorHeights addObject:[NSNumber numberWithFloat:FLOOR3_HT*PTM_RATIO]];
+        [floorHeights addObject:[NSNumber numberWithFloat:FLOOR4_HT*PTM_RATIO]];
+        
         //set up the floors
         b2BodyDef groundBodyDef;
         groundBodyDef.position.Set(0,0);
@@ -1887,7 +1903,7 @@
     [shiba updateSensorPosition];
     
     if(level->hasShiba && !(time % 500) && arc4random() % 3 == 1){
-        shiba = [[Shiba alloc] init:[NSValue valueWithPointer:spriteSheetCharacter] withWorld:[NSValue valueWithPointer:_world]];
+        shiba = [[Shiba alloc] init:[NSValue valueWithPointer:spriteSheetCharacter] withWorld:[NSValue valueWithPointer:_world] withFloorHeights:floorHeights];
     }
     
     // level-specific repetitive actions

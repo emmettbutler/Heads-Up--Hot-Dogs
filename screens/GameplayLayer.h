@@ -23,13 +23,9 @@
 #import "HotDog.h"
 #import "SteamVent.h"
 
-#define FLOOR1_HT 0
 #define FLOOR1_Z 42
-#define FLOOR2_HT .4
 #define FLOOR2_Z 32
-#define FLOOR3_HT .8
 #define FLOOR3_Z 22
-#define FLOOR4_HT 1.2
 #define FLOOR4_Z 12
 #define PTM_RATIO 32
 
@@ -53,14 +49,14 @@
     CCAction *window1CycleAction, *window2CycleAction, *window3CycleAction, *window4CycleAction;
     CCMenu *_pauseMenu;
     ccColor3B _color_pink, spcDogFlashColor, satanColor;
-    NSMutableArray *bgSprites, *floorBits, *xPositions, *dogTouches, *dogIcons;
+    NSMutableArray *bgSprites, *floorBits, *xPositions, *dogTouches, *dogIcons, *floorHeights;
     NSString *slug;
     CGSize winSize;
     CGRect _pauseButtonRect, _resumeRect, _restartRect, _levelRect;
     NSUserDefaults *standardUserDefaults;
     NSInteger _sfxOn, _introDone, _savedHighScore;
     int _points, _droppedCount, time, _curPersonMaskBits, _peopleGrumped, _dogsSaved, _dogsOnscreen, _maxDogsOnScreen, _numWorldTouches, _levelMaxDogs;
-    float spriteScale, pointNotifyScale, _wienerSpawnDelayTime, _levelSpawnInterval, _subwayForce;
+    float spriteScale, pointNotifyScale, _wienerSpawnDelayTime, _levelSpawnInterval, _subwayForce, FLOOR1_HT, FLOOR2_HT, FLOOR3_HT, FLOOR4_HT;
     BOOL _pause, _shootLock, _policeOnScreen, _muncherOnScreen, _gameOver, _hasDroppedDog, _fgIsDark, _scoreNotifyLock, _player_hasTickled;
 
     struct bodyUserData {

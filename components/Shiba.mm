@@ -11,7 +11,7 @@
 
 @implementation Shiba
 
--(Shiba *)init:(NSValue *)s withWorld:(NSValue *)w {
+-(Shiba *)init:(NSValue *)s withWorld:(NSValue *)w withFloorHeights:(NSMutableArray *)floorHeights{
     winSize = [[CCDirector sharedDirector] winSize];
     float scale = 1;
     if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
@@ -42,15 +42,10 @@
     animation = [CCAnimation animationWithFrames:animFrames delay:.1f];
     self->eatAction = [[CCAnimate alloc] initWithAnimation:animation restoreOriginalFrame:NO];;
     
-    NSMutableArray *array = [[NSMutableArray alloc] init];
-    [array addObject:[NSNumber numberWithFloat:FLOOR1_HT*PTM_RATIO]];
-    [array addObject:[NSNumber numberWithFloat:FLOOR2_HT*PTM_RATIO]];
-    [array addObject:[NSNumber numberWithFloat:FLOOR3_HT*PTM_RATIO]];
-    [array addObject:[NSNumber numberWithFloat:FLOOR4_HT*PTM_RATIO]];
-    int pick = arc4random() % [array count];
+    int pick = arc4random() % [floorHeights count];
     // using this array for both floor heights and z-indices because f*ck NSDictionary
-    NSNumber *floor = [array objectAtIndex:pick];
-    array = [[NSMutableArray alloc] init];
+    NSNumber *floor = [floorHeights objectAtIndex:pick];
+    NSMutableArray *array = [[NSMutableArray alloc] init];
     [array addObject:[NSNumber numberWithInt:FLOOR1_Z]];
     [array addObject:[NSNumber numberWithInt:FLOOR2_Z]];
     [array addObject:[NSNumber numberWithInt:FLOOR3_Z]];

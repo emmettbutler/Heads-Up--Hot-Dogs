@@ -24,7 +24,7 @@
     CGSize winSize;
 }
 
--(Shiba *)init:(NSValue *)s withWorld:(NSValue *)w;
+-(Shiba *)init:(NSValue *)s withWorld:(NSValue *)w withFloorHeights:(NSMutableArray *)floorHeights;
 -(BOOL)dogIsInHitbox:(NSValue *)d;
 -(BOOL)eatDog:(NSValue *)d;
 -(BOOL)hasEatenDog;
