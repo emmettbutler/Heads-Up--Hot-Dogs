@@ -341,22 +341,23 @@
         _quitRect = CGRectMake((button2.position.x-(button2.contentSize.width*button2.scaleX)/2), (button2.position.y-(button2.contentSize.height*button2.scaleY)/2), (button2.contentSize.width*button2.scaleX+70), (button2.contentSize.height*button2.scaleY+70));
         
         CCSprite *box = [CCSprite spriteWithSpriteFrameName:@"GameEnd_Social_Overlay.png"];
-        box.position = CGPointMake(winSize.width-box.contentSize.width/2-5, winSize.height-box.contentSize.height/2-3);
+        box.scale = scale;
+        box.position = CGPointMake(winSize.width-box.scaleX*box.contentSize.width/2-5, winSize.height-box.scaleY*box.contentSize.height/2-3);
         [self addChild:box];
         
         CCSprite *twitterButton = [CCSprite spriteWithSpriteFrameName:@"twitter.png"];
-        twitterButton.position = ccp(winSize.width-twitterButton.contentSize.width/2-12, winSize.height-twitterButton.contentSize.height/2-13);
-        twitterButton.scale = 1;
+        twitterButton.scale = scale;
+        twitterButton.position = ccp(winSize.width-(twitterButton.scaleX*twitterButton.contentSize.width*.75), winSize.height-(twitterButton.scaleY*twitterButton.contentSize.height*.75));
         [[twitterButton texture] setAliasTexParameters];
         [self addChild:twitterButton z:10];
-        _twitterRect = CGRectMake((twitterButton.position.x-(twitterButton.contentSize.width)/2), (twitterButton.position.y-(twitterButton.contentSize.height)/2), (twitterButton.contentSize.width+10), (twitterButton.contentSize.height+10));
+        _twitterRect = CGRectMake((twitterButton.position.x-(twitterButton.scaleX*twitterButton.contentSize.width)/2), (twitterButton.position.y-(twitterButton.scaleY*twitterButton.contentSize.height)/2), (twitterButton.scaleX*twitterButton.contentSize.width+10), (twitterButton.scaleY*twitterButton.contentSize.height+10));
         
         CCSprite *gcButton = [CCSprite spriteWithSpriteFrameName:@"game-center-logo-tiny.png"];
-        gcButton.position = ccp(winSize.width-gcButton.contentSize.width/2-18, winSize.height-gcButton.contentSize.height/2-twitterButton.contentSize.height-20);
-        gcButton.scale = 1;
+        gcButton.scale = scale;
+        gcButton.position = ccp(winSize.width-(gcButton.scaleX*gcButton.contentSize.width), winSize.height-(gcButton.scaleY*gcButton.contentSize.height)/2-twitterButton.scaleY*twitterButton.contentSize.height-gcButton.scaleY*gcButton.contentSize.height/2);
         [[gcButton texture] setAliasTexParameters];
         [self addChild:gcButton z:10];
-        _gcRect = CGRectMake((gcButton.position.x-(gcButton.contentSize.width)/2), (gcButton.position.y-(gcButton.contentSize.height)/2), (gcButton.contentSize.width+10), (gcButton.contentSize.height+10));
+        _gcRect = CGRectMake((gcButton.position.x-(gcButton.scaleX*gcButton.contentSize.width)/2), (gcButton.position.y-(gcButton.scaleY*gcButton.contentSize.height)/2), (gcButton.scaleX*gcButton.contentSize.width+10), (gcButton.scaleY*gcButton.contentSize.height+10));
         
         [TestFlight passCheckpoint:@"Game Over Screen"];
         
