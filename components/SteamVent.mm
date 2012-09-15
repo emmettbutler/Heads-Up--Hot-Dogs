@@ -86,7 +86,7 @@
     b2Body *b = (b2Body *)[body pointerValue];
     bodyUserData *ud = (bodyUserData*)b->GetUserData();
     if(ud->sprite1.position.y < winSize.height - 40){
-        if((ud->sprite1.position.x > self->position.x - self->mainSprite.contentSize.width*self->mainSprite.scaleX && ud->sprite1.position.x < self->position.x + self->mainSprite.contentSize.width*self->mainSprite.scaleX)){
+        if((ud->sprite1.position.x > self->position.x - (self->mainSprite.contentSize.width*self->mainSprite.scaleX/2) && ud->sprite1.position.x < self->position.x + (self->mainSprite.contentSize.width*self->mainSprite.scaleX/2))){
             if(b->GetLinearVelocity().y != b->GetLinearVelocity().y+self->force){
                 b->SetLinearVelocity(b2Vec2(b->GetLinearVelocity().x+((((float) rand() / RAND_MAX) * 2) - 1), b->GetLinearVelocity().y+self->force));
                 [ud->sprite1 stopAllActions];
