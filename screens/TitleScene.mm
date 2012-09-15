@@ -148,7 +148,7 @@
     
 	[myController.view addSubview:navBar];
     
-    CGRect webFrame = CGRectMake(0, frame.size.height, winSize.width, winSize.height-40);
+    CGRect webFrame = CGRectMake(0, frame.size.height, winSize.width, winSize.height-frame.size.height);
     UIWebView *webView = [[UIWebView alloc] initWithFrame:webFrame];
     webView.backgroundColor = [UIColor whiteColor];
     [webView setOpaque:NO];
