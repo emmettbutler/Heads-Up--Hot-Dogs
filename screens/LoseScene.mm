@@ -110,50 +110,50 @@
     
     if(characterName == @"Business"){
         s->bad = @"You should probably think about restructuring your workflow.";
-        s->ok = @"You’re on your way to the top. Nice work.";
-        s->good = @"I’ve been impressed with your efficiency lately. Best regards.";
-        s->other1 = @"Would you please stop? I’ve got an important business meeting today.";
-        s->other2 = @"Shouldn’t you be at work!?";
+        s->ok = @"You\'re on your way to the top. Nice work.";
+        s->good = @"I\'ve been impressed with your efficiency lately. Best regards.";
+        s->other1 = @"Would you please stop? I\'ve got an important business meeting today.";
+        s->other2 = @"Shouldn\'t you be at work!?";
     } else if (characterName == @"Cop"){
-        s->bad = @"Nice try, punk! You’re coming with me!";
-        s->ok = @"We can’t let this delinquent keep causing mayhem!";
+        s->bad = @"Nice try, punk! You\'re coming with me!";
+        s->ok = @"We can\'t let this delinquent keep causing mayhem!";
         s->good = @"There are too many of them! I need backup!";
         s->other1 = @"I missed %d dogs? No way!";
-        s->other2 = @"Ha! I shot down %d dogs, and I’ll get more next time!";
+        s->other2 = @"Ha! I shot down %d dogs, and I\'ll get more next time!";
     } else if (characterName == @"CrustPunk"){
         s->bad = @"Haha, that score chunks it.";
         s->ok = @"Not too bad, dude. Nice.";
         s->good = @"Cool score! Share the wealth?";
-        s->other1 = @"I’m thinking about getting a face-tat. Pentagram maybe?";
+        s->other1 = @"I\'m thinking about getting a face-tat. Pentagram maybe?";
         s->other2 = @"Hanging out with you is pretty cool. Wanna get our eyeballs pierced?";
     } else if (characterName == @"Jogger"){
         s->bad = @"Did you pull something? Keep training!";
-        s->ok = @"Haha woah. It’s hard to work out with you tossing those hot dogs around.";
-        s->good = @"Wow, you’re in amazing shape! What motivation.";
+        s->ok = @"Haha woah. It\'s hard to work out with you tossing those hot dogs around.";
+        s->good = @"Wow, you\'re in amazing shape! What motivation.";
         s->other1 = @"Exercising works out both the body and mind!!!";
-        s->other2 = @"I’m trying to keep in shape but those franks look so tasty!";
+        s->other2 = @"I\'m trying to keep in shape but those franks look so tasty!";
     } else if (characterName == @"Nudie"){
         s->bad = @"Uhm... not so good...";
         s->ok = @"Urk! Not bad...";
         s->good = @"Great job! But excuse me...";
         s->other1 = @"Please stop looking at me!";
-        s->other2 = @"Why not save a screencap? It’ll last longer.";
+        s->other2 = @"Why not save a screencap? It\'ll last longer.";
     } else if (characterName == @"Shiba"){
         s->bad = @"Barf barf barf!";
         s->ok = @"Bark!";
         s->good = @"Bark bark bark bark bark bark bark bark bark bark!";
-        s->other1 = @"C’’an y ou teacher me use wo rds";
-        s->other2 = @"C’’an y ou teacher me use wo rds";
+        s->other1 = @"C\'\'an y ou teacher me use wo rds";
+        s->other2 = @"C\'\'an y ou teacher me use wo rds";
     } else if (characterName == @"YoungProfesh"){
         s->bad = @"Keep trying! I believe in you.";
-        s->ok = @"You’re getting there! Nice work!";
-        s->good = @"Oh wow! Amazing! You’re so good at this.";
-        s->other1 = @"You look like you’re having a lot of fun. I wish I didn’t have work today.";
-        s->other2 = @"I’m on my way into the office, let’s talk later!";
+        s->ok = @"You\'re getting there! Nice work!";
+        s->good = @"Oh wow! Amazing! You\'re so good at this.";
+        s->other1 = @"You look like you\'re having a lot of fun. I wish I didn\'t have work today.";
+        s->other2 = @"I\'m on my way into the office, let\'s talk later!";
     } else if (characterName == @"Rubber"){
-        s->bad = @"You’ve gotta put in some work, dude!";
-        s->ok = @"That score’s pretty good... I’m supes hungry...";
-        s->good = @"Are you kidding me?? How’d you get so good!?";
+        s->bad = @"You\'ve gotta put in some work, dude!";
+        s->ok = @"That score\'s pretty good... I\'m supes hungry...";
+        s->good = @"Are you kidding me?? How\'d you get so good!?";
         s->other1 = @"...How could you do this to me?";
         s->other2 = @"PLEASE LEAVE ME ALONE PLEASE";
     } else if (characterName == @"Professor"){
@@ -262,6 +262,11 @@
         [self addChild:spriteSheet];
         
         float headerFontSize = IPHONE_HEADER_TEXT_SIZE;
+        float scale = 1;
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            scale = IPAD_SCALE_FACTOR_X;
+        }
+        float fontSize = scale*22.0;
         
         CCSprite *background = [CCSprite spriteWithSpriteFrameName:@"Splash_BG_clean.png"];
         background.anchorPoint = CGPointZero;
@@ -314,9 +319,10 @@
         [self addChild:summary];
         
         CCSprite *button1 = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
-        button1.position = ccp(winSize.width/4, (float)button1.contentSize.height/1.5);
+        button1.scale = scale;
+        button1.position = ccp(winSize.width/4, (float)button1.contentSize.height*button1.scaleY/1.5);
         [self addChild:button1 z:10];
-        label = [CCLabelTTF labelWithString:@"Try Again" fontName:@"LostPet.TTF" fontSize:22.0];
+        label = [CCLabelTTF labelWithString:@"Try Again" fontName:@"LostPet.TTF" fontSize:fontSize];
         [[label texture] setAliasTexParameters];
         label.color = _color_pink;
         label.position = ccp(button1.position.x, button1.position.y-1);
@@ -324,9 +330,10 @@
         _replayRect = CGRectMake((button1.position.x-(button1.contentSize.width*button1.scaleX)/2), (button1.position.y-(button1.contentSize.height*button1.scaleY)/2), (button1.contentSize.width*button1.scaleX+70), (button1.contentSize.height*button1.scaleY+70));
         
         CCSprite *button2 = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
-        button2.position = ccp(3*(winSize.width/4), (float)button1.contentSize.height/1.5);
+        button2.scale = scale;
+        button2.position = ccp(3*(winSize.width/4), (float)button1.contentSize.height*button1.scaleY/1.5);
         [self addChild:button2 z:10];
-        CCLabelTTF *otherLabel = [CCLabelTTF labelWithString:@"Levels" fontName:@"LostPet.TTF" fontSize:22.0];
+        CCLabelTTF *otherLabel = [CCLabelTTF labelWithString:@"Levels" fontName:@"LostPet.TTF" fontSize:fontSize];
         [[otherLabel texture] setAliasTexParameters];
         otherLabel.color = _color_pink;
         otherLabel.position = ccp(button2.position.x, button2.position.y-1);
@@ -374,7 +381,7 @@
         [trophy setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:res->trophy]];
         [trophy setVisible:true];
         
-        CCLabelTTF *speech = [CCLabelTTF labelWithString:res->f->speechBubble dimensions:CGSizeMake(((bubble.contentSize.width*bubble.scaleX)-80), ([res->f->speechBubble length]/25)*30.0*elmtScale) alignment:UITextAlignmentCenter fontName:@"LostPet.TTF" fontSize:15.0*elmtScale];
+        CCLabelTTF *speech = [CCLabelTTF labelWithString:res->f->speechBubble dimensions:CGSizeMake(((bubble.contentSize.width*bubble.scaleX)-80), (([res->f->speechBubble length]/25 > 1) ? [res->f->speechBubble length]/25 : 1)*30.0*elmtScale) alignment:UITextAlignmentCenter fontName:@"LostPet.TTF" fontSize:15.0*elmtScale];
         speech.color = _color_pink;
         speech.position = CGPointMake(bubble.position.x-3, bubble.position.y);
         [[speech texture] setAliasTexParameters];

@@ -67,10 +67,17 @@
         label.position = ccp((label.contentSize.width/2)+6, winSize.height-(label.contentSize.height/2)-5);
         [self addChild:label];
 
+        float scale = 1;
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            scale = IPAD_SCALE_FACTOR_X;
+        }
+        float fontSize = 22.0*scale;
+        
         CCSprite *button1 = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
-        button1.position = ccp(winSize.width/4, button1.contentSize.height);
+        button1.scale = scale;
+        button1.position = ccp(winSize.width/4, button1.contentSize.height*button1.scaleY);
         [self addChild:button1 z:10];
-        label = [CCLabelTTF labelWithString:@"Start" fontName:@"LostPet.TTF" fontSize:22.0];
+        label = [CCLabelTTF labelWithString:@"Start" fontName:@"LostPet.TTF" fontSize:fontSize];
         [[label texture] setAliasTexParameters];
         label.color = _color_pink;
         label.position = ccp(button1.position.x, button1.position.y-1);
@@ -78,9 +85,10 @@
         _startRect = CGRectMake((button1.position.x-(button1.contentSize.width*button1.scaleX)/2), (button1.position.y-(button1.contentSize.height*button1.scaleY)/2), (button1.contentSize.width*button1.scaleX+70), (button1.contentSize.height*button1.scaleY+70));
         
         CCSprite *button2 = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
-        button2.position = ccp(3*(winSize.width/4), button1.contentSize.height);
+        button2.scale = scale;
+        button2.position = ccp(3*(winSize.width/4), button1.contentSize.height*button1.scaleY);
         [self addChild:button2 z:10];
-        CCLabelTTF *otherLabel = [CCLabelTTF labelWithString:@"Options" fontName:@"LostPet.TTF" fontSize:22.0];
+        CCLabelTTF *otherLabel = [CCLabelTTF labelWithString:@"Options" fontName:@"LostPet.TTF" fontSize:fontSize];
         [[otherLabel texture] setAliasTexParameters];
         otherLabel.color = _color_pink;
         otherLabel.position = ccp(button2.position.x, button2.position.y-1);

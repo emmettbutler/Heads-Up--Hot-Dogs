@@ -15,6 +15,7 @@
     CGRect _siteRect, _creditsRect, _tutRect, _scoresRect, _sfxRect, _titleRect, _startRect;
     BOOL credits, scores;
     NSInteger sfxOn;
+    float scale;
     CCLayerColor *creditsLayer, *scoresLayer;
     CCLabelTTF *sfxLabel;
 }
