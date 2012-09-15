@@ -87,7 +87,7 @@
 	return scene;
 }
 
--(face *)buildFace:(NSString *)characterName{
+-(face *)buildFace:(NSString *)characterName withGrade:(NSNumber *)grade{
     NSMutableArray *frames;
     face *f;
     
@@ -100,55 +100,103 @@
     }
     CCAnimation *anim = [CCAnimation animationWithFrames:frames delay:.2f];
     f->faceAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO]] retain];
-    f->speechBubble = [self makeComment];
+    f->speechBubble = [self makeComment:characterName withGrade:grade];
     return f;
 }
 
--(NSString *)makeComment{
-    int metricChoice = arc4random() % 2;
-    NSString *firstHalf, *secondHalf;
+-(NSString *)makeComment:(NSString *)characterName withGrade:(NSNumber *)grade{
+    NSString *comment;
+    characterSpeech *s = new characterSpeech();
     
-    switch (metricChoice){
-        case 1:
-            firstHalf = [NSString stringWithFormat:@"You saved %d hot dogs!", _dogsSaved];
-            // probably, this should be semi-random. Add certain phrases on the condition of the relative size of the metric
-            if(_dogsSaved > 150){
-                secondHalf = @"How is that even possible!?";
-            } else {
-                secondHalf = @"Pretty good, but keep trying!";
-            }
-            break;
-        default:
-            firstHalf = [NSString stringWithFormat:@"You topped %d noggins!", _peopleGrumped];
-            if(_peopleGrumped > 150){
-                secondHalf = @"You're a legend!";
-            } else {
-                secondHalf = @"So many dogless domes...";
-            }
-            break;
+    if(characterName == @"Business"){
+        s->bad = @"You should probably think about restructuring your workflow.";
+        s->ok = @"You’re on your way to the top. Nice work.";
+        s->good = @"I’ve been impressed with your efficiency lately. Best regards.";
+        s->other1 = @"Would you please stop? I’ve got an important business meeting today.";
+        s->other2 = @"Shouldn’t you be at work!?";
+    } else if (characterName == @"Cop"){
+        s->bad = @"Nice try, punk! You’re coming with me!";
+        s->ok = @"We can’t let this delinquent keep causing mayhem!";
+        s->good = @"There are too many of them! I need backup!";
+        s->other1 = @"I missed %d dogs? No way!";
+        s->other2 = @"Ha! I shot down %d dogs, and I’ll get more next time!";
+    } else if (characterName == @"CrustPunk"){
+        s->bad = @"Haha, that score chunks it.";
+        s->ok = @"Not too bad, dude. Nice.";
+        s->good = @"Cool score! Share the wealth?";
+        s->other1 = @"I’m thinking about getting a face-tat. Pentagram maybe?";
+        s->other2 = @"Hanging out with you is pretty cool. Wanna get our eyeballs pierced?";
+    } else if (characterName == @"Jogger"){
+        s->bad = @"Did you pull something? Keep training!";
+        s->ok = @"Haha woah. It’s hard to work out with you tossing those hot dogs around.";
+        s->good = @"Wow, you’re in amazing shape! What motivation.";
+        s->other1 = @"Exercising works out both the body and mind!!!";
+        s->other2 = @"I’m trying to keep in shape but those franks look so tasty!";
+    } else if (characterName == @"Nudie"){
+        s->bad = @"Uhm... not so good...";
+        s->ok = @"Urk! Not bad...";
+        s->good = @"Great job! But excuse me...";
+        s->other1 = @"Please stop looking at me!";
+        s->other2 = @"Why not save a screencap? It’ll last longer.";
+    } else if (characterName == @"Shiba"){
+        s->bad = @"Barf barf barf!";
+        s->ok = @"Bark!";
+        s->good = @"Bark bark bark bark bark bark bark bark bark bark!";
+        s->other1 = @"C’’an y ou teacher me use wo rds";
+        s->other2 = @"C’’an y ou teacher me use wo rds";
+    } else if (characterName == @"YoungProfesh"){
+        s->bad = @"Keep trying! I believe in you.";
+        s->ok = @"You’re getting there! Nice work!";
+        s->good = @"Oh wow! Amazing! You’re so good at this.";
+        s->other1 = @"You look like you’re having a lot of fun. I wish I didn’t have work today.";
+        s->other2 = @"I’m on my way into the office, let’s talk later!";
+    } else if (characterName == @"Rubber"){
+        s->bad = @"You’ve gotta put in some work, dude!";
+        s->ok = @"That score’s pretty good... I’m supes hungry...";
+        s->good = @"Are you kidding me?? How’d you get so good!?";
+        s->other1 = @"...How could you do this to me?";
+        s->other2 = @"PLEASE LEAVE ME ALONE PLEASE";
+    } else if (characterName == @"Professor"){
+        s->bad = @"Such a low grade. Study harder.";
+        s->ok = @"Interesting score, but there are a few points you could use to elaborate.";
+        s->good = @"Such a model of excellence. The ideal pupil!";
+        s->other1 = @"Are you going anywhere for summer vacation? I hear %@ is nice.";
+        s->other2 = @"The history of the hot dog is unclear, but fascinating nonetheless.";
     }
-
-    return [NSString stringWithFormat:@"%@ %@", firstHalf, secondHalf];
+    
+    if(arc4random() % 4 == 1){
+        comment = s->other2;
+        if(arc4random() % 2 == 1)
+            comment = s->other1;
+    } else {
+        if(grade.floatValue > .7){
+            comment = s->good;
+        } else if(grade.floatValue > 0){
+            comment = s->ok;
+        } else {
+            comment = s->bad;
+        }
+    }
+    return comment;
 }
 
--(NSMutableArray *)buildFaces{
+-(NSMutableArray *)buildFaces:(NSNumber *)grade{
     NSMutableArray *faces = [[NSMutableArray alloc] init];
     
-    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Business"]]];
-    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Cop"]]];
-    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"CrustPunk"]]];
-    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Jogger"]]];
-    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Nudie"]]];
-    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Rubber"]]];
-    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Shiba"]]];
-    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"YoungProfesh"]]];
+    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Business" withGrade:grade]]];
+    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Cop" withGrade:grade]]];
+    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"CrustPunk" withGrade:grade]]];
+    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Jogger" withGrade:grade]]];
+    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Nudie" withGrade:grade]]];
+    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Rubber" withGrade:grade]]];
+    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Shiba" withGrade:grade]]];
+    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"YoungProfesh" withGrade:grade]]];
+    //[faces addObject:[NSValue valueWithPointer:[self buildFace:@"Professor" withGrade:grade]]];
     
     return faces;
 }
 
 -(endResult *)buildResult{
-    NSMutableArray *faces = [self buildFaces];
-    
     endResult *res = new endResult();
     
     // value whose magnitude represents the distance from the unlock threshold
@@ -187,6 +235,7 @@
         res->dogName = @"CARDBOARD DOG";
     }
     
+    NSMutableArray *faces = [self buildFaces:grade];
     res->head = [CCSprite spriteWithSpriteFrameName:@"GameEnd_Business_1.png"];
     res->f = (face *)[[faces objectAtIndex:arc4random() % [faces count]] pointerValue];
     
@@ -325,7 +374,7 @@
         [trophy setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:res->trophy]];
         [trophy setVisible:true];
         
-        CCLabelTTF *speech = [CCLabelTTF labelWithString:res->f->speechBubble dimensions:CGSizeMake(((bubble.contentSize.width*bubble.scaleX)-80), 60*elmtScale) alignment:UITextAlignmentCenter fontName:@"LostPet.TTF" fontSize:20.0*elmtScale];
+        CCLabelTTF *speech = [CCLabelTTF labelWithString:res->f->speechBubble dimensions:CGSizeMake(((bubble.contentSize.width*bubble.scaleX)-80), ([res->f->speechBubble length]/25)*30.0*elmtScale) alignment:UITextAlignmentCenter fontName:@"LostPet.TTF" fontSize:15.0*elmtScale];
         speech.color = _color_pink;
         speech.position = CGPointMake(bubble.position.x-3, bubble.position.y);
         [[speech texture] setAliasTexParameters];

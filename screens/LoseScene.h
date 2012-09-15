@@ -27,6 +27,10 @@
         face *f;
     };
     
+    struct characterSpeech{
+        NSString *good, *ok, *bad, *other1, *other2;
+    };
+    
     int _score, _timePlayed, _peopleGrumped, _dogsSaved, _lock;
     CCLabelTTF *scoreLine, *timeLine, *dogsLine, *peopleLine, *highScoreLine;
     CCLabelTTF *scoreNotify, *timeNotify, *summary;
