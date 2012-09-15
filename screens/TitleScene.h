@@ -15,10 +15,12 @@
     CCAnimation *titleAnim;
     CCAction *titleAnimAction;
     CCSprite *background, *cloud1, *cloud2, *cloud3, *dogLogo, *swooshLogo;
-    CGRect screen, _startRect, _optionsRect;
+    CGRect screen, _startRect, _optionsRect, _moreGamesRect;
     CGPoint dogLogoAnchor, swooshLogoAnchor;
+    CGSize winSize;
     ccColor3B _color_pink;
     NSUserDefaults *standardUserDefaults;
+    UIViewController *myController;
     float introSoundLen;
     ALuint soundId;
     CDSoundEngine *engine;
