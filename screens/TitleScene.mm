@@ -13,6 +13,8 @@
 #import "LevelSelectLayer.h"
 #import "Clouds.h"
 #import "UIDefs.h"
+#import "ASNewsFeed.h"
+#import "AppDelegate.h"
 
 #define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 
@@ -87,6 +89,7 @@
         
         // TODO - stub for eventual placement of ASG more games button
         _moreGamesRect = CGRectMake(0, 0, 0, 0);
+        _newsRect = CGRectMake(0, 0, 0, 0);
         
         background = [CCSprite spriteWithSpriteFrameName:@"Splash_BG_clean.png"];
         background.anchorPoint = CGPointZero;
@@ -159,17 +162,27 @@
     [myController.view removeFromSuperview];
 }
 
+-(void)showASGNewsView{
+    AppDelegate *ad = [[UIApplication sharedApplication] delegate];
+    UIViewController *rootViewController = (UIViewController *)ad.getRootViewController;
+    [[ASNewsFeed sharedNewsFeedManager] initializeNewsFeedVC];
+    UIViewController *newsController = [[ASNewsFeed sharedNewsFeedManager] getNewsFeedVC];
+    [rootViewController presentModalViewController:newsController animated:YES];
+}
+
 - (void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     UITouch *myTouch = [touches anyObject];
     CGPoint location = [myTouch locationInView:[myTouch view]];
     location = [[CCDirector sharedDirector] convertToGL:location];
-    
+     
     if(CGRectContainsPoint(_startRect, location)){
         [self switchSceneStart];
     } else if(CGRectContainsPoint(_optionsRect, location)){
         [self switchSceneOptions];
     } else if(CGRectContainsPoint(_moreGamesRect, location)){
         [self showASGMoreGamesView];
+    } else if(CGRectContainsPoint(_newsRect, location)){
+        [self showASGNewsView];
     }
 }
 

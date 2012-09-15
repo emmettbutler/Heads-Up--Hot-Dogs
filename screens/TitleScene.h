@@ -15,7 +15,7 @@
     CCAnimation *titleAnim;
     CCAction *titleAnimAction;
     CCSprite *background, *cloud1, *cloud2, *cloud3, *dogLogo, *swooshLogo;
-    CGRect screen, _startRect, _optionsRect, _moreGamesRect;
+    CGRect screen, _startRect, _optionsRect, _moreGamesRect, _newsRect;
     CGPoint dogLogoAnchor, swooshLogoAnchor;
     CGSize winSize;
     ccColor3B _color_pink;

@@ -209,6 +209,10 @@
 	[[CCDirector sharedDirector] setNextDeltaTimeZero:YES];
 }
 
+-(RootViewController *)getRootViewController{
+    return self->viewController;
+}
+
 - (void)dealloc {
 	[[CCDirector sharedDirector] end];
 	[window release];

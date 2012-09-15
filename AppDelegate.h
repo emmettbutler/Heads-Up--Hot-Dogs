@@ -17,6 +17,8 @@
     NSUserDefaults *standardUserDefaults;
 }
 
+-(RootViewController *)getRootViewController;
+
 @property (nonatomic, retain) UIWindow *window;
 
 @end
