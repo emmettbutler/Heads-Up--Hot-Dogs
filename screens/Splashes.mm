@@ -7,6 +7,7 @@
 //
 
 #import "Splashes.h"
+#import "UIDefs.h"
 
 
 @implementation Splashes
@@ -23,6 +24,7 @@
     if ((self = [super init])){
         NSLog(@"Splash screens start");
         
+        float scaleX = 1, scaleY = 1;
         winSize = [CCDirector sharedDirector].winSize;
         spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_menus.png"];
         [self addChild:spriteSheet];
@@ -32,18 +34,22 @@
         CCSprite *background = [CCSprite spriteWithSpriteFrameName:@"Splash_BG_clean.png"];
         background.anchorPoint = CGPointZero;
         if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
-            background.scaleX = 2.1333333;
-            background.scaleY = 2.4;
+            background.scaleX = IPAD_SCALE_FACTOR_X;
+            background.scaleY = IPAD_SCALE_FACTOR_Y;
+            scaleX = IPAD_SCALE_FACTOR_X;
+            scaleY = IPAD_SCALE_FACTOR_Y;
         }
         [spriteSheet addChild:background z:-10];
         
         logoBG = [CCSprite spriteWithSpriteFrameName:@"Logo_Cloud.png"];
         cloudAnchor = CGPointMake(winSize.width/2+4, winSize.height/2+8);
+        logoBG.scale = scaleX*.7;
         logoBG.position = ccp(cloudAnchor.x, cloudAnchor.y);
         [spriteSheet addChild:logoBG];
         
         mainLogo = [CCSprite spriteWithSpriteFrameName:@"ASg_Logo.png"];
         logoAnchor = CGPointMake(winSize.width/2+16, winSize.height/2-15);
+        mainLogo.scale = scaleX*.7;
         mainLogo.position = ccp(logoAnchor.x, logoAnchor.y);
         [spriteSheet addChild:mainLogo];
         
