@@ -371,17 +371,9 @@
         }
         
         tweets = [[NSMutableArray alloc] init];
-        [tweets addObject:[NSString stringWithFormat:@"I just scored %d points in %@ in @HeadsUpHotDogs!", _score, level->name]];
-        [tweets addObject:[NSString stringWithFormat:@"I just dropped hot dogs on %d people's heads in @HeadsUpHotDogs!", _peopleGrumped]];
-        [tweets addObject:[NSString stringWithFormat:@"I just saved %d hot dogs from destruction in %@ in @HeadsUpHotDogs!", _dogsSaved, level->name]];
-        [tweets addObject:[NSString stringWithFormat:@"I just saved %d inches of meat from destruction in @HeadsUpHotDogs!", _dogsSaved * (10 + (arc4random() % 3))]];
-        [tweets addObject:@"I am the new savior of franks in @HeadsUpHotDogs!"];
-        [tweets addObject:[NSString stringWithFormat:@"I just earned the %@ in %@ in @HeadsUpHotDogs!", res->dogName, level->name]];
-        
-        NSString *highScoreString = [NSString stringWithFormat:@"I just set a new high score in @HeadsUpHotDogs beta: %d points!", _score];
-        
-        if(_setNewHighScore)
-            [tweets addObject:highScoreString];
+        [tweets addObject:[NSString stringWithFormat:@"I just scored %d points in %@! #HeadsUpHotDogs", _score, level->name]];
+        [tweets addObject:[NSString stringWithFormat:@"I just saved %d inches of sweet sweet frankmeat! #HeadsUpHotDogs", _dogsSaved * (10 + (arc4random() % 3))]];
+        [tweets addObject:[NSString stringWithFormat:@"I just earned a %@ trophy in %@! #HeadsUpHotDogs", res->dogName, level->name]];
         
         if(_score > level->unlockNextThreshold){
             [tweets addObject:level->next->unlockTweet];
