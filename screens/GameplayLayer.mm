@@ -649,12 +649,17 @@
     b2Body *b = (b2Body *)[body pointerValue];
     bodyUserData *ud = (bodyUserData *)b->GetUserData();
     
+    float scale = 1;
+    if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+        scale = IPAD_SCALE_FACTOR_X*.75;
+    }
+    
     [ud->angryFace setVisible:NO];
     [ud->sprite2 setVisible:YES];
     ud->_busman_isVomiting = true;
     ud->stopTimeDelta = 250;
-    ud->heightOffset2 = 2.3;
-    ud->widthOffset = -.4;
+    ud->heightOffset2 = 2.3*scale;
+    ud->widthOffset = -.4*scale;
     if(ud->sprite1.flipX){
         ud->widthOffset *= -1;
     }
@@ -711,10 +716,15 @@
     
     CCSequence *seq = [CCSequence actions:ud->postStopAction, [CCCallFuncND actionWithTarget:self selector:@selector(setHeadNoCollide:data:) data:[[NSValue valueWithPointer:b] retain]], (CCFiniteTimeAction *)ud->altAction2, nil];
     
+    float scale = 1;
+    if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+        scale = IPAD_SCALE_FACTOR_X*.75;
+    }
+    
     // TODO - this is jumpy on ipad
     [ud->sprite2 setVisible:false];
     [ud->angryFace setVisible:false];
-    ud->lowerYOffset = 40*spriteScaleX*.75;
+    ud->lowerYOffset = 40*scale;
     if(ud->sprite1.flipX)
         ud->rippleXOffset = -4.2/PTM_RATIO;
     else
@@ -726,6 +736,11 @@
 }
 
 -(void)movePerson:(NSValue *)body{
+    float scale = 1;
+    if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+        scale = 3*(IPAD_SCALE_FACTOR_X/4);
+    }
+    
     b2Body *b = (b2Body *)[body pointerValue];
     bodyUserData *ud = (bodyUserData *)b->GetUserData();
     // move person across screen at the appropriate speed
@@ -780,7 +795,7 @@
                     }
                 }
                 if(ud->_busman_willVomit){
-                    ud->heightOffset2 = 2.9;
+                    ud->heightOffset2 = 2.9*scale;
                     ud->widthOffset = 0;
                 }
             } else {
@@ -1988,6 +2003,11 @@
             [bgc->sprite runAction:window4CycleAction];
         }
     } else if(level->slug == @"china"){
+        for(NSValue *v in bgSprites){
+            CCSprite *sprite = (CCSprite *)[v pointerValue];
+            if(sprite.tag && sprite.tag == 1)
+                [sprite setOpacity:255.00 * cosf(.01 * time)];
+        }
         if(!(time % 250) && arc4random() % 2  == 1){
             firecracker = [[Firecracker alloc] init:[NSValue valueWithPointer:_world] withSpritesheet:[NSValue valueWithPointer:spriteSheetCommon]];
             [firecracker runSequence];

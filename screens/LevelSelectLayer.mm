@@ -617,11 +617,27 @@
         }
         lp->specialDog = dd;
         
+        CGSize winSize = [CCDirector sharedDirector].winSize;
+        float scaleX = 1, scaleY = 1;
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            scaleX = IPAD_SCALE_FACTOR_X;
+            scaleY = IPAD_SCALE_FACTOR_Y;
+        }
+        
         lp->bgComponents = [[NSMutableArray alloc] init];
         bgComponent *bgc = new bgComponent();
-        bgc->sprite = [CCSprite spriteWithSpriteFrameName:@"China_Lanterns.png"];
-        bgc->sprite.position = CGPointMake(238, 262);
+        bgc->sprite = [CCSprite spriteWithSpriteFrameName:@"China_LightOverlay.png"];
+        bgc->sprite.scaleX = scaleX;
+        bgc->sprite.scaleY = scaleY;
+        bgc->sprite.position = CGPointMake(winSize.width*.652, winSize.height*.535);
         bgc->sprite.tag = 1;
+        [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
+        bgc = new bgComponent();
+        bgc->sprite = [CCSprite spriteWithSpriteFrameName:@"China_Lanterns.png"];
+        bgc->sprite.scaleX = scaleX;
+        bgc->sprite.scaleY = scaleY;
+        bgc->sprite.position = CGPointMake(winSize.width*.652, winSize.height*.62);
+        bgc->sprite.tag = 2;
         [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
     }
     [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_china.plist"];
