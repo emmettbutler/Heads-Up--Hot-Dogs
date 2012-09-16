@@ -24,7 +24,7 @@
     if ((self = [super init])){
         NSLog(@"Splash screens start");
         
-        float scaleX = 1, scaleY = 1;
+        scaleX = 1, scaleY = 1;
         winSize = [CCDirector sharedDirector].winSize;
         spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_menus.png"];
         [self addChild:spriteSheet];
@@ -61,9 +61,25 @@
 -(void)tick:(ccTime)dt {
     time++;
     
-    if(time == 150){
+    if(time == 90){
         [mainLogo runAction:[CCFadeOut actionWithDuration:1]];
         [logoBG runAction:[CCFadeOut actionWithDuration:1]];
+        [self runAction:[CCSequence actions:[CCDelayTime actionWithDuration:1], nil]];
+        
+        namesBG = [CCSprite spriteWithSpriteFrameName:@"Logo_Cloud.png"];
+        namesBG.scale = scaleX;
+        namesBG.position = ccp(cloudAnchor.x, cloudAnchor.y);
+        [spriteSheet addChild:namesBG];
+        [namesBG runAction:[CCFadeIn actionWithDuration:1.8]];
+        
+        namesSprite = [CCSprite spriteWithSpriteFrameName:@"ASg_Logo.png"];
+        namesSprite.scale = scaleX;
+        namesSprite.position = ccp(logoAnchor.x, logoAnchor.y);
+        [spriteSheet addChild:namesSprite];
+        [namesSprite runAction:[CCFadeIn actionWithDuration:1.8]];
+    } else if(time == 180){
+        [namesSprite runAction:[CCFadeOut actionWithDuration:1]];
+        [namesBG runAction:[CCFadeOut actionWithDuration:1]];
         [self runAction:[CCSequence actions:[CCDelayTime actionWithDuration:1], [CCCallFunc actionWithTarget:self selector:@selector(switchSceneTitle)], nil]];
     }
 
