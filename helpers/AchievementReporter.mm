@@ -20,7 +20,9 @@
                 NSLog(@"Error reporting achievement to game center: %@", identifier);
                 // if showsCompletionHandler doesn't end up working, use this instead (however, in prod, this should be commented)
                 // this might lead to confusion, but it seems like an ok fallback?
-                [GKNotificationBanner showBannerWithTitle:@"Achievement unlocked:" message:achievement.identifier completionHandler:^(void){return;}];
+                if(achievement.percentComplete >= 100){
+                    [GKNotificationBanner showBannerWithTitle:@"Achievement unlocked:" message:achievement.identifier completionHandler:^(void){return;}];
+                }
             } else {
                 NSLog(@"Reported achievement to game center: %@", identifier);
             }
