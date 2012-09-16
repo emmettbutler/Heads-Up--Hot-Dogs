@@ -189,7 +189,7 @@
         unlockAllLevelsLabel.color = _color_pink;
         CCMenuItem *item = [CCMenuItemLabel itemWithLabel:unlockAllLevelsLabel target:self selector:@selector(unlockAllLevels)];
         CCMenu *menu = [CCMenu menuWithItems:item, nil];
-        menu.position = ccp(winSize.width-unlockAllLevelsLabel.contentSize.width/2, winSize.height-unlockAllLevelsLabel.contentSize.height);
+        menu.position = ccp(winSize.width-unlockAllLevelsLabel.contentSize.width/2, unlockAllLevelsLabel.contentSize.height);
         [self addChild:menu];
 #endif
 
