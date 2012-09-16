@@ -578,7 +578,7 @@
     // per-level dog movement changes
     if(level->slug == @"chicago" && !(time % 19) && b->GetPosition().y > FLOOR4_HT+.5){
         if(ud->sprite1.position.x > 40 && ud->sprite1.position.x < winSize.width - 40){
-            if(![ud->shotSeq isDone]){
+            if(![ud->shotSeq isDone] && abs(windForce.x) > .8){
                 if(b->GetLinearVelocity().x != b->GetLinearVelocity().x+windForce.x)
                     b->SetLinearVelocity(b2Vec2(b->GetLinearVelocity().x+windForce.x, b->GetLinearVelocity().y));
             }
@@ -2078,7 +2078,7 @@
             [firecracker runSequence];
         }
     } else if(level->slug == @"chicago" && !(time % 19)){
-        float maxWind = 1.7;
+        float maxWind = 1.9;
         float windX = maxWind * cosf(.001 * time);
         windForce = b2Vec2(windX, .2);
         CCSprite *flag1 = (CCSprite *)[[bgSprites objectAtIndex:0] pointerValue];

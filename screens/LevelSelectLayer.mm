@@ -590,30 +590,30 @@
         lp->frictionMul = .95;
         
         spcDogData *dd = new spcDogData();
-        dd->riseSprite = @"Bagel_Rise.png";
-        dd->fallSprite = @"Bagel_Fall.png";
-        dd->mainSprite = @"Bagel.png";
-        dd->grabSprite = @"Bagel_Grab.png";
+        dd->riseSprite = @"Baozi_Rise.png";
+        dd->fallSprite = @"Baozi_Fall.png";
+        dd->mainSprite = @"Baozi.png";
+        dd->grabSprite = @"Baozi_Grab.png";
         dd->deathAnimFrames = [[NSMutableArray alloc] init];
         dd->shotAnimFrames = [[NSMutableArray alloc] init];
         dd->flashAnimFrames = [[NSMutableArray alloc] init];
         for(int i = 0; i < 1; i++){
             [dd->flashAnimFrames addObject:
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-              [NSString stringWithFormat:@"Bagel_Die_1.png"]]];
+              [NSString stringWithFormat:@"Baozi_Die_1.png"]]];
             [dd->flashAnimFrames addObject:
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-              [NSString stringWithFormat:@"Bagel_Die_2.png"]]];
+              [NSString stringWithFormat:@"Baozi.png"]]];
         }
-        for(int i = 1; i <= 8; i++){
+        for(int i = 1; i <= 9; i++){
             [dd->deathAnimFrames addObject:
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-              [NSString stringWithFormat:@"Bagel_Die_%d.png", i]]];
+              [NSString stringWithFormat:@"Baozi_Die_%d.png", i]]];
         }
         for(int i = 1; i <= 6; i++){
             [dd->shotAnimFrames addObject:
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-              [NSString stringWithFormat:@"Bagel_Shot_%d.png", i]]];
+              [NSString stringWithFormat:@"Baozi_Shoot_%d.png", i]]];
         }
         lp->specialDog = dd;
         
@@ -636,7 +636,7 @@
         bgc->sprite = [CCSprite spriteWithSpriteFrameName:@"China_Lanterns.png"];
         bgc->sprite.scaleX = scaleX;
         bgc->sprite.scaleY = scaleY;
-        bgc->sprite.position = CGPointMake(winSize.width*.652, winSize.height*.62);
+        bgc->sprite.position = CGPointMake(winSize.width*.652, winSize.height*.82);
         bgc->sprite.tag = 2;
         [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
     }
@@ -678,30 +678,30 @@
         }
         
         spcDogData *dd = new spcDogData();
-        dd->riseSprite = @"Bagel_Rise.png";
-        dd->fallSprite = @"Bagel_Fall.png";
-        dd->mainSprite = @"Bagel.png";
-        dd->grabSprite = @"Bagel_Grab.png";
+        dd->riseSprite = @"YakisobaPan_Rise.png";
+        dd->fallSprite = @"YakisobaPan_Fall.png";
+        dd->mainSprite = @"YakisobaPan.png";
+        dd->grabSprite = @"YakisobaPan_Grab.png";
         dd->deathAnimFrames = [[NSMutableArray alloc] init];
         dd->shotAnimFrames = [[NSMutableArray alloc] init];
         dd->flashAnimFrames = [[NSMutableArray alloc] init];
         for(int i = 0; i < 1; i++){
             [dd->flashAnimFrames addObject:
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-              [NSString stringWithFormat:@"Bagel_Die_1.png"]]];
+              [NSString stringWithFormat:@"YakisobaPan_Die_1.png"]]];
             [dd->flashAnimFrames addObject:
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-              [NSString stringWithFormat:@"Bagel_Die_2.png"]]];
+              [NSString stringWithFormat:@"YakisobaPan_Die_2.png"]]];
         }
-        for(int i = 1; i <= 8; i++){
+        for(int i = 1; i <= 11; i++){
             [dd->deathAnimFrames addObject:
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-              [NSString stringWithFormat:@"Bagel_Die_%d.png", i]]];
+              [NSString stringWithFormat:@"YakisobaPan_Die_%d.png", i]]];
         }
-        for(int i = 1; i <= 6; i++){
+        for(int i = 1; i <= 10; i++){
             [dd->shotAnimFrames addObject:
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-              [NSString stringWithFormat:@"Bagel_Shot_%d.png", i]]];
+              [NSString stringWithFormat:@"YakisobaPan_Shoot_%d.png", i]]];
         }
         lp->specialDog = dd;
         [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_japan.plist"];
@@ -730,8 +730,8 @@
         lp->bgm = @"gameplay 1.mp3";
         lp->gravity = -27.0f;
         lp->spritesheet = @"sprites_chicago";
-        lp->personSpeedMul = .85;
-        lp->restitutionMul = 1.3;
+        lp->personSpeedMul = 1;
+        lp->restitutionMul = 1.1;
         lp->frictionMul = 1.1;
         lp->maxDogs = 5;
         lp->hasShiba = true;
@@ -765,10 +765,19 @@
         
         lp->specialDog = dd;
         
+        CGSize winSize = [[CCDirector sharedDirector] winSize];
+        float scaleX = 1, scaleY = 1;
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            scaleX = IPAD_SCALE_FACTOR_X;
+            scaleY = IPAD_SCALE_FACTOR_Y;
+        }
+        
         lp->bgComponents = [[NSMutableArray alloc] init];
         bgComponent *bgc = new bgComponent();
         bgc->sprite = [[CCSprite spriteWithSpriteFrameName:@"Flag_Flap_1.png"] retain];
-        bgc->sprite.position = CGPointMake([CCDirector sharedDirector].winSize.width-17, 245);
+        bgc->sprite.scaleX = scaleX;
+        bgc->sprite.scaleY = scaleY;
+        bgc->sprite.position = CGPointMake(winSize.width*.96, winSize.height*.765);
         bgc->anim1 = [[NSMutableArray alloc] init];
         for(int i = 1; i <= 4; i++){
             [bgc->anim1 addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -782,7 +791,9 @@
         [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
         bgc = new bgComponent();
         bgc->sprite = [[CCSprite spriteWithSpriteFrameName:@"Flag_Flap_1.png"] retain];
-        bgc->sprite.position = CGPointMake(19, 267);
+        bgc->sprite.scaleX = scaleX;
+        bgc->sprite.scaleY = scaleY;
+        bgc->sprite.position = CGPointMake(winSize.width*.039, winSize.height*.834);
         bgc->anim1 = [[NSMutableArray alloc] init];
         for(int i = 1; i <= 4; i++){
             [bgc->anim1 addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -796,7 +807,9 @@
         [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
         bgc = new bgComponent();
         bgc->sprite = [[CCSprite spriteWithSpriteFrameName:@"Dust1_1.png"] retain];
-        bgc->sprite.position = CGPointMake(179, 20);
+        bgc->sprite.scaleX = scaleX;
+        bgc->sprite.scaleY = scaleY;
+        bgc->sprite.position = CGPointMake(winSize.width*.372, winSize.height*.062);
         bgc->anim1 = [[NSMutableArray alloc] init];
         for(int i = 1; i <= 6; i++){
             [bgc->anim1 addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
