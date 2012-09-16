@@ -107,10 +107,10 @@
         _newsRect = CGRectMake((button4.position.x-(button4.contentSize.width*button4.scaleX)/2), (button4.position.y-(button4.contentSize.height*button4.scaleY)/2), (button4.contentSize.width*button4.scaleX+70), (button4.contentSize.height*button4.scaleY+70));
         
         CCSprite *button2 = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
-        button2.scale = scale;
+        button2.scale = scale*1.2;
         button2.position = ccp((winSize.width/2), winSize.height*.23);
         [self addChild:button2 z:10];
-        CCLabelTTF *otherLabel = [CCLabelTTF labelWithString:@"Start" fontName:@"LostPet.TTF" fontSize:fontSize];
+        CCLabelTTF *otherLabel = [CCLabelTTF labelWithString:@"Start" fontName:@"LostPet.TTF" fontSize:fontSize*1.2];
         [[otherLabel texture] setAliasTexParameters];
         otherLabel.color = _color_pink;
         otherLabel.position = ccp(button2.position.x, button2.position.y-1);
