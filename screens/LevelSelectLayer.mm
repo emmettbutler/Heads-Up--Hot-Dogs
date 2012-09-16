@@ -418,28 +418,37 @@
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
               [NSString stringWithFormat:@"Bagel_Shot_%d.png", i]]];
         }
-        
         lp->specialDog = dd;
+        
+        CGSize winSize = [CCDirector sharedDirector].winSize;
+        float scale = 1;
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            scale = IPAD_SCALE_FACTOR_X;
+        }
         
         lp->bgComponents = [[NSMutableArray alloc] init];
         bgComponent *bgc = new bgComponent();
         bgc->sprite = [CCSprite spriteWithSpriteFrameName:@"Light_One.png"];
-        bgc->sprite.position = CGPointMake(238, 262);
+        bgc->sprite.scale = scale;
+        bgc->sprite.position = CGPointMake(winSize.width*.495, winSize.height*.81);
         bgc->sprite.tag = 1;
         [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
         bgc = new bgComponent();
         bgc->sprite = [CCSprite spriteWithSpriteFrameName:@"Light_Two.png"];
-        bgc->sprite.position = CGPointMake(352, 262);
+        bgc->sprite.scale = scale;
+        bgc->sprite.position = CGPointMake(winSize.width*.733, winSize.height*.81);
         bgc->sprite.tag = 1;
         [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
         bgc = new bgComponent();
         bgc->sprite = [CCSprite spriteWithSpriteFrameName:@"Light_Three.png"];
-        bgc->sprite.position = CGPointMake(380, 156);
+        bgc->sprite.scale = scale;
+        bgc->sprite.position = CGPointMake(winSize.width*.792, winSize.height*.48);
         bgc->sprite.tag = 1;
         [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
         bgc = new bgComponent();
         bgc->sprite = [CCSprite spriteWithSpriteFrameName:@"Light_Three.png"];
-        bgc->sprite.position = CGPointMake(86, 156);
+        bgc->sprite.scale = scale;
+        bgc->sprite.position = CGPointMake(winSize.width*.179, winSize.height*.48);
         bgc->sprite.tag = 1;
         [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
         [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_nyc.plist"];
