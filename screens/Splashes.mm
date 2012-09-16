@@ -66,18 +66,19 @@
         [logoBG runAction:[CCFadeOut actionWithDuration:1]];
         [self runAction:[CCSequence actions:[CCDelayTime actionWithDuration:1], nil]];
         
-        namesBG = [CCSprite spriteWithSpriteFrameName:@"Logo_Cloud.png"];
+        namesBG = [CCSprite spriteWithSpriteFrameName:@"CreatedBy_Cloud.png"];
         namesBG.scale = scaleX;
         namesBG.position = ccp(cloudAnchor.x, cloudAnchor.y);
         [spriteSheet addChild:namesBG];
         [namesBG runAction:[CCFadeIn actionWithDuration:1.8]];
         
-        namesSprite = [CCSprite spriteWithSpriteFrameName:@"ASg_Logo.png"];
+        namesSprite = [CCSprite spriteWithSpriteFrameName:@"CreatedBy_Names.png"];
         namesSprite.scale = scaleX;
+        logoAnchor = CGPointMake(logoAnchor.x*.95, logoAnchor.y*1.1);
         namesSprite.position = ccp(logoAnchor.x, logoAnchor.y);
         [spriteSheet addChild:namesSprite];
         [namesSprite runAction:[CCFadeIn actionWithDuration:1.8]];
-    } else if(time == 180){
+    } else if(time == 210){
         [namesSprite runAction:[CCFadeOut actionWithDuration:1]];
         [namesBG runAction:[CCFadeOut actionWithDuration:1]];
         [self runAction:[CCSequence actions:[CCDelayTime actionWithDuration:1], [CCCallFunc actionWithTarget:self selector:@selector(switchSceneTitle)], nil]];

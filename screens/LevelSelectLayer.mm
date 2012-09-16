@@ -28,11 +28,11 @@
     // check it out - seven levels!
     [levelStructs addObject:[self philly:full]];
     [levelStructs addObject:[self nyc:full]];
-    [levelStructs addObject:[self chicago:full]];
     [levelStructs addObject:[self london:full]];
     [levelStructs addObject:[self china:full]];
-    [levelStructs addObject:[self japan:full]];
+    [levelStructs addObject:[self chicago:full]];
     [levelStructs addObject:[self space:full]];
+    [levelStructs addObject:[self japan:full]];
    
     [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_common.plist"];
 

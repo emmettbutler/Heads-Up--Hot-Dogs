@@ -1661,6 +1661,7 @@
 
 -(void)wienerCallback:(id)sender data:(NSNumber *)thisType {
     CCLOG(@"Dogs onscreen: %d", _dogsOnscreen);
+    //thisType = [NSNumber numberWithInt:1];
     
     if(_dogsOnscreen < _maxDogsOnScreen && !_gameOver){
         if(thisType.intValue == 1 && _peopleGrumped > OVERLAYS_STOP){

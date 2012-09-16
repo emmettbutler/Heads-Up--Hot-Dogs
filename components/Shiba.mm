@@ -78,7 +78,7 @@
     
     self->destination = abs(x.floatValue - (winSize.width + self->mainSprite.contentSize.width / 2));
     
-    [self->mainSprite setPosition:CGPointMake(x.floatValue, floor.floatValue + self->mainSprite.contentSize.height / 2)];
+    [self->mainSprite setPosition:CGPointMake(x.floatValue, floor.floatValue + (self->mainSprite.contentSize.height*self->mainSprite.scaleY) / 2)];
     [self->spritesheet addChild:self->mainSprite z:z.intValue];
     [self->mainSprite runAction:[CCSequence actions:[CCMoveTo actionWithDuration:winSize.width/self->speed position:ccp(self->destination, self->mainSprite.position.y)], [CCCallFunc actionWithTarget:self selector:@selector(removeSprite)], nil]];
     [self->mainSprite runAction:self->walkAction];
