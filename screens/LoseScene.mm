@@ -58,6 +58,8 @@
     [[[CCDirector sharedDirector] openGLView] addSubview:myController.view];
     tweetSheet.completionHandler = ^(TWTweetComposeViewControllerResult result){[myController dismissModalViewControllerAnimated:YES];};
     [myController presentModalViewController:tweetSheet animated:YES];
+    
+    [reporter reportAchievementIdentifier:@"tweet" percentComplete:100];
 }
 
 +(CCScene *)sceneWithData:(void *)data
@@ -382,7 +384,7 @@
         [trophy setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:res->trophy]];
         [trophy setVisible:true];
         
-        CCLabelTTF *speech = [CCLabelTTF labelWithString:res->f->speechBubble dimensions:CGSizeMake(((bubble.contentSize.width*bubble.scaleX)-80), (([res->f->speechBubble length]/25 > 1) ? [res->f->speechBubble length]/25 : 1)*30.0*elmtScale) alignment:UITextAlignmentCenter fontName:@"LostPet.TTF" fontSize:15.0*elmtScale];
+        CCLabelTTF *speech = [CCLabelTTF labelWithString:res->f->speechBubble dimensions:CGSizeMake(((bubble.contentSize.width*bubble.scaleX)-80), (([res->f->speechBubble length]/25 > 1) ? [res->f->speechBubble length]/25 : 1)*30.0*elmtScale) alignment:UITextAlignmentCenter fontName:@"LostPet.TTF" fontSize:17.0*elmtScale];
         speech.color = _color_pink;
         speech.position = CGPointMake(bubble.position.x-3, bubble.position.y);
         [[speech texture] setAliasTexParameters];
@@ -395,6 +397,10 @@
         int minutes = seconds/60;
         [summary setString:[NSString stringWithFormat:@"You lasted %02d:%02d and scored %d points.\nYou earned %@", minutes, seconds%60, _score, res->dogName]];
         [[summary texture] setAliasTexParameters];
+        
+        if(res->dogName == @"GOLD DOG"){
+            [reporter reportAchievementIdentifier:[NSString stringWithFormat:@"gold_%@", level->slug] percentComplete:100];
+        }
         
         if(_score > highScore){
             _setNewHighScore = true;
@@ -412,6 +418,8 @@
             levelBox = [CCSprite spriteWithSpriteFrameName:@"Lvl_TextBox.png"];
             levelBox.position = ccp(winSize.width/2, (winSize.height/2));
             [self addChild:levelBox];
+            
+            [reporter reportAchievementIdentifier:[NSString stringWithFormat:@"unlock_%@", level->next->slug] percentComplete:100];
         
             // TODO - only show this the first time it's unlocked
             levelLabel1 = [CCLabelTTF labelWithString:@"New Level Unlocked" fontName:@"LostPet.TTF" fontSize:20.0];
@@ -431,10 +439,6 @@
         [tweets addObject:[NSString stringWithFormat:@"I just scored %d points in %@! #HeadsUpHotDogs", _score, level->name]];
         [tweets addObject:[NSString stringWithFormat:@"I just saved %d inches of sweet sweet frankmeat! #HeadsUpHotDogs", _dogsSaved * (10 + (arc4random() % 3))]];
         [tweets addObject:[NSString stringWithFormat:@"I just earned a %@ trophy in %@! #HeadsUpHotDogs", res->dogName, level->name]];
-        
-        if(_score > level->unlockNextThreshold){
-            [tweets addObject:level->next->unlockTweet];
-        }
             
         CCLOG(@"OverallTime + _timePlayed/60 --> %d + %d = %d", overallTime, _timePlayed/60, overallTime+(_timePlayed/60));
         int newOverallTime = overallTime+(_timePlayed/60);

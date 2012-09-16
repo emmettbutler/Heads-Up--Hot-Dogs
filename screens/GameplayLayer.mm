@@ -82,28 +82,75 @@
     [[CCDirector sharedDirector] replaceScene:[LoseLayer sceneWithData:loseParams]];
 }
 
+-(void)reportSaveAchievement:(NSNumber *)number{
+    if(number.intValue >= 6){
+        [reporter reportAchievementIdentifier:@"single_6" percentComplete:100];
+    } else if(number.intValue >= 5){
+        [reporter reportAchievementIdentifier:@"single_5" percentComplete:100];
+    } else if(number.intValue >= 4){
+        [reporter reportAchievementIdentifier:@"single_4" percentComplete:100];
+    } else if(number.intValue >= 3){
+        [reporter reportAchievementIdentifier:@"single_3" percentComplete:100];
+    } else if(number.intValue >= 2){
+        [reporter reportAchievementIdentifier:@"single_2" percentComplete:100];
+    } else if(number.intValue >= 1){
+        [reporter reportAchievementIdentifier:@"single_1" percentComplete:100];
+    }
+}
+
 -(void)reportAchievements{
     // achievement reporting (internally locked by the reporter object)
-    if(_points >= 40000){
-        [reporter reportAchievementIdentifier:@"points_40000" percentComplete:100];
+    if(_points >= 30000){
+        [reporter reportAchievementIdentifier:@"points_30000" percentComplete:100];
     } else if(_points >= 20000){
         [reporter reportAchievementIdentifier:@"points_20000" percentComplete:100];
     } else if(_points >= 10000){
         [reporter reportAchievementIdentifier:@"points_10000" percentComplete:100];
-    } else if(_points >= 5000){
-        [reporter reportAchievementIdentifier:@"points_5000" percentComplete:100];
     }
-    if(time/60 > 180 && _droppedCount == 0 && !_hasDroppedDog){
-        [reporter reportAchievementIdentifier:@"nodrops_180" percentComplete:100];
+    if(!_hasDroppedDog){
+        if(time/60 > 240){
+            [reporter reportAchievementIdentifier:@"nodrops_240" percentComplete:100];
+        } else if(time/60 > 180){
+            [reporter reportAchievementIdentifier:@"nodrops_180" percentComplete:100];
+        } else if(time/60 > 120){
+            [reporter reportAchievementIdentifier:@"nodrops_120" percentComplete:100];
+        } else if(time/60 > 90){
+            [reporter reportAchievementIdentifier:@"nodrops_90" percentComplete:100];
+        } else if(time/60 > 60){
+            [reporter reportAchievementIdentifier:@"nodrops_60" percentComplete:100];
+        }
+        if(_points > 35000){
+            [reporter reportAchievementIdentifier:@"pnodrops_35000" percentComplete:100];
+        } else if(_points > 25000){
+            [reporter reportAchievementIdentifier:@"pnodrops_25000" percentComplete:100];
+        } else if(_points > 10000){
+            [reporter reportAchievementIdentifier:@"pnodrops_10000" percentComplete:100];
+        } else if(_points > 5000){
+            [reporter reportAchievementIdentifier:@"pnodrops_5000" percentComplete:100];
+        } else if(_points > 3000){
+            [reporter reportAchievementIdentifier:@"pnodrops_3000" percentComplete:100];
+        }
     }
-    else if(time/60 > 90 && _droppedCount == 0 && !_hasDroppedDog){
-        [reporter reportAchievementIdentifier:@"nodrops_90" percentComplete:100];
-    }
-    if(_points > 30000 && !_hasDroppedDog){
-        [reporter reportAchievementIdentifier:@"nodrops_30000" percentComplete:100];
+    if(!_dogsSaved == 0){
+        if(_points > 10000){
+            [reporter reportAchievementIdentifier:@"nosave_3" percentComplete:100];
+        } else if(_points > 5000){
+            [reporter reportAchievementIdentifier:@"nosave_2" percentComplete:100];
+        } else if(_points > 1000){
+            [reporter reportAchievementIdentifier:@"nosave_1" percentComplete:100];
+        }
     }
     if(_peopleGrumped > 100){
         [reporter reportAchievementIdentifier:@"grumps_100" percentComplete:100];
+    }
+    if(_spcDogsSaved >= 4){
+        [reporter reportAchievementIdentifier:@"bonus_saves" percentComplete:100];
+    }
+    if(_gameOver && _points == 0){
+        [reporter reportAchievementIdentifier:@"nopoints" percentComplete:100];
+    }
+    if(_dogsShotByCop >= 6){
+        [reporter reportAchievementIdentifier:@"cop_6" percentComplete:100];
     }
 }
 
@@ -462,14 +509,19 @@
     }
 }
 
+-(void)incrementShotByCop{
+    _dogsShotByCop++;
+}
+
 -(void)explodeDog:(id)sender data:(NSValue *)body{
     b2Body *b = (b2Body *)[body pointerValue];
     bodyUserData *ud = (bodyUserData *)b->GetUserData();
     id incAction = [CCCallFuncND actionWithTarget:self selector:@selector(incrementDroppedCount:data:) data:[[NSValue valueWithPointer:b] retain]];
     id lockAction = [CCCallFuncND actionWithTarget:self selector:@selector(lockWiener:data:) data:[[NSValue valueWithPointer:ud] retain]];
+    id incShotAction = [CCCallFunc actionWithTarget:self selector:@selector(incrementShotByCop)];
     id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:[[NSValue valueWithPointer:b] retain]];
     CCFiniteTimeAction *wienerExplodeAction = (CCFiniteTimeAction *)ud->altAction2;
-    CCAction *shotSeq = [[CCSequence actions:lockAction, incAction, wienerExplodeAction, destroyAction, nil] retain];
+    CCAction *shotSeq = [[CCSequence actions:lockAction, incAction, incShotAction, wienerExplodeAction, destroyAction, nil] retain];
     [ud->sprite1 runAction:shotSeq];
 }
 
@@ -687,6 +739,7 @@
                 [ud->ripples stopAllActions];
                 [ud->angryFace stopAllActions];
                 if(ud->_busman_willVomit){
+                    [reporter reportAchievementIdentifier:@"vomit" percentComplete:100];
                     [self vomit:[NSValue valueWithPointer:b]];
                 } else if(ud->sprite1.tag == S_TWLMAN) {
                     ud->_nudie_isStopped = true;
@@ -780,6 +833,7 @@
         } else{
             if(ud->timeWalking == ud->stopTime + (ud->stopTimeDelta - ([ud->postStopAction duration]*60.0))){
                 ud->_muncher_hasDroppedDog = true;
+                [reporter reportAchievementIdentifier:@"tickle" percentComplete:100];
                 ud->lowerYOffset = 9;
                 if(ud->sprite1.flipX){
                     ud->lowerXOffset = -12;
@@ -2118,6 +2172,9 @@
                 ud->hasLeftScreen = true;
                 _points += ud->dogsOnHead * 100;
                 _points += ud->spcDogsOnHead * 1000;
+                _spcDogsSaved += ud->spcDogsOnHead;
+                _dogsSaved += ud->dogsOnHead + ud->spcDogsOnHead;
+                [self reportSaveAchievement:[NSNumber numberWithInt:ud->dogsOnHead]];
                 if(ud->dogsOnHead != 0){
                     CCSprite *oneHundred = [CCSprite spriteWithSpriteFrameName:@"Bonus_Plus_1000_8.png"];
                     NSMutableArray *plus100Params = [[NSMutableArray alloc] initWithCapacity:4];
@@ -2152,9 +2209,6 @@
                 }
                 if(b->GetJointList()){
                     _world->DestroyJoint(b->GetJointList()->joint);
-                }
-                if(ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG){
-                    _dogsSaved++;
                 }
                 CCLOG(@"Body removed - tag %d", ud->sprite1.tag);
                 [ud->sprite1 removeFromParentAndCleanup:YES];
@@ -2323,6 +2377,7 @@
                         
                         if([shiba dogIsInHitbox:[NSValue valueWithPointer:b]] && ![shiba hasEatenDog]){
                             if(!ud->grabbed && [shiba eatDog:[NSValue valueWithPointer:b]]){
+                                [reporter reportAchievementIdentifier:@"shiba" percentComplete:100];
                                 [self incrementDroppedCount:self data:[NSValue valueWithPointer:b]];
                             }
                         }
