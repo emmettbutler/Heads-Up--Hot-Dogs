@@ -220,11 +220,11 @@
     
     NSLog(@"Grade: %0.2f", grade.floatValue);
     
-    if(grade.floatValue > 1.0){
+    if(grade.floatValue > 1.2){
         res->trophy = @"Trophy_Gold.png";
         res->trophyLevel = 1;
         res->dogName = @"GOLD DOG";
-    } else if(grade.floatValue > .5){
+    } else if(grade.floatValue > .7){
         res->trophy = @"Trophy_Silver.png";
         res->trophyLevel = 2;
         res->dogName = @"SILVER DOG";
@@ -232,7 +232,7 @@
         res->trophy = @"Trophy_Bronze.png";
         res->trophyLevel = 3;
         res->dogName = @"BRONZE DOG";
-    } else if(grade.floatValue > -.5){
+    } else if(grade.floatValue > -.7){
         res->trophy = @"Trophy_Wood.png";
         res->trophyLevel = 4;
         res->dogName = @"WOODEN DOG";
