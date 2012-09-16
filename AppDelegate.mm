@@ -123,8 +123,7 @@
     
     // game center
     GKLocalPlayer *localPlayer = [GKLocalPlayer localPlayer];
-    // TODO - Game Center support disabled until we get that figured out with Turner
-    /*[localPlayer authenticateWithCompletionHandler:^(NSError *error) {
+    [localPlayer authenticateWithCompletionHandler:^(NSError *error) {
         if (localPlayer.isAuthenticated)
         {
             NSLog(@"Player %@ recognized", localPlayer.alias);
@@ -132,7 +131,7 @@
         } else {
             NSLog(@"Player not authenticated");
         }
-    }];*/
+    }];
     
     standardUserDefaults = [NSUserDefaults standardUserDefaults];
 #ifdef DEBUG

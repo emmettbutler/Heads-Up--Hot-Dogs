@@ -18,7 +18,11 @@
         [achievement reportAchievementWithCompletionHandler:^(NSError *error){
             if(error != nil){
                 NSLog(@"Error reporting achievement to game center: %@", identifier);
-            } else { NSLog(@"Reported achievement to game center: %@", identifier); }
+            } else {
+                NSLog(@"Reported achievement to game center: %@", identifier);
+                // if showsCompletionHandler doesn't end up working, use this instead (however, in prod, this should be commented)
+                [GKNotificationBanner showBannerWithTitle:@"Achievement unlocked:" message:achievement.description completionHandler:^(void){return;}];
+            }
         }];
     }
 }
@@ -32,8 +36,10 @@
             NSLog(@"Error retrieving achievement progress");
         } else { NSLog(@"Loaded achievements successfully"); }
         if (achievements != nil){
-            for (GKAchievement* achievement in achievements)
+            for (GKAchievement* achievement in achievements){
+                achievement.showsCompletionBanner = YES;
                 [achievementsDictionary setObject:achievement forKey:achievement.identifier];
+            }
         }
     }];
 }

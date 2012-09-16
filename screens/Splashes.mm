@@ -36,20 +36,20 @@
         if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
             background.scaleX = IPAD_SCALE_FACTOR_X;
             background.scaleY = IPAD_SCALE_FACTOR_Y;
-            scaleX = IPAD_SCALE_FACTOR_X;
-            scaleY = IPAD_SCALE_FACTOR_Y;
+            scaleX = IPAD_SCALE_FACTOR_X*.7;
+            scaleY = IPAD_SCALE_FACTOR_Y*.7;
         }
         [spriteSheet addChild:background z:-10];
         
         logoBG = [CCSprite spriteWithSpriteFrameName:@"Logo_Cloud.png"];
         cloudAnchor = CGPointMake(winSize.width/2+4, winSize.height/2+8);
-        logoBG.scale = scaleX*.7;
+        logoBG.scale = scaleX;
         logoBG.position = ccp(cloudAnchor.x, cloudAnchor.y);
         [spriteSheet addChild:logoBG];
         
         mainLogo = [CCSprite spriteWithSpriteFrameName:@"ASg_Logo.png"];
         logoAnchor = CGPointMake(winSize.width/2+16, winSize.height/2-15);
-        mainLogo.scale = scaleX*.7;
+        mainLogo.scale = scaleX;
         mainLogo.position = ccp(logoAnchor.x, logoAnchor.y);
         [spriteSheet addChild:mainLogo];
         
