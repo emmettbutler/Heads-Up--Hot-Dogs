@@ -131,7 +131,7 @@
             [reporter reportAchievementIdentifier:@"pnodrops_3000" percentComplete:100];
         }
     }
-    if(!_dogsSaved == 0){
+    if(_dogsSaved == 0){
         if(_points > 10000){
             [reporter reportAchievementIdentifier:@"nosave_3" percentComplete:100];
         } else if(_points > 5000){
