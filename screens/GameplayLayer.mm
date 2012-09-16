@@ -22,7 +22,7 @@
 #define COP_RANGE 4
 #define VOMIT_PROBABILITY 250
 #define OVERLAYS_STOP 2
-#define WIND_PARTICLES 40
+#define WIND_PARTICLES 50
 #define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 
 #ifdef DEBUG
@@ -170,6 +170,9 @@
 -(void)restartScene{
     if(_pause){
         [self unschedule:@selector(tick:)];
+        if(level->slug == @"chicago"){
+            [self unschedule:@selector(updateWind:)];
+        }
         [self stopAllActions];
         [self removeAllChildrenWithCleanup:YES];
         [[CCDirector sharedDirector] resume];
@@ -199,6 +202,9 @@
 -(void)levelSelect{
     if(_pause){
         [self unschedule:@selector(tick:)];
+        if(level->slug == @"chicago"){
+            [self unschedule:@selector(updateWind:)];
+        }
         [self stopAllActions];
         [self removeAllChildrenWithCleanup:YES];
         [[CCDirector sharedDirector] resume];
@@ -2072,10 +2078,8 @@
             [firecracker runSequence];
         }
     } else if(level->slug == @"chicago" && !(time % 19)){
-        float maxWind = 2.7;
+        float maxWind = 1.7;
         float windX = maxWind * cosf(.001 * time);
-        //float windX = (float)(arc4random() % 5);
-        CCLOG(@"wind: %0.2f", windX);
         windForce = b2Vec2(windX, .2);
         CCSprite *flag1 = (CCSprite *)[[bgSprites objectAtIndex:0] pointerValue];
         CCSprite *flag2 = (CCSprite *)[[bgSprites objectAtIndex:1] pointerValue];
@@ -2793,6 +2797,9 @@
 
 - (void) dealloc {
     [self unschedule:@selector(tick:)];
+    if(level->slug == @"chicago"){
+        [self unschedule:@selector(updateWind:)];
+    }
     [self stopAllActions];
     [self removeAllChildrenWithCleanup:YES];
     
