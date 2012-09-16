@@ -15,12 +15,14 @@
 #import "DogTouch.h"
 #import "Overlay.h"
 #import "UIDefs.h"
+#import "WindParticle.h"
 
 #define DEGTORAD 0.0174532
 #define VOMIT_VEL 666 // diego thinks this should be 666, i think 66.6 makes more sense
 #define COP_RANGE 4
 #define VOMIT_PROBABILITY 250
 #define OVERLAYS_STOP 2
+#define WIND_PARTICLES 40
 #define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 
 #ifdef DEBUG
@@ -827,6 +829,59 @@
                 [ud->angryFace runAction:ud->angryFaceWalkAction];
         }
     } else if(b->GetLinearVelocity().x != 0){ b->SetLinearVelocity(b2Vec2(0, 0)); }
+}
+
+-(void) createWind
+{
+    if (!windParticles) {
+        windParticles = [[NSMutableArray alloc]init];
+    }
+    
+	float creationZone_Width =  winSize.width;
+	float creationZone_Height = winSize.height;
+	float densityRatio = (winSize.width*winSize.height)/(512*512);
+	for (int j=0; j<(WIND_PARTICLES*densityRatio); j++) {
+		WindParticle *leaf = [[WindParticle alloc] init];
+		[self addChild:leaf];
+		[leaf setPosition:ccp(((CCRANDOM_0_1() + 0.01) * creationZone_Width),((CCRANDOM_0_1() + 0.01) * creationZone_Height))];
+		[leaf setSpeed:windForce.x*3];
+		[leaf startMovement];
+		
+		[windParticles addObject:leaf];
+		[leaf release];
+	}
+}
+
+-(void) updateWind: (ccTime) dt
+{
+	//remove out of stage objects
+	for (uint i=0; i<windParticles.count; i++){
+		WindParticle *leaf = (WindParticle *)[windParticles objectAtIndex:i];
+		if (leaf.position.x < 0 || leaf.position.x > winSize.width){
+			[windParticles removeObjectAtIndex:i];
+			[leaf removeFromParentAndCleanup:YES];
+		}
+	}
+	
+	float densityRatio = (winSize.width*winSize.height)/(512*512);
+	
+	//create new objects
+	if (windParticles.count < WIND_PARTICLES*densityRatio) {
+		float creationZone_Height = winSize.height;
+		float creationZone_Width =  (windForce.x < 0)?100.0f:-100.0f;
+		
+		for (uint j=0; j<((WIND_PARTICLES*densityRatio) - windParticles.count); j++) {
+			WindParticle* leaf = [[WindParticle alloc] init];
+			[self addChild:leaf];
+			float start_point = (windForce.x * 3 > 0) ? 0 : winSize.width;
+			[leaf setPosition:ccp(start_point + ((CCRANDOM_0_1() + 0.01) * creationZone_Width),((CCRANDOM_0_1() + 0.01) * creationZone_Height))];
+			[leaf setSpeed:windForce.x * 3];
+			[leaf startMovement];
+			
+			[windParticles addObject:leaf];
+			[leaf release];
+		}
+	}
 }
 
 -(void)updateMuncher:(NSValue *)body{
@@ -1709,6 +1764,10 @@
             vent1 = [[SteamVent alloc] init:[NSValue valueWithPointer:spriteSheetCommon] withLevelSpriteSheet:[NSValue valueWithPointer:spriteSheetLevel] withPosition:[NSValue valueWithCGPoint:CGPointMake(winSize.width/4, winSize.height/8)]];
             vent2 = [[SteamVent alloc] init:[NSValue valueWithPointer:spriteSheetCommon] withLevelSpriteSheet:[NSValue valueWithPointer:spriteSheetLevel] withPosition:[NSValue valueWithCGPoint:CGPointMake(3*(winSize.width/4), winSize.height/8)]];
         } else if(level->slug == @"chicago"){
+            windForce = b2Vec2(2.7, .2);
+            [self createWind];
+            [self schedule:@selector(updateWind:)];
+            
             bgComponent *bgc = (bgComponent *)[[level->bgComponents objectAtIndex:0] pointerValue];
             CCAnimation *anim = [CCAnimation animationWithFrames:bgc->anim1 delay:.1f];
             _flag1LeftAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO]] retain];
@@ -2006,15 +2065,15 @@
         for(NSValue *v in bgSprites){
             CCSprite *sprite = (CCSprite *)[v pointerValue];
             if(sprite.tag && sprite.tag == 1)
-                [sprite setOpacity:255.00 * cosf(.01 * time)];
+                [sprite setOpacity:120.00 * cosf(.01 * time)];
         }
         if(!(time % 250) && arc4random() % 2  == 1){
             firecracker = [[Firecracker alloc] init:[NSValue valueWithPointer:_world] withSpritesheet:[NSValue valueWithPointer:spriteSheetCommon]];
             [firecracker runSequence];
         }
     } else if(level->slug == @"chicago" && !(time % 19)){
-        float maxWind = 3.2;
-        float windX = maxWind * cosf(.01 * time);
+        float maxWind = 2.7;
+        float windX = maxWind * cosf(.001 * time);
         //float windX = (float)(arc4random() % 5);
         CCLOG(@"wind: %0.2f", windX);
         windForce = b2Vec2(windX, .2);

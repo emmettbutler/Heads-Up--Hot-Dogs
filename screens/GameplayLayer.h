@@ -49,14 +49,14 @@
     CCAction *window1CycleAction, *window2CycleAction, *window3CycleAction, *window4CycleAction;
     CCMenu *_pauseMenu;
     ccColor3B _color_pink, spcDogFlashColor, satanColor;
-    NSMutableArray *bgSprites, *floorBits, *xPositions, *dogTouches, *dogIcons, *floorHeights;
+    NSMutableArray *bgSprites, *floorBits, *xPositions, *dogTouches, *dogIcons, *floorHeights, *windParticles;
     NSString *slug;
     CGSize winSize;
     CGRect _pauseButtonRect, _resumeRect, _restartRect, _levelRect;
     NSUserDefaults *standardUserDefaults;
     NSInteger _sfxOn, _introDone, _savedHighScore;
     int _points, _droppedCount, time, _curPersonMaskBits, _peopleGrumped, _dogsSaved, _spcDogsSaved, _dogsOnscreen, _maxDogsOnScreen, _numWorldTouches, _levelMaxDogs, _dogsShotByCop;
-    float spriteScaleX, spriteScaleY, pointNotifyScale, _wienerSpawnDelayTime, _levelSpawnInterval, _subwayForce, FLOOR1_HT, FLOOR2_HT, FLOOR3_HT, FLOOR4_HT;
+    float spriteScaleX, spriteScaleY, pointNotifyScale, _wienerSpawnDelayTime, _levelSpawnInterval, _subwayForce, FLOOR1_HT, FLOOR2_HT, FLOOR3_HT, FLOOR4_HT, windSpeed;
     BOOL _pause, _shootLock, _policeOnScreen, _muncherOnScreen, _gameOver, _hasDroppedDog, _fgIsDark, _scoreNotifyLock, _player_hasTickled;
 
     struct bodyUserData {
