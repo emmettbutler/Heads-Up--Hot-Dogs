@@ -61,7 +61,7 @@
         // color definitions
         _color_pink = ccc3(255, 62, 166);
         
-        CCLabelTTF *label = [CCLabelTTF labelWithString:@"GOLD CANDIDATE 1" fontName:@"LostPet.TTF" fontSize:30.0];
+        CCLabelTTF *label = [CCLabelTTF labelWithString:@"GOLD CDT. 1" fontName:@"LostPet.TTF" fontSize:30.0];
         [[label texture] setAliasTexParameters];
         label.color = _color_pink;
         label.position = ccp((label.contentSize.width/2)+6, winSize.height-(label.contentSize.height/2)-5);
@@ -75,29 +75,47 @@
         
         CCSprite *button1 = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
         button1.scale = scale;
-        button1.position = ccp(winSize.width/4, button1.contentSize.height*button1.scaleY);
+        button1.position = ccp(winSize.width/2, button1.contentSize.height*button1.scaleY);
         [self addChild:button1 z:10];
-        label = [CCLabelTTF labelWithString:@"Start" fontName:@"LostPet.TTF" fontSize:fontSize];
+        label = [CCLabelTTF labelWithString:@"Options" fontName:@"LostPet.TTF" fontSize:fontSize];
         [[label texture] setAliasTexParameters];
         label.color = _color_pink;
         label.position = ccp(button1.position.x, button1.position.y-1);
         [self addChild:label z:11];
-        _startRect = CGRectMake((button1.position.x-(button1.contentSize.width*button1.scaleX)/2), (button1.position.y-(button1.contentSize.height*button1.scaleY)/2), (button1.contentSize.width*button1.scaleX+70), (button1.contentSize.height*button1.scaleY+70));
+        _optionsRect = CGRectMake((button1.position.x-(button1.contentSize.width*button1.scaleX)/2), (button1.position.y-(button1.contentSize.height*button1.scaleY)/2), (button1.contentSize.width*button1.scaleX+70), (button1.contentSize.height*button1.scaleY+70));
+        
+        CCSprite *button3 = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
+        button3.scale = scale;
+        button3.position = ccp(winSize.width*.2, button3.contentSize.height*button3.scaleY);
+        [self addChild:button3 z:10];
+        label = [CCLabelTTF labelWithString:@"More Games" fontName:@"LostPet.TTF" fontSize:fontSize];
+        [[label texture] setAliasTexParameters];
+        label.color = _color_pink;
+        label.position = ccp(button3.position.x, button3.position.y-1);
+        [self addChild:label z:11];
+        _moreGamesRect = CGRectMake((button3.position.x-(button3.contentSize.width*button3.scaleX)/2), (button3.position.y-(button3.contentSize.height*button3.scaleY)/2), (button3.contentSize.width*button3.scaleX+70), (button3.contentSize.height*button3.scaleY+70));
+        
+        CCSprite *button4 = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
+        button4.scale = scale;
+        button4.position = ccp(winSize.width*.8, button4.contentSize.height*button4.scaleY);
+        [self addChild:button4 z:10];
+        label = [CCLabelTTF labelWithString:@"ASG News" fontName:@"LostPet.TTF" fontSize:fontSize];
+        [[label texture] setAliasTexParameters];
+        label.color = _color_pink;
+        label.position = ccp(button4.position.x, button4.position.y-1);
+        [self addChild:label z:11];
+        _newsRect = CGRectMake((button4.position.x-(button4.contentSize.width*button4.scaleX)/2), (button4.position.y-(button4.contentSize.height*button4.scaleY)/2), (button4.contentSize.width*button4.scaleX+70), (button4.contentSize.height*button4.scaleY+70));
         
         CCSprite *button2 = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
         button2.scale = scale;
-        button2.position = ccp(3*(winSize.width/4), button1.contentSize.height*button1.scaleY);
+        button2.position = ccp((winSize.width/2), winSize.height*.23);
         [self addChild:button2 z:10];
-        CCLabelTTF *otherLabel = [CCLabelTTF labelWithString:@"Options" fontName:@"LostPet.TTF" fontSize:fontSize];
+        CCLabelTTF *otherLabel = [CCLabelTTF labelWithString:@"Start" fontName:@"LostPet.TTF" fontSize:fontSize];
         [[otherLabel texture] setAliasTexParameters];
         otherLabel.color = _color_pink;
         otherLabel.position = ccp(button2.position.x, button2.position.y-1);
         [self addChild:otherLabel z:11];
-        _optionsRect = CGRectMake((button2.position.x-(button2.contentSize.width*button2.scaleX)/2), (button2.position.y-(button2.contentSize.height*button2.scaleY)/2), (button2.contentSize.width*button2.scaleX+70), (button2.contentSize.height*button2.scaleY+70));
-        
-        // TODO - stub for eventual placement of ASG more games button
-        _moreGamesRect = CGRectMake(0, 0, 0, 0);
-        _newsRect = CGRectMake(0, 0, 0, 0);
+        _startRect = CGRectMake((button2.position.x-(button2.contentSize.width*button2.scaleX)/2), (button2.position.y-(button2.contentSize.height*button2.scaleY)/2), (button2.contentSize.width*button2.scaleX+70), (button2.contentSize.height*button2.scaleY+70));
         
         background = [CCSprite spriteWithSpriteFrameName:@"Splash_BG_clean.png"];
         background.anchorPoint = CGPointZero;
@@ -113,13 +131,13 @@
         }
         dogLogo.position = ccp(winSize.width/2, winSize.height+100);
         [spriteSheet addChild:dogLogo];
-        dogLogoAnchor = CGPointMake(dogLogo.position.x, 4*(winSize.height/10));
+        dogLogoAnchor = CGPointMake(dogLogo.position.x, winSize.height*.5);
         
         swooshLogo = [CCSprite spriteWithSpriteFrameName:@"HeadsUp.png"];
         if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
             swooshLogo.scale = 2;
         }
-        swooshLogo.position = ccp(-1*(swooshLogo.contentSize.width), 15*(winSize.height/20));
+        swooshLogo.position = ccp(-1*(swooshLogo.contentSize.width), winSize.height*.85);
         [spriteSheet addChild:swooshLogo];
         
         [swooshLogo runAction:[CCMoveTo actionWithDuration:.4 position:CGPointMake(winSize.width/2, swooshLogo.position.y)]];
