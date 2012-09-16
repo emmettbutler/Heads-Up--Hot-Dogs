@@ -63,6 +63,16 @@
     return levelStructs;
 }
 
+#ifdef TEST
+-(void)unlockAllLevels{
+    for(NSValue *v in lStructs){
+        levelProps *lp = (levelProps *)[v pointerValue];
+        lp->unlocked = true;
+    }
+    unlockedCount = [lStructs count] - 1;
+}
+#endif
+
 -(id) init{
     if ((self = [super init])){
         standardUserDefaults = [NSUserDefaults standardUserDefaults];
@@ -173,6 +183,15 @@
         helpLabel.color = _color_pink;
         helpLabel.position = ccp(winSize.width/2, thumb.position.y-((thumb.contentSize.height*thumb.scaleY)/2)+6);
         [self addChild:helpLabel];
+        
+#ifdef TEST
+        CCLabelTTF *unlockAllLevelsLabel = [CCLabelTTF labelWithString:@"Unlock all levels" fontName:@"LostPet.TTF" fontSize:25.0];
+        unlockAllLevelsLabel.color = _color_pink;
+        CCMenuItem *item = [CCMenuItemLabel itemWithLabel:unlockAllLevelsLabel target:self selector:@selector(unlockAllLevels)];
+        CCMenu *menu = [CCMenu menuWithItems:item, nil];
+        menu.position = ccp(winSize.width-unlockAllLevelsLabel.contentSize.width/2, winSize.height-unlockAllLevelsLabel.contentSize.height);
+        [self addChild:menu];
+#endif
 
         thumbnailRect = CGRectMake((thumb.position.x-((thumb.contentSize.width*thumb.scaleX))/2), (thumb.position.y-(thumb.contentSize.height*thumb.scaleY)/2), ((thumb.contentSize.width*thumb.scaleX)+10), ((thumb.contentSize.height*thumb.scaleY)+10));
 
