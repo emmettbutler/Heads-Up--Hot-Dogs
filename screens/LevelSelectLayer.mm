@@ -49,8 +49,9 @@
         l->next = (levelProps *)[(NSValue *)[levelStructs objectAtIndex:nextIndex] pointerValue];
         l->prev = (levelProps *)[(NSValue *)[levelStructs objectAtIndex:prevIndex] pointerValue];
 
-        int unlocked, prevHighScore = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"highScore%@", l->prev->slug]];
-        if(prevHighScore > l->prev->unlockNextThreshold){
+        int unlocked = 0, prevTrophyLevel = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"trophy_%@", l->prev->slug]];
+        if((prevTrophyLevel && prevTrophyLevel <= 2) || l->slug == @"philly"){
+            NSLog(@"Level %@ unlocked", l->name);
             [standardUserDefaults setInteger:1 forKey:[NSString stringWithFormat:@"unlocked%@", l->slug]];
             unlocked = 1;
         }
@@ -75,7 +76,7 @@
         
         // TODO: for testing only - don't lock the levels
         // this completely bypasses the storage of level unlock userDefaults and simply shows all levels as available
-        NO_LEVEL_LOCKS = true;
+        NO_LEVEL_LOCKS = false;
 
         self.isTouchEnabled = true;
 
@@ -176,6 +177,12 @@
         thumbnailRect = CGRectMake((thumb.position.x-((thumb.contentSize.width*thumb.scaleX))/2), (thumb.position.y-(thumb.contentSize.height*thumb.scaleY)/2), ((thumb.contentSize.width*thumb.scaleX)+10), ((thumb.contentSize.height*thumb.scaleY)+10));
 
         lStructs = [[LevelSelectLayer buildLevels:[NSNumber numberWithInt:0]] retain];
+        
+        for(NSValue *v in lStructs){
+            levelProps *lp = (levelProps *)[v pointerValue];
+            if(lp->unlocked && unlockedCount < [lStructs count] - 1)
+                unlockedCount++;
+        }
 
         [self schedule: @selector(tick:)];
     }
@@ -187,13 +194,13 @@
     time++;
     level = (levelProps *)[(NSValue *)[lStructs objectAtIndex:curLevelIndex] pointerValue];
 
-    if(NO_LEVEL_LOCKS || level->unlocked || level->prev->unlockNextThreshold < 0){
+    if(level->unlocked){
         [thumb setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:level->thumbnail]];
         [nameLabel setString:[NSString stringWithFormat:@"%@\nhigh score: %06d", level->name, level->highScore]];
         [helpLabel setVisible:true];
     } else {
         [thumb setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"NoLevel.png"]];
-        [nameLabel setString:[NSString stringWithFormat:@"??????\nunlock with %d points", level->prev->unlockNextThreshold]];
+        [nameLabel setString:[NSString stringWithFormat:@"??????\nunlock: silver on %@", level->prev->name]];
         [helpLabel setVisible:false];
     }
     [[nameLabel texture] setAliasTexParameters];
@@ -218,14 +225,14 @@
 
     //Minimum length of the swipe
     float swipeLength = ccpDistance(firstTouch, lastTouch);
-
+    
     if(CGRectContainsPoint(leftArrowRect, location) || (firstTouch.x < lastTouch.x && swipeLength > 60)){
         if(curLevelIndex > 0)
             curLevelIndex--;
-        else curLevelIndex = [lStructs count] - 1;
+        else curLevelIndex = unlockedCount;
     }
     else if(CGRectContainsPoint(rightArrowRect, location) || (firstTouch.x > lastTouch.x && swipeLength > 60)){
-        if(curLevelIndex < [lStructs count] - 1)
+        if(curLevelIndex < unlockedCount)
             curLevelIndex++;
         else curLevelIndex = 0;
     }
@@ -537,7 +544,7 @@
     levelProps *lp = new levelProps();
     lp->enabled = true;
     lp->slug = @"china";
-    lp->name = @"Chinese New Year";
+    lp->name = @"Beijing";
     lp->unlockNextThreshold = 12000;
     lp->func = @"switchScreenChina";
     lp->thumbnail = @"NYC_Thumb.png";
@@ -593,7 +600,7 @@
     levelProps *lp = new levelProps();
     lp->enabled = true;
     lp->slug = @"japan";
-    lp->name = @"Hot Spring";
+    lp->name = @"Yamanashi";
     lp->unlockNextThreshold = 6500;
     lp->func = @"switchScreenJapan";
     lp->thumbnail = @"Japan_Thumb.png";
@@ -658,7 +665,7 @@
     levelProps *lp = new levelProps();
     lp->enabled = true;
     lp->slug = @"chicago";
-    lp->name = @"Windy City";
+    lp->name = @"Chicago";
     lp->unlockNextThreshold = 6500;
     lp->thumbnail = @"Chicago_Thumb.png";
     lp->func = @"switchScreenChicago";
@@ -758,7 +765,7 @@
     lp->enabled = false;
     lp->slug = @"space";
     lp->name = @"Space Station";
-    lp->unlockNextThreshold = 16000;
+    lp->unlockNextThreshold = -1;
     lp->thumbnail = @"Space_Thumb.png";
     lp->func = @"switchScreenSpace";
     lp->unlockTweet = @"We sent a frankfurter to the moon in @HeadsUpHotDogs";

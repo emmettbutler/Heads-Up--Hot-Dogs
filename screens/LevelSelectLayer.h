@@ -30,13 +30,13 @@ static NSUserDefaults *standardUserDefaults;
         NSString *bg, *bgm, *name, *slug, *func, *spritesheet, *thumbnail, *unlockTweet;
         NSMutableArray *bgComponents, *characters, *activeComponents, *dogDeathAnimFrames;
         levelProps *next, *prev;
-        int characterProbSum, maxDogs, highScore, unlockNextThreshold;
+        int characterProbSum, maxDogs, highScore, unlockNextThreshold, highestTrophy;
         float gravity, frictionMul, personSpeedMul, restitutionMul, dogDeathDelay, spawnInterval;
         BOOL unlocked, enabled, hasShiba;
         spcDogData *specialDog;
     };
 
-    int time;
+    int time, unlockedCount;
     ccColor3B _color_pink;
     NSMutableArray *lStructs;
     CGPoint firstTouch, lastTouch;

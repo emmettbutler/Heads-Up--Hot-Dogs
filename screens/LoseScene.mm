@@ -222,18 +222,23 @@
     
     if(grade.floatValue > 1.0){
         res->trophy = @"Trophy_Gold.png";
+        res->trophyLevel = 1;
         res->dogName = @"GOLD DOG";
     } else if(grade.floatValue > .5){
         res->trophy = @"Trophy_Silver.png";
+        res->trophyLevel = 2;
         res->dogName = @"SILVER DOG";
     } else if(grade.floatValue > 0){
         res->trophy = @"Trophy_Bronze.png";
+        res->trophyLevel = 3;
         res->dogName = @"BRONZE DOG";
     } else if(grade.floatValue > -.5){
         res->trophy = @"Trophy_Wood.png";
+        res->trophyLevel = 4;
         res->dogName = @"WOODEN DOG";
     } else {
         res->trophy = @"Trophy_Cardboard.png";
+        res->trophyLevel = 5;
         res->dogName = @"CARDBOARD DOG";
     }
     
@@ -414,7 +419,11 @@
         if(_timePlayed > bestTime)
             [standardUserDefaults setInteger:_timePlayed forKey:@"bestTime"];
         
-        if(_score > level->unlockNextThreshold && !level->next->unlocked){
+        if(level->highestTrophy < res->trophyLevel){
+            level->highestTrophy = res->trophyLevel;
+            [standardUserDefaults setInteger:level->highestTrophy forKey:[NSString stringWithFormat:@"trophy_%@", level->slug]];
+        }
+        if(res->trophyLevel <= 2 && !level->next->unlocked){
             levelBox = [CCSprite spriteWithSpriteFrameName:@"Lvl_TextBox.png"];
             levelBox.position = ccp(winSize.width/2, (winSize.height/2));
             [self addChild:levelBox];

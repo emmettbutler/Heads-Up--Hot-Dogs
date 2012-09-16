@@ -23,7 +23,7 @@
         NSString *trophy;
         NSString *dogName;
         CCSprite *head;
-        int grade;
+        int grade, trophyLevel;
         face *f;
     };
     
