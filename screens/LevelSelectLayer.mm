@@ -325,7 +325,7 @@
     lp->enabled = true;
     lp->slug = @"philly";
     lp->name = @"Philly";
-    lp->unlockNextThreshold = 16000;
+    lp->unlockNextThreshold = 17000;
     lp->func = @"switchScreenPhilly";
     lp->thumbnail = @"Philly_Thumb.png";
     
@@ -379,7 +379,7 @@
     lp->enabled = true;
     lp->slug = @"nyc";
     lp->name = @"Big Apple";
-    lp->unlockNextThreshold = 15000;
+    lp->unlockNextThreshold = 16000;
     lp->func = @"switchScreenNYC";
     lp->thumbnail = @"NYC_Thumb.png";
     lp->unlockTweet = @"I traveled to the Big Apple for some mischief in @HeadsUpHotDogs";
@@ -457,7 +457,7 @@
     lp->enabled = true;
     lp->slug = @"london";
     lp->name = @"London";
-    lp->unlockNextThreshold = 12000;
+    lp->unlockNextThreshold = 14000;
     lp->func = @"switchScreenLondon";
     lp->thumbnail = @"London_Thumb.png";
     lp->unlockTweet = @"I went to London to conquer some franks in @HeadsUpHotDogs";
@@ -551,6 +551,7 @@
             [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
         }
     }
+    [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_london.plist"];
     return [NSValue valueWithPointer:lp];
 }
 
@@ -564,16 +565,17 @@
     lp->enabled = true;
     lp->slug = @"china";
     lp->name = @"Beijing";
-    lp->unlockNextThreshold = 12000;
+    lp->unlockNextThreshold = 15000;
     lp->func = @"switchScreenChina";
-    lp->thumbnail = @"NYC_Thumb.png";
+    lp->thumbnail = @"China_Thumb.png";
     lp->unlockTweet = @"Chinese New Year is a perfect time for franks in @HeadsUpHotDogs";
     
     if(loadFull){
-        lp->bg = @"BG_NYC.png";
+        [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_china.plist"];
+        lp->bg = @"China_BG.png";
         lp->bgm = @"gameplay 3.mp3";
         lp->gravity = -22.0f;
-        lp->spritesheet = @"sprites_nyc";
+        lp->spritesheet = @"sprites_china";
         lp->personSpeedMul = 1.2;
         lp->restitutionMul = 1.2;
         lp->frictionMul = .95;
@@ -604,9 +606,16 @@
              [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
               [NSString stringWithFormat:@"Bagel_Shot_%d.png", i]]];
         }
-        
         lp->specialDog = dd;
+        
+        lp->bgComponents = [[NSMutableArray alloc] init];
+        bgComponent *bgc = new bgComponent();
+        bgc->sprite = [CCSprite spriteWithSpriteFrameName:@"China_Lanterns.png"];
+        bgc->sprite.position = CGPointMake(238, 262);
+        bgc->sprite.tag = 1;
+        [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
     }
+    [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_china.plist"];
     return [NSValue valueWithPointer:lp];
 }
 
@@ -620,7 +629,7 @@
     lp->enabled = true;
     lp->slug = @"japan";
     lp->name = @"Yamanashi";
-    lp->unlockNextThreshold = 6500;
+    lp->unlockNextThreshold = 8000;
     lp->func = @"switchScreenJapan";
     lp->thumbnail = @"Japan_Thumb.png";
     lp->unlockTweet = @"I was ready to relax in a calming Japanese hot spring in @HeadsUpHotDogs";
@@ -685,7 +694,7 @@
     lp->enabled = true;
     lp->slug = @"chicago";
     lp->name = @"Chicago";
-    lp->unlockNextThreshold = 6500;
+    lp->unlockNextThreshold = 12000;
     lp->thumbnail = @"Chicago_Thumb.png";
     lp->func = @"switchScreenChicago";
     lp->unlockTweet = @"I traveled to the Windy City in @HeadsUpHotDogs";
@@ -784,7 +793,7 @@
     lp->enabled = false;
     lp->slug = @"space";
     lp->name = @"Space Station";
-    lp->unlockNextThreshold = -1;
+    lp->unlockNextThreshold = 20000;
     lp->thumbnail = @"Space_Thumb.png";
     lp->func = @"switchScreenSpace";
     lp->unlockTweet = @"We sent a frankfurter to the moon in @HeadsUpHotDogs";
