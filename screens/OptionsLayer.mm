@@ -65,6 +65,7 @@
     for(NSValue *v in lStructs){
         levelProps *lp = (levelProps *)[v pointerValue];
         [[NSUserDefaults standardUserDefaults] setInteger:0 forKey:[NSString stringWithFormat:@"highScore%@", lp->slug]];
+        [[NSUserDefaults standardUserDefaults] setInteger:0 forKey:[NSString stringWithFormat:@"trophy_%@", lp->slug]];
     }
     [standardUserDefaults synchronize];
     
