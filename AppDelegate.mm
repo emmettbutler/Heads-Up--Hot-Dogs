@@ -125,12 +125,14 @@
     //---------------------------------------------------------------------------------
     
     // kontagent -----------------------------------------------------------------------
-    [Kontagent enableDebug];
+#ifdef DEBUG
+    [Kontagent debugEnabled];
+#endif
     // test api key
-    [Kontagent startSession:@"315132246f7a4f3ab619276a35ea6407" mode:kKontagentSDKMode_TEST shouldSendApplicationAddedAutomatically:YES];
+    [Kontagent startSession:@"315132246f7a4f3ab619276a35ea6407" mode:kKontagentSDKMode_PRODUCTION shouldSendApplicationAddedAutomatically:YES];
     // prod api key
-    //[Kontagent startSession:@"40a5b05ff49e43b2afa8a863eeb320c3" mode:kKontagentSDKMode_TEST shouldSendApplicationAddedAutomatically:YES];
-    [Kontagent setMode:kKontagentSDKMode_TEST];
+    //[Kontagent startSession:@"40a5b05ff49e43b2afa8a863eeb320c3" mode:kKontagentSDKMode_PRODUCTION shouldSendApplicationAddedAutomatically:YES];
+    //[Kontagent setMode:kKontagentSDKMode_TEST];
     
     // create and save unique ID
     NSString *savedUuid = [standardUserDefaults stringForKey:@"uuid"];
@@ -138,7 +140,7 @@
     if(!savedUuid){
         uuid = [self GetUUID];
         [standardUserDefaults setObject:uuid forKey:@"uuid"];
-        [Kontagent revenueTracking:99 optionalParams:nil];
+        //[Kontagent revenueTracking:99 optionalParams:nil];
     }
         
     KTParamMap* paramMap = [[[KTParamMap alloc] init] autorelease];
