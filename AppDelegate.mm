@@ -17,6 +17,7 @@
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 #import "Kontagent/Kontagent.h"
+#import "UIDefs.h"
 
 @implementation AppDelegate
 
@@ -111,7 +112,8 @@
 	// You can change anytime.
 	[CCTexture2D setDefaultAlphaPixelFormat:kCCTexture2DPixelFormat_RGBA8888];
 
-	
+	standardUserDefaults = [NSUserDefaults standardUserDefaults];
+    
 	// Removes the startup flicker
 	[self removeStartupFlicker];
 	
@@ -123,8 +125,27 @@
     //---------------------------------------------------------------------------------
     
     // kontagent -----------------------------------------------------------------------
-    [Kontagent startSession:@"315132246f7a4f3ab619276a35ea6407" mode:kKontagentSDKMode_TEST shouldSendApplicationAddedAutomatically:YES];
     [Kontagent enableDebug];
+    // test api key
+    [Kontagent startSession:@"315132246f7a4f3ab619276a35ea6407" mode:kKontagentSDKMode_TEST shouldSendApplicationAddedAutomatically:YES];
+    // prod api key
+    //[Kontagent startSession:@"40a5b05ff49e43b2afa8a863eeb320c3" mode:kKontagentSDKMode_TEST shouldSendApplicationAddedAutomatically:YES];
+    [Kontagent setMode:kKontagentSDKMode_TEST];
+    
+    // create and save unique ID
+    NSString *savedUuid = [standardUserDefaults stringForKey:@"uuid"];
+    NSString *uuid = savedUuid;
+    if(!savedUuid){
+        uuid = [self GetUUID];
+        [standardUserDefaults setObject:uuid forKey:@"uuid"];
+        [Kontagent revenueTracking:99 optionalParams:nil];
+    }
+        
+    KTParamMap* paramMap = [[[KTParamMap alloc] init] autorelease];
+    [paramMap put:@"v_maj" value:VERSION_STRING];
+    [Kontagent sendDeviceInformation:paramMap];
+    //[paramMap put:@"s" value:uuid];
+    //[Kontagent applicationAdded:paramMap];
     // ---------------------------------------------------------------------------------
     
     // game center
@@ -139,7 +160,6 @@
         }
     }];
     
-    standardUserDefaults = [NSUserDefaults standardUserDefaults];
 #ifdef DEBUG
     [standardUserDefaults setInteger:0 forKey:@"introDone"]; //should be 0, is 1 for debugging
     [standardUserDefaults setInteger:1 forKey:@"unlockednyc"];
@@ -175,6 +195,12 @@
 	[[CCDirector sharedDirector] runWithScene:[Splashes scene]];
 }
 
+-(NSString *)GetUUID {
+    CFUUIDRef theUUID = CFUUIDCreate(NULL);
+    CFStringRef string = CFUUIDCreateString(NULL, theUUID);
+    CFRelease(theUUID);
+    return [(NSString *)string autorelease];
+}
 
 - (void)applicationWillResignActive:(UIApplication *)application {
 	[[CCDirector sharedDirector] pause];
