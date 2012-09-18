@@ -207,15 +207,30 @@
 -(NSMutableArray *)buildFaces:(NSNumber *)grade{
     NSMutableArray *faces = [[NSMutableArray alloc] init];
     
-    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Business" withGrade:grade]]];
-    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Cop" withGrade:grade]]];
-    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"CrustPunk" withGrade:grade]]];
-    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Jogger" withGrade:grade]]];
-    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Nudie" withGrade:grade]]];
-    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Rubber" withGrade:grade]]];
-    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Shiba" withGrade:grade]]];
-    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"YoungProfesh" withGrade:grade]]];
-    //[faces addObject:[NSValue valueWithPointer:[self buildFace:@"Professor" withGrade:grade]]];
+    NSMutableArray *charSlugs = [[NSMutableArray alloc] init];
+    for(int i = 0; i < [level->characters count]; i++){
+        personStruct *p = (personStruct *)[[level->characters objectAtIndex:i] pointerValue];
+        [charSlugs addObject:p->slug];
+    }
+    
+    if([charSlugs containsObject:@"busman"])
+        [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Business" withGrade:grade]]];
+    if([charSlugs containsObject:@"police"])
+        [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Cop" withGrade:grade]]];
+    if([charSlugs containsObject:@"crpunk"])
+        [faces addObject:[NSValue valueWithPointer:[self buildFace:@"CrustPunk" withGrade:grade]]];
+    if([charSlugs containsObject:@"jogger"])
+        [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Jogger" withGrade:grade]]];
+    if([charSlugs containsObject:@"nudie"])
+        [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Nudie" withGrade:grade]]];
+    if([charSlugs containsObject:@"muncher"])
+        [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Rubber" withGrade:grade]]];
+    if(level->hasShiba)
+        [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Shiba" withGrade:grade]]];
+    if([charSlugs containsObject:@"youngpro"])
+        [faces addObject:[NSValue valueWithPointer:[self buildFace:@"YoungProfesh" withGrade:grade]]];
+    //if([charSlugs containsObject:@"professor"])
+        //[faces addObject:[NSValue valueWithPointer:[self buildFace:@"Professor" withGrade:grade]]];
     
     return faces;
 }
@@ -327,12 +342,12 @@
         
         bubble = [CCSprite spriteWithSpriteFrameName:@"GameEnd_Bubble.png"];
         bubble.scale = elmtScale;
-        bubble.position = ccp(sprite.position.x-((sprite.contentSize.width*sprite.scaleX)/10), sprite.position.y-((sprite.contentSize.height*sprite.scaleY)/4)-(bubble.contentSize.height*bubble.scaleY/5));
+        bubble.position = ccp(sprite.position.x-((sprite.contentSize.width*sprite.scaleX)*.11), sprite.position.y-((sprite.contentSize.height*sprite.scaleY)/4)-(bubble.contentSize.height*bubble.scaleY/5));
         [self addChild:bubble];
         
         charFace = [CCSprite spriteWithSpriteFrameName:@"GameEnd_Cop_1.png"];
         charFace.scale = elmtScale;
-        charFace.position = ccp(sprite.position.x+((sprite.contentSize.width*sprite.scaleX)/3), sprite.position.y-((sprite.contentSize.height*sprite.scaleY)/4));
+        charFace.position = ccp(sprite.position.x+((sprite.contentSize.width*sprite.scaleX)*.36), sprite.position.y-((sprite.contentSize.height*sprite.scaleY)/4));
         charFace.visible = false;
         [self addChild:charFace];
         

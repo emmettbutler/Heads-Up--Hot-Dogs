@@ -81,7 +81,7 @@
         namesSprite.position = ccp(logoAnchor.x, logoAnchor.y);
         [spriteSheet addChild:namesSprite  z:21];
         [namesSprite runAction:[CCFadeIn actionWithDuration:1.8]];
-    } else if(time == 250){
+    } else if(time == 280){
         [namesSprite runAction:[CCFadeOut actionWithDuration:1]];
         [namesBG runAction:[CCFadeOut actionWithDuration:1]];
         [self runAction:[CCSequence actions:[CCDelayTime actionWithDuration:1], [CCCallFunc actionWithTarget:self selector:@selector(switchSceneTitle)], nil]];

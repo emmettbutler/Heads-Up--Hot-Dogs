@@ -58,5 +58,6 @@
 }
 
 +(NSMutableArray *)buildCharacters:(NSString *)levelSlug;
++(NSMutableArray *)buildCharacterNames:(NSString *)levelSlug;
 
 @end
