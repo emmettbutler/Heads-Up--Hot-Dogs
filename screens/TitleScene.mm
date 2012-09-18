@@ -61,7 +61,7 @@
         // color definitions
         _color_pink = ccc3(255, 62, 166);
         
-        CCLabelTTF *label = [CCLabelTTF labelWithString:@"GOLD CDT. 1" fontName:@"LostPet.TTF" fontSize:30.0];
+        CCLabelTTF *label = [CCLabelTTF labelWithString:@"GOLD CDT. 2" fontName:@"LostPet.TTF" fontSize:30.0];
         [[label texture] setAliasTexParameters];
         label.color = _color_pink;
         label.position = ccp((label.contentSize.width/2)+6, winSize.height-(label.contentSize.height/2)-5);
@@ -88,7 +88,7 @@
         button3.scale = scale;
         button3.position = ccp(winSize.width*.2, button3.contentSize.height*button3.scaleY);
         [self addChild:button3 z:10];
-        label = [CCLabelTTF labelWithString:@"More Games" fontName:@"LostPet.TTF" fontSize:fontSize];
+        label = [CCLabelTTF labelWithString:@"More Games" fontName:@"LostPet.TTF" fontSize:fontSize*.85];
         [[label texture] setAliasTexParameters];
         label.color = _color_pink;
         label.position = ccp(button3.position.x, button3.position.y-1);
@@ -110,7 +110,7 @@
         button2.scale = scale*1.2;
         button2.position = ccp((winSize.width/2), winSize.height*.23);
         [self addChild:button2 z:10];
-        CCLabelTTF *otherLabel = [CCLabelTTF labelWithString:@"Start" fontName:@"LostPet.TTF" fontSize:fontSize*1.2];
+        CCLabelTTF *otherLabel = [CCLabelTTF labelWithString:@"Start" fontName:@"LostPet.TTF" fontSize:fontSize*1.4];
         [[otherLabel texture] setAliasTexParameters];
         otherLabel.color = _color_pink;
         otherLabel.position = ccp(button2.position.x, button2.position.y-1);

@@ -26,10 +26,11 @@
         
         scaleX = 1, scaleY = 1;
         winSize = [CCDirector sharedDirector].winSize;
-        spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_menus.png"];
-        [self addChild:spriteSheet];
         
         [[Clouds alloc] initWithLayer:[NSValue valueWithPointer:self]];
+        
+        spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_menus.png"];
+        [self addChild:spriteSheet];
         
         CCSprite *background = [CCSprite spriteWithSpriteFrameName:@"Splash_BG_clean.png"];
         background.anchorPoint = CGPointZero;
@@ -39,19 +40,19 @@
             scaleX = IPAD_SCALE_FACTOR_X*.7;
             scaleY = IPAD_SCALE_FACTOR_Y*.7;
         }
-        [spriteSheet addChild:background z:-10];
+        [self addChild:background z:-10];
         
         logoBG = [CCSprite spriteWithSpriteFrameName:@"Logo_Cloud.png"];
         cloudAnchor = CGPointMake(winSize.width/2+4, winSize.height/2+8);
         logoBG.scale = scaleX;
         logoBG.position = ccp(cloudAnchor.x, cloudAnchor.y);
-        [spriteSheet addChild:logoBG];
+        [spriteSheet addChild:logoBG z:20];
         
         mainLogo = [CCSprite spriteWithSpriteFrameName:@"ASg_Logo.png"];
         logoAnchor = CGPointMake(winSize.width/2+16, winSize.height/2-15);
         mainLogo.scale = scaleX;
         mainLogo.position = ccp(logoAnchor.x, logoAnchor.y);
-        [spriteSheet addChild:mainLogo];
+        [spriteSheet addChild:mainLogo z:21];
         
         [self schedule: @selector(tick:)];
     }
@@ -69,16 +70,16 @@
         namesBG = [CCSprite spriteWithSpriteFrameName:@"CreatedBy_Cloud.png"];
         namesBG.scale = scaleX;
         namesBG.position = ccp(cloudAnchor.x, cloudAnchor.y);
-        [spriteSheet addChild:namesBG];
+        [spriteSheet addChild:namesBG  z:20];
         [namesBG runAction:[CCFadeIn actionWithDuration:1.8]];
         
         namesSprite = [CCSprite spriteWithSpriteFrameName:@"CreatedBy_Names.png"];
         namesSprite.scale = scaleX;
         logoAnchor = CGPointMake(logoAnchor.x*.95, logoAnchor.y*1.1);
         namesSprite.position = ccp(logoAnchor.x, logoAnchor.y);
-        [spriteSheet addChild:namesSprite];
+        [spriteSheet addChild:namesSprite  z:21];
         [namesSprite runAction:[CCFadeIn actionWithDuration:1.8]];
-    } else if(time == 210){
+    } else if(time == 250){
         [namesSprite runAction:[CCFadeOut actionWithDuration:1]];
         [namesBG runAction:[CCFadeOut actionWithDuration:1]];
         [self runAction:[CCSequence actions:[CCDelayTime actionWithDuration:1], [CCCallFunc actionWithTarget:self selector:@selector(switchSceneTitle)], nil]];
