@@ -69,13 +69,15 @@
         
         namesBG = [CCSprite spriteWithSpriteFrameName:@"CreatedBy_Cloud.png"];
         namesBG.scale = scaleX;
+        namesBG.opacity = 0;
         namesBG.position = ccp(cloudAnchor.x, cloudAnchor.y);
         [spriteSheet addChild:namesBG  z:20];
         [namesBG runAction:[CCFadeIn actionWithDuration:1.8]];
         
         namesSprite = [CCSprite spriteWithSpriteFrameName:@"CreatedBy_Names.png"];
         namesSprite.scale = scaleX;
-        logoAnchor = CGPointMake(logoAnchor.x*.95, logoAnchor.y*1.1);
+        namesSprite.opacity = 0;
+        namesAnchor = CGPointMake(logoAnchor.x*.95, logoAnchor.y*1.1);
         namesSprite.position = ccp(logoAnchor.x, logoAnchor.y);
         [spriteSheet addChild:namesSprite  z:21];
         [namesSprite runAction:[CCFadeIn actionWithDuration:1.8]];
@@ -87,6 +89,7 @@
 
     [logoBG setPosition:CGPointMake(cloudAnchor.x + (5 * sinf(time * .01)), cloudAnchor.y)];
     [mainLogo setPosition:CGPointMake(logoAnchor.x + (6 * sinf(time * .03)), logoAnchor.y + (3 * cosf(time * .02)))];
+    [namesSprite setPosition:CGPointMake(namesAnchor.x + (5 * sinf(time * .01)), namesAnchor.y)];
 }
 
 -(void)switchSceneTitle{

@@ -16,7 +16,7 @@
     CCSprite *mainLogo, *logoBG, *cloud1, *cloud2, *cloud3, *namesSprite, *namesBG;
     int time;
     float scaleX, scaleY;
-    CGPoint cloudAnchor, logoAnchor;
+    CGPoint cloudAnchor, logoAnchor, namesAnchor;
     CGRect screen;
     CGSize winSize;
 }
