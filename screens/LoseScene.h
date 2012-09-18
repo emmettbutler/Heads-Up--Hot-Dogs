@@ -12,7 +12,7 @@
 #import <Twitter/Twitter.h>
 #import "AchievementReporter.h"
 
-@interface LoseLayer : CCLayer <GKLeaderboardViewControllerDelegate>
+@interface LoseLayer : CCLayer <GKLeaderboardViewControllerDelegate, GKAchievementViewControllerDelegate>
 {
     struct face{
         NSString *speechBubble;
@@ -41,6 +41,8 @@
     ALuint sting;
     float elmtScale;
     AchievementReporter *reporter;
+    GKLeaderboardViewController *leaderboardController;
+    GKAchievementViewController *achievementController;
     BOOL touchLock, _setNewHighScore;
     CGRect _twitterRect, _replayRect, _quitRect, _gcRect;
     NSString *slug;

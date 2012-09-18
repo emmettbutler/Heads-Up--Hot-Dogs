@@ -12,6 +12,7 @@
 #import "TestFlight.h"
 #import "Clouds.h"
 #import "UIDefs.h"
+#import "AppDelegate.h"
 
 #import <GameKit/GameKit.h>
 #import <UIKit/UIKit.h>
@@ -37,14 +38,35 @@
 }
 
 -(void)showGameCenterLeaderboard{
-    GKLeaderboardViewController *leaderboardController = [[GKLeaderboardViewController alloc] init];
+    leaderboardController = [[GKLeaderboardViewController alloc] init];
     if (leaderboardController != nil){
-        UIViewController *myController = [[UIViewController alloc] init];
+        AppDelegate *ad = [[UIApplication sharedApplication] delegate];
+        UIViewController *rootViewController = (UIViewController *)ad.getRootViewController;
         leaderboardController.leaderboardDelegate = self;
-        [myController presentModalViewController:leaderboardController animated:YES];
+        [rootViewController presentModalViewController:leaderboardController animated:YES];
     } else {
         NSLog(@"Game center view not found");
     }
+}
+
+-(void)showGameCenterAchievements{
+    achievementController = [[GKAchievementViewController alloc] init];
+    if (achievementController != nil){
+        AppDelegate *ad = [[UIApplication sharedApplication] delegate];
+        UIViewController *rootViewController = (UIViewController *)ad.getRootViewController;
+        achievementController.achievementDelegate = self;
+        [rootViewController presentModalViewController:achievementController animated:YES];
+    } else {
+        NSLog(@"Game center view not found");
+    }
+}
+
+-(void)leaderboardViewControllerDidFinish:(GKLeaderboardViewController *)viewController{
+    [leaderboardController dismissModalViewControllerAnimated:YES];
+}
+
+-(void)achievementViewControllerDidFinish:(GKAchievementViewController *)viewController{
+    [achievementController dismissModalViewControllerAnimated:YES];
 }
 
 - (IBAction)tweetButtonPressed:(id)sender{
@@ -485,7 +507,8 @@
     if(CGRectContainsPoint(_twitterRect,location)){
         [self tweetButtonPressed:self];
     } else if(CGRectContainsPoint(_gcRect, location)){
-        [self showGameCenterLeaderboard];
+        [self showGameCenterAchievements];
+        //[self showGameCenterLeaderboard];
     } else if(CGRectContainsPoint(_quitRect, location)){
         [self switchSceneLevel];
     } else if(CGRectContainsPoint(_replayRect, location)){
