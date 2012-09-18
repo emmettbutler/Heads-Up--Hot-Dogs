@@ -16,6 +16,7 @@
 #import <GameKit/GameKit.h>
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
+#import "Kontagent/Kontagent.h"
 
 @implementation AppDelegate
 
@@ -121,6 +122,11 @@
     [TestFlight setDeviceIdentifier:[[UIDevice currentDevice] uniqueIdentifier]];
     //---------------------------------------------------------------------------------
     
+    // kontagent -----------------------------------------------------------------------
+    [Kontagent startSession:@"315132246f7a4f3ab619276a35ea6407" mode:kKontagentSDKMode_TEST shouldSendApplicationAddedAutomatically:YES];
+    [Kontagent enableDebug];
+    // ---------------------------------------------------------------------------------
+    
     // game center
     GKLocalPlayer *localPlayer = [GKLocalPlayer localPlayer];
     [localPlayer authenticateWithCompletionHandler:^(NSError *error) {
@@ -194,6 +200,7 @@
 	CCDirector *director = [CCDirector sharedDirector];
     
     NSLog(@"Application HEADS UP HOT DOGS exiting");
+    [Kontagent stopSession];
 	
 	[[director openGLView] removeFromSuperview];
 	
