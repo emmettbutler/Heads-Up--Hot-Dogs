@@ -12,19 +12,20 @@
 @implementation AchievementReporter
 
 -(void)reportAchievementIdentifier:(NSString*)identifier percentComplete:(float)percent{
+    // could pass in the achievement name here and surface to user
     GKAchievement *achievement = [self getAchievementForIdentifier:identifier];
     if(achievement && achievement.percentComplete < 100){
         achievement.percentComplete = percent;
         [achievement reportAchievementWithCompletionHandler:^(NSError *error){
             if(error != nil){
                 NSLog(@"Error reporting achievement to game center: %@", identifier);
-                // if showsCompletionHandler doesn't end up working, use this instead (however, in prod, this should be commented)
-                // this might lead to confusion, but it seems like an ok fallback?
-                if(achievement.percentComplete >= 100){
-                    [GKNotificationBanner showBannerWithTitle:@"Achievement unlocked:" message:achievement.identifier completionHandler:^(void){return;}];
-                }
             } else {
                 NSLog(@"Reported achievement to game center: %@", identifier);
+            }
+            // if showsCompletionHandler doesn't end up working, use this instead (however, in prod, this should be commented)
+            // this might lead to confusion, but it seems like an ok fallback?
+            if(achievement.percentComplete >= 100){
+                [GKNotificationBanner showBannerWithTitle:@"Achievement unlocked" message:@"" completionHandler:^(void){return;}];
             }
         }];
     }
