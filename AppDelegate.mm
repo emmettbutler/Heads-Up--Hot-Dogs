@@ -132,7 +132,6 @@
     [Kontagent startSession:@"315132246f7a4f3ab619276a35ea6407" mode:kKontagentSDKMode_PRODUCTION shouldSendApplicationAddedAutomatically:YES];
     // prod api key
     //[Kontagent startSession:@"40a5b05ff49e43b2afa8a863eeb320c3" mode:kKontagentSDKMode_PRODUCTION shouldSendApplicationAddedAutomatically:YES];
-    //[Kontagent setMode:kKontagentSDKMode_TEST];
     
     // create and save unique ID
     NSString *savedUuid = [standardUserDefaults stringForKey:@"uuid"];
@@ -164,11 +163,6 @@
     
 #ifdef DEBUG
     [standardUserDefaults setInteger:0 forKey:@"introDone"]; //should be 0, is 1 for debugging
-    [standardUserDefaults setInteger:1 forKey:@"unlockednyc"];
-    [standardUserDefaults setInteger:1 forKey:@"unlockedjapan"];
-    [standardUserDefaults setInteger:1 forKey:@"unlockedlondon"];
-    [standardUserDefaults setInteger:1 forKey:@"unlockedchicago"];
-    [standardUserDefaults setInteger:1 forKey:@"unlockedspace"];
 #else
     [[SimpleAudioEngine sharedEngine] preloadEffect:@"menu intro.mp3"];
     [[SimpleAudioEngine sharedEngine] preloadEffect:@"pause 3.mp3"];
