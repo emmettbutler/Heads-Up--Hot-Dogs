@@ -159,5 +159,6 @@ Technical / Development Lessons
 The project as a whole has taught me:
 
 - the value of beginning with a simple, naive implementation and then quickly iterating and optimizing.
+- it's better to show nothing at all than to show a buggy feature
 
 - Touch hashes
