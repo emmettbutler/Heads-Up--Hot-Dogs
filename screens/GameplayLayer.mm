@@ -1982,9 +1982,7 @@
         _wallsBody->CreateFixture(&wallsBoxDef);
 
         [TestFlight passCheckpoint:@"Game Started"];
-        
-        _points = 50000;
-        
+
         //schedule callbacks for dogs, people, and game value decrements
         [self spawnCallback];
         [self wienerCallback:self data:[[NSNumber numberWithInt:arc4random() % 10] retain]];
@@ -2143,18 +2141,14 @@
 #endif
             CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"Lvl_TextBox.png"];
             sprite.position = ccp(winSize.width/2, winSize.height/2);
+            sprite.scaleX = spriteScaleX;
+            sprite.scaleY = spriteScaleY;
             [self addChild:sprite];
         
-            CCLabelTTF *gameOverLabel = [CCLabelTTF labelWithString:@"You lost five franks!" fontName:@"LostPet.TTF" fontSize:23.0];
+            CCLabelTTF *gameOverLabel = [CCLabelTTF labelWithString:@"You lost five franks!\nBetter luck next time..." dimensions:CGSizeMake(sprite.contentSize.width*sprite.scaleX*.9,sprite.contentSize.height*sprite.scaleY*.9) alignment:UITextAlignmentCenter fontName:@"LostPet.TTF" fontSize:20.0*spriteScaleX];
             gameOverLabel.color = _color_pink;
             [[gameOverLabel texture] setAliasTexParameters];
-            gameOverLabel.position = ccp(winSize.width/2, winSize.height/2+10);
-            [self addChild:gameOverLabel];
-        
-            gameOverLabel = [CCLabelTTF labelWithString:@"Better luck next time..." fontName:@"LostPet.TTF" fontSize:23.0];
-            gameOverLabel.color = _color_pink;
-            [[gameOverLabel texture] setAliasTexParameters];
-            gameOverLabel.position = ccp(winSize.width/2, winSize.height/2-10);
+            gameOverLabel.position = ccp(sprite.position.x, sprite.position.y-4*sprite.scaleY);
             [self addChild:gameOverLabel];
         
             [self runAction:[CCSequence actions:[CCDelayTime actionWithDuration:3], [CCCallFunc actionWithTarget:self selector:@selector(loseScene)], nil]];

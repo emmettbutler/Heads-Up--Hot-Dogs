@@ -283,11 +283,19 @@
 -(void)addLoading{
     [background setColor:ccc3(160, 160, 160)];
     
+    float scale = 1, fontSize = 40.0;
+    
+    if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+        scale = IPAD_SCALE_FACTOR_X;
+        fontSize *= IPAD_SCALE_FACTOR_X;
+    }
+    
     CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"Lvl_TextBox.png"];
     sprite.position = ccp(winSize.width/2, (winSize.height/2));
+    sprite.scale = scale;
     [self addChild:sprite];
     
-    loading = [[CCLabelTTF labelWithString:@"Loading..." fontName:@"LostPet.TTF" fontSize:40.0] retain];
+    loading = [[CCLabelTTF labelWithString:@"Loading..." fontName:@"LostPet.TTF" fontSize:fontSize] retain];
     loading.color = _color_pink;
     loading.position = ccp(winSize.width/2, winSize.height/2);
     [[loading texture] setAliasTexParameters];

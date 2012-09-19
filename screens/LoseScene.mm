@@ -467,22 +467,23 @@
         if(res->trophyLevel <= 2 && !level->next->unlocked){
             NSInteger unlocked = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"unlocked%@", level->next->slug]];
             if(level->next->slug != level->slug && (!unlocked || unlocked == 0)){
+                float scale = 1, fontSize = 20.0;
+                if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+                    scale = IPAD_SCALE_FACTOR_X;
+                    fontSize *= IPAD_SCALE_FACTOR_X;
+                }
+                
                 levelBox = [CCSprite spriteWithSpriteFrameName:@"Lvl_TextBox.png"];
                 levelBox.position = ccp(winSize.width/2, (winSize.height/2));
+                levelBox.scale = scale;
                 [self addChild:levelBox];
                 
                 [reporter reportAchievementIdentifier:[NSString stringWithFormat:@"unlock_%@", level->next->slug] percentComplete:100];
-                // TODO - only show this the first time it's unlocked
-                levelLabel1 = [CCLabelTTF labelWithString:@"New Level Unlocked" fontName:@"LostPet.TTF" fontSize:20.0];
-                [[levelLabel1 texture] setAliasTexParameters];
-                levelLabel1.color = _color_pink;
-                levelLabel1.position = ccp(winSize.width/2, winSize.height/2+10);
-                [self addChild:levelLabel1];
         
-                levelLabel2 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"%@", level->next->name] fontName:@"LostPet.TTF" fontSize:20.0];
+                levelLabel2 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"New level unlocked\n%@", level->next->name] dimensions:CGSizeMake(levelBox.contentSize.width*levelBox.scaleX*.9,levelBox.contentSize.height*levelBox.scaleY*.8) alignment:UITextAlignmentCenter fontName:@"LostPet.TTF" fontSize:fontSize];
                 [[levelLabel2 texture] setAliasTexParameters];
                 levelLabel2.color = _color_pink;
-                levelLabel2.position = ccp(winSize.width/2, winSize.height/2-10);
+                levelLabel2.position = levelBox.position;
                 [self addChild:levelLabel2];
             }
         }
