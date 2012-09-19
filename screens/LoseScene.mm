@@ -98,6 +98,8 @@
     NSString *slug = (NSString *)[(NSMutableArray *) data objectAtIndex:4];
     NSValue *lV = (NSValue *)[(NSMutableArray *) data objectAtIndex:5];
     levelProps *l = (levelProps *)[lV pointerValue];
+    NSInteger *dogsShotByCop = (NSInteger *)[(NSValue *)[(NSMutableArray *) data objectAtIndex:6] pointerValue];
+    NSInteger *dogsMissedByCop = (NSInteger *)[(NSValue *)[(NSMutableArray *) data objectAtIndex:7] pointerValue];
     
     layer->_score = (int)score;
     layer->_timePlayed = (int)timePlayed;
@@ -105,6 +107,8 @@
     layer->_dogsSaved = (int)dogsSaved;
     layer->slug = slug;
     layer->level = l;
+    layer->_shotByCop = (int)dogsShotByCop;
+    layer->_missedByCop = (int)dogsMissedByCop;
     CCLOG(@"In sceneWithData: score = %d, time = %d, peopleGrumped = %d, dogsSaved = %d", layer->_score, layer->_timePlayed, layer->_peopleGrumped, layer->_dogsSaved);
     
 	[scene addChild:layer];
@@ -142,8 +146,8 @@
         s->bad = @"Nice try, punk! You\'re coming with me!";
         s->ok = @"We can\'t let this delinquent keep causing mayhem!";
         s->good = @"There are too many of them! I need backup!";
-        s->other1 = @"I missed %d dogs? No way!";
-        s->other2 = @"Ha! I shot down %d dogs, and I\'ll get more next time!";
+        s->other1 = [NSString stringWithFormat:@"I missed %d dogs? No way!", _missedByCop];
+        s->other2 = [NSString stringWithFormat:@"Ha! I shot down %d dogs, and I\'ll get more next time!", _shotByCop];
     } else if (characterName == @"CrustPunk"){
         s->bad = @"Haha, that score chunks it.";
         s->ok = @"Not too bad, dude. Nice.";
@@ -184,7 +188,7 @@
         s->bad = @"Such a low grade. Study harder.";
         s->ok = @"Interesting score, but there are a few points you could use to elaborate.";
         s->good = @"Such a model of excellence. The ideal pupil!";
-        s->other1 = @"Are you going anywhere for summer vacation? I hear %@ is nice.";
+        s->other1 = [NSString stringWithFormat:@"Are you going anywhere for summer vacation? I hear %@ is nice.", level->prev->name];
         s->other2 = @"The history of the hot dog is unclear, but fascinating nonetheless.";
     }
     
@@ -426,7 +430,7 @@
         [trophy setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:res->trophy]];
         [trophy setVisible:true];
         
-        CCLabelTTF *speech = [CCLabelTTF labelWithString:res->f->speechBubble dimensions:CGSizeMake(((bubble.contentSize.width*bubble.scaleX)-80), (([res->f->speechBubble length]/30 > 1) ? [res->f->speechBubble length]/30 : 1)*35.0*elmtScale) alignment:UITextAlignmentCenter fontName:@"LostPet.TTF" fontSize:17.0*elmtScale];
+        CCLabelTTF *speech = [CCLabelTTF labelWithString:res->f->speechBubble dimensions:CGSizeMake(((bubble.contentSize.width*bubble.scaleX)-80), (([res->f->speechBubble length]/30 > 1) ? [res->f->speechBubble length]/30 : 1)*38.0*elmtScale) alignment:UITextAlignmentCenter fontName:@"LostPet.TTF" fontSize:17.0*elmtScale];
         speech.color = _color_pink;
         speech.position = CGPointMake(bubble.position.x-3, bubble.position.y);
         [[speech texture] setAliasTexParameters];
