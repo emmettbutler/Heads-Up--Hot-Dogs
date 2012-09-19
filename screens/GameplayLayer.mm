@@ -1983,6 +1983,8 @@
 
         [TestFlight passCheckpoint:@"Game Started"];
         
+        _points = 50000;
+        
         //schedule callbacks for dogs, people, and game value decrements
         [self spawnCallback];
         [self wienerCallback:self data:[[NSNumber numberWithInt:arc4random() % 10] retain]];
