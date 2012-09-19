@@ -546,6 +546,12 @@
     bodyUserData *ud = (bodyUserData *)b->GetUserData();
     b2Body *aimedDog;
     double dy, dx, a;
+    
+    float scale = 1;
+    if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+        scale = spriteScaleX*.7;
+    }
+    
     for(b2Body* aimedBody = _world->GetBodyList(); aimedBody; aimedBody = aimedBody->GetNext()){
         if(aimedBody->GetUserData() && aimedBody->GetUserData() != (void*)100){
             bodyUserData *aimedUd = (bodyUserData *)aimedBody->GetUserData();
@@ -558,6 +564,8 @@
                 [ud->overlaySprite setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"Target_Dog.png"]];
                 ud->overlaySprite.position = CGPointMake(aimedDog->GetPosition().x*PTM_RATIO, aimedDog->GetPosition().y*PTM_RATIO);
                 ud->overlaySprite.rotation = 6 * (time % 360);
+                
+                ud->overlaySprite.scale = scale;
                 break;
             }
         }
@@ -2324,9 +2332,15 @@
             if(ud->overlaySprite != NULL){
                 if(ud->sprite1.tag == S_POLICE){
                     if(!ud->aiming){
+                        float scale = 1;
+                        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+                            scale = spriteScaleX*.7;
+                        }
+                        
                         [ud->overlaySprite setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"Target_NoDog.png"]];
                         ud->overlaySprite.position = CGPointMake(policeRayPoint2.x*PTM_RATIO, policeRayPoint2.y*PTM_RATIO);
                         ud->overlaySprite.rotation = 3 * (time % 360);
+                        ud->overlaySprite.scale = scale;
                         if(ud->_cop_hasShot){
                             [ud->overlaySprite removeFromParentAndCleanup:YES];
                             ud->overlaySprite = NULL;
