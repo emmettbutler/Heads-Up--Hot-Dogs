@@ -189,7 +189,7 @@
         button4.scale = scale;
         button4.position = ccp(button4.contentSize.width/2*button4.scaleX*1.1, button4.contentSize.height*button4.scaleY*.6);
         [self addChild:button4 z:10];
-        label = [CCLabelTTF labelWithString:@"Back" fontName:@"LostPet.TTF" fontSize:fontSize];
+        label = [CCLabelTTF labelWithString:@"Title" fontName:@"LostPet.TTF" fontSize:fontSize];
         [[label texture] setAliasTexParameters];
         label.color = _color_pink;
         label.position = ccp(button4.position.x, button4.position.y-1);
