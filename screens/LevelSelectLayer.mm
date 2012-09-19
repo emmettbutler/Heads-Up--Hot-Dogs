@@ -9,6 +9,7 @@
 #import "LevelSelectLayer.h"
 #import "GameplayLayer.h"
 #import "Clouds.h"
+#import "TitleScene.h"
 #import "UIDefs.h"
 
 @implementation LevelSelectLayer
@@ -23,7 +24,7 @@
 +(NSMutableArray *)buildLevels:(NSNumber *)full{
     NSMutableArray *levelStructs = [[NSMutableArray alloc] init];
     
-    [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_common.plist"];
+    if(full.boolValue) [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_common.plist"];
 
     // check it out - seven levels!
     [levelStructs addObject:[self philly:full]];
@@ -34,7 +35,7 @@
     [levelStructs addObject:[self space:full]];
     [levelStructs addObject:[self japan:full]];
    
-    [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_common.plist"];
+    if(full.boolValue) [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_common.plist"];
 
     NSLog(@"Loading levels...");
     for(NSValue *v in levelStructs){
@@ -184,6 +185,17 @@
         helpLabel.position = ccp(winSize.width/2, thumb.position.y-((thumb.contentSize.height*thumb.scaleY)/2)+6);
         [self addChild:helpLabel];
         
+        CCSprite *button4 = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
+        button4.scale = scale;
+        button4.position = ccp(button4.contentSize.width/2*button4.scaleX*1.1, button4.contentSize.height*button4.scaleY*.6);
+        [self addChild:button4 z:10];
+        label = [CCLabelTTF labelWithString:@"Back" fontName:@"LostPet.TTF" fontSize:fontSize];
+        [[label texture] setAliasTexParameters];
+        label.color = _color_pink;
+        label.position = ccp(button4.position.x, button4.position.y-1);
+        [self addChild:label z:11];
+        _backRect = CGRectMake((button4.position.x-(button4.contentSize.width*button4.scaleX)/2), (button4.position.y-(button4.contentSize.height*button4.scaleY)/2), (button4.contentSize.width*button4.scaleX+70), (button4.contentSize.height*button4.scaleY+70));
+        
 //#ifdef TEST
         CCLabelTTF *unlockAllLevelsLabel = [CCLabelTTF labelWithString:@"Unlock all levels" fontName:@"LostPet.TTF" fontSize:25.0];
         unlockAllLevelsLabel.color = _color_pink;
@@ -231,6 +243,10 @@
     location = [[CCDirector sharedDirector] convertToGL:location];
 
     firstTouch = location;
+    
+    if(CGRectContainsPoint(_backRect, location)){
+        [self switchSceneTitle];
+    }
 }
 
 -(void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{
@@ -276,6 +292,10 @@
     loading.position = ccp(winSize.width/2, winSize.height/2);
     [[loading texture] setAliasTexParameters];
     [self addChild:loading];
+}
+
+- (void)switchSceneTitle{
+    [[CCDirector sharedDirector] replaceScene:[TitleLayer scene]];
 }
 
 -(void)switchScreenPhilly{
@@ -325,7 +345,7 @@
     lp->enabled = true;
     lp->slug = @"philly";
     lp->name = @"Philly";
-    lp->unlockNextThreshold = 17000;
+    lp->unlockNextThreshold = 20000;
     lp->func = @"switchScreenPhilly";
     lp->thumbnail = @"Philly_Thumb.png";
     

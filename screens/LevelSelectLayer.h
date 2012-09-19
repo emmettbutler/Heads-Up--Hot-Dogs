@@ -45,7 +45,7 @@ static NSUserDefaults *standardUserDefaults;
     levelProps *level;
     CGRect rightArrowRect;
     BOOL NO_LEVEL_LOCKS;
-    CGRect leftArrowRect;
+    CGRect leftArrowRect, _backRect;
     CGRect thumbnailRect;
     CGSize winSize;
     CCSprite *thumb, *background;
