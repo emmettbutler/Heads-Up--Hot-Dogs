@@ -59,8 +59,6 @@
 }
 
 -(void)deleteScores{
-    CGSize winSize = [[CCDirector sharedDirector] winSize];
-    
     NSMutableArray *lStructs = [LevelSelectLayer buildLevels:[NSNumber numberWithInt:0]];
     for(NSValue *v in lStructs){
         levelProps *lp = (levelProps *)[v pointerValue];
@@ -69,11 +67,16 @@
     }
     [standardUserDefaults synchronize];
     
-    CCLabelTTF *label = [CCLabelTTF labelWithString:@"Scores cleared!" fontName:@"LostPet.TTF" fontSize:30.0];
+    float fontSize = 30.0;
+    if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        fontSize *= IPAD_SCALE_FACTOR_X;
+    }
+    
+    CCLabelTTF *label = [CCLabelTTF labelWithString:@"Done!" fontName:@"LostPet.TTF" fontSize:fontSize];
     label.color = _color_pink;
-    label.position = ccp(winSize.width/2, 70);
+    label.position = ccp(yesButton.position.x+yesButton.contentSize.width/2*yesButton.scaleX*1.5, yesButton.position.y);
+    [[label texture] setAliasTexParameters];
     [scoresLayer addChild:label z:100];
-    lStructs = nil;
 }
 
 -(void)clearScoresWindow{
@@ -98,33 +101,39 @@
     pauseTitle.position = ccp((sprite.position.x+3), winSize.height*.82);
     [scoresLayer addChild:pauseTitle z:81];
     
-    label = [CCLabelTTF labelWithString:@"WARNING" fontName:@"LostPet.TTF" fontSize:fontSize+5];
+    label = [CCLabelTTF labelWithString:@"WARNING: This will delete all saved scores and unlocked levels on this device. Are you sure you'd like to continue?" dimensions:CGSizeMake(sprite.contentSize.width*sprite.scaleX*.9, sprite.contentSize.height*sprite.scaleY*.6) alignment:UITextAlignmentCenter fontName:@"LostPet.TTF" fontSize:fontSize];
     label.color = _color_pink;
-    CCMenuItem *warnItem = [CCMenuItemLabel itemWithLabel:label];
+    label.position = ccp(sprite.position.x, sprite.position.y);
+    [scoresLayer addChild:label z:81];
     
-    label = [CCLabelTTF labelWithString:@"This will clear all saved scores" fontName:@"LostPet.TTF" fontSize:fontSize];
+    yesButton = [CCSprite spriteWithSpriteFrameName:@"Options_Btn.png"];
+    yesButton.position = ccp(winSize.width/2, sprite.position.y*.65);
+    if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+        yesButton.scaleX = IPAD_SCALE_FACTOR_X;
+        yesButton.scaleY = IPAD_SCALE_FACTOR_Y;
+    }
+    [[yesButton texture] setAliasTexParameters];
+    [scoresLayer addChild:yesButton z:81];
+    _clearScoresRect = CGRectMake((yesButton.position.x-(yesButton.scaleX*yesButton.contentSize.width)/2), (yesButton.position.y-(yesButton.scaleY*yesButton.contentSize.height)/2), (yesButton.scaleX*yesButton.contentSize.width+10), (yesButton.scaleY*yesButton.contentSize.height+10));
+    label = [CCLabelTTF labelWithString:@"YES" fontName:@"LostPet.TTF" fontSize:fontSize];
+    [[label texture] setAliasTexParameters];
     label.color = _color_pink;
-    CCMenuItem *warnItem2 = [CCMenuItemLabel itemWithLabel:label];
+    label.position = ccp(yesButton.position.x, yesButton.position.y-1);
+    [scoresLayer addChild:label z:82];
     
-    label = [CCLabelTTF labelWithString:@"on this device. Are you sure?" fontName:@"LostPet.TTF" fontSize:fontSize];
+    CCSprite *noButton = [CCSprite spriteWithSpriteFrameName:@"Options_Btn.png"];
+    noButton.position = ccp(winSize.width/2, sprite.position.y*.4);
+    if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+        noButton.scaleX = IPAD_SCALE_FACTOR_X;
+        noButton.scaleY = IPAD_SCALE_FACTOR_Y;
+    }
+    [[noButton texture] setAliasTexParameters];
+    [scoresLayer addChild:noButton z:81];
+    label = [CCLabelTTF labelWithString:@"Never mind" fontName:@"LostPet.TTF" fontSize:fontSize];
+    [[label texture] setAliasTexParameters];
     label.color = _color_pink;
-    CCMenuItem *warnItem3 = [CCMenuItemLabel itemWithLabel:label];
-    
-    label = [CCLabelTTF labelWithString:@"YES!" fontName:@"LostPet.TTF" fontSize:fontSize+8];
-    label.color = _color_pink;
-    CCMenuItem *confirm = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(deleteScores)];
-    
-    CCSprite *bSprite = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
-    bSprite.position = ccp(winSize.width/2, winSize.height*.36);
-    bSprite.scaleY = 1.5*scale;
-    bSprite.scaleX = .7*scale;
-    [[bSprite texture] setAliasTexParameters];
-    [scoresLayer addChild:bSprite z:81];
-    
-    CCMenu *scoresMenu = [CCMenu menuWithItems: warnItem, warnItem2, warnItem3, confirm, nil];
-    [scoresMenu setPosition:ccp(sprite.position.x, winSize.height/2-10)];
-    [scoresMenu alignItemsVerticallyWithPadding:5*scale];
-    [scoresLayer addChild:scoresMenu z:81];
+    label.position = ccp(noButton.position.x, noButton.position.y-1);
+    [scoresLayer addChild:label z:82];
 }
 
 -(void)showCredits{
@@ -332,6 +341,10 @@
         [self removeChild:creditsLayer cleanup:YES];
         return;
     } else if(scores){
+        if(CGRectContainsPoint(_clearScoresRect, touchLocation1)){
+            [self deleteScores];
+            return;
+        }
         scores = false;
         [self removeChild:scoresLayer cleanup:YES];
         return;

@@ -12,10 +12,11 @@
 {
     CCSpriteBatchNode *spriteSheet, *spriteSheetCommon;
     ccColor3B _color_pink;
-    CGRect _siteRect, _creditsRect, _tutRect, _scoresRect, _sfxRect, _titleRect, _startRect;
+    CGRect _siteRect, _creditsRect, _tutRect, _scoresRect, _sfxRect, _titleRect, _startRect, _clearScoresRect;
     BOOL credits, scores;
     NSInteger sfxOn;
     float scale;
+    CCSprite *yesButton;
     CCLayerColor *creditsLayer, *scoresLayer;
     CCLabelTTF *sfxLabel;
 }
