@@ -81,6 +81,8 @@
     [loseParams addObject:[NSNumber numberWithInteger:_dogsSaved]];
     [loseParams addObject:slug];
     [loseParams addObject:[NSValue valueWithPointer:level]];
+    [loseParams addObject:[NSNumber numberWithInteger:_dogsShotByCop]];
+    [loseParams addObject:[NSNumber numberWithInteger:_dogsMissedByCop]];
     [[CCDirector sharedDirector] replaceScene:[LoseLayer sceneWithData:loseParams]];
 }
 
@@ -2232,8 +2234,10 @@
                 ud->hasTouchedGround = true;
                 ud->touchLock = false;
                 //ud->grabbed = false;
-                if(ud->shotSeq && !ud->touchLock)
+                if(ud->shotSeq && !ud->touchLock){
                     [ud->sprite1 stopAction:ud->shotSeq];
+                    _dogsMissedByCop++;
+                }
                 if(!ud->deathSeqLock){
                     [self runDogDeathAction:[NSValue valueWithPointer:dogBody]];
                 }
@@ -2713,6 +2717,10 @@
                                     }
                                 }
                                 if(b) break;
+                                
+                                if(ud->shotSeq){
+                                    _dogsMissedByCop++;
+                                }
                                 
                                 DogTouch *touch = [[DogTouch alloc] initWithBody:[[NSValue valueWithPointer:body]retain] andMouseJoint:[NSValue valueWithPointer:&md] andWorld:[[NSValue valueWithPointer:_world]retain] andHash:hash];
                                 [dogTouches addObject:[NSValue valueWithPointer:touch]];
