@@ -54,8 +54,9 @@
     CCFiniteTimeAction *endAction = [[[CCAnimate alloc] initWithAnimation:animation restoreOriginalFrame:NO] retain];
     
     CCCallFunc *flipBlowing = [CCCallFunc actionWithTarget:self selector:@selector(flipBlowing)];
+    CCCallFuncND *setInvisibleAction = [CCCallFuncND actionWithTarget:self selector:@selector(setVisibility:data:) data:[NSNumber numberWithBool:false]];
     
-    self->combinedAction = [[CCSequence actions:startAction, flipBlowing, loopAction, flipBlowing, endAction, nil] retain];
+    self->combinedAction = [[CCSequence actions:startAction, flipBlowing, loopAction, flipBlowing, endAction, setInvisibleAction, nil] retain];
     
     [self->mainSprite setPosition:CGPointMake(self->position.x-(self->grateSprite.contentSize.width*self->grateSprite.scaleX)/20, self->position.y+39*(self->mainSprite.contentSize.height*self->mainSprite.scaleY)/100)];
     [self->grateSprite setPosition:self->position];
@@ -67,9 +68,14 @@
     return self;
 }
 
+-(void)setVisibility:(id) sender data:(NSNumber *)visible{
+    [self->mainSprite setVisible:visible.boolValue];
+}
+
 -(void)flipBlowing{
-    if(self->isOn)
+    if(self->isOn){
         self->isOn = false;
+    }
     else
         self->isOn = true;
 }
