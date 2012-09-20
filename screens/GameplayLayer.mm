@@ -931,6 +931,8 @@
                 [animParams addObject:[NSValue valueWithPointer:ud->sprite1]];
                 [animParams addObject:[NSValue valueWithPointer:ud->altWalk]];
                 [ud->sprite1 runAction:[CCSequence actions:ud->postStopAction, [CCCallFuncND actionWithTarget:self selector:@selector(spriteRunAnim:data:) data:animParams], [CCCallFuncND actionWithTarget:self selector:@selector(clearLowerOffsets:data:) data:[[NSValue valueWithPointer:ud] retain]], nil]];
+                [ud->ripples stopAllActions];
+                [ud->ripples setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"DogEater_Ripple_Idle.png"]];
                 _player_hasTickled = true;
                 [ud->sprite2 stopAllActions];
                 [ud->angryFace stopAllActions];
@@ -1038,6 +1040,7 @@
     bodyUserData *ud = (bodyUserData *)[userdata pointerValue];
     ud->lowerXOffset = 0;
     ud->lowerYOffset = 0;
+    ud->rippleXOffset = ud->ogRippleXOffset;
 }
 
 -(void)playParticles:(id)sender data:(NSValue *)particles{
