@@ -73,6 +73,11 @@
         fontSize *= IPAD_SCALE_FACTOR_X;
     }
     
+#ifdef DEBUG
+#else
+    [[SimpleAudioEngine sharedEngine] playEffect:@"pause 3.mp3"];
+#endif
+    
     CCLabelTTF *label = [CCLabelTTF labelWithString:@"Done!" fontName:@"LostPet.TTF" fontSize:fontSize];
     label.color = _color_pink;
     label.position = ccp(yesButton.position.x+yesButton.contentSize.width/2*yesButton.scaleX*1.5, yesButton.position.y);
