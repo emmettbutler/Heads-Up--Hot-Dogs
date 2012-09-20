@@ -1417,21 +1417,20 @@
     }
 
     //put the sprites in place
+    if(person->tag == S_POLICE){
+        _policeArm.position = ccp(xPos.intValue, yPos);
+        [spriteSheetCharacter addChild:_policeArm z:zIndex];
+    }
     _personLower.position = ccp(xPos.intValue, yPos);
     _personUpper.position = ccp(xPos.intValue, yPos);
     _personUpperOverlay.position = ccp(xPos.intValue, yPos);
     [spriteSheetCharacter addChild:_personLower z:zIndex];
-    [spriteSheetCharacter addChild:_personUpper z:zIndex+2];
-    [spriteSheetCharacter addChild:_personUpperOverlay z:zIndex+2];
+    [spriteSheetCharacter addChild:_personUpper z:zIndex];
+    [spriteSheetCharacter addChild:_personUpperOverlay z:zIndex];
     if(person->rippleSprite && level->slug == @"japan"){
         _rippleSprite.position = ccp(xPos.intValue, yPos);
-        [spriteSheetCharacter addChild:_rippleSprite z:zIndex+3];
+        [spriteSheetCharacter addChild:_rippleSprite z:zIndex];
     }
-    if(person->tag == S_POLICE){
-        _policeArm.position = ccp(xPos.intValue, yPos);
-        [spriteSheetCharacter addChild:_policeArm z:zIndex-2];
-    }
-    
     int moveDelta, lowerArmAngle, upperArmAngle;
     float rippleXOffset;
     

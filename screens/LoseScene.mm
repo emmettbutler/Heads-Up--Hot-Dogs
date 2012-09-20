@@ -147,7 +147,7 @@
         s->ok = @"We can\'t let this delinquent keep causing mayhem!";
         s->good = @"There are too many of them! I need backup!";
         s->other1 = [NSString stringWithFormat:@"I missed %d dogs? No way!", _missedByCop];
-        s->other2 = [NSString stringWithFormat:@"Ha! I shot down %d dogs, and I\'ll get more next time!", _shotByCop];
+        s->other2 = [NSString stringWithFormat:@"Ha! I shot %d dogs, and I\'ll get more next time!", _shotByCop];
     } else if (characterName == @"CrustPunk"){
         s->bad = @"Haha, that score chunks it.";
         s->ok = @"Not too bad, dude. Nice.";
