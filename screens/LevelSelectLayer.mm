@@ -214,6 +214,8 @@
             if(lp->unlocked && unlockedCount < [lStructs count] - 1)
                 unlockedCount++;
         }
+        
+        firstTouch = CGPointMake(-1, -1);
 
         [self schedule: @selector(tick:)];
     }
@@ -250,11 +252,13 @@
 }
 
 -(void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{
+    if(firstTouch.x == -1) return;
+    
     NSSet *allTouches = [event allTouches];
     UITouch * touch = [[allTouches allObjects] objectAtIndex:0];
     CGPoint location = [touch locationInView: [touch view]];
     location = [[CCDirector sharedDirector] convertToGL:location];
-
+    
     //Swipe Detection Part 2
     lastTouch = location;
 
