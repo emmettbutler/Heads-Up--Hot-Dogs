@@ -1981,7 +1981,7 @@
         _wallsBody->CreateFixture(&wallsBoxDef);
 
         [TestFlight passCheckpoint:@"Game Started"];
-
+        
         //schedule callbacks for dogs, people, and game value decrements
         [self spawnCallback];
         [self wienerCallback:self data:[[NSNumber numberWithInt:arc4random() % 10] retain]];

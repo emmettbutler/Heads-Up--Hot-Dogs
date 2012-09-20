@@ -160,5 +160,6 @@ The project as a whole has taught me:
 
 - the value of beginning with a simple, naive implementation and then quickly iterating and optimizing.
 - it's better to show nothing at all than to show a buggy feature
+- seomthing about bloat/feature creep that I'm not sure of, should reflect on how to balance feature requests with simplicity
 
 - Touch hashes

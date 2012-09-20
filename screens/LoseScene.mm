@@ -430,9 +430,10 @@
         [trophy setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:res->trophy]];
         [trophy setVisible:true];
         
-        CCLabelTTF *speech = [CCLabelTTF labelWithString:res->f->speechBubble dimensions:CGSizeMake(((bubble.contentSize.width*bubble.scaleX)-80), (([res->f->speechBubble length]/30 > 1) ? [res->f->speechBubble length]/30 : 1)*38.0*elmtScale) alignment:UITextAlignmentCenter fontName:@"LostPet.TTF" fontSize:17.0*elmtScale];
+        CCLabelTTF *speech = [CCLabelTTF labelWithString:res->f->speechBubble dimensions:CGSizeMake(((bubble.contentSize.width*bubble.scaleX)*.75), (([res->f->speechBubble length]/25 > 1) ? [res->f->speechBubble length]/25 : 1)*34.0*elmtScale) alignment:UITextAlignmentCenter fontName:@"LostPet.TTF" fontSize:17.0*elmtScale];
         speech.color = _color_pink;
         speech.position = CGPointMake(bubble.position.x-3, bubble.position.y);
+        speech.anchorPoint = ccp(0.5, 0.5);
         [[speech texture] setAliasTexParameters];
         [self addChild:speech];
         
