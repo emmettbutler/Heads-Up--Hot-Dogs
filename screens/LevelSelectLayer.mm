@@ -107,6 +107,8 @@
             background.scaleX = IPAD_SCALE_FACTOR_X;
             background.scaleY = IPAD_SCALE_FACTOR_Y;
             largeFontSize = IPAD_HEADER_TEXT_SiZE;
+        } else {
+            background.scaleX = winSize.width / background.contentSize.width;
         }
         [self addChild:background z:-1];
         
@@ -357,7 +359,7 @@
     lp->enabled = true;
     lp->slug = @"philly";
     lp->name = @"Philly";
-    lp->unlockNextThreshold = 20000;
+    lp->unlockNextThreshold = 5000;
     lp->func = @"switchScreenPhilly";
     lp->thumbnail = @"Philly_Thumb.png";
     
@@ -411,7 +413,7 @@
     lp->enabled = true;
     lp->slug = @"nyc";
     lp->name = @"Big Apple";
-    lp->unlockNextThreshold = 16000;
+    lp->unlockNextThreshold = 7000;
     lp->func = @"switchScreenNYC";
     lp->thumbnail = @"NYC_Thumb.png";
     lp->unlockTweet = @"I traveled to the Big Apple for some mischief in @HeadsUpHotDogs";
@@ -498,7 +500,7 @@
     lp->enabled = true;
     lp->slug = @"london";
     lp->name = @"London";
-    lp->unlockNextThreshold = 14000;
+    lp->unlockNextThreshold = 7000;
     lp->func = @"switchScreenLondon";
     lp->thumbnail = @"London_Thumb.png";
     lp->unlockTweet = @"I went to London to conquer some franks in @HeadsUpHotDogs";
@@ -509,9 +511,9 @@
         lp->bgm = @"gameplay 3.mp3";
         lp->gravity = -22.0f;
         lp->spritesheet = @"sprites_london";
-        lp->personSpeedMul = 1.2;
-        lp->restitutionMul = 1.2;
-        lp->frictionMul = .95;
+        lp->personSpeedMul = 1;
+        lp->restitutionMul = 1;
+        lp->frictionMul = 1;
         
         spcDogData *dd = new spcDogData();
         dd->riseSprite = @"Pasty_Rise.png";
@@ -606,7 +608,7 @@
     lp->enabled = true;
     lp->slug = @"china";
     lp->name = @"Beijing";
-    lp->unlockNextThreshold = 15000;
+    lp->unlockNextThreshold = 7500;
     lp->func = @"switchScreenChina";
     lp->thumbnail = @"China_Thumb.png";
     lp->unlockTweet = @"Chinese New Year is a perfect time for franks in @HeadsUpHotDogs";
@@ -617,9 +619,9 @@
         lp->bgm = @"gameplay 3.mp3";
         lp->gravity = -22.0f;
         lp->spritesheet = @"sprites_china";
-        lp->personSpeedMul = 1.2;
-        lp->restitutionMul = 1.2;
-        lp->frictionMul = .95;
+        lp->personSpeedMul = 1;
+        lp->restitutionMul = 1;
+        lp->frictionMul = 1;
         
         spcDogData *dd = new spcDogData();
         dd->riseSprite = @"Baozi_Rise.png";
@@ -686,7 +688,7 @@
     lp->enabled = true;
     lp->slug = @"japan";
     lp->name = @"Yamanashi";
-    lp->unlockNextThreshold = 8000;
+    lp->unlockNextThreshold = 4500;
     lp->func = @"switchScreenJapan";
     lp->thumbnail = @"Japan_Thumb.png";
     lp->unlockTweet = @"I was ready to relax in a calming Japanese hot spring in @HeadsUpHotDogs";
@@ -694,7 +696,7 @@
     if(loadFull){
         lp->bg = @"Japan_BG.png";
         lp->bgm = @"gameplay 1.mp3";
-        lp->gravity = -28.0f;
+        lp->gravity = -27.0f;
         lp->spritesheet = @"sprites_japan";
         lp->dogDeathDelay = .001;
         lp->personSpeedMul = .7;
@@ -751,7 +753,7 @@
     lp->enabled = true;
     lp->slug = @"chicago";
     lp->name = @"Chicago";
-    lp->unlockNextThreshold = 12000;
+    lp->unlockNextThreshold = 8000;
     lp->thumbnail = @"Chicago_Thumb.png";
     lp->func = @"switchScreenChicago";
     lp->unlockTweet = @"I traveled to the Windy City in @HeadsUpHotDogs";
@@ -763,7 +765,7 @@
         lp->gravity = -27.0f;
         lp->spritesheet = @"sprites_chicago";
         lp->personSpeedMul = 1;
-        lp->restitutionMul = 1.1;
+        lp->restitutionMul = .8;
         lp->frictionMul = 1.1;
         lp->maxDogs = 5;
         lp->hasShiba = true;
@@ -863,7 +865,7 @@
     lp->enabled = false;
     lp->slug = @"space";
     lp->name = @"Space Station";
-    lp->unlockNextThreshold = 20000;
+    lp->unlockNextThreshold = 8500;
     lp->thumbnail = @"Space_Thumb.png";
     lp->func = @"switchScreenSpace";
     lp->unlockTweet = @"We sent a frankfurter to the moon in @HeadsUpHotDogs";
@@ -875,7 +877,7 @@
         lp->gravity = -40.0f;
         lp->spritesheet = @"sprites_space";
         lp->personSpeedMul = 1.1;
-        lp->restitutionMul = 1.7;
+        lp->restitutionMul = 1.3;
         lp->frictionMul = 100;
         lp->hasShiba = true;
         
