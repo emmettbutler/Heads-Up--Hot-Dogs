@@ -261,11 +261,11 @@
     
     NSLog(@"Grade: %0.2f", grade.floatValue);
     
-    if(grade.floatValue > 1.4){
+    if(grade.floatValue > 1.2){
         res->trophy = @"Trophy_Gold.png";
         res->trophyLevel = 1;
         res->dogName = @"GOLD DOG";
-    } else if(grade.floatValue > .7){
+    } else if(grade.floatValue > .6){
         res->trophy = @"Trophy_Silver.png";
         res->trophyLevel = 2;
         res->dogName = @"SILVER DOG";
@@ -322,6 +322,8 @@
             background.scaleX = IPAD_SCALE_FACTOR_X;
             background.scaleY = IPAD_SCALE_FACTOR_Y;
             headerFontSize = IPAD_HEADER_TEXT_SiZE;
+        } else {
+            background.scaleX = winSize.width / background.contentSize.width;
         }
         [self addChild:background z:-1];
         

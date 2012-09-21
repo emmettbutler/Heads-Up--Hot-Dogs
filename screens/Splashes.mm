@@ -39,6 +39,8 @@
             background.scaleY = IPAD_SCALE_FACTOR_Y;
             scaleX = IPAD_SCALE_FACTOR_X*.7;
             scaleY = IPAD_SCALE_FACTOR_Y*.7;
+        } else {
+            background.scaleX = winSize.width / background.contentSize.width;
         }
         [self addChild:background z:-10];
         

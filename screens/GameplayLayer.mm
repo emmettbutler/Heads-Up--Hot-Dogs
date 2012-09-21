@@ -25,17 +25,10 @@
 #define WIND_PARTICLES 50
 #define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 
-#ifdef DEBUG
-#define SPAWN_LIMIT_DECREMENT_DELAY 6
-#define SPECIAL_DOG_PROBABILITY 29
-#define DROPPED_MAX 20
-#define WIENER_SPAWN_START 5
-#else
 #define SPAWN_LIMIT_DECREMENT_DELAY 2
 #define SPECIAL_DOG_PROBABILITY 25
 #define DROPPED_MAX 5
 #define WIENER_SPAWN_START 5
-#endif
 
 @implementation GameplayLayer
 
@@ -598,7 +591,7 @@
         [vent2 blowFrank:[NSValue valueWithPointer:b]];
     } else if(level->slug == @"london"){
         if(!ud->grabbed){
-            if(_subwayForce && abs(_subwayForce) < 2){
+            if(_subwayForce && abs(_subwayForce) < 1){
                 if(b->GetLinearVelocity().x != b->GetLinearVelocity().x+_subwayForce)
                 b->SetLinearVelocity(b2Vec2(b->GetLinearVelocity().x+_subwayForce, b->GetLinearVelocity().y));
                 if(_subwayForce > 0)
@@ -1820,6 +1813,8 @@
             background.scaleX = IPAD_SCALE_FACTOR_X;
             background.scaleY = IPAD_SCALE_FACTOR_Y;
             [[background texture] setAliasTexParameters];
+        } else {
+            background.scaleX = winSize.width / background.contentSize.width;
         }
         background.anchorPoint = CGPointZero;
         
@@ -1833,8 +1828,8 @@
         [self addChild:menu z:1000];
 #else
         [[SimpleAudioEngine sharedEngine] playBackgroundMusic:level->bgm loop:YES];
-        [spriteSheetLevel addChild:background z:-10];
 #endif
+        [spriteSheetLevel addChild:background z:-10];
 
         //basic game/box2d/cocos2d initialization
         _curPersonMaskBits = 0x1000;

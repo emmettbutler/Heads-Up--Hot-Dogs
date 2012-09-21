@@ -122,6 +122,8 @@
         if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
             background.scaleX = IPAD_SCALE_FACTOR_X;
             background.scaleY = IPAD_SCALE_FACTOR_Y;
+        } else {
+            background.scaleX = winSize.width / background.contentSize.width;
         }
         [self addChild:background z:-10];
         
