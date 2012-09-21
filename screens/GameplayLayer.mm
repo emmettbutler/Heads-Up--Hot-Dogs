@@ -1812,10 +1812,10 @@
         if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
             background.scaleX = IPAD_SCALE_FACTOR_X;
             background.scaleY = IPAD_SCALE_FACTOR_Y;
-            [[background texture] setAliasTexParameters];
         } else {
             background.scaleX = winSize.width / background.contentSize.width;
         }
+        [[background texture] setAliasTexParameters];
         background.anchorPoint = CGPointZero;
         
 #ifdef DEBUG

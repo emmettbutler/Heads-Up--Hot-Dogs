@@ -565,6 +565,7 @@
                 default: break;
             }
             bgc->sprite.position = CGPointMake(xPos, 2*(winSize.height/3));
+            bgc->sprite.scaleX = winSize.width/BASE_X_RESOLUTION;
             bgc->anim1 = [[NSMutableArray alloc] init];
             for(int j = 1; j <= 13; j++){
                 [bgc->anim1 addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -656,6 +657,8 @@
         if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
             scaleX = IPAD_SCALE_FACTOR_X;
             scaleY = IPAD_SCALE_FACTOR_Y;
+        } else {
+            scaleX = winSize.width/BASE_X_RESOLUTION;
         }
         
         lp->bgComponents = [[NSMutableArray alloc] init];
@@ -920,6 +923,8 @@
             if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
                 bgc->sprite.scaleX = IPAD_SCALE_FACTOR_X;
                 bgc->sprite.scaleY = IPAD_SCALE_FACTOR_Y;
+            } else {
+                bgc->sprite.scaleX = winSize.width/BASE_X_RESOLUTION;
             }
             bgc->sprite.position = CGPointMake(219.5*((float)winSize.width/320), y+((bgc->sprite.scaleY*(bgc->sprite.contentSize.height+.8*IPAD_SCALE_FACTOR_Y))*(i-1)));
             [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
