@@ -149,18 +149,33 @@
     //[paramMap put:@"s" value:uuid];
     //[Kontagent applicationAdded:paramMap];
     // ---------------------------------------------------------------------------------
-    
-    // game center
-    GKLocalPlayer *localPlayer = [GKLocalPlayer localPlayer];
-    [localPlayer authenticateWithCompletionHandler:^(NSError *error) {
-        if (localPlayer.isAuthenticated)
-        {
-            NSLog(@"Player %@ recognized", localPlayer.alias);
-            [TestFlight passCheckpoint:[NSString stringWithFormat:@"Player %@ recognized", localPlayer.alias]];
-        } else {
-            NSLog(@"Player not authenticated");
-        }
-    }];
+
+    NSLog(@"Version: %@", [[UIDevice currentDevice] systemVersion]);
+    if(SYSTEM_VERSION_LESS_THAN(@"6.0")){
+        // game center
+        GKLocalPlayer *localPlayer = [GKLocalPlayer localPlayer];
+        [localPlayer authenticateWithCompletionHandler:^(NSError *error) {
+            if (localPlayer.isAuthenticated){
+                NSLog(@"Player %@ recognized", localPlayer.alias);
+            } else {
+                NSLog(@"Player not authenticated");
+            }
+        }];
+    } else {
+        GKLocalPlayer *localPlayer = [GKLocalPlayer localPlayer];
+        localPlayer.authenticateHandler = ^(UIViewController *controller, NSError *error){
+            if (controller != nil){
+                //[self->viewController presentModalViewController:controller animated:NO];
+            }
+            else if (localPlayer.isAuthenticated){
+                //[self authenticatedPlayer: localPlayer];
+            }
+            else{
+                //[self disableGameCenter];
+            }
+        };
+    }
+ 
     
 #ifdef DEBUG
     [standardUserDefaults setInteger:0 forKey:@"introDone"]; //should be 0, is 1 for debugging
@@ -178,7 +193,7 @@
     NSInteger timesPlayed = [standardUserDefaults integerForKey:@"timesPlayed"];
     [standardUserDefaults setInteger:++timesPlayed forKey:@"timesPlayed"];
     [standardUserDefaults synchronize];
-    
+   
     [CCTexture2D setDefaultAlphaPixelFormat:kTexture2DPixelFormat_RGBA4444];
     
     // must be called before any other call to the director
