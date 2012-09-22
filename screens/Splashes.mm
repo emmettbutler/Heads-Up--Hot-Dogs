@@ -48,12 +48,14 @@
         cloudAnchor = CGPointMake(winSize.width/2+4, winSize.height/2+8);
         logoBG.scale = scaleX;
         logoBG.position = ccp(cloudAnchor.x, cloudAnchor.y);
+        //logoBG.visible = false;
         [spriteSheet addChild:logoBG z:20];
         
         mainLogo = [CCSprite spriteWithSpriteFrameName:@"ASg_Logo.png"];
         logoAnchor = CGPointMake(winSize.width/2+16, winSize.height/2-15);
         mainLogo.scale = scaleX;
         mainLogo.position = ccp(logoAnchor.x, logoAnchor.y);
+        //mainLogo.visible = false;
         [spriteSheet addChild:mainLogo z:21];
         
         [self schedule: @selector(tick:)];

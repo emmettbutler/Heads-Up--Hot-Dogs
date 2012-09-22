@@ -31,7 +31,7 @@
         NSString *good, *ok, *bad, *other1, *other2;
     };
     
-    int _score, _timePlayed, _peopleGrumped, _dogsSaved, _lock, _shotByCop, _missedByCop;
+    int _score, _timePlayed, _peopleGrumped, _dogsSaved, _lock, _shotByCop, _missedByCop, time;
     CCLabelTTF *scoreLine, *timeLine, *dogsLine, *peopleLine, *highScoreLine;
     CCLabelTTF *scoreNotify, *timeNotify, *summary;
     CCSpriteBatchNode *spriteSheet;

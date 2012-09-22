@@ -419,6 +419,12 @@
 -(void) tick: (ccTime) dt {
     CGSize winSize = [[CCDirector sharedDirector] winSize];
     
+    time++;
+    
+    if(time == 5){
+        [charFace setVisible:true];
+    }
+    
     if(!_lock){
         NSUserDefaults *standardUserDefaults = [NSUserDefaults standardUserDefaults];
         highScore = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"highScore%@", level->slug]];
@@ -440,7 +446,6 @@
         [self addChild:speech];
         
         [charFace runAction:res->f->faceAction];
-        [charFace setVisible:true];
         
         int seconds = _timePlayed/60;
         int minutes = seconds/60;

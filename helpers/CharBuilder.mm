@@ -69,8 +69,7 @@
     [levelArray addObject:[NSValue valueWithPointer:[self businessman]]];
     [levelArray addObject:[NSValue valueWithPointer:[self nudie]]];
     [levelArray addObject:[NSValue valueWithPointer:[self jogger]]];
-    [levelArray addObject:[NSValue valueWithPointer:[self police]]];
-    [levelArray addObject:[NSValue valueWithPointer:[self dogMuncher]]];
+    [levelArray addObject:[NSValue valueWithPointer:[self youngPro]]];
     
     return levelArray;
 }
