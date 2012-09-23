@@ -28,9 +28,10 @@
         winSize = [[CCDirector sharedDirector] winSize];
         float windowWidth = winSize.width, windowHeight = winSize.height;
         if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
-            float swap = winSize.width;
-            windowWidth = winSize.height;
-            windowHeight = winSize.width;
+            if(!(winSize.width > winSize.height)){
+                windowWidth = winSize.height;
+                windowHeight = winSize.width;
+            }
         }
         NSLog(@"Winsize: %0.2f x %0.2f", windowWidth, windowHeight);
         

@@ -331,6 +331,21 @@
     _world->SetDebugDraw(m_debugDraw);
 }
 
+-(void)resolveDogHUD{
+    if(_droppedCount <= DROPPED_MAX && _droppedCount >= 0){
+        for(NSValue *v in dogIcons){
+            CCSprite *icon = (CCSprite *)[v pointerValue];
+            if([dogIcons indexOfObject:v] < _droppedCount && [icon numberOfRunningActions] == 0){
+                [icon setScale:hudScale];
+                [icon setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"DogHud_X_6.png"]];
+            } else if([icon numberOfRunningActions] == 0){
+                [icon setScale:hudScale];
+                [icon setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"DogHud_Dog.png"]];
+            }
+        }
+    }
+}
+
 -(void)timedDecrement{
     if(_wienerSpawnDelayTime > 1){
         _wienerSpawnDelayTime = _wienerSpawnDelayTime - .1;
@@ -368,9 +383,15 @@
     NSNumber *points = (NSNumber *)[(NSMutableArray *) params objectAtIndex:2];
     NSValue *userdata = (NSValue *)[(NSMutableArray *) params objectAtIndex:3];
     bodyUserData *ud = (bodyUserData *)[userdata pointerValue];
+    
+    float scale = 1;
+    if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+        scale = IPAD_SCALE_FACTOR_X;
+    }
 
     CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"plusTen1.png"];
     sprite.position = ccp(xPos.intValue, yPos.intValue);
+    sprite.scale = scale;
     [self addChild:sprite z:100];
 
     CCAction *removeAction = [CCCallFuncND actionWithTarget:self selector:@selector(removeSprite:data:) data:[[NSValue valueWithPointer:sprite] retain]];
@@ -450,11 +471,17 @@
     bodyUserData *ud = (bodyUserData *)[userdata pointerValue];
 
     CCSprite *twentyFive;
+
+    float scale = 1;
+    if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+        scale = IPAD_SCALE_FACTOR_X;
+    }
     
     if(spec.intValue == 0)
         twentyFive = [CCSprite spriteWithSpriteFrameName:@"Plus_25_sm_1.png"];
     else twentyFive = [CCSprite spriteWithSpriteFrameName:@"Bonus_Plus250_sm_1.png"];
     twentyFive.position = ccp(xPos.intValue, yPos.intValue);
+    twentyFive.scale = scale;
     [spriteSheetCommon addChild:twentyFive z:100];
     CCAction *removeAction = [CCCallFuncND actionWithTarget:self selector:@selector(removeSprite:data:) data:[[NSValue valueWithPointer:twentyFive] retain]];
 
@@ -474,12 +501,19 @@
     NSValue *userdata = (NSValue *)[(NSMutableArray *) params objectAtIndex:3];
     bodyUserData *ud = (bodyUserData *)[userdata pointerValue];
     
+    float scale = 1;
+    if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+        scale = IPAD_SCALE_FACTOR_X;
+    }
+    
     CCSprite *oneHundred = [CCSprite spriteWithSpriteFrameName:@"Plus_100_1.png"];
     oneHundred.position = ccp(xPos.intValue, yPos.intValue);
+    oneHundred.scale = scale;
     [spriteSheetCommon addChild:oneHundred z:100];
     
     CCSprite *blast = [CCSprite spriteWithSpriteFrameName:@"CarryOff_Blast_1.png"];
     blast.position = ccp(xPos.intValue, yPos.intValue);
+    blast.scale = scale;
     if(xPos.intValue > winSize.width/2){
         blast.flipX = true;
     }
@@ -2062,18 +2096,7 @@
         _wienerSpawnDelayTime = _levelSpawnInterval;
     }
     
-    if(_droppedCount <= DROPPED_MAX && _droppedCount >= 0){
-        for(NSValue *v in dogIcons){
-            CCSprite *icon = (CCSprite *)[v pointerValue];
-            if([dogIcons indexOfObject:v] < _droppedCount && [icon numberOfRunningActions] == 0){
-                [icon setScale:hudScale];
-                [icon setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"DogHud_X_6.png"]];
-            } else if([icon numberOfRunningActions] == 0){
-                [icon setScale:hudScale];
-                [icon setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"DogHud_Dog.png"]];
-            }
-        }
-    }
+    [self resolveDogHUD];
     
     if(_flashLayer){
         [_flashLayer setOpacity:255 - (190+((5*time) % 255))];
