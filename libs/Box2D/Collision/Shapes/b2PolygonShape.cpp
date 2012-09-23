@@ -246,7 +246,7 @@ bool b2PolygonShape::RayCast(b2RayCastOutput* output, const b2RayCastInput& inpu
 		}
 	}
 
-	b2Assert(0.0f <= lower && lower <= input.maxFraction);
+	if(!(0.0f <= lower && lower <= input.maxFraction)) return false;
 
 	if (index >= 0)
 	{

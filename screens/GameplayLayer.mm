@@ -1663,7 +1663,7 @@
 
 -(void)wienerCallback:(id)sender data:(NSNumber *)thisType {
     CCLOG(@"Dogs onscreen: %d", _dogsOnscreen);
-    //thisType = [NSNumber numberWithInt:1];
+    thisType = [NSNumber numberWithInt:1];
     if(_gameOver) return;
     
     if(_dogsOnscreen < _maxDogsOnScreen && !_gameOver){
@@ -2375,7 +2375,7 @@
                 ud->ripples.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
             }
             if(ud->sprite1 != NULL){
-                if(_gameOver && ud->sprite1.tag != S_HOTDOG){
+                if(_gameOver && ud->sprite1.tag != S_HOTDOG && ud->sprite1.tag != S_SPCDOG){
                     [ud->sprite1 stopAllActions];
                     [ud->sprite2 stopAllActions];
                     [ud->ripples stopAllActions];

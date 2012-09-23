@@ -539,8 +539,8 @@
     if(CGRectContainsPoint(_twitterRect,location)){
         [self tweetButtonPressed:self];
     } else if(CGRectContainsPoint(_gcRect, location)){
-        [self showGameCenterAchievements];
-        //[self showGameCenterLeaderboard];
+        //[self showGameCenterAchievements];
+        [self showGameCenterLeaderboard];
     } else if(CGRectContainsPoint(_quitRect, location)){
         [self switchSceneLevel];
     } else if(CGRectContainsPoint(_replayRect, location)){

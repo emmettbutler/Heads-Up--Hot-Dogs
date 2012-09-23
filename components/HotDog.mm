@@ -38,7 +38,7 @@
         fallSprite = dd->fallSprite;
         mainSprite = dd->mainSprite;
         grabSprite = dd->grabSprite;
-        deathDelay = .001;
+        deathDelay = .5;
         tag = S_SPCDOG;
         wienerDeathAnimFrames = dd->deathAnimFrames;
         wienerFlashAnimFrames = dd->flashAnimFrames;
