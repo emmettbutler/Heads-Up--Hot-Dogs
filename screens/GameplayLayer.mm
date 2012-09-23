@@ -590,16 +590,6 @@
         [vent1 blowFrank:[NSValue valueWithPointer:b]];
         [vent2 blowFrank:[NSValue valueWithPointer:b]];
     } else if(level->slug == @"london"){
-        if(!ud->grabbed){
-            if(_subwayForce && abs(_subwayForce) < 1){
-                if(b->GetLinearVelocity().x != b->GetLinearVelocity().x+_subwayForce)
-                b->SetLinearVelocity(b2Vec2(b->GetLinearVelocity().x+_subwayForce, b->GetLinearVelocity().y));
-                if(_subwayForce > 0)
-                    _subwayForce += .1;
-                else
-                    _subwayForce -= .1;
-            } else _subwayForce = 0;
-        }
     } else if(level->slug == @"china"){
         if(!ud->grabbed && [firecracker explosionHittingDog:[NSValue valueWithPointer:b]]){
             ud->exploding = true;
@@ -1805,10 +1795,8 @@
             anim = [CCAnimation animationWithFrames:bgc->anim1 delay:.1f];
             _dustAction = [[CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO]] retain];
         } else if (level->slug == @"london"){
-            id startForceAction = [CCCallFuncND actionWithTarget:self selector:@selector(setSubwayForce:data:) data:[[NSNumber numberWithFloat:-1.0] retain]];
-            id stopForceAction = [CCCallFuncND actionWithTarget:self selector:@selector(setSubwayForce:data:) data:[[NSNumber numberWithFloat:1.0] retain]];
             bgComponent *bgc = (bgComponent *)[[level->bgComponents objectAtIndex:0] pointerValue];
-            window1CycleAction = [[CCSequence actions:startForceAction, bgc->startingAction, bgc->loopingAction, stopForceAction, bgc->stoppingAction, nil] retain];
+            window1CycleAction = [[CCSequence actions:bgc->startingAction, bgc->loopingAction, bgc->stoppingAction, nil] retain];
             bgc = (bgComponent *)[[level->bgComponents objectAtIndex:1] pointerValue];
             window2CycleAction = [[CCSequence actions:bgc->startingAction, bgc->loopingAction, bgc->stoppingAction, nil] retain];
             bgc = (bgComponent *)[[level->bgComponents objectAtIndex:2] pointerValue];
