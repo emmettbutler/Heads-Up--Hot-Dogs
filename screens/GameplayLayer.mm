@@ -1077,10 +1077,17 @@
         particles.startColor = startColorGrn;
     particles.endColor = endColor;
     particles.life = .0000000005;
-    particles.startSize = .003;
-    particles.startRadius = .0005;
-    particles.endSize = .0005;
-    particles.endRadius = .0005;
+    if(_droppedCount == DROPPED_MAX){
+        particles.startSize = 10;
+        particles.startRadius = 5;
+        particles.endSize = 5;
+        particles.endRadius = 3;
+    } else {
+        particles.startSize = .003;
+        particles.startRadius = .0005;
+        particles.endSize = .0005;
+        particles.endRadius = .0005;
+    }
     particles.speed = 120;
     particles.duration = .05;
     
@@ -1667,6 +1674,7 @@
 -(void)wienerCallback:(id)sender data:(NSNumber *)thisType {
     CCLOG(@"Dogs onscreen: %d", _dogsOnscreen);
     //thisType = [NSNumber numberWithInt:1];
+    if(_gameOver) return;
     
     if(_dogsOnscreen < _maxDogsOnScreen && !_gameOver){
         if(thisType.intValue == 1 && _peopleGrumped > OVERLAYS_STOP){
@@ -1695,6 +1703,7 @@
 }
 
 -(void)spawnCallback{
+    if(_gameOver) return;
     [self walkIn];
 
     id delay = [CCDelayTime actionWithDuration:1];
@@ -1770,7 +1779,7 @@
             }
         }
         [self addChild:spriteSheetCharacter];
-        [self addChild:spriteSheetCommon];
+        [self addChild:spriteSheetCommon z:30];
         
         if(level->slug == @"nyc"){
             vent1 = [[SteamVent alloc] init:[NSValue valueWithPointer:spriteSheetCommon] withLevelSpriteSheet:[NSValue valueWithPointer:spriteSheetLevel] withPosition:[NSValue valueWithCGPoint:CGPointMake(winSize.width/4, winSize.height/8)]];
@@ -2139,7 +2148,11 @@
             if(_sfxOn)
                 [[SimpleAudioEngine sharedEngine] playEffect:@"game over sting.mp3"];
 #endif
-            CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"Lvl_TextBox.png"];
+            CCLayerColor *endLayer = [CCLayerColor layerWithColor:ccc4(10, 10, 10, 155) width:winSize.width height:winSize.height];
+            endLayer.anchorPoint = CGPointZero;
+            //[self addChild:endLayer z:29];
+            
+            /*CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"Lvl_TextBox.png"];
             sprite.position = ccp(winSize.width/2, winSize.height/2);
             sprite.scaleX = spriteScaleX;
             sprite.scaleY = spriteScaleY;
@@ -2149,16 +2162,18 @@
             gameOverLabel.color = _color_pink;
             [[gameOverLabel texture] setAliasTexParameters];
             gameOverLabel.position = ccp(sprite.position.x, sprite.position.y-4*sprite.scaleY);
-            [self addChild:gameOverLabel];
+            [self addChild:gameOverLabel];*/
         
             [self runAction:[CCSequence actions:[CCDelayTime actionWithDuration:3], [CCCallFunc actionWithTarget:self selector:@selector(loseScene)], nil]];
         
+            [self unschedule:@selector(tick:)];
+            
             _gameOver = true;
         }
     }
-    
-    _world->Step(dt, velocityIterations, positionIterations);
 
+    _world->Step(dt, velocityIterations, positionIterations);
+    
     //score and dropped count
     [scoreLabel setString:[NSString stringWithFormat:@"%06d", _points]];
 
@@ -2368,6 +2383,13 @@
                 ud->ripples.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
             }
             if(ud->sprite1 != NULL){
+                if(_gameOver && ud->sprite1.tag != S_HOTDOG){
+                    [ud->sprite1 stopAllActions];
+                    [ud->sprite2 stopAllActions];
+                    [ud->ripples stopAllActions];
+                    [ud->overlaySprite stopAllActions];
+                    [ud->howToPlaySprite stopAllActions];
+                }
                 if(ud->sprite1.tag == S_MUNCHR){
                     _muncherOnScreen = YES;
                     if(ud->hasLeftScreen)
