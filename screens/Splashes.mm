@@ -25,9 +25,16 @@
         NSLog(@"Splash screens start");
         
         scaleX = 1, scaleY = 1;
-        winSize = [CCDirector sharedDirector].winSize;
+        winSize = [[CCDirector sharedDirector] winSize];
+        float windowWidth = winSize.width, windowHeight = winSize.height;
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            float swap = winSize.width;
+            windowWidth = winSize.height;
+            windowHeight = winSize.width;
+        }
+        NSLog(@"Winsize: %0.2f x %0.2f", windowWidth, windowHeight);
         
-        [[Clouds alloc] initWithLayer:[NSValue valueWithPointer:self]];
+        clouds = [[Clouds alloc] initWithLayer:[NSValue valueWithPointer:self]];
         
         spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_menus.png"];
         [self addChild:spriteSheet];
@@ -40,19 +47,19 @@
             scaleX = IPAD_SCALE_FACTOR_X*.7;
             scaleY = IPAD_SCALE_FACTOR_Y*.7;
         } else {
-            background.scaleX = winSize.width / background.contentSize.width;
+            background.scaleX = windowWidth / IPHONE_4_INCH_SCALE_FACTOR_X;
         }
         [self addChild:background z:-10];
         
         logoBG = [CCSprite spriteWithSpriteFrameName:@"Logo_Cloud.png"];
-        cloudAnchor = CGPointMake(winSize.width/2+4, winSize.height/2+8);
+        cloudAnchor = CGPointMake(windowWidth/2+4, windowHeight/2+8);
         logoBG.scale = scaleX;
         logoBG.position = ccp(cloudAnchor.x, cloudAnchor.y);
         //logoBG.visible = false;
         [spriteSheet addChild:logoBG z:20];
         
         mainLogo = [CCSprite spriteWithSpriteFrameName:@"ASg_Logo.png"];
-        logoAnchor = CGPointMake(winSize.width/2+16, winSize.height/2-15);
+        logoAnchor = CGPointMake(windowWidth/2+16, windowHeight/2-15);
         mainLogo.scale = scaleX;
         mainLogo.position = ccp(logoAnchor.x, logoAnchor.y);
         //mainLogo.visible = false;
@@ -101,6 +108,7 @@
 }
 
 -(void) dealloc{
+    [clouds dealloc];
     [super dealloc];
 }
 

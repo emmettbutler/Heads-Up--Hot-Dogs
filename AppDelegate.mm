@@ -165,7 +165,9 @@
         GKLocalPlayer *localPlayer = [GKLocalPlayer localPlayer];
         localPlayer.authenticateHandler = ^(UIViewController *controller, NSError *error){
             if (controller != nil){
-                //[self->viewController presentModalViewController:controller animated:NO];
+                //UIViewController* myController = [[UIViewController alloc] init];
+                //[[[CCDirector sharedDirector] openGLView] addSubview:myController.view];
+                //[myController presentViewController:controller animated:YES completion:nil];
             }
             else if (localPlayer.isAuthenticated){
                 //[self authenticatedPlayer: localPlayer];

@@ -19,6 +19,7 @@
     CGPoint cloudAnchor, logoAnchor, namesAnchor;
     CGRect screen;
     CGSize winSize;
+    Clouds *clouds;
 }
 
 +(CCScene *) scene;
