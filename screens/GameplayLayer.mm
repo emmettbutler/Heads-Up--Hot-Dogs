@@ -2351,11 +2351,15 @@
                         if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
                             scale = spriteScaleX*.7;
                         }
-                        
-                        [ud->overlaySprite setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"Target_NoDog.png"]];
-                        ud->overlaySprite.position = CGPointMake(policeRayPoint2.x*PTM_RATIO, policeRayPoint2.y*PTM_RATIO);
-                        ud->overlaySprite.rotation = 3 * (time % 360);
-                        ud->overlaySprite.scale = scale;
+                        if(ud->dogsOnHead >= 1){
+                            [ud->overlaySprite setVisible:false];
+                        } else {
+                            [ud->overlaySprite setVisible:true];
+                            [ud->overlaySprite setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"Target_NoDog.png"]];
+                            ud->overlaySprite.position = CGPointMake(policeRayPoint2.x*PTM_RATIO, policeRayPoint2.y*PTM_RATIO);
+                            ud->overlaySprite.rotation = 3 * (time % 360);
+                            ud->overlaySprite.scale = scale;
+                        }
                         if(ud->_cop_hasShot){
                             [ud->overlaySprite removeFromParentAndCleanup:YES];
                             ud->overlaySprite = NULL;
@@ -2538,7 +2542,7 @@
                                         }
                                         if(!copBody || !copBody->GetUserData()) continue;
                                         copUd = (bodyUserData *)copBody->GetUserData();
-                                        if(!copUd->_cop_hasShot && copArmBody && copArmBody->GetUserData()){
+                                        if(!copUd->_cop_hasShot && copUd->dogsOnHead == 0 && copArmBody && copArmBody->GetUserData()){
                                             NSValue *dBody = [[NSValue valueWithPointer:dogBody] retain];
 
                                             CCDelayTime *delay = [CCDelayTime actionWithDuration:((float)copUd->stopTimeDelta-10)/60];
