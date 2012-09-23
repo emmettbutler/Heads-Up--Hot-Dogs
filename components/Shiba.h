@@ -19,7 +19,7 @@
     CCSpriteBatchNode *spritesheet;
     b2Fixture *hitboxSensor;
     BOOL hasEatenDog, hasEntered;
-    float destination, speed;
+    float destination, speed, scale;
     CGPoint offset;
     CGSize winSize;
 }

@@ -13,7 +13,7 @@
 
 -(Shiba *)init:(NSValue *)s withWorld:(NSValue *)w withFloorHeights:(NSMutableArray *)floorHeights{
     winSize = [[CCDirector sharedDirector] winSize];
-    float scale = 1;
+    scale = 1;
     if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
         scale = IPAD_SCALE_FACTOR_X;
     }
@@ -128,10 +128,10 @@
     float distanceRemaining, spriteMove;
     if(self->mainSprite.flipX){
         distanceRemaining = self->mainSprite.position.x + self->mainSprite.contentSize.width / 2;
-        spriteMove = -10.0;
+        spriteMove = -15.0*scale;
     } else {
         distanceRemaining = winSize.width - self->mainSprite.position.x + self->mainSprite.contentSize.width / 2;
-        spriteMove = 10.0;
+        spriteMove = 15.0*scale;
     }
     
     self->offset = CGPointMake(spriteMove, 10);

@@ -20,7 +20,7 @@
 #define DEGTORAD 0.0174532
 #define VOMIT_VEL 666 // diego thinks this should be 666, i think 66.6 makes more sense
 #define COP_RANGE 4
-#define VOMIT_PROBABILITY 250
+#define VOMIT_PROBABILITY 500
 #define OVERLAYS_STOP 2
 #define WIND_PARTICLES 50
 #define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
@@ -270,7 +270,7 @@
         if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
             scale = IPAD_SCALE_FACTOR_Y;
         }
-        float buttonsX = winSize.width/2+button1.contentSize.width*scale;
+        float buttonsX = winSize.width/2+button1.contentSize.width*scale*1.3;
         
         button1.scale = scale;
         button1.position = ccp(buttonsX, winSize.height/2);
