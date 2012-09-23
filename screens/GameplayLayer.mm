@@ -1877,44 +1877,54 @@
             
         [standardUserDefaults synchronize];
 
+        hudScale = 1;
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            hudScale = IPAD_SCALE_FACTOR_X;
+        }
+        
         //HUD objects
         CCSprite *droppedBG = [CCSprite spriteWithSpriteFrameName:@"DogHud_BG.png"];;
-        droppedBG.position = ccp(winSize.width/2-5, winSize.height-droppedBG.contentSize.height);
+        droppedBG.scale = hudScale;
+        droppedBG.position = ccp(winSize.width/2-5*droppedBG.scaleX, winSize.height-droppedBG.contentSize.height*droppedBG.scaleY);
         [spriteSheetCommon addChild:droppedBG z:70];
         dogIcons = [[NSMutableArray alloc] initWithCapacity:DROPPED_MAX+1];
-        int hudX = droppedBG.position.x-(float)droppedBG.contentSize.width/4.5;
-        for(int i = hudX; i < hudX+(23*DROPPED_MAX); i += 23){
+        int hudX = droppedBG.position.x-(float)droppedBG.contentSize.width*droppedBG.scaleX/4.5;
+        float padding = 23*hudScale;
+        for(int i = hudX; i < hudX+(padding*DROPPED_MAX*.95); i += padding){
             CCSprite *dogIcon = [CCSprite spriteWithSpriteFrameName:@"DogHud_Dog.png"];
-            dogIcon.position = ccp(winSize.width-i, winSize.height-droppedBG.contentSize.height);
+            dogIcon.position = ccp(winSize.width-i, winSize.height-droppedBG.contentSize.height*droppedBG.scaleY);
+            dogIcon.scale = hudScale;
             [spriteSheetCommon addChild:dogIcon z:70];
             [dogIcons addObject:[NSValue valueWithPointer:dogIcon]];
         }
 
-        CCSprite *scoreBG = [CCSprite spriteWithSpriteFrameName:@"Score_BG.png"];;
-        scoreBG.position = ccp(winSize.width-80, winSize.height-scoreBG.contentSize.height);
+        CCSprite *scoreBG = [CCSprite spriteWithSpriteFrameName:@"Score_BG.png"];
+        scoreBG.scale = hudScale;
+        scoreBG.position = ccp(winSize.width-80*scoreBG.scaleX, winSize.height-scoreBG.contentSize.height*scoreBG.scaleY);
         [spriteSheetCommon addChild:scoreBG z:70];
 
         //labels for score
         NSString *scoreText = [[NSString alloc] initWithFormat:@"%06d", _points];
-        scoreLabel = [CCLabelTTF labelWithString:scoreText fontName:@"LostPet.TTF" fontSize:34];
+        scoreLabel = [CCLabelTTF labelWithString:scoreText fontName:@"LostPet.TTF" fontSize:34*hudScale];
         [[scoreLabel texture] setAliasTexParameters];
         scoreLabel.color = _color_pink;
-        scoreLabel.position = ccp(winSize.width-80, winSize.height-scoreBG.contentSize.height-3);
+        scoreLabel.position = ccp(winSize.width-80*scoreBG.scaleX, winSize.height-scoreBG.scaleY*scoreBG.contentSize.height-3*scoreBG.scaleY);
         [self addChild: scoreLabel z:72];
 
         NSInteger highScore = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"highScore%@", level->slug]];
         _sfxOn = [standardUserDefaults integerForKey:@"sfxon"];
         
-        CCLabelTTF *highScoreLabel = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"HI: %d", highScore] fontName:@"LostPet.TTF" fontSize:18.0];
+        CCLabelTTF *highScoreLabel = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"HI: %d", highScore] fontName:@"LostPet.TTF" fontSize:18.0*hudScale];
         highScoreLabel.color = _color_pink;
         [[highScoreLabel texture] setAliasTexParameters];
         highScoreLabel.position = ccp(winSize.width-highScoreLabel.contentSize.width, scoreBG.position.y-highScoreLabel.contentSize.height*1.4);
         [self addChild: highScoreLabel];
 
         _pauseButton = [CCSprite spriteWithSpriteFrameName:@"Pause_Button.png"];;
-        _pauseButton.position = ccp(_pauseButton.contentSize.width, winSize.height-_pauseButton.contentSize.height);
+        _pauseButton.scale = hudScale;
+        _pauseButton.position = ccp(_pauseButton.contentSize.width*_pauseButton.scaleX, winSize.height-_pauseButton.contentSize.height*_pauseButton.scaleY);
         [spriteSheetCommon addChild:_pauseButton z:70];
-        _pauseButtonRect = CGRectMake((_pauseButton.position.x-(_pauseButton.contentSize.width)/2), (_pauseButton.position.y-(_pauseButton.contentSize.height)/2), (_pauseButton.contentSize.width+10), (_pauseButton.contentSize.height+10));
+        _pauseButtonRect = CGRectMake((_pauseButton.position.x-(_pauseButton.contentSize.width*_pauseButton.scaleX)/2), (_pauseButton.position.y-(_pauseButton.contentSize.height*_pauseButton.scaleY)/2), (_pauseButton.contentSize.width*_pauseButton.scaleX+10), (_pauseButton.contentSize.height*_pauseButton.scaleY+10));
 
         //initialize global arrays for possible x,y positions and charTags
         floorBits = [[NSMutableArray alloc] initWithCapacity:4];;
@@ -2053,10 +2063,10 @@
         for(NSValue *v in dogIcons){
             CCSprite *icon = (CCSprite *)[v pointerValue];
             if([dogIcons indexOfObject:v] < _droppedCount && [icon numberOfRunningActions] == 0){
-                [icon setScale:1];
+                [icon setScale:hudScale];
                 [icon setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"DogHud_X_6.png"]];
             } else if([icon numberOfRunningActions] == 0){
-                [icon setScale:1];
+                [icon setScale:hudScale];
                 [icon setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"DogHud_Dog.png"]];
             }
         }
