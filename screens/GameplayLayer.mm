@@ -266,38 +266,41 @@
         
         CCSprite *button1 = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
         
-        float scale = 1.3;
+        float scale = 1;
         if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
-            scale = IPAD_SCALE_FACTOR_X;
+            scale = IPAD_SCALE_FACTOR_Y;
         }
         float buttonsX = winSize.width/2+button1.contentSize.width*scale;
         
+        button1.scale = scale;
         button1.position = ccp(buttonsX, winSize.height/2);
         [_pauseLayer addChild:button1 z:81];
-        CCLabelTTF *otherLabel = [CCLabelTTF labelWithString:@"RESTART" fontName:@"LostPet.TTF" fontSize:23.0];
+        CCLabelTTF *otherLabel = [CCLabelTTF labelWithString:@"RESTART" fontName:@"LostPet.TTF" fontSize:fontSize-1];
         [[otherLabel texture] setAliasTexParameters];
         otherLabel.color = _color_pink;
-        otherLabel.position = ccp(button1.position.x, button1.position.y-1);
+        otherLabel.position = ccp(button1.position.x, button1.position.y-button1.scaleY);
         [_pauseLayer addChild:otherLabel z:82];
         _restartRect = CGRectMake((button1.position.x-(button1.contentSize.width*button1.scaleX)/2), (button1.position.y-(button1.contentSize.height*button1.scaleY)/2), (button1.contentSize.width*button1.scaleX+70), (button1.contentSize.height*button1.scaleY+70));
 
         CCSprite *button2 = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
-        button2.position = ccp(buttonsX, winSize.height/2+button2.contentSize.height*button2.scaleX*1.5);
+        button2.scale = scale;
+        button2.position = ccp(buttonsX, winSize.height/2+button2.contentSize.height*button2.scaleY*1.5);
         [_pauseLayer addChild:button2 z:81];
-        otherLabel = [CCLabelTTF labelWithString:@"CONTINUE" fontName:@"LostPet.TTF" fontSize:23.0];
+        otherLabel = [CCLabelTTF labelWithString:@"CONTINUE" fontName:@"LostPet.TTF" fontSize:fontSize-1];
         [[otherLabel texture] setAliasTexParameters];
         otherLabel.color = _color_pink;
-        otherLabel.position = ccp(button2.position.x, button2.position.y-1);
+        otherLabel.position = ccp(button2.position.x, button2.position.y-button2.scaleY);
         [_pauseLayer addChild:otherLabel z:82];
         _resumeRect = CGRectMake((button2.position.x-(button2.contentSize.width*button2.scaleX)/2), (button2.position.y-(button2.contentSize.height*button2.scaleY)/2), (button2.contentSize.width*button2.scaleX+70), (button2.contentSize.height*button2.scaleY+70));
         
         CCSprite *button3 = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
-        button3.position = ccp(buttonsX, winSize.height/2-button3.contentSize.height*button3.scaleX*1.5);
+        button3.scale = scale;
+        button3.position = ccp(buttonsX, winSize.height/2-button3.contentSize.height*button3.scaleY*1.5);
         [_pauseLayer addChild:button3 z:81];
-        otherLabel = [CCLabelTTF labelWithString:@"LEVELS" fontName:@"LostPet.TTF" fontSize:23.0];
+        otherLabel = [CCLabelTTF labelWithString:@"LEVELS" fontName:@"LostPet.TTF" fontSize:fontSize-1];
         [[otherLabel texture] setAliasTexParameters];
         otherLabel.color = _color_pink;
-        otherLabel.position = ccp(button3.position.x, button3.position.y-1);
+        otherLabel.position = ccp(button3.position.x, button3.position.y-button3.scaleY);
         [_pauseLayer addChild:otherLabel z:82];
         _levelRect = CGRectMake((button3.position.x-(button3.contentSize.width*button3.scaleX)/2), (button3.position.y-(button3.contentSize.height*button3.scaleY)/2), (button3.contentSize.width*button3.scaleX+70), (button3.contentSize.height*button3.scaleY+70));
 
