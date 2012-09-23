@@ -413,11 +413,12 @@
     [wienerParameters addObject:[NSNumber numberWithInt:0]];
     id sleepAction = [CCCallFuncND actionWithTarget:self selector:@selector(setAwake:data:) data:wienerParameters];
     id angleAction = [CCCallFuncND actionWithTarget:self selector:@selector(setRotation:data:) data:wienerParameters];
+    id xAction = [CCCallFuncND actionWithTarget:self selector:@selector(playXAnimation:data:) data:[[NSValue valueWithPointer:dogBody] retain]];
     id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:[[NSValue valueWithPointer:dogBody] retain]];
     if(ud->altAction3)
-        ud->deathSeq = [CCSequence actions: delay, sleepAction, angleAction, ud->altAction3, lockAction, incAction, ud->altAction, destroyAction, nil];
+        ud->deathSeq = [CCSequence actions: delay, sleepAction, angleAction, ud->altAction3, lockAction, xAction, incAction, ud->altAction, destroyAction, nil];
     else
-        ud->deathSeq = [CCSequence actions: delay, sleepAction, angleAction, lockAction, incAction, ud->altAction, destroyAction, nil];
+        ud->deathSeq = [CCSequence actions: delay, sleepAction, angleAction, lockAction, xAction, incAction, ud->altAction, destroyAction, nil];
     [ud->sprite1 runAction:ud->deathSeq];
 }
 
@@ -520,11 +521,12 @@
     b2Body *b = (b2Body *)[body pointerValue];
     bodyUserData *ud = (bodyUserData *)b->GetUserData();
     id incAction = [CCCallFuncND actionWithTarget:self selector:@selector(incrementDroppedCount:data:) data:[[NSValue valueWithPointer:b] retain]];
+    id xAction = [CCCallFuncND actionWithTarget:self selector:@selector(playXAnimation:data:) data:[[NSValue valueWithPointer:b] retain]];
     id lockAction = [CCCallFuncND actionWithTarget:self selector:@selector(lockWiener:data:) data:[[NSValue valueWithPointer:ud] retain]];
     id incShotAction = [CCCallFunc actionWithTarget:self selector:@selector(incrementShotByCop)];
     id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:[[NSValue valueWithPointer:b] retain]];
     CCFiniteTimeAction *wienerExplodeAction = (CCFiniteTimeAction *)ud->altAction2;
-    CCAction *shotSeq = [[CCSequence actions:lockAction, incAction, incShotAction, wienerExplodeAction, destroyAction, nil] retain];
+    CCAction *shotSeq = [[CCSequence actions:lockAction, xAction, incAction, incShotAction, wienerExplodeAction, destroyAction, nil] retain];
     [ud->sprite1 runAction:shotSeq];
 }
 
@@ -1030,8 +1032,28 @@
     [self addChild:(CCParticleSystem *)[particles pointerValue] z:100];
 }
 
--(void)setSubwayForce:(id)sender data:(NSNumber *)force {
-    _subwayForce = force.floatValue;
+-(void)playXAnimation:(id)sender data:(NSValue *)body{
+    b2Body *b = (b2Body *)[body pointerValue];
+    CGPoint position = CGPointMake(b->GetPosition().x*PTM_RATIO, b->GetPosition().y*PTM_RATIO);
+    
+    NSMutableArray *counterAnimFrames = [[NSMutableArray alloc] init];
+    for(int i = 1; i <= 6; i++){
+        [counterAnimFrames addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                                      [NSString stringWithFormat:@"DogHud_X_%d.png", i]]];
+    }
+    CCAnimation *xAnim = [CCAnimation animationWithFrames:counterAnimFrames delay:.08f];
+    CCFiniteTimeAction *xAction = [CCAnimate actionWithAnimation:xAnim restoreOriginalFrame:YES];
+    
+    CCSprite *xSprite = [CCSprite spriteWithSpriteFrameName:@"DogHud_X_1.png"];
+    xSprite.position = position;
+    xSprite.scale = 3;
+    [self addChild:xSprite z:31];
+    [xSprite runAction:[CCSequence actions:xAction, [CCCallFuncN actionWithTarget:self selector:@selector(removeSprite:)], nil]];
+}
+
+-(void) removeSprite:(id)sender
+{
+    [self removeChild:sender cleanup:YES];
 }
 
 -(void)counterExplode:(id)sender data:(NSNumber *)increment{
@@ -1054,6 +1076,7 @@
     }
         
     CCSprite *sprite = (CCSprite *)[[dogIcons objectAtIndex:_droppedCount-1] pointerValue];
+    [sprite setScale:3*sprite.scale];
     CCAnimation *xAnim = [CCAnimation animationWithFrames:counterAnimFrames delay:.08f];
     CCFiniteTimeAction *xAction = [CCAnimate actionWithAnimation:xAnim restoreOriginalFrame:NO];
 #ifdef DEBUG
@@ -1663,7 +1686,7 @@
 
 -(void)wienerCallback:(id)sender data:(NSNumber *)thisType {
     CCLOG(@"Dogs onscreen: %d", _dogsOnscreen);
-    thisType = [NSNumber numberWithInt:1];
+    //thisType = [NSNumber numberWithInt:1];
     if(_gameOver) return;
     
     if(_dogsOnscreen < _maxDogsOnScreen && !_gameOver){
@@ -2030,8 +2053,10 @@
         for(NSValue *v in dogIcons){
             CCSprite *icon = (CCSprite *)[v pointerValue];
             if([dogIcons indexOfObject:v] < _droppedCount && [icon numberOfRunningActions] == 0){
+                [icon setScale:1];
                 [icon setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"DogHud_X_6.png"]];
             } else if([icon numberOfRunningActions] == 0){
+                [icon setScale:1];
                 [icon setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"DogHud_Dog.png"]];
             }
         }
@@ -2136,26 +2161,8 @@
             if(_sfxOn)
                 [[SimpleAudioEngine sharedEngine] playEffect:@"game over sting.mp3"];
 #endif
-            CCLayerColor *endLayer = [CCLayerColor layerWithColor:ccc4(10, 10, 10, 155) width:winSize.width height:winSize.height];
-            endLayer.anchorPoint = CGPointZero;
-            //[self addChild:endLayer z:29];
-            
-            /*CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"Lvl_TextBox.png"];
-            sprite.position = ccp(winSize.width/2, winSize.height/2);
-            sprite.scaleX = spriteScaleX;
-            sprite.scaleY = spriteScaleY;
-            [self addChild:sprite];
-        
-            CCLabelTTF *gameOverLabel = [CCLabelTTF labelWithString:@"You lost five franks!\nBetter luck next time..." dimensions:CGSizeMake(sprite.contentSize.width*sprite.scaleX*.9,sprite.contentSize.height*sprite.scaleY*.9) alignment:UITextAlignmentCenter fontName:@"LostPet.TTF" fontSize:20.0*spriteScaleX];
-            gameOverLabel.color = _color_pink;
-            [[gameOverLabel texture] setAliasTexParameters];
-            gameOverLabel.position = ccp(sprite.position.x, sprite.position.y-4*sprite.scaleY);
-            [self addChild:gameOverLabel];*/
-        
             [self runAction:[CCSequence actions:[CCDelayTime actionWithDuration:3], [CCCallFunc actionWithTarget:self selector:@selector(loseScene)], nil]];
-        
             [self unschedule:@selector(tick:)];
-            
             _gameOver = true;
         }
     }
@@ -2381,6 +2388,7 @@
                     [ud->ripples stopAllActions];
                     [ud->overlaySprite stopAllActions];
                     [ud->howToPlaySprite stopAllActions];
+                    [ud->angryFace stopAllActions];
                 }
                 if(ud->sprite1.tag == S_MUNCHR){
                     _muncherOnScreen = YES;
@@ -2491,6 +2499,7 @@
                             if(!ud->grabbed && [shiba eatDog:[NSValue valueWithPointer:b]]){
                                 [reporter reportAchievementIdentifier:@"shiba" percentComplete:100];
                                 [self incrementDroppedCount:self data:[NSValue valueWithPointer:b]];
+                                [self runAction:[CCCallFuncND actionWithTarget:self selector:@selector(playXAnimation:data:) data:[NSValue valueWithPointer:b]]];
                             }
                         }
                         // start cop shooting logic
