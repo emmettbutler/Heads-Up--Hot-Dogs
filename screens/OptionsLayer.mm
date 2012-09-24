@@ -164,38 +164,11 @@
     pauseTitle.position = ccp((sprite.position.x), winSize.height*.82);
     [creditsLayer addChild:pauseTitle z:81];
     
-    label = [CCLabelTTF labelWithString:@"Sugoi Papa Interactive:" fontName:@"LostPet.TTF" fontSize:fontSize+3];
+    label = [CCLabelTTF labelWithString:@"Emmett Butler: design & program\nDiego Garcia: design & art\nMusic: Luke Silas/Ben Carignan\nTesters: Nick Johnson, Dave Mauro, Nina Freeman, Sam Bosma, Grace Yang, Mike Bartnett, Aaron Koenigsberg, Zach Cimafonte\nSpecial thanks to Muhammed Ali Khan" dimensions:CGSizeMake(sprite.contentSize.width*sprite.scaleX*.9, sprite.contentSize.height*sprite.scaleY*.9) alignment:UITextAlignmentLeft fontName:@"LostPet.TTF" fontSize:fontSize];
+    label.position = ccp(sprite.position.x, sprite.position.y*.8);
     label.color = _color_pink;
-    CCMenuItem *teamItem = [CCMenuItemLabel itemWithLabel:label];
-    
-    label = [CCLabelTTF labelWithString:@"Diego Garcia" fontName:@"LostPet.TTF" fontSize:fontSize];
-    label.color = _color_pink;
-    CCMenuItem *diegoItem = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(diegoSocial)];
-    
-    label = [CCLabelTTF labelWithString:@"design & art" fontName:@"LostPet.TTF" fontSize:fontSize-3];
-    label.color = _color_pink;
-    CCMenuItem *diegoItem2 = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(diegoSocial)];
-    
-    label = [CCLabelTTF labelWithString:@"Emmett Butler" fontName:@"LostPet.TTF" fontSize:fontSize-3];
-    label.color = _color_pink;
-    CCMenuItem *emmettItem = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(emmettSocial)];
-    
-    label = [CCLabelTTF labelWithString:@"design & program" fontName:@"LostPet.TTF" fontSize:fontSize-3];
-    label.color = _color_pink;
-    CCMenuItem *emmettItem2 = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(emmettSocial)];
-    
-    label = [CCLabelTTF labelWithString:@"Music:" fontName:@"LostPet.TTF" fontSize:fontSize+3];
-    label.color = _color_pink;
-    CCMenuItem *musicItem = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(emmettSocial)];
-    
-    label = [CCLabelTTF labelWithString:@"Luke Silas/Ben Carignan" fontName:@"LostPet.TTF" fontSize:fontSize];
-    label.color = _color_pink;
-    CCMenuItem *musicItem2 = [CCMenuItemLabel itemWithLabel:label target:self selector:@selector(emmettSocial)];
-    
-    CCMenu *creditsMenu = [CCMenu menuWithItems: teamItem, diegoItem, diegoItem2, emmettItem, emmettItem2, musicItem, musicItem2, nil];
-    [creditsMenu setPosition:ccp(sprite.position.x, winSize.height/2-10)];
-    [creditsMenu alignItemsVerticallyWithPadding:5];
-    [creditsLayer addChild:creditsMenu z:81];
+    [[label texture] setAliasTexParameters];
+    [creditsLayer addChild:label z:81];
 }
 
 -(id) init{
@@ -206,7 +179,6 @@
         
         _color_pink = ccc3(255, 62, 166);
         
-        float imgScale = 1.8;
         scale = 1;
         if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
             scale = IPAD_SCALE_FACTOR_X;

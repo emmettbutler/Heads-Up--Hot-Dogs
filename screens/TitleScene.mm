@@ -113,7 +113,7 @@
         CCLabelTTF *otherLabel = [CCLabelTTF labelWithString:@"Start" fontName:@"LostPet.TTF" fontSize:fontSize*1.4];
         [[otherLabel texture] setAliasTexParameters];
         otherLabel.color = _color_pink;
-        otherLabel.position = ccp(button2.position.x, button2.position.y-1);
+        otherLabel.position = ccp(button2.position.x, button2.position.y-2);
         [self addChild:otherLabel z:11];
         _startRect = CGRectMake((button2.position.x-(button2.contentSize.width*button2.scaleX)/2), (button2.position.y-(button2.contentSize.height*button2.scaleY)/2), (button2.contentSize.width*button2.scaleX+70), (button2.contentSize.height*button2.scaleY+70));
         
