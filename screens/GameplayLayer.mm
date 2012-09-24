@@ -625,12 +625,12 @@
                     b->SetLinearVelocity(b2Vec2(b->GetLinearVelocity().x+windForce.x, b->GetLinearVelocity().y));
             }
         }
-    } else if(level->slug == @"nyc" && !(time % 19)) {
+    } else if(level->slug == @"nyc" && !(time % 19)){
         [vent1 blowFrank:[NSValue valueWithPointer:b]];
         [vent2 blowFrank:[NSValue valueWithPointer:b]];
     } else if(level->slug == @"london"){
     } else if(level->slug == @"china"){
-        if(!ud->grabbed && [firecracker explosionHittingDog:[NSValue valueWithPointer:b]]){
+        if(!ud->grabbed && ud->hasTouchedGround && [firecracker explosionHittingDog:[NSValue valueWithPointer:b]]){
             ud->exploding = true;
             b->SetActive(false);
             [self explodeDog:self data:[NSValue valueWithPointer:b]];
