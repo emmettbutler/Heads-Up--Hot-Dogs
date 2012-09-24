@@ -84,8 +84,7 @@
         WALLS   = 0x0010,
         WIENER  = 0x0040,
         BODYBOX = 0x0080, // character bodies
-        TARGET  = 0x0100,
-        SENSOR  = 0x0200,
+        SENSOR  = 0x0020,
     };
     
     enum _spriteTags {

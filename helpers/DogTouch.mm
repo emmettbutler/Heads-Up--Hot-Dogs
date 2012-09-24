@@ -91,7 +91,7 @@
             // here, we restore the fixture's original collision filter from that saved in
             // its ogCollideFilter field
             filter = fixture->GetFilterData();
-            fUd->ogCollideFilters = fUd->ogCollideFilters | 0xfffff000;
+            fUd->ogCollideFilters = fUd->ogCollideFilters | 0xffffff00;
             filter.maskBits = fUd->ogCollideFilters;
             filter.maskBits = filter.maskBits | FLOOR1;
             fixture->SetFilterData(filter);

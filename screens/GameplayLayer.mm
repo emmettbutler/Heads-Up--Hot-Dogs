@@ -1299,6 +1299,15 @@
     }
     personStruct *person = p;
     
+    // cycle through a set of several possible mask/category bits for dog/person collision
+    // this is so that a dog can be told only to collide with the person who it's touching already,
+    // or to collide with all people. this breaks when there are more than 4 people onscreen
+    if(_curPersonMaskBits >= 0x8000){
+        _curPersonMaskBits = 0x0100;
+    } else {
+        _curPersonMaskBits *= 2;
+    }
+    
     //first, see if a person should spawn
     if(_policeOnScreen && person->tag == S_POLICE){
         return;
@@ -1309,23 +1318,19 @@
             if (body->GetUserData() != NULL && body->GetUserData() != (void*)100) {
                 bodyUserData *ud = (bodyUserData *)body->GetUserData();
                 for(b2Fixture* f = body->GetFixtureList(); f; f = f->GetNext()){
+                    fixtureUserData *fUd = (fixtureUserData *)f->GetUserData();
                     if(f->GetFilterData().maskBits == floorBit.intValue){
                         if(ud->sprite1.flipX != _personLower.flipX){
                             return;
                         }
                     }
+                    if(f->GetFilterData().categoryBits == _curPersonMaskBits * 2){
+                        return;
+                        //_curPersonMaskBits *= 2;
+                    }
                 }
             }
         }
-    }
-
-    // cycle through a set of several possible mask/category bits for dog/person collision
-    // this is so that a dog can be told only to collide with the person who it's touching already,
-    // or to collide with all people. this breaks when there are more than 4 people onscreen
-    if(_curPersonMaskBits >= 0x8000){
-        _curPersonMaskBits = 0x1000;
-    } else {
-        _curPersonMaskBits *= 2;
     }
     
     //if we're not supposed to spawn , just skip all this
