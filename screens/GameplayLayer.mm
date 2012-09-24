@@ -1318,7 +1318,6 @@
             if (body->GetUserData() != NULL && body->GetUserData() != (void*)100) {
                 bodyUserData *ud = (bodyUserData *)body->GetUserData();
                 for(b2Fixture* f = body->GetFixtureList(); f; f = f->GetNext()){
-                    fixtureUserData *fUd = (fixtureUserData *)f->GetUserData();
                     if(f->GetFilterData().maskBits == floorBit.intValue){
                         if(ud->sprite1.flipX != _personLower.flipX){
                             return;
@@ -1586,7 +1585,7 @@
         ud->stopTimeDelta = 100 + (arc4random() % 80);
     } else if(person->tag == S_TWLMAN && arc4random() % 2 == 1){ // only have the towel guy drop his towel half of the time
         ud->stopTimeDelta = 117;
-        ud->stopTime = 100 + (arc4random() % 80);
+        ud->stopTime = 180 + (arc4random() % 80);
     }
     if(person->tag == S_POLICE || person->tag == S_MUNCHR || person->tag == S_TWLMAN){
         ud->altAction2 = _specialAction;
