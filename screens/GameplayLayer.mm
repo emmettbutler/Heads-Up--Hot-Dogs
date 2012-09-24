@@ -28,7 +28,7 @@
 #define SPAWN_LIMIT_DECREMENT_DELAY 2
 #define SPECIAL_DOG_PROBABILITY 25
 #define DROPPED_MAX 5
-#define WIENER_SPAWN_START 5
+#define WIENER_SPAWN_START 5.7
 
 @implementation GameplayLayer
 
@@ -1088,17 +1088,13 @@
     [xSprite runAction:[CCSequence actions:xAction, [CCCallFuncN actionWithTarget:self selector:@selector(removeSprite:)], nil]];
 }
 
--(void) removeSprite:(id)sender
-{
+-(void) removeSprite:(id)sender{
     [self removeChild:sender cleanup:YES];
 }
 
 -(void)counterExplode:(id)sender data:(NSNumber *)increment{
     int inc = [increment intValue]; // 1 if dropped, 0 if regained
     NSMutableArray *counterAnimFrames = [[NSMutableArray alloc] init];
-    ccColor4F startColorRed = {1, 0, 0, 1};
-    ccColor4F startColorGrn = {0, 1, 0, 1};
-    ccColor4F endColor = {1, 1, 1, 0};
     if(inc){
         for(int i = 1; i <= 6; i++){
             [counterAnimFrames addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -1117,7 +1113,11 @@
     CCAnimation *xAnim = [CCAnimation animationWithFrames:counterAnimFrames delay:.08f];
     CCFiniteTimeAction *xAction = [CCAnimate actionWithAnimation:xAnim restoreOriginalFrame:NO];
 #ifdef DEBUG
+    [sprite runAction:[CCSequence actions:xAction, nil]];
 #else
+    ccColor4F startColorRed = {1, 0, 0, 1};
+    ccColor4F startColorGrn = {0, 1, 0, 1};
+    ccColor4F endColor = {1, 1, 1, 0};
     CCParticleSystem* particles = [CCParticleExplosion node];
     particles.autoRemoveOnFinish = YES;
     particles.position = sprite.position;
@@ -1278,6 +1278,8 @@
     if(_sfxOn)
         [[SimpleAudioEngine sharedEngine] playEffect:@"hot dog appear 1.mp3"];
 #endif
+    
+    dogNumberCounter++;
 }
 
 -(void)walkIn{
@@ -1893,6 +1895,7 @@
         _wienerSpawnDelayTime = WIENER_SPAWN_START;
         _maxDogsOnScreen = 6;
         _levelMaxDogs = 6;
+        dogNumberCounter = 0;
         if(level->maxDogs){
             _levelMaxDogs = level->maxDogs;
             _maxDogsOnScreen = level->maxDogs - 3;
@@ -2495,7 +2498,7 @@
                 }
                 else if(ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG){
                     Overlay *overlay;
-                    if(_peopleGrumped <= OVERLAYS_STOP && level->slug != @"japan" && ud->sprite1.tag != S_SPCDOG){
+                    if(dogNumberCounter != 1 && _peopleGrumped <= OVERLAYS_STOP && level->slug != @"japan" && ud->sprite1.tag != S_SPCDOG){
                         if(!ud->howToPlaySprite){
                             overlay = [[Overlay alloc] initWithDogBody:[NSValue valueWithPointer:b] andSpriteSheet:[NSValue valueWithPointer:spriteSheetCommon]];
                             ud->howToPlaySprite = [overlay getSprite];
