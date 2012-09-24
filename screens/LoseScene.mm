@@ -190,6 +190,12 @@
         s->good = @"Such a model of excellence. The ideal pupil!";
         s->other1 = [NSString stringWithFormat:@"Are you going anywhere for summer vacation? I hear %@ is nice.", level->prev->name];
         s->other2 = @"The history of the hot dog is unclear, but fascinating nonetheless.";
+    }  else if (characterName == @"Astronaut"){
+        s->bad = @"Something's wrong with the frank diffuser!";
+        s->ok = @"You're becoming more like your father.";
+        s->good = @"We're in the pipe, five by five.";
+        s->other1 = @"I wonder what spring is like on mars and stuff, tra la...";
+        s->other2 = @"I wonder what spring is like on mars and stuff, tra la...";
     }
     
     if(arc4random() % 4 == 1){
@@ -233,6 +239,8 @@
         [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Shiba" withGrade:grade]]];
     if([charSlugs containsObject:@"youngpro"])
         [faces addObject:[NSValue valueWithPointer:[self buildFace:@"YoungProfesh" withGrade:grade]]];
+    if([charSlugs containsObject:@"astronaut"])
+        [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Astronaut" withGrade:grade]]];
     //if([charSlugs containsObject:@"professor"])
         //[faces addObject:[NSValue valueWithPointer:[self buildFace:@"Professor" withGrade:grade]]];
     

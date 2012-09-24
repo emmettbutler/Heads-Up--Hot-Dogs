@@ -91,7 +91,7 @@
     [levelArray addObject:[NSValue valueWithPointer:[self dogMuncher]]];
     [levelArray addObject:[NSValue valueWithPointer:[self youngPro]]];
     [levelArray addObject:[NSValue valueWithPointer:[self jogger]]];
-    [levelArray addObject:[NSValue valueWithPointer:[self nudie]]];
+    [levelArray addObject:[NSValue valueWithPointer:[self astronaut]]];
     [levelArray addObject:[NSValue valueWithPointer:[self police]]];
     
     return levelArray;
@@ -661,6 +661,66 @@
         [c->rippleIdleAnimFrames addObject:
          [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
           [NSString stringWithFormat:@"nudie_towelDrop_ripple_%d.png", i]]];
+    }
+    
+    return c;
+}
+
++(personStruct *)astronaut{
+    personStruct *c = new personStruct();
+    
+    c->slug = @"astronaut";
+    c->lowerSprite = @"Astronaunt_Walk_1.png";
+    c->upperSprite = @"Astronaut_Head_NoDog_1.png";
+    c->upperOverlaySprite = @"Astronaut_Head_Dog_1.png";
+    c->rippleSprite = @"BusinessMan_Ripple_Walk_1.png";
+    c->tag = S_ASTRO;
+    c->flipSprites = false;
+    c->hitboxWidth = 20.0;
+    c->hitboxHeight = .0001;
+    c->hitboxCenterX = 0;
+    c->hitboxCenterY = 3.5;
+    c->moveDelta = 3.0;
+    c->sensorHeight = 2.0f;
+    c->sensorWidth = 1.5f;
+    c->restitution = .36f;
+    c->friction = 0.65f;
+    c->framerate = .08f;
+    c->pointValue = 25;
+    c->frequency = 6;
+    c->fTag = F_PRFHED;
+    c->heightOffset = 2.7f;
+    c->rippleXOffset = -.012;
+    c->rippleYOffset = -1.125;
+    c->walkAnimFrames = [[NSMutableArray alloc] init];
+    c->idleAnimFrames = [[NSMutableArray alloc] init];
+    c->faceWalkAnimFrames = [[NSMutableArray alloc] init];
+    c->faceDogWalkAnimFrames = [[NSMutableArray alloc] init];
+    c->rippleWalkAnimFrames = [[NSMutableArray alloc] init];
+    for(int i = 1; i <= 8; i++){
+        [c->walkAnimFrames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithFormat:@"Astronaunt_Walk_%d.png", i]]];
+    }
+    for(int i = 1; i <= 1; i++){
+        [c->idleAnimFrames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithFormat:@"Astronaunt_Walk_%d.png", i]]];
+    }
+    for(int i = 1; i <= 4; i++){
+        [c->faceWalkAnimFrames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithFormat:@"Astronaut_Head_NoDog_%d.png", i]]];
+    }
+    for(int i = 1; i <= 4; i++){
+        [c->faceDogWalkAnimFrames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithFormat:@"Astronaut_Head_Dog_%d.png", i]]];
+    }
+    for(int i = 1; i <= 8; i++){
+        [c->rippleWalkAnimFrames addObject:
+         [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+          [NSString stringWithFormat:@"CrustPunk_Ripple_Walk_%d.png", i]]];
     }
     
     return c;

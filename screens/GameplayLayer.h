@@ -99,6 +99,7 @@
         S_MUNCHR    =   8,
         S_PROFSR    =   9,
         S_TWLMAN    =   10,
+        S_ASTRO     =   11,
         S_TOPPSN    =   20, // top person sprite tag, this must be TOPPSN > POLICE > BUSMAN with only person tags between
         S_COPARM    =   21,
     };
