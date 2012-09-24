@@ -156,15 +156,16 @@
     sprite.scale = 1.4*scale;
     [creditsLayer addChild:sprite z:81];
     
-    float fontSize = 24.0*scale;
+    float fontSize = 23.0*scale;
     
     CCLabelTTF *label = [CCLabelTTF labelWithString:@"Credits" fontName:@"LostPet.TTF" fontSize:fontSize+3];
     label.color = _color_pink;
+    [[label texture] setAliasTexParameters];
     CCMenuItem *pauseTitle = [CCMenuItemLabel itemWithLabel:label];
     pauseTitle.position = ccp((sprite.position.x), winSize.height*.82);
     [creditsLayer addChild:pauseTitle z:81];
     
-    label = [CCLabelTTF labelWithString:@"Emmett Butler: design & program\nDiego Garcia: design & art\nMusic: Luke Silas/Ben Carignan\nTesters: Nick Johnson, Dave Mauro, Nina Freeman, Sam Bosma, Grace Yang, Mike Bartnett, Aaron Koenigsberg, Zach Cimafonte\nSpecial thanks to Muhammed Ali Khan" dimensions:CGSizeMake(sprite.contentSize.width*sprite.scaleX*.9, sprite.contentSize.height*sprite.scaleY*.9) alignment:UITextAlignmentLeft fontName:@"LostPet.TTF" fontSize:fontSize];
+    label = [CCLabelTTF labelWithString:@"Emmett Butler: design & program\nDiego Garcia: design & art\nMusic: Luke Silas/Ben Carignan\nTesters: Nick Johnson, Dave Mauro, Nina Freeman, Sam Bosma, Grace Yang, Mike Bartnett, Aaron Koenigsberg, Zach Cimafonte\nSpecial thanks to Muhammed Ali Khan and Anna Anthropy" dimensions:CGSizeMake(sprite.contentSize.width*sprite.scaleX*.9, sprite.contentSize.height*sprite.scaleY*.9) alignment:UITextAlignmentLeft fontName:@"LostPet.TTF" fontSize:fontSize];
     label.position = ccp(sprite.position.x, sprite.position.y*.8);
     label.color = _color_pink;
     [[label texture] setAliasTexParameters];
