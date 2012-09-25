@@ -269,11 +269,11 @@
         
         CCSprite *button1 = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
         
-        float scale = 1;
+        float scale = 1, buttonsX = winSize.width/2+button1.contentSize.width*scale*1.3;;
         if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
             scale = IPAD_SCALE_FACTOR_Y;
+            buttonsX = winSize.width * .8;
         }
-        float buttonsX = winSize.width/2+button1.contentSize.width*scale*1.3;
         
         button1.scale = scale;
         button1.position = ccp(buttonsX, winSize.height/2);
@@ -512,9 +512,9 @@
     CCSprite *oneHundred = [CCSprite spriteWithSpriteFrameName:@"Plus_100_1.png"];
     oneHundred.scale = scale;
     if(xPos.intValue > winSize.width/2){
-        xPosition = winSize.width - oneHundred.contentSize.width*oneHundred.scaleX/2;
+        xPosition = winSize.width - oneHundred.contentSize.width*oneHundred.scaleX*.6;
     } else {
-        xPosition = oneHundred.contentSize.width*oneHundred.scaleX/2;
+        xPosition = oneHundred.contentSize.width*oneHundred.scaleX*.6;
     }
     oneHundred.position = ccp(xPosition, yPos.intValue);
     [spriteSheetCommon addChild:oneHundred z:100];
