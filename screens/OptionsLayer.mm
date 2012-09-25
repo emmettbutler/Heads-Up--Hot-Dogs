@@ -104,7 +104,7 @@
     CCLabelTTF *label = [CCLabelTTF labelWithString:@"Clear Scores" fontName:@"LostPet.TTF" fontSize:fontSize-2];
     label.color = _color_pink;
     CCMenuItem *pauseTitle = [CCMenuItemLabel itemWithLabel:label];
-    pauseTitle.position = ccp((sprite.position.x+3), winSize.height*.82);
+    pauseTitle.position = ccp((sprite.position.x+3), winSize.height*.817);
     [scoresLayer addChild:pauseTitle z:81];
     
     label = [CCLabelTTF labelWithString:@"WARNING: This will delete all saved scores and unlocked levels on this device. Are you sure you'd like to continue?" dimensions:CGSizeMake(sprite.contentSize.width*sprite.scaleX*.9, sprite.contentSize.height*sprite.scaleY*.6) alignment:UITextAlignmentCenter fontName:@"LostPet.TTF" fontSize:fontSize];
@@ -162,7 +162,7 @@
     label.color = _color_pink;
     [[label texture] setAliasTexParameters];
     CCMenuItem *pauseTitle = [CCMenuItemLabel itemWithLabel:label];
-    pauseTitle.position = ccp((sprite.position.x), winSize.height*.82);
+    pauseTitle.position = ccp((sprite.position.x), winSize.height*.817);
     [creditsLayer addChild:pauseTitle z:81];
     
     label = [CCLabelTTF labelWithString:@"Emmett Butler: design & program\nDiego Garcia: design & art\nMusic: Luke Silas, Ben Carignan\nTesters: Nick Johnson, Dave Mauro, Nina Freeman, Sam Bosma, Grace Yang, Mike Bartnett, Aaron Koenigsberg, Zach Cimafonte, Noah Lemen\nSpecial thanks to Muhammed Ali Khan and Anna Anthropy" dimensions:CGSizeMake(sprite.contentSize.width*sprite.scaleX*.9, sprite.contentSize.height*sprite.scaleY*.9) alignment:UITextAlignmentLeft fontName:@"LostPet.TTF" fontSize:fontSize];
