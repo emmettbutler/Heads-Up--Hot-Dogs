@@ -1890,6 +1890,7 @@
         CCLOG(@"Debug draw added");
         [self addChild:menu z:1000];
 #else
+        [SimpleAudioEngine sharedEngine].backgroundMusicVolume = .4;
         [[SimpleAudioEngine sharedEngine] playBackgroundMusic:level->bgm loop:YES];
 #endif
         [spriteSheetLevel addChild:background z:-10];
