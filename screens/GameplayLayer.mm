@@ -2084,9 +2084,27 @@
     if(!_policeOnScreen)
         _shootLock = 0;
     
-    if(_points > 19000 && !(time % 300) && _wienerSpawnDelayTime > .1){
-        _wienerSpawnDelayTime -= .05;
-    } else if(_points > 14000 && _wienerSpawnDelayTime != _levelSpawnInterval - 2.9){
+    if(_points > 19000 && !(time % 300)){
+        if(_wienerSpawnDelayTime > .1){
+            _wienerSpawnDelayTime -= .05;
+        }
+    }
+    if((_points > 101000) && (_maxDogsOnScreen != _levelMaxDogs + 5)){
+        _maxDogsOnScreen = _levelMaxDogs + 5;
+    }
+    else if((_points > 89000) && (_maxDogsOnScreen != _levelMaxDogs + 4)){
+        _maxDogsOnScreen = _levelMaxDogs + 4;
+    }
+    else if((_points > 69000) && (_maxDogsOnScreen != _levelMaxDogs + 3)){
+        _maxDogsOnScreen = _levelMaxDogs + 3;
+    }
+    else if((_points > 54000) && (_maxDogsOnScreen != _levelMaxDogs + 2)){
+        _maxDogsOnScreen = _levelMaxDogs + 2;
+    }
+    else if((_points > 35000) && (_maxDogsOnScreen != _levelMaxDogs + 1)){
+        _maxDogsOnScreen = _levelMaxDogs + 1;
+    }
+    else if(_points > 14000 && _wienerSpawnDelayTime != _levelSpawnInterval - 2.9){
         _maxDogsOnScreen = _levelMaxDogs;
         _wienerSpawnDelayTime = _levelSpawnInterval - 2.9;
     } else if(_points > 12000 && _wienerSpawnDelayTime != _levelSpawnInterval - 2.7) {
