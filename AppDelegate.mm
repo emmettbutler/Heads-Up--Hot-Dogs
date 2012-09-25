@@ -218,6 +218,7 @@
     return [(NSString *)string autorelease];
 }
 
+// resignActive and becomeActive are called with home button double-taps
 - (void)applicationWillResignActive:(UIApplication *)application {
     NSLog(@"willResignActive");
 	[[CCDirector sharedDirector] pause];
@@ -255,11 +256,8 @@
     
     NSLog(@"Application HEADS UP HOT DOGS exiting");
     [Kontagent stopSession];
-	
 	[[director openGLView] removeFromSuperview];
-	
 	[viewController release];
-	
 	[window release];
 	
 	[director end];	

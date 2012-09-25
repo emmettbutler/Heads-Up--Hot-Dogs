@@ -1084,6 +1084,8 @@
     CCAnimation *xAnim = [CCAnimation animationWithFrames:counterAnimFrames delay:.08f];
     CCFiniteTimeAction *xAction = [CCAnimate actionWithAnimation:xAnim restoreOriginalFrame:YES];
     
+    if(position.x >= winSize.width || position.x <= 0) return;
+    
     CCSprite *xSprite = [CCSprite spriteWithSpriteFrameName:@"DogHud_X_1.png"];
     xSprite.position = position;
     xSprite.scale = 3;
