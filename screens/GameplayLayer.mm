@@ -504,19 +504,29 @@
     NSValue *userdata = (NSValue *)[(NSMutableArray *) params objectAtIndex:3];
     bodyUserData *ud = (bodyUserData *)[userdata pointerValue];
     
-    float scale = 1;
+    float scale = 1, xPosition;
     if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
         scale = IPAD_SCALE_FACTOR_X;
     }
     
     CCSprite *oneHundred = [CCSprite spriteWithSpriteFrameName:@"Plus_100_1.png"];
-    oneHundred.position = ccp(xPos.intValue, yPos.intValue);
     oneHundred.scale = scale;
+    if(xPos.intValue > winSize.width/2){
+        xPosition = winSize.width - oneHundred.contentSize.width*oneHundred.scaleX/2;
+    } else {
+        xPosition = oneHundred.contentSize.width*oneHundred.scaleX/2;
+    }
+    oneHundred.position = ccp(xPosition, yPos.intValue);
     [spriteSheetCommon addChild:oneHundred z:100];
     
     CCSprite *blast = [CCSprite spriteWithSpriteFrameName:@"CarryOff_Blast_1.png"];
-    blast.position = ccp(xPos.intValue, yPos.intValue);
     blast.scale = scale;
+    if(xPos.intValue > winSize.width/2){
+        xPosition = winSize.width - blast.contentSize.width*blast.scaleX/2;
+    } else {
+        xPosition = blast.contentSize.width*blast.scaleX/2;
+    }
+    blast.position = ccp(xPosition, yPos.intValue);
     if(xPos.intValue > winSize.width/2){
         blast.flipX = true;
     }
