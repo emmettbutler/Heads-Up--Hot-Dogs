@@ -508,7 +508,7 @@
     if(loadFull){
         [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_london.plist"];
         lp->bg = @"Subway_Car.png";
-        lp->bgm = @"gameplay 3.mp3";
+        lp->bgm = @"gameplay 2.mp3";
         lp->gravity = -22.0f;
         lp->spritesheet = @"sprites_london";
         lp->personSpeedMul = 1;
@@ -617,7 +617,7 @@
     if(loadFull){
         [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_china.plist"];
         lp->bg = @"China_BG.png";
-        lp->bgm = @"gameplay 3.mp3";
+        lp->bgm = @"gameplay 2.mp3";
         lp->gravity = -22.0f;
         lp->spritesheet = @"sprites_china";
         lp->personSpeedMul = 1;
