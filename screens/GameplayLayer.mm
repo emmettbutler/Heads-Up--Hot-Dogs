@@ -1358,7 +1358,7 @@
     
     float scale = 1;
     if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
-        scale = 3*(IPAD_SCALE_FACTOR_X/4);
+        scale = IPAD_SCALE_FACTOR_X*.85;
     }
     
     self.personLower = [CCSprite spriteWithSpriteFrameName:person->lowerSprite];
