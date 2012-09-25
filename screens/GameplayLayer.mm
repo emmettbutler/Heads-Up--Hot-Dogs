@@ -2089,13 +2089,13 @@
             _wienerSpawnDelayTime -= .05;
         }
     }
-    if((_points > 101000) && (_maxDogsOnScreen != _levelMaxDogs + 5)){
+    if((_points > 111000) && (_maxDogsOnScreen != _levelMaxDogs + 5)){
         _maxDogsOnScreen = _levelMaxDogs + 5;
     }
-    else if((_points > 89000) && (_maxDogsOnScreen != _levelMaxDogs + 4)){
+    else if((_points > 95000) && (_maxDogsOnScreen != _levelMaxDogs + 4)){
         _maxDogsOnScreen = _levelMaxDogs + 4;
     }
-    else if((_points > 69000) && (_maxDogsOnScreen != _levelMaxDogs + 3)){
+    else if((_points > 77000) && (_maxDogsOnScreen != _levelMaxDogs + 3)){
         _maxDogsOnScreen = _levelMaxDogs + 3;
     }
     else if((_points > 54000) && (_maxDogsOnScreen != _levelMaxDogs + 2)){
