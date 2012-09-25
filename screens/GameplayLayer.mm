@@ -16,6 +16,7 @@
 #import "Overlay.h"
 #import "UIDefs.h"
 #import "WindParticle.h"
+#import "HotDogManager.h"
 
 #define DEGTORAD 0.0174532
 #define VOMIT_VEL 666 // diego thinks this should be 666, i think 66.6 makes more sense
@@ -159,6 +160,7 @@
 #else
     [[SimpleAudioEngine sharedEngine] resumeBackgroundMusic];
 #endif
+    [[HotDogManager sharedManager] setPause:[NSNumber numberWithBool:false]];
     _pause = false;
 }
 
@@ -210,6 +212,7 @@
 
 -(void) pauseButton{
     if(!_pause){
+        [[HotDogManager sharedManager] setPause:[NSNumber numberWithBool:true]];
         _pause = true;
         [[CCDirector sharedDirector] pause];
 #ifdef DEBUG

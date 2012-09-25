@@ -15,6 +15,7 @@
 #import "UIDefs.h"
 #import "ASNewsFeed.h"
 #import "AppDelegate.h"
+#import "HotDogManager.h"
 
 #define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 
@@ -32,6 +33,8 @@
 
 -(id) init{
     if ((self = [super init])){
+        [HotDogManager sharedManager];
+        
         self.isTouchEnabled = true;
         winSize = [[CCDirector sharedDirector] winSize];
         standardUserDefaults = [NSUserDefaults standardUserDefaults];

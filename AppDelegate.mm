@@ -18,6 +18,10 @@
 #import <Foundation/Foundation.h>
 #import "Kontagent/Kontagent.h"
 #import "UIDefs.h"
+#import "HotDogManager.h"
+
+#define KONTAGENT_KEY @"315132246f7a4f3ab619276a35ea6407" // qa
+//#define KONTAGENT_KEY @"40a5b05ff49e43b2afa8a863eeb320c3" // prod
 
 @implementation AppDelegate
 
@@ -129,10 +133,7 @@
 #ifdef DEBUG
     [Kontagent debugEnabled];
 #endif
-    // test api key
-    [Kontagent startSession:@"315132246f7a4f3ab619276a35ea6407" mode:kKontagentSDKMode_PRODUCTION shouldSendApplicationAddedAutomatically:YES];
-    // prod api key
-    //[Kontagent startSession:@"40a5b05ff49e43b2afa8a863eeb320c3" mode:kKontagentSDKMode_PRODUCTION shouldSendApplicationAddedAutomatically:YES];
+    [Kontagent startSession:KONTAGENT_KEY mode:kKontagentSDKMode_PRODUCTION shouldSendApplicationAddedAutomatically:YES];
     
     // create and save unique ID
     NSString *savedUuid = [standardUserDefaults stringForKey:@"uuid"];
@@ -218,11 +219,17 @@
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
+    NSLog(@"willResignActive");
 	[[CCDirector sharedDirector] pause];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-	[[CCDirector sharedDirector] resume];
+    NSLog(@"didBecomeActive");
+    NSLog(@"paused: %d", [[HotDogManager sharedManager] isPaused]);
+    [[CCDirector sharedDirector] startAnimation];
+    if(![[HotDogManager sharedManager] isPaused]){
+        [[CCDirector sharedDirector] resume];
+    }
 }
 
 - (void)applicationDidReceiveMemoryWarning:(UIApplication *)application {
@@ -230,11 +237,17 @@
 }
 
 -(void) applicationDidEnterBackground:(UIApplication*)application {
+    NSLog(@"didEnterBackground");
+    [Kontagent stopSession];
 	[[CCDirector sharedDirector] stopAnimation];
 }
 
 -(void) applicationWillEnterForeground:(UIApplication*)application {
-	[[CCDirector sharedDirector] startAnimation];
+    NSLog(@"willEnterForeground");
+    [Kontagent startSession:KONTAGENT_KEY mode:kKontagentSDKMode_PRODUCTION shouldSendApplicationAddedAutomatically:YES];
+    if(![[HotDogManager sharedManager] isPaused]){
+        [[CCDirector sharedDirector] startAnimation];
+    }
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
