@@ -191,6 +191,7 @@
     [[SimpleAudioEngine sharedEngine] preloadEffect:@"100pts.mp3"];
     [[SimpleAudioEngine sharedEngine] preloadEffect:@"hot dog on head.mp3"];
     [[SimpleAudioEngine sharedEngine] preloadEffect:@"game over sting.mp3"];
+    [SimpleAudioEngine sharedEngine].backgroundMusicVolume = .4;
 #endif
     NSInteger timesPlayed = [standardUserDefaults integerForKey:@"timesPlayed"];
     [standardUserDefaults setInteger:++timesPlayed forKey:@"timesPlayed"];
