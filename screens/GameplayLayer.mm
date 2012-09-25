@@ -3,7 +3,7 @@
 //  Heads Up Hot Dogs
 //
 //  Created by Emmett Butler and Diego Garcia on 1/3/12.
-//  Copyright Emmett and Diego 2012. All rights reserved.
+//  Copyright Sugoi Papa Interactive 2012. All rights reserved.
 //
 
 #import "GameplayLayer.h"

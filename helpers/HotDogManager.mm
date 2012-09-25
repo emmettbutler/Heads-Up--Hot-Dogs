@@ -1,3 +1,12 @@
+//
+//  HotDogManager.mm
+//  Heads Up
+//
+//  Created by Emmett Butler on 9/25/12.
+//  Copyright 2012 Sugoi Papa Interactive. All rights reserved.
+//
+
+
 #import "HotDogManager.h"
 
 static HotDogManager *sharedInstance = nil;

@@ -3,7 +3,7 @@
 //  Heads Up Hot Dogs
 //
 //  Created by Emmett Butler on 12/26/11.
-//  Copyright 2011 NYU. All rights reserved.
+//  Copyright 2011 Sugoi Papa Interactive. All rights reserved.
 //
 
 #import "Box2D.h"

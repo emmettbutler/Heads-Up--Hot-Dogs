@@ -3,7 +3,7 @@
 //  Heads Up
 //
 //  Created by Emmett Butler on 8/15/12.
-//  Copyright 2012 NYU. All rights reserved.
+//  Copyright 2012 Sugoi Papa Interactive. All rights reserved.
 //
 
 #import "DogTouch.h"

@@ -1,9 +1,9 @@
 //
-//  HelloWorldLayer.h
-//  sandbox
+//  GameplayLayer.h
+//  Heads Up! Hot Dogs
 //
 //  Created by Emmett Butler on 1/3/12.
-//  Copyright NYU 2012. All rights reserved.
+//  Copyright Sugoi Papa Interactive 2012. All rights reserved.
 //
 
 //character sprite tags will be in the range 3-10
