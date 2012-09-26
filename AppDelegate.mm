@@ -231,7 +231,7 @@
     if(![[HotDogManager sharedManager] isPaused]){
         [[CCDirector sharedDirector] resume];
     }
-    [[CCDirector sharedDirector] startAnimation];
+    //[[CCDirector sharedDirector] startAnimation];
 }
 
 - (void)applicationDidReceiveMemoryWarning:(UIApplication *)application {

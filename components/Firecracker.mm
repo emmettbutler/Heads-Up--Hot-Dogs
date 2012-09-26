@@ -116,7 +116,7 @@
                                  [[CCCallFunc actionWithTarget:self selector:@selector(explode)] retain],
                                  [CCDelayTime actionWithDuration:2.6],
                                  [[CCCallFunc actionWithTarget:self selector:@selector(pullUp)] retain],
-                                 [CCCallFunc actionWithTarget:self selector:@selector(dealloc)], nil]];
+                                 [CCCallFunc actionWithTarget:self selector:@selector(removeBody)], nil]];
 }
 
 -(BOOL)explosionHittingDog:(NSValue *)d {
@@ -130,9 +130,9 @@
     return false;
 }
 
--(void)dealloc{
+-(void)removeBody{
     self->world->DestroyBody(self->worldBody);
-    [super dealloc];
+    //[super dealloc];
 }
 
 @end
