@@ -643,7 +643,7 @@
         [vent2 blowFrank:[NSValue valueWithPointer:b]];
     } else if(level->slug == @"london"){
     } else if(level->slug == @"china"){
-        if(!ud->grabbed && ud->hasTouchedGround && [firecracker explosionHittingDog:[NSValue valueWithPointer:b]]){
+        if(!ud->grabbed && ud->_dog_hasBeenGrabbed && [firecracker explosionHittingDog:[NSValue valueWithPointer:b]]){
             ud->exploding = true;
             b->SetActive(false);
             [self explodeDog:self data:[NSValue valueWithPointer:b]];

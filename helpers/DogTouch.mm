@@ -29,6 +29,7 @@
     body->SetTransform(body->GetPosition(), CC_DEGREES_TO_RADIANS(0));
     body->SetFixedRotation(true);
     body->SetAwake(true);
+    ud->_dog_hasBeenGrabbed = true;
     
     b2MouseJointDef* mdstar = (b2MouseJointDef *)[j pointerValue];
     
