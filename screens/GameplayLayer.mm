@@ -2466,6 +2466,9 @@
                     [ud->overlaySprite stopAllActions];
                     [ud->howToPlaySprite stopAllActions];
                     [ud->angryFace stopAllActions];
+                    if(level->hasShiba && shiba){
+                        [shiba stopAllActions];
+                    }
                 }
                 if(ud->sprite1.tag == S_MUNCHR){
                     _muncherOnScreen = YES;

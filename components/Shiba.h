@@ -29,5 +29,6 @@
 -(BOOL)eatDog:(NSValue *)d;
 -(BOOL)hasEatenDog;
 -(void)updateSensorPosition;
+-(void)stopAllActions;
 
 @end

@@ -162,6 +162,10 @@
 
 -(BOOL)hasEatenDog{
     return self->hasEatenDog;
-}   
+}
+
+-(void)stopAllActions{
+    [self->mainSprite stopAllActions];
+}
 
 @end
