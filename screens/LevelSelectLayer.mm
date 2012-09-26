@@ -701,8 +701,8 @@
     if(loadFull){
         lp->bg = @"Japan_BG.png";
         lp->bgm = @"05 - Gourmet Dog Japon.mp3";
-        lp->bgmVol = .4;
-        lp->sfxVol = .7;
+        lp->bgmVol = .3;
+        lp->sfxVol = .6;
         lp->gravity = -27.0f;
         lp->spritesheet = @"sprites_japan";
         lp->dogDeathDelay = .001;
