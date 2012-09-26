@@ -232,7 +232,6 @@
     if(![[HotDogManager sharedManager] isPaused]){
         [[CCDirector sharedDirector] resume];
     }
-    //[[CCDirector sharedDirector] startAnimation];
 }
 
 - (void)applicationDidReceiveMemoryWarning:(UIApplication *)application {
@@ -243,17 +242,18 @@
     NSLog(@"didEnterBackground");
     [Kontagent stopSession];
 	[[CCDirector sharedDirector] stopAnimation];
+    [[CCDirector sharedDirector] pause];
 }
 
 -(void) applicationWillEnterForeground:(UIApplication*)application {
     NSLog(@"willEnterForeground");
     [Kontagent startSession:KONTAGENT_KEY mode:kKontagentSDKMode_PRODUCTION shouldSendApplicationAddedAutomatically:YES];
-    if(![[HotDogManager sharedManager] isPaused]){
-        [[CCDirector sharedDirector] startAnimation];
-    }
+    [[HotDogManager sharedManager] setPause:[NSNumber numberWithBool:true]];
+    [[CCDirector sharedDirector] startAnimation];
+    [[CCDirector sharedDirector] resume];
 }
 
-- (void)applicationWillTerminate:(UIApplication *)application {
+-(void)applicationWillTerminate:(UIApplication *)application {
 	CCDirector *director = [CCDirector sharedDirector];
     
     NSLog(@"Application HEADS UP HOT DOGS exiting");

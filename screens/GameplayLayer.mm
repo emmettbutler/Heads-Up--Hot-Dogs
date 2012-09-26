@@ -52,7 +52,7 @@
 }
 
 - (void)titleScene{
-    if(_pause){
+    if([[HotDogManager sharedManager] isPaused]){
         [self resumeGame];
     }
 #ifdef DEBUG
@@ -155,17 +155,17 @@
 -(void)resumeGame{
     [self removeChild:_pauseMenu cleanup:YES];
     [self removeChild:_pauseLayer cleanup:YES];
+    _pauseLayer = NULL;
     [[CCDirector sharedDirector] resume];
 #ifdef DEBUG
 #else
     [[SimpleAudioEngine sharedEngine] resumeBackgroundMusic];
 #endif
     [[HotDogManager sharedManager] setPause:[NSNumber numberWithBool:false]];
-    _pause = false;
 }
 
 -(void)restartScene{
-    if(_pause){
+    if([[HotDogManager sharedManager] isPaused]){
         [self unschedule:@selector(tick:)];
         if(level->slug == @"chicago"){
             [self unschedule:@selector(updateWind:)];
@@ -197,7 +197,7 @@
 }
 
 -(void)levelSelect{
-    if(_pause){
+    if([[HotDogManager sharedManager] isPaused]){
         [self unschedule:@selector(tick:)];
         if(level->slug == @"chicago"){
             [self unschedule:@selector(updateWind:)];
@@ -210,15 +210,17 @@
     [[CCDirector sharedDirector] replaceScene:[LevelSelectLayer scene]];
 }
 
--(void) pauseButton{
-    if(!_pause){
+-(void) pauseButton:(NSNumber *)force{
+    BOOL _pause = [[HotDogManager sharedManager] isPaused];
+    if(!_pause || force.boolValue){
         [[HotDogManager sharedManager] setPause:[NSNumber numberWithBool:true]];
-        _pause = true;
         [[CCDirector sharedDirector] pause];
 #ifdef DEBUG
 #else
         [[SimpleAudioEngine sharedEngine] pauseBackgroundMusic];
 #endif
+        if(_pauseLayer) return;
+        
         _pauseLayer = [CCLayerColor layerWithColor:ccc4(190, 190, 190, 155) width:winSize.width height:winSize.height];
         _pauseLayer.anchorPoint = CGPointZero;
         [self addChild:_pauseLayer z:80];
@@ -1896,6 +1898,8 @@
         [[background texture] setAliasTexParameters];
         background.anchorPoint = CGPointZero;
         
+        [[HotDogManager sharedManager] setPause:[NSNumber numberWithBool:false]];
+        
 #ifdef DEBUG
         //debug labels
         CCLabelTTF *label = [CCLabelTTF labelWithString:@"Debug draw" fontName:@"LostPet.TTF" fontSize:18.0];
@@ -2083,6 +2087,10 @@
 
 //the "GAME LOOP"
 -(void) tick: (ccTime) dt {
+    if([[HotDogManager sharedManager] isPaused]){
+        [self pauseButton:[NSNumber numberWithBool:true]];
+    }
+    
     int32 velocityIterations = 2;
     int32 positionIterations = 1;
     
@@ -2714,6 +2722,7 @@
     _numWorldTouches = count;
     int dogsTouched = 0;
     BOOL touched1 = false, touched2 = false;
+    BOOL _pause = [[HotDogManager sharedManager] isPaused];
     
     if (count <= 2){
         CCLOG(@"%d touches", count);
@@ -2724,7 +2733,7 @@
                 if(_sfxOn)
                     [[SimpleAudioEngine sharedEngine] playEffect:@"pause 3.mp3"];
 #endif
-                [self pauseButton];
+                [self pauseButton:[NSNumber numberWithBool:false]];
             }
             else{
                 [self resumeGame];
