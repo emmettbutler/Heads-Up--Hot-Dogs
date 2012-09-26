@@ -26,6 +26,7 @@ static HotDogManager *sharedInstance = nil;
     @synchronized(self) {
         [super init];
         _pause = [NSNumber numberWithBool:false];
+        _sfxOn = [NSNumber numberWithBool:false];
         return self;
     }
 }
@@ -42,6 +43,21 @@ static HotDogManager *sharedInstance = nil;
 -(BOOL)isPaused{
     @synchronized(self) {
         return [_pause boolValue];
+    }
+}
+
+-(void)setSFX:(NSNumber *)sfxOn{
+    @synchronized(self) {
+        if (_sfxOn != sfxOn) {
+            [sfxOn release];
+            _sfxOn = [sfxOn retain];
+        }
+    }
+}
+
+-(BOOL)sfxOn{
+    @synchronized(self) {
+        return [_sfxOn boolValue];
     }
 }
 

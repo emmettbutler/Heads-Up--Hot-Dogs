@@ -8,6 +8,8 @@
 
 #import "Firecracker.h"
 #import "GameplayLayer.h"
+#import <SimpleAudioEngine.h>
+#import "HotDogManager.h"
 
 @implementation Firecracker
 
@@ -97,13 +99,23 @@
     [self->mainSprite runAction:[CCSequence actions:[CCCallFunc actionWithTarget:self selector:@selector(setPullUpSprite)], moveAction, nil]];
 }
 
+-(void)playSFX{
+#ifdef DEBUG
+#else
+    if([[HotDogManager sharedManager] sfxOn]){
+        [[SimpleAudioEngine sharedEngine] playEffect:@"firecracker.mp3"];
+    }
+#endif
+}
+
 -(void)runSequence{
     [self->mainSprite runAction:[CCSequence actions:
-                                 [CCCallFunc actionWithTarget:self selector:@selector(dropDown)],
+                                 [[CCCallFunc actionWithTarget:self selector:@selector(dropDown)] retain],
                                  [CCDelayTime actionWithDuration:2],
-                                 [CCCallFunc actionWithTarget:self selector:@selector(explode)],
+                                 [[CCCallFunc actionWithTarget:self selector:@selector(playSFX)] retain],
+                                 [[CCCallFunc actionWithTarget:self selector:@selector(explode)] retain],
                                  [CCDelayTime actionWithDuration:2.6],
-                                 [CCCallFunc actionWithTarget:self selector:@selector(pullUp)],
+                                 [[CCCallFunc actionWithTarget:self selector:@selector(pullUp)] retain],
                                  [CCCallFunc actionWithTarget:self selector:@selector(dealloc)], nil]];
 }
 

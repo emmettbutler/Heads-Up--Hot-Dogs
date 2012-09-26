@@ -8,6 +8,8 @@
 
 #import "Shiba.h"
 #import "GameplayLayer.h"
+#import <SimpleAudioEngine.h>
+#import "HotDogManager.h"
 
 @implementation Shiba
 
@@ -143,6 +145,12 @@
     [self->mainSprite runAction:[CCSequence actions:[CCDelayTime actionWithDuration:2], [CCCallFunc actionWithTarget:self selector:@selector(playWalkAnim)], [CCMoveTo actionWithDuration:distanceRemaining/self->speed position:ccp(self->destination, self->mainSprite.position.y)], [CCCallFunc actionWithTarget:self selector:@selector(removeSprite)], nil]];
 
     [ud->sprite1 runAction:[CCSequence actions:[CCDelayTime actionWithDuration:.7], [CCCallFuncND actionWithTarget:self selector:@selector(destroyBody:data:) data:[[NSValue valueWithPointer:dogBody] retain]], nil]];
+    
+#ifdef DEBUG
+#else
+    if([[HotDogManager sharedManager] sfxOn])
+        [[SimpleAudioEngine sharedEngine] playEffect:@"dog bark.mp3"];
+#endif
     
     return true;
 }

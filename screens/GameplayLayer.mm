@@ -1972,6 +1972,7 @@
 
         NSInteger highScore = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"highScore%@", level->slug]];
         _sfxOn = [standardUserDefaults integerForKey:@"sfxon"];
+        [[HotDogManager sharedManager] setSFX:[NSNumber numberWithInt:_sfxOn]];
         
         CCLabelTTF *highScoreLabel = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"HI: %d", highScore] fontName:@"LostPet.TTF" fontSize:18.0*hudScale];
         highScoreLabel.color = _color_pink;
