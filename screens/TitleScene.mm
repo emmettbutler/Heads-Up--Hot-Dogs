@@ -52,6 +52,7 @@
         dlabel.position = ccp(winSize.width-(dlabel.contentSize.width/2)-6, winSize.height-(dlabel.contentSize.height/2)-5);
         [self addChild:dlabel];
 #else
+        [SimpleAudioEngine sharedEngine].backgroundMusicVolume = .4;
         if(![[SimpleAudioEngine sharedEngine] isBackgroundMusicPlaying])
             [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"menu 2.mp3" loop:YES];
 #endif

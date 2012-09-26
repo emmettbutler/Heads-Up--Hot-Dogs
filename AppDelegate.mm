@@ -192,6 +192,7 @@
     [[SimpleAudioEngine sharedEngine] preloadEffect:@"25pts.mp3"];
     [[SimpleAudioEngine sharedEngine] preloadEffect:@"50pts.mp3"];
     [[SimpleAudioEngine sharedEngine] preloadEffect:@"100pts.mp3"];
+    [[SimpleAudioEngine sharedEngine] preloadEffect:@"water splash.mp3"];
     [[SimpleAudioEngine sharedEngine] preloadEffect:@"hot dog on head.mp3"];
     [[SimpleAudioEngine sharedEngine] preloadEffect:@"game over sting.mp3"];
     [SimpleAudioEngine sharedEngine].backgroundMusicVolume = .4;

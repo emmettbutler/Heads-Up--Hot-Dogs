@@ -81,6 +81,7 @@
         [[CCDirector sharedDirector] setDisplayFPS:NO];
 #ifdef DEBUG
 #else
+        [SimpleAudioEngine sharedEngine].backgroundMusicVolume = .4;
         if(![[SimpleAudioEngine sharedEngine] isBackgroundMusicPlaying])
             [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"menu 2.mp3" loop:YES];
 #endif
@@ -618,6 +619,7 @@
         [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_china.plist"];
         lp->bg = @"China_BG.png";
         lp->bgm = @"chinatown full.mp3";
+        lp->bgmVol = .7;
         lp->gravity = -22.0f;
         lp->spritesheet = @"sprites_china";
         lp->personSpeedMul = 1;
@@ -699,7 +701,8 @@
     if(loadFull){
         lp->bg = @"Japan_BG.png";
         lp->bgm = @"05 - Gourmet Dog Japon.mp3";
-        lp->bgmVol = 1.0;
+        lp->bgmVol = .4;
+        lp->sfxVol = .7;
         lp->gravity = -27.0f;
         lp->spritesheet = @"sprites_japan";
         lp->dogDeathDelay = .001;

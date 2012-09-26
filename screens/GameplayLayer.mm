@@ -1909,11 +1909,11 @@
         CCLOG(@"Debug draw added");
         [self addChild:menu z:1000];
 #else
-        float vol = 0.3;
-        if(level->bgmVol)
-            vol = level->bgmVol;
-        [[SimpleAudioEngine sharedEngine] setBackgroundMusicVolume:vol];
-        [[SimpleAudioEngine sharedEngine] setEffectsVolume:vol-.1];
+        float volBGM = 0.3, volSFX = volBGM;
+        if(level->bgmVol) volBGM = level->bgmVol;
+        if(level->sfxVol) volSFX = level->sfxVol;
+        [[SimpleAudioEngine sharedEngine] setBackgroundMusicVolume:volBGM];
+        [[SimpleAudioEngine sharedEngine] setEffectsVolume:volSFX];
         [[SimpleAudioEngine sharedEngine] playBackgroundMusic:level->bgm loop:YES];
 #endif
         [spriteSheetLevel addChild:background z:-10];
@@ -2337,6 +2337,12 @@
                 if(!ud->deathSeqLock){
                     [self runDogDeathAction:[NSValue valueWithPointer:dogBody]];
                 }
+#ifdef DEBUG
+#else
+                if(level->slug == @"japan"){
+                    [[SimpleAudioEngine sharedEngine] playEffect:@"water splash.mp3"];
+                }
+#endif
                 ud->aimedAt = false;
             }
         }
