@@ -1109,12 +1109,14 @@
 
 -(void)counterExplode:(id)sender data:(NSNumber *)increment{
     int inc = [increment intValue]; // 1 if dropped, 0 if regained
+    CCSprite *sprite = (CCSprite *)[[dogIcons objectAtIndex:_droppedCount-1] pointerValue];
     NSMutableArray *counterAnimFrames = [[NSMutableArray alloc] init];
     if(inc){
         for(int i = 1; i <= 6; i++){
             [counterAnimFrames addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
                                           [NSString stringWithFormat:@"DogHud_X_%d.png", i]]];
         }
+        [sprite setScale:3*sprite.scale];
     } else {
         for(int i = 1; i <= 21; i++){
             [counterAnimFrames addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
@@ -1123,8 +1125,6 @@
         [counterAnimFrames addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"DogHud_Dog.png"]];
     }
         
-    CCSprite *sprite = (CCSprite *)[[dogIcons objectAtIndex:_droppedCount-1] pointerValue];
-    [sprite setScale:3*sprite.scale];
     CCAnimation *xAnim = [CCAnimation animationWithFrames:counterAnimFrames delay:.08f];
     CCFiniteTimeAction *xAction = [CCAnimate actionWithAnimation:xAnim restoreOriginalFrame:NO];
 #ifdef DEBUG

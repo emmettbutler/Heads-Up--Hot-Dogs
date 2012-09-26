@@ -186,6 +186,7 @@
     [[SimpleAudioEngine sharedEngine] preloadEffect:@"menu intro.mp3"];
     [[SimpleAudioEngine sharedEngine] preloadEffect:@"pause 3.mp3"];
     [[SimpleAudioEngine sharedEngine] preloadEffect:@"firecracker.mp3"];
+    [[SimpleAudioEngine sharedEngine] preloadEffect:@"dog bark.mp3"];
     [[SimpleAudioEngine sharedEngine] preloadEffect:@"hot dog appear 1.mp3"];
     [[SimpleAudioEngine sharedEngine] preloadEffect:@"hot dog disappear.mp3"];
     [[SimpleAudioEngine sharedEngine] preloadEffect:@"25pts.mp3"];
