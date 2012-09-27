@@ -77,7 +77,7 @@
     [loseParams addObject:[NSValue valueWithPointer:level]];
     [loseParams addObject:[NSNumber numberWithInteger:_dogsShotByCop]];
     [loseParams addObject:[NSNumber numberWithInteger:_dogsMissedByCop]];
-    [[CCDirector sharedDirector] replaceScene:[LoseLayer sceneWithData:loseParams]];
+    [[CCDirector sharedDirector] replaceScene:[CCTransitionMoveInT transitionWithDuration:.3 scene:[LoseLayer sceneWithData:loseParams]]];
 }
 
 -(void)reportSaveAchievement:(NSNumber *)number{

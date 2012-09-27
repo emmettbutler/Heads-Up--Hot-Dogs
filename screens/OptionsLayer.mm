@@ -311,7 +311,7 @@
 }
 
 - (void)switchSceneStart{
-    [[CCDirector sharedDirector] replaceScene:[LevelSelectLayer scene]];
+    [[CCDirector sharedDirector] replaceScene:[CCTransitionSlideInT transitionWithDuration:.3 scene:[LevelSelectLayer scene]]];
 }
 
 - (void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -349,7 +349,7 @@
 }
 
 - (void)switchSceneTitleScreen{
-    [[CCDirector sharedDirector] replaceScene:[TitleLayer scene]];
+    [[CCDirector sharedDirector] replaceScene:[CCTransitionSlideInL transitionWithDuration:.3 scene:[TitleLayer scene]]];
 }
 
 -(void) dealloc{

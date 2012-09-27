@@ -524,11 +524,11 @@
 }
 
 - (void)switchSceneRestart{
-    [[CCDirector sharedDirector] replaceScene:[GameplayLayer sceneWithSlug:slug]];
+    [[CCDirector sharedDirector] replaceScene:[CCTransitionRadialCW transitionWithDuration:.3 scene:[GameplayLayer sceneWithSlug:slug]]];
 }
 
 - (void)switchSceneLevel{
-    [[CCDirector sharedDirector] replaceScene:[LevelSelectLayer scene]];
+    [[CCDirector sharedDirector] replaceScene:[CCTransitionMoveInB transitionWithDuration:.3 scene:[LevelSelectLayer scene]]];
 }
 
 - (void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {

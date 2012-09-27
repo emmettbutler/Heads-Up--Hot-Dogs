@@ -222,11 +222,11 @@
 - (void)switchSceneStart{
     NSInteger introDone = [standardUserDefaults integerForKey:@"introDone"];
     NSLog(@"introDone: %d", introDone);
-    [[CCDirector sharedDirector] replaceScene:[LevelSelectLayer scene]];
+    [[CCDirector sharedDirector] replaceScene:[CCTransitionSlideInT transitionWithDuration:.5 scene:[LevelSelectLayer scene]]];
 }
 
 - (void)switchSceneOptions{
-    [[CCDirector sharedDirector] replaceScene:[OptionsLayer scene]];
+    [[CCDirector sharedDirector] replaceScene:[CCTransitionSlideInR transitionWithDuration:.3 scene:[OptionsLayer scene]]];
 }
 
 -(void) dealloc{

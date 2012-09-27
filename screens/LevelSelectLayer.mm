@@ -313,7 +313,7 @@
 }
 
 - (void)switchSceneTitle{
-    [[CCDirector sharedDirector] replaceScene:[TitleLayer scene]];
+    [[CCDirector sharedDirector] replaceScene:[CCTransitionSlideInB transitionWithDuration:.3 scene:[TitleLayer scene]]];
 }
 
 -(void)switchScreenPhilly{
@@ -345,7 +345,7 @@
 }
 
 -(void)switchScreenStartWithSlug:(NSString *)slug{
-    [[CCDirector sharedDirector] replaceScene:[GameplayLayer sceneWithSlug:slug]];
+    [[CCDirector sharedDirector] replaceScene:[CCTransitionRadialCW transitionWithDuration:.3 scene:[GameplayLayer sceneWithSlug:slug]]];
 }
 
 -(void) dealloc{
