@@ -144,6 +144,7 @@
     [self->mainSprite runAction:self->eatAction];
     [self->mainSprite runAction:[CCSequence actions:[CCDelayTime actionWithDuration:2], [CCCallFunc actionWithTarget:self selector:@selector(playWalkAnim)], [CCMoveTo actionWithDuration:distanceRemaining/self->speed position:ccp(self->destination, self->mainSprite.position.y)], [CCCallFunc actionWithTarget:self selector:@selector(removeSprite)], nil]];
 
+    [ud->countdownLabel removeFromParentAndCleanup:YES];
     [ud->sprite1 runAction:[CCSequence actions:[CCDelayTime actionWithDuration:.7], [CCCallFuncND actionWithTarget:self selector:@selector(destroyBody:data:) data:[[NSValue valueWithPointer:dogBody] retain]], nil]];
     
 #ifdef DEBUG
