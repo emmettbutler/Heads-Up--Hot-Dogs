@@ -1,1 +1,1 @@
-wc -l `find ./screens ./helpers ./components ./*.mm ./*.h -name "*.mm" -o -name "*.h"`
+wc -l `find ./screens ./helpers ./components ./*.mm ./*.h -name "*.mm" -o -name "*.h"` | sort -r
