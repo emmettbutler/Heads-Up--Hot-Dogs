@@ -21,6 +21,7 @@
     bodyUserData *ud = (bodyUserData *)body->GetUserData();
     
     [ud->sprite1 stopAllActions];
+    [ud->sprite1 setColor:ccc3(255, 255, 255)];
     [ud->countdownLabel setVisible:false];
     ud->deathSeqLock = false;
     ud->grabbed = true;
