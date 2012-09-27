@@ -13,6 +13,7 @@
 #import "Clouds.h"
 #import "UIDefs.h"
 #import "AppDelegate.h"
+#import "HotDogManager.h"
 
 #import <GameKit/GameKit.h>
 #import <UIKit/UIKit.h>
@@ -303,6 +304,7 @@
         touchLock = false;
         CGSize winSize = [CCDirector sharedDirector].winSize;
         self.isTouchEnabled = YES;
+        [[HotDogManager sharedManager] setPause:[NSNumber numberWithBool:false]];
         
         reporter = [[AchievementReporter alloc] init];
         [reporter loadAchievements];

@@ -33,7 +33,7 @@
 
 -(id) init{
     if ((self = [super init])){
-        [HotDogManager sharedManager];
+        [[HotDogManager sharedManager] setPause:[NSNumber numberWithBool:false]];
         
         self.isTouchEnabled = true;
         winSize = [[CCDirector sharedDirector] winSize];

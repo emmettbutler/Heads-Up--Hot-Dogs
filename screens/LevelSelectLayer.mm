@@ -11,6 +11,7 @@
 #import "Clouds.h"
 #import "TitleScene.h"
 #import "UIDefs.h"
+#import "HotDogManager.h"
 
 @implementation LevelSelectLayer
 
@@ -79,6 +80,7 @@
         standardUserDefaults = [NSUserDefaults standardUserDefaults];
         winSize = [[CCDirector sharedDirector] winSize];
         [[CCDirector sharedDirector] setDisplayFPS:NO];
+        [[HotDogManager sharedManager] setPause:[NSNumber numberWithBool:false]];
 #ifdef DEBUG
 #else
         [SimpleAudioEngine sharedEngine].backgroundMusicVolume = .4;
