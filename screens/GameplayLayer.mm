@@ -477,8 +477,10 @@
         ud->deathSeq = [CCSequence actions: delay, sleepAction, angleAction, lockAction, xAction, incAction, ud->altAction, destroyAction, nil];
     [ud->sprite1 runAction:ud->deathSeq];
     
-    [ud->countdownLabel setVisible:true];
-    [ud->sprite1 runAction:ud->countdownAction];
+    if(ud->sprite1.tag != S_SPCDOG){
+        [ud->countdownLabel setVisible:true];
+        [ud->sprite1 runAction:ud->countdownAction];
+    }
 }
 
 -(void)heartParticles:(NSValue *)loc{
