@@ -2517,7 +2517,7 @@
                 ud->ripples.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
             }
             if(ud->countdownLabel != NULL){
-                ud->countdownLabel.position = CGPointMake(b->GetPosition().x*PTM_RATIO+20, b->GetPosition().y*PTM_RATIO+20);
+                ud->countdownLabel.position = CGPointMake(b->GetPosition().x*PTM_RATIO+20*ud->sprite1.scaleX, b->GetPosition().y*PTM_RATIO+20*ud->sprite1.scaleY);
             }
             if(ud->sprite1 != NULL){
                 if(_gameOver && ud->sprite1.tag != S_HOTDOG && ud->sprite1.tag != S_SPCDOG){
