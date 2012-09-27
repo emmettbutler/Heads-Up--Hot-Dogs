@@ -97,6 +97,7 @@
                 b->SetLinearVelocity(b2Vec2(b->GetLinearVelocity().x+((((float) rand() / RAND_MAX) * 2) - 1), b->GetLinearVelocity().y+self->force));
                 [ud->sprite1 stopAllActions];
                 ud->deathSeqLock = false;
+                [ud->countdownLabel setVisible:false];
             }
         }
     }

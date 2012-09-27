@@ -2209,7 +2209,7 @@
         for(NSValue *v in bgSprites){
             CCSprite *sprite = (CCSprite *)[v pointerValue];
             if(sprite.tag && sprite.tag == 1)
-                [sprite setOpacity:255.00 * cosf(.01 * time)];
+                [sprite setOpacity:110.00 * (cosf(.07 * time) + 1.2)];
         }
         if(!(time % [vent1 getInterval])){
             [vent1 startBlowing];
@@ -2230,8 +2230,9 @@
     } else if(level->slug == @"china"){
         for(NSValue *v in bgSprites){
             CCSprite *sprite = (CCSprite *)[v pointerValue];
-            if(sprite.tag && sprite.tag == 1)
-                [sprite setOpacity:120.00 * cosf(.01 * time)];
+            if(sprite.tag && sprite.tag == 1){
+                [sprite setOpacity:60.00 * (cosf(.05 * time) + 1.2)];
+            }
         }
         if(!(time % 250) && arc4random() % 2  == 1){
             firecracker = [[Firecracker alloc] init:[NSValue valueWithPointer:_world] withSpritesheet:[NSValue valueWithPointer:spriteSheetCommon]];

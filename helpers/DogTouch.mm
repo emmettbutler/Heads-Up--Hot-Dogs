@@ -76,6 +76,7 @@
     bodyUserData *ud = (bodyUserData *)body->GetUserData();
     
     ud->grabbed = false;
+    [ud->countdownLabel setVisible:false];
     body->SetLinearVelocity(b2Vec2(body->GetLinearVelocity().x/5.0, body->GetLinearVelocity().y/5.0));
     body->SetFixedRotation(false);
     
