@@ -24,6 +24,7 @@
     float deathDelay;
     BOOL touched, exploding, touchLock, aimedAt, grabbed, deathSeqLock, animLock, hasTouchedHead, _dog_isOnHead;
     int collideFilter;
+    ccColor3B _color_pink;
 }
 
 -(HotDog *)init:(NSValue *)s withWorld:(NSValue *)w withLocation:(NSValue *)loc withSpcDog:(NSValue *)sd withVel:(NSValue *)v withDeathDelay:(NSNumber *)delay withDeathAnim:(NSMutableArray *)deathAnimFrames withFrictionMul:(NSNumber *)fric withRestitutionMul:(NSNumber *)rest;

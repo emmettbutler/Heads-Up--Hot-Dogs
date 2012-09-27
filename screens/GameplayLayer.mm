@@ -476,6 +476,9 @@
     else
         ud->deathSeq = [CCSequence actions: delay, sleepAction, angleAction, lockAction, xAction, incAction, ud->altAction, destroyAction, nil];
     [ud->sprite1 runAction:ud->deathSeq];
+    
+    [ud->countdownLabel setVisible:true];
+    [ud->sprite1 runAction:ud->countdownAction];
 }
 
 -(void)heartParticles:(NSValue *)loc{
@@ -1205,6 +1208,7 @@
         dogBody->SetAwake(false);
         [dogSprite stopAllActions];
         [dogSprite removeFromParentAndCleanup:YES];
+        [ud->countdownLabel removeFromParentAndCleanup:YES];
         [ud->howToPlaySprite removeFromParentAndCleanup:YES];
         [ud->overlaySprite removeFromParentAndCleanup:YES];
         _world->DestroyBody(dogBody);
@@ -1287,6 +1291,8 @@
     b2Body *wienerBody = (b2Body *)[[dog getBody] pointerValue];
     bodyUserData *ud = (bodyUserData *)wienerBody->GetUserData();
     CCSprite *sprite = (CCSprite *)ud->sprite1;
+    [ud->countdownLabel setVisible:false];
+    [self addChild:ud->countdownLabel];
     
     wienerBody->SetAwake(false);
 
@@ -2450,6 +2456,9 @@
                 if(ud->howToPlaySprite != NULL){
                     [ud->howToPlaySprite removeFromParentAndCleanup:YES];
                 }
+                if(ud->countdownLabel != NULL){
+                    [ud->countdownLabel removeFromParentAndCleanup:YES];
+                }
                 _world->DestroyBody(b);
                 ud = NULL;
                 continue;
@@ -2504,6 +2513,9 @@
                 ud->ripples.position = CGPointMake((b->GetPosition().x+ud->rippleXOffset)*PTM_RATIO,
                                                    (b->GetPosition().y+ud->rippleYOffset)*PTM_RATIO);
                 ud->ripples.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
+            }
+            if(ud->countdownLabel != NULL){
+                ud->countdownLabel.position = CGPointMake(b->GetPosition().x*PTM_RATIO+20, b->GetPosition().y*PTM_RATIO+20);
             }
             if(ud->sprite1 != NULL){
                 if(_gameOver && ud->sprite1.tag != S_HOTDOG && ud->sprite1.tag != S_SPCDOG){

@@ -11,6 +11,8 @@
 @implementation HotDog
 
 -(HotDog *)init:(NSValue *)s withWorld:(NSValue *)w withLocation:(NSValue *)loc withSpcDog:(NSValue *)sd withVel:(NSValue *)v withDeathDelay:(NSNumber *)delay withDeathAnim:(NSMutableArray *)deathAnimFrames withFrictionMul:(NSNumber *)fric withRestitutionMul:(NSNumber *)rest{
+    _color_pink = ccc3(255, 62, 166);
+    
     CGPoint location = [loc CGPointValue];
     CGPoint vel = [v CGPointValue];
     
@@ -101,6 +103,13 @@
     CCAnimation *dogShotAnim = [CCAnimation animationWithFrames:wienerShotAnimFrames delay:.1f ];
     CCFiniteTimeAction *_shotAction = [[CCAnimate alloc] initWithAnimation:dogShotAnim restoreOriginalFrame:NO];
     
+    CCLabelTTF *count = [CCLabelTTF labelWithString:@"5" fontName:@"LostPet.TTF" fontSize:20.0];
+    count.color = _color_pink;
+    CCAction *countAction = [[CCSequence actions:[CCCallFuncND actionWithTarget:self selector:@selector(setCountdownString:data:) data:@"4"],
+                             [CCDelayTime actionWithDuration:1], [CCCallFuncND actionWithTarget:self selector:@selector(setCountdownString:data:) data:@"3"],
+                             [CCDelayTime actionWithDuration:1], [CCCallFuncND actionWithTarget:self selector:@selector(setCountdownString:data:) data:@"2"],
+                             [CCDelayTime actionWithDuration:1], [CCCallFuncND actionWithTarget:self selector:@selector(setCountdownString:data:) data:@"1"],nil] retain];
+    
     //set up the userdata structures
     bodyUserData *ud = new bodyUserData();
     ud->sprite1 = self->sprite1;
@@ -108,6 +117,8 @@
     ud->_dog_riseSprite = riseSprite;
     ud->_dog_mainSprite = mainSprite;
     ud->_dog_grabSprite = grabSprite;
+    ud->countdownLabel = count;
+    ud->countdownAction = countAction;
     ud->altAction = _deathAction;
     ud->altAction2 = _shotAction;
     ud->howToPlaySpriteYOffset = 60;
@@ -182,6 +193,11 @@
     self->worldBody = (b2Body *)[b pointerValue];
     self->winSize = [CCDirector sharedDirector].winSize;
     return self;
+}
+
+-(void)setCountdownString:(id)sender data:(NSString *)string{
+    bodyUserData *ud = (bodyUserData *)self->worldBody->GetUserData();
+    [ud->countdownLabel setString:string];
 }
 
 -(void)setDogDisplayFrame{
