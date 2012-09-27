@@ -250,7 +250,7 @@
     NSLog(@"willEnterForeground");
     [Kontagent startSession:KONTAGENT_KEY mode:kKontagentSDKMode_PRODUCTION shouldSendApplicationAddedAutomatically:YES];
     [[CCDirector sharedDirector] startAnimation];
-    if(![[HotDogManager sharedManager] isPaused]){
+    if([[HotDogManager sharedManager] isInGame] && ![[HotDogManager sharedManager] isPaused]){
         [[HotDogManager sharedManager] setPause:[NSNumber numberWithBool:true]];
         [[CCDirector sharedDirector] resume];
     }

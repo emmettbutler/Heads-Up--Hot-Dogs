@@ -305,6 +305,7 @@
         CGSize winSize = [CCDirector sharedDirector].winSize;
         self.isTouchEnabled = YES;
         [[HotDogManager sharedManager] setPause:[NSNumber numberWithBool:false]];
+        [[HotDogManager sharedManager] setInGame:[NSNumber numberWithBool:false]];
         
         reporter = [[AchievementReporter alloc] init];
         [reporter loadAchievements];

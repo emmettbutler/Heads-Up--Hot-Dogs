@@ -8,6 +8,7 @@
 
 #import "Splashes.h"
 #import "UIDefs.h"
+#import "HotDogManager.h"
 
 
 @implementation Splashes
@@ -23,6 +24,8 @@
 -(id) init{
     if ((self = [super init])){
         NSLog(@"Splash screens start");
+        [[HotDogManager sharedManager] setInGame:[NSNumber numberWithBool:false]];
+        [[HotDogManager sharedManager] setPause:[NSNumber numberWithBool:false]];
         
         scaleX = 1, scaleY = 1;
         winSize = [[CCDirector sharedDirector] winSize];

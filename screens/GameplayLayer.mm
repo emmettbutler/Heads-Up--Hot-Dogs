@@ -1815,6 +1815,7 @@
 -(id) initWithSlug:(NSString *)levelSlug {
     if( (self=[super init])) {
         winSize = [CCDirector sharedDirector].winSize;
+        [[HotDogManager sharedManager] setInGame:[NSNumber numberWithBool:true]];
         
         standardUserDefaults = [NSUserDefaults standardUserDefaults];
         [[CCDirector sharedDirector] setDisplayFPS:NO];

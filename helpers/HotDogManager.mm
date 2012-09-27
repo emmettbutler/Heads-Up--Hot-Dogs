@@ -27,6 +27,7 @@ static HotDogManager *sharedInstance = nil;
         [super init];
         _pause = [NSNumber numberWithBool:false];
         _sfxOn = [NSNumber numberWithBool:false];
+        _inGame = [NSNumber numberWithBool:false];
         return self;
     }
 }
@@ -43,6 +44,21 @@ static HotDogManager *sharedInstance = nil;
 -(BOOL)isPaused{
     @synchronized(self) {
         return [_pause boolValue];
+    }
+}
+
+-(void)setInGame:(NSNumber *)inGame{
+    @synchronized(self) {
+        if (_inGame != inGame) {
+            [inGame release];
+            _inGame = [inGame retain];
+        }
+    }
+}
+
+-(BOOL)isInGame{
+    @synchronized(self) {
+        return [_inGame boolValue];
     }
 }
 

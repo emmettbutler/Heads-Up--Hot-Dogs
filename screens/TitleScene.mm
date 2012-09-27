@@ -34,6 +34,7 @@
 -(id) init{
     if ((self = [super init])){
         [[HotDogManager sharedManager] setPause:[NSNumber numberWithBool:false]];
+        [[HotDogManager sharedManager] setInGame:[NSNumber numberWithBool:false]];
         
         self.isTouchEnabled = true;
         winSize = [[CCDirector sharedDirector] winSize];

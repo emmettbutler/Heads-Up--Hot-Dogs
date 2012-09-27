@@ -8,8 +8,7 @@
 
 
 @interface HotDogManager : NSObject {
-    NSNumber *_pause;
-    NSNumber *_sfxOn;
+    NSNumber *_pause, *_sfxOn, *_inGame;
 }
 
 +(HotDogManager *)sharedManager;
@@ -17,5 +16,7 @@
 -(BOOL)isPaused;
 -(void)setSFX:(NSNumber *)sfxOn;
 -(BOOL)sfxOn;
+-(void)setInGame:(NSNumber *)inGame;
+-(BOOL)isInGame;
 
 @end

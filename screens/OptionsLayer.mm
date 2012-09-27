@@ -13,6 +13,7 @@
 #import "LevelSelectLayer.h"
 #import "Clouds.h"
 #import "UIDefs.h"
+#import "HotDogManager.h"
 
 #define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 
@@ -175,6 +176,7 @@
 -(id) init{
     if ((self = [super init])){
         CGSize winSize = [[CCDirector sharedDirector] winSize];
+        [[HotDogManager sharedManager] setInGame:[NSNumber numberWithBool:false]];
         sfxOn = [[NSUserDefaults standardUserDefaults] integerForKey:@"sfxon"];
         self.isTouchEnabled = true;
         
