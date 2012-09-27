@@ -137,7 +137,7 @@
         }
         dogLogo.position = ccp(winSize.width/2, winSize.height+100);
         [spriteSheet addChild:dogLogo];
-        dogLogoAnchor = CGPointMake(dogLogo.position.x, winSize.height*.5);
+        dogLogoAnchor = CGPointMake(dogLogo.position.x, winSize.height*.53);
         
         swooshLogo = [CCSprite spriteWithSpriteFrameName:@"HeadsUp.png"];
         if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
@@ -159,7 +159,7 @@
     time++;
     
     if([dogLogo numberOfRunningActions] == 0)
-        dogLogo.position = CGPointMake(dogLogo.position.x, dogLogoAnchor.y + (5 * sinf(time * .03)));
+        dogLogo.position = CGPointMake(dogLogo.position.x, dogLogoAnchor.y + (10 * sinf(time * .03)));
 }
 
 -(void)showASGMoreGamesView{

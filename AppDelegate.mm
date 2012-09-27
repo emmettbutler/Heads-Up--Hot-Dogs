@@ -249,9 +249,11 @@
 -(void) applicationWillEnterForeground:(UIApplication*)application {
     NSLog(@"willEnterForeground");
     [Kontagent startSession:KONTAGENT_KEY mode:kKontagentSDKMode_PRODUCTION shouldSendApplicationAddedAutomatically:YES];
-    [[HotDogManager sharedManager] setPause:[NSNumber numberWithBool:true]];
     [[CCDirector sharedDirector] startAnimation];
-    [[CCDirector sharedDirector] resume];
+    if(![[HotDogManager sharedManager] isPaused]){
+        [[HotDogManager sharedManager] setPause:[NSNumber numberWithBool:true]];
+        [[CCDirector sharedDirector] resume];
+    }
 }
 
 -(void)applicationWillTerminate:(UIApplication *)application {

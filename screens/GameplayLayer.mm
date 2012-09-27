@@ -156,12 +156,12 @@
     [self removeChild:_pauseMenu cleanup:YES];
     [self removeChild:_pauseLayer cleanup:YES];
     _pauseLayer = NULL;
+    [[HotDogManager sharedManager] setPause:[NSNumber numberWithBool:false]];
     [[CCDirector sharedDirector] resume];
 #ifdef DEBUG
 #else
     [[SimpleAudioEngine sharedEngine] resumeBackgroundMusic];
 #endif
-    [[HotDogManager sharedManager] setPause:[NSNumber numberWithBool:false]];
 }
 
 -(void)restartScene{
@@ -210,16 +210,24 @@
     [[CCDirector sharedDirector] replaceScene:[LevelSelectLayer scene]];
 }
 
+-(void)freezeAction{
+    [[CCDirector sharedDirector] pause];
+    [[HotDogManager sharedManager] setPause:[NSNumber numberWithBool:true]];
+#ifdef DEBUG
+#else
+    [[SimpleAudioEngine sharedEngine] pauseBackgroundMusic];
+#endif
+}
+
 -(void) pauseButton:(NSNumber *)force{
     BOOL _pause = [[HotDogManager sharedManager] isPaused];
     if(!_pause || force.boolValue){
-        [[HotDogManager sharedManager] setPause:[NSNumber numberWithBool:true]];
-        [[CCDirector sharedDirector] pause];
-#ifdef DEBUG
-#else
-        [[SimpleAudioEngine sharedEngine] pauseBackgroundMusic];
-#endif
-        if(_pauseLayer) return;
+        float slideSpeed = .15;
+        
+        if(_pauseLayer){
+            //[self runAction:[CCSequence actions:[CCDelayTime actionWithDuration:slideSpeed], [CCCallFunc actionWithTarget:self selector:@selector(freezeAction)], nil]];
+            return;
+        }
         
         _pauseLayer = [CCLayerColor layerWithColor:ccc4(190, 190, 190, 155) width:winSize.width height:winSize.height];
         _pauseLayer.anchorPoint = CGPointZero;
@@ -229,8 +237,10 @@
         if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
             sprite.scale = 1.7;
         }
-        sprite.position = ccp(winSize.width/2-((sprite.contentSize.width*sprite.scaleX)/4), winSize.height/2);
+        CGPoint bgAnchor = CGPointMake(winSize.width/2-((sprite.contentSize.width*sprite.scaleX)/4), winSize.height/2);
+        sprite.position = ccp(-200, bgAnchor.y);
         [_pauseLayer addChild:sprite z:81];
+        [sprite runAction:[CCSequence actions:[CCMoveTo actionWithDuration:slideSpeed position:bgAnchor], [CCCallFunc actionWithTarget:self selector:@selector(freezeAction)], nil]];
 
         float fontSize = 24.0;
         if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
@@ -240,8 +250,10 @@
         CCLabelTTF *label = [CCLabelTTF labelWithString:@"Paused" fontName:@"LostPet.TTF" fontSize:fontSize+3.0];
         label.color = _color_pink;
         CCMenuItem *pauseTitle = [CCMenuItemLabel itemWithLabel:label];
-        pauseTitle.position = ccp((sprite.position.x), (sprite.position.y+(float)(sprite.contentSize.height*sprite.scaleY)/2.5));
+        CGPoint titleAnchor = CGPointMake(bgAnchor.x, bgAnchor.y+(float)(sprite.contentSize.height*sprite.scaleY)/2.5);
+        pauseTitle.position = ccp(-200, (sprite.position.y+(float)(sprite.contentSize.height*sprite.scaleY)/2.5));
         [_pauseLayer addChild:pauseTitle z:81];
+        [pauseTitle runAction:[CCMoveTo actionWithDuration:slideSpeed position:titleAnchor]];
 
         NSInteger _overallTime = [standardUserDefaults integerForKey:@"overallTime"];
         CCLOG(@"Initial overall time: %d seconds", _overallTime);
@@ -278,40 +290,54 @@
         }
         
         button1.scale = scale;
-        button1.position = ccp(buttonsX, winSize.height/2);
+        button1.position = ccp(winSize.width+200, winSize.height/2);
+        CGPoint button1Anchor = CGPointMake(buttonsX, winSize.height/2);
         [_pauseLayer addChild:button1 z:81];
+        [button1 runAction:[CCMoveTo actionWithDuration:slideSpeed position:button1Anchor]];
         CCLabelTTF *otherLabel = [CCLabelTTF labelWithString:@"RESTART" fontName:@"LostPet.TTF" fontSize:fontSize-1];
         [[otherLabel texture] setAliasTexParameters];
         otherLabel.color = _color_pink;
+        CGPoint label1Anchor = CGPointMake(button1Anchor.x, button1Anchor.y-button1.scaleY);
         otherLabel.position = ccp(button1.position.x, button1.position.y-button1.scaleY);
         [_pauseLayer addChild:otherLabel z:82];
-        _restartRect = CGRectMake((button1.position.x-(button1.contentSize.width*button1.scaleX)/2), (button1.position.y-(button1.contentSize.height*button1.scaleY)/2), (button1.contentSize.width*button1.scaleX+70), (button1.contentSize.height*button1.scaleY+70));
+        [otherLabel runAction:[CCMoveTo actionWithDuration:slideSpeed position:label1Anchor]];
+        _restartRect = CGRectMake((button1Anchor.x-(button1.contentSize.width*button1.scaleX)/2), (button1Anchor.y-(button1.contentSize.height*button1.scaleY)/2), (button1.contentSize.width*button1.scaleX+70), (button1.contentSize.height*button1.scaleY+70));
 
         CCSprite *button2 = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
         button2.scale = scale;
-        button2.position = ccp(buttonsX, winSize.height/2+button2.contentSize.height*button2.scaleY*1.5);
+        button2.position = ccp(buttonsX, winSize.height+200);
+        CGPoint button2Anchor = CGPointMake(buttonsX, winSize.height/2+button2.contentSize.height*button2.scaleY*1.5);
         [_pauseLayer addChild:button2 z:81];
+        [button2 runAction:[CCMoveTo actionWithDuration:slideSpeed position:button2Anchor]];
         otherLabel = [CCLabelTTF labelWithString:@"CONTINUE" fontName:@"LostPet.TTF" fontSize:fontSize-1];
         [[otherLabel texture] setAliasTexParameters];
         otherLabel.color = _color_pink;
+        CGPoint label2Anchor = CGPointMake(button2Anchor.x, button2Anchor.y-button2.scaleY);
         otherLabel.position = ccp(button2.position.x, button2.position.y-button2.scaleY);
         [_pauseLayer addChild:otherLabel z:82];
-        _resumeRect = CGRectMake((button2.position.x-(button2.contentSize.width*button2.scaleX)/2), (button2.position.y-(button2.contentSize.height*button2.scaleY)/2), (button2.contentSize.width*button2.scaleX+70), (button2.contentSize.height*button2.scaleY+70));
+        [otherLabel runAction:[CCMoveTo actionWithDuration:slideSpeed position:label2Anchor]];
+        _resumeRect = CGRectMake((button2Anchor.x-(button2.contentSize.width*button2.scaleX)/2), (button2Anchor.y-(button2.contentSize.height*button2.scaleY)/2), (button2.contentSize.width*button2.scaleX+70), (button2.contentSize.height*button2.scaleY+70));
         
         CCSprite *button3 = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
         button3.scale = scale;
-        button3.position = ccp(buttonsX, winSize.height/2-button3.contentSize.height*button3.scaleY*1.5);
+        button3.position = ccp(buttonsX, -200);
+        CGPoint button3Anchor = CGPointMake(buttonsX, winSize.height/2-button3.contentSize.height*button3.scaleY*1.5);
         [_pauseLayer addChild:button3 z:81];
+        [button3 runAction:[CCMoveTo actionWithDuration:slideSpeed position:button3Anchor]];
         otherLabel = [CCLabelTTF labelWithString:@"LEVELS" fontName:@"LostPet.TTF" fontSize:fontSize-1];
         [[otherLabel texture] setAliasTexParameters];
         otherLabel.color = _color_pink;
+        CGPoint label3Anchor = CGPointMake(button3Anchor.x, button3Anchor.y-button3.scaleY);
         otherLabel.position = ccp(button3.position.x, button3.position.y-button3.scaleY);
         [_pauseLayer addChild:otherLabel z:82];
-        _levelRect = CGRectMake((button3.position.x-(button3.contentSize.width*button3.scaleX)/2), (button3.position.y-(button3.contentSize.height*button3.scaleY)/2), (button3.contentSize.width*button3.scaleX+70), (button3.contentSize.height*button3.scaleY+70));
+        [otherLabel runAction:[CCMoveTo actionWithDuration:slideSpeed position:label3Anchor]];
+        _levelRect = CGRectMake((button3Anchor.x-(button3.contentSize.width*button3.scaleX)/2), (button3Anchor.y-(button3.contentSize.height*button3.scaleY)/2), (button3.contentSize.width*button3.scaleX+70), (button3.contentSize.height*button3.scaleY+70));
 
         _pauseMenu = [CCMenu menuWithItems: score, timeItem, peopleItem, savedItem, totalTimeItem, nil];
-        [_pauseMenu setPosition:ccp(sprite.position.x, winSize.height/2-10)];
+        CGPoint menuAnchor = CGPointMake(bgAnchor.x, winSize.height/2-10);
+        [_pauseMenu setPosition:ccp(-200, winSize.height/2-10)];
         [_pauseMenu alignItemsVerticallyWithPadding:5];
+        [_pauseMenu runAction:[CCMoveTo actionWithDuration:slideSpeed position:menuAnchor]];
         [self addChild:_pauseMenu z:81];
         
         [TestFlight passCheckpoint:@"Pause Menu"];
