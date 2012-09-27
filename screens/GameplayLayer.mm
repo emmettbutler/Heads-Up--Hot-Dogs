@@ -2341,6 +2341,7 @@
                         break;
                     }
                 }
+                [ud->countdownLabel setVisible:false];
                 if(!ud->hasTouchedHead && !_gameOver){
                     NSMutableArray *plusPointsParams = [[NSMutableArray alloc] initWithCapacity:4];
                     [plusPointsParams addObject:[NSNumber numberWithInt:pBody->GetPosition().x*PTM_RATIO]];
