@@ -30,8 +30,8 @@
     [levelStructs addObject:[self philly:full]];
     [levelStructs addObject:[self nyc:full]];
     [levelStructs addObject:[self london:full]];
-    [levelStructs addObject:[self china:full]];
     [levelStructs addObject:[self chicago:full]];
+    [levelStructs addObject:[self china:full]];
     [levelStructs addObject:[self space:full]];
     [levelStructs addObject:[self japan:full]];
    
@@ -610,7 +610,7 @@
     lp->enabled = true;
     lp->slug = @"china";
     lp->name = @"Beijing";
-    lp->unlockNextThreshold = 7500;
+    lp->unlockNextThreshold = 9000;
     lp->func = @"switchScreenChina";
     lp->thumbnail = @"China_Thumb.png";
     lp->unlockTweet = @"Chinese New Year is a perfect time for franks in @HeadsUpHotDogs";
@@ -771,6 +771,7 @@
         lp->bgm = @"04 - Chaos Dog In The Windy City.mp3";
         lp->gravity = -27.0f;
         lp->spritesheet = @"sprites_chicago";
+        lp->sfxVol = .8;
         lp->personSpeedMul = 1;
         lp->restitutionMul = .8;
         lp->frictionMul = 1.1;
