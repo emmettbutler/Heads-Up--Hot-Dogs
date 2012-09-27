@@ -480,7 +480,7 @@
     if(ud->sprite1.tag != S_SPCDOG){
         [ud->countdownLabel setVisible:true];
         [ud->sprite1 runAction:ud->countdownAction];
-        [ud->sprite1 runAction:[CCTintTo actionWithDuration:ud->deathDelay red:255 green:0 blue:0]];
+        [ud->sprite1 runAction:[CCTintTo actionWithDuration:ud->deathDelay+2.5 red:250 green:0 blue:0]];
     }
 }
 
