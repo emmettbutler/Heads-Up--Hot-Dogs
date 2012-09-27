@@ -103,10 +103,9 @@
     CCAnimation *dogShotAnim = [CCAnimation animationWithFrames:wienerShotAnimFrames delay:.1f ];
     CCFiniteTimeAction *_shotAction = [[CCAnimate alloc] initWithAnimation:dogShotAnim restoreOriginalFrame:NO];
     
-    CCLabelTTF *count = [CCLabelTTF labelWithString:@"5" fontName:@"LostPet.TTF" fontSize:20.0];
+    CCLabelTTF *count = [CCLabelTTF labelWithString:@"5" fontName:@"LostPet.TTF" fontSize:27.0];
     count.color = _color_pink;
-    CCAction *countAction = [[CCSequence actions:[CCCallFuncND actionWithTarget:self selector:@selector(setCountdownString:data:) data:@"4"],
-                             [CCDelayTime actionWithDuration:1], [CCCallFuncND actionWithTarget:self selector:@selector(setCountdownString:data:) data:@"3"],
+    CCAction *countAction = [[CCSequence actions:[CCCallFuncND actionWithTarget:self selector:@selector(setCountdownString:data:) data:@"3"],
                              [CCDelayTime actionWithDuration:1], [CCCallFuncND actionWithTarget:self selector:@selector(setCountdownString:data:) data:@"2"],
                              [CCDelayTime actionWithDuration:1], [CCCallFuncND actionWithTarget:self selector:@selector(setCountdownString:data:) data:@"1"],nil] retain];
     
