@@ -15,7 +15,7 @@
 
 -(Shiba *)init:(NSValue *)s withWorld:(NSValue *)w withFloorHeights:(NSMutableArray *)floorHeights{
     winSize = [[CCDirector sharedDirector] winSize];
-    scale = 1;
+    scale = 1.2;
     if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
         scale = IPAD_SCALE_FACTOR_X;
     }
@@ -119,6 +119,7 @@
     b2Body *body = (b2Body *)[b pointerValue];
     bodyUserData *ud = (bodyUserData *)body->GetUserData();
     [ud->sprite1 removeFromParentAndCleanup:YES];
+    [ud->howToPlaySprite removeFromParentAndCleanup:YES];
     [ud->countdownLabel removeFromParentAndCleanup:YES];
     self->world->DestroyBody(body);
 }
