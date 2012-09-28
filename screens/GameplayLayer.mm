@@ -2156,6 +2156,15 @@
         [self pauseButton:[NSNumber numberWithBool:true]];
     }
     
+    b2RayCastInput input;
+    float closestFraction = 1; //start with end of line as policeRayPoint2
+    b2Vec2 intersectionNormal(0,0);
+    float rayLength = COP_RANGE;
+    b2Vec2 intersectionPoint(0,0);
+    
+    //any non-collision actions that apply to multiple onscreen entities happen here
+    _dogsOnscreen = 0;
+    
     int32 velocityIterations = 2;
     int32 positionIterations = 1;
     
@@ -2410,15 +2419,6 @@
         }
     }
     personDogContactListener->contacts.clear();
-
-    b2RayCastInput input;
-    float closestFraction = 1; //start with end of line as policeRayPoint2
-    b2Vec2 intersectionNormal(0,0);
-    float rayLength = COP_RANGE;
-    b2Vec2 intersectionPoint(0,0);
-
-    //any non-collision actions that apply to multiple onscreen entities happen here
-    _dogsOnscreen = 0;
     
     for(b2Body* b = _world->GetBodyList(); b; b = b->GetNext()){
         if(b->GetUserData() && b->GetUserData() != (void*)100){

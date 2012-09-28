@@ -154,20 +154,24 @@
     
     CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"Pause_BG.png"];
     sprite.position = ccp(winSize.width/2, winSize.height/2);
-    sprite.scale = 1.4*scale;
+    sprite.scale = 1.5*scale;
     [creditsLayer addChild:sprite z:81];
     
-    float fontSize = 23.0*scale;
+    float fontSize = 21.0*scale;
     
     CCLabelTTF *label = [CCLabelTTF labelWithString:@"Credits" fontName:@"LostPet.TTF" fontSize:fontSize+3];
     label.color = _color_pink;
     [[label texture] setAliasTexParameters];
     CCMenuItem *pauseTitle = [CCMenuItemLabel itemWithLabel:label];
-    pauseTitle.position = ccp((sprite.position.x), winSize.height*.817);
+    float height = winSize.height*.88;
+    if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+        height = winSize.height*.84;
+    }
+    pauseTitle.position = ccp((sprite.position.x), height);
     [creditsLayer addChild:pauseTitle z:81];
     
-    label = [CCLabelTTF labelWithString:@"Emmett Butler: design & program\nDiego Garcia: design & art\nMusic: Luke Silas, Ben Carignan\nTesters: Nick Johnson, Dave Mauro, Nina Freeman, Sam Bosma, Grace Yang, Mike Bartnett, Aaron Koenigsberg, Zach Cimafonte, Noah Lemen\nSpecial thanks to Muhammed Ali Khan and Anna Anthropy" dimensions:CGSizeMake(sprite.contentSize.width*sprite.scaleX*.9, sprite.contentSize.height*sprite.scaleY*.9) alignment:UITextAlignmentLeft fontName:@"LostPet.TTF" fontSize:fontSize];
-    label.position = ccp(sprite.position.x, sprite.position.y*.8);
+    label = [CCLabelTTF labelWithString:@"Emmett Butler: design & program\nDiego Garcia: design & art\nMusic: Benjamin Carignan - \"Space Boyfriend\"\nLuke Silas - \"knife city\"\nTesters: Nick Johnson, Dave Mauro, Nina Freeman, Sam Bosma, Grace Yang, Mike Bartnett, Aaron Koenigsberg, Zach Cimafonte, Noah Lemen\nSpecial thanks to Muhammed Ali Khan and Anna Anthropy" dimensions:CGSizeMake(sprite.contentSize.width*sprite.scaleX*.9, sprite.contentSize.height*sprite.scaleY*.9) alignment:UITextAlignmentLeft fontName:@"LostPet.TTF" fontSize:fontSize];
+    label.position = ccp(sprite.position.x, sprite.position.y*.86);
     label.color = _color_pink;
     [[label texture] setAliasTexParameters];
     [creditsLayer addChild:label z:81];
