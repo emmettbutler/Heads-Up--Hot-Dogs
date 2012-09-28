@@ -497,7 +497,7 @@
     heartParticles.speed = 90.0f;
     heartParticles.anchorPoint = ccp(0.5f,0.5f);
     heartParticles.position = [loc CGPointValue];
-    heartParticles.duration = 0.1f;
+    heartParticles.duration = .35f;
     [self addChild:heartParticles z:60];
 }
 
