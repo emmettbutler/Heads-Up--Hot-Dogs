@@ -11,7 +11,7 @@
 #import "TitleScene.h"
 #import "Clouds.h"
 
-@interface Splashes : CCLayer {
+@interface Splashes : CCLayer <CDLongAudioSourceDelegate> {
     CCSpriteBatchNode *spriteSheet;
     CCSprite *mainLogo, *logoBG, *cloud1, *cloud2, *cloud3, *namesSprite, *namesBG;
     int time;

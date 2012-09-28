@@ -9,7 +9,7 @@
 #import "cocos2d.h"
 #import <SimpleAudioEngine.h>
 
-@interface TitleLayer : CCLayer 
+@interface TitleLayer : CCLayer <CDLongAudioSourceDelegate>
 {
     CCSpriteBatchNode *spriteSheet;
     CCAnimation *titleAnim;

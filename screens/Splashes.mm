@@ -96,10 +96,16 @@
         namesSprite.position = ccp(logoAnchor.x, logoAnchor.y);
         [spriteSheet addChild:namesSprite  z:21];
         [namesSprite runAction:[CCFadeIn actionWithDuration:1.8]];
+    } else if(time == 160){
+        CDLongAudioSource *introAudio = [[CDAudioManager sharedManager] audioSourceForChannel:kASC_Right];
+        [introAudio load:@"menu intro.mp3"];
+        introAudio.delegate = self;
+        introAudio.volume = .4;
+        [introAudio play];
     } else if(time == 280){
         [namesSprite runAction:[CCFadeOut actionWithDuration:1]];
         [namesBG runAction:[CCFadeOut actionWithDuration:1]];
-        [self runAction:[CCSequence actions:[CCDelayTime actionWithDuration:1], [CCCallFunc actionWithTarget:self selector:@selector(switchSceneTitle)], nil]];
+        [self runAction:[CCSequence actions:[CCDelayTime actionWithDuration:1], nil]];
     }
 
     [logoBG setPosition:CGPointMake(cloudAnchor.x + (5 * sinf(time * .01)), cloudAnchor.y)];
@@ -107,7 +113,7 @@
     [namesSprite setPosition:CGPointMake(namesAnchor.x + (5 * sinf(time * .01)), namesAnchor.y)];
 }
 
--(void)switchSceneTitle{
+-(void)cdAudioSourceDidFinishPlaying:(CDLongAudioSource *)audioSource{
     [[CCDirector sharedDirector] replaceScene:[TitleLayer scene]];
 }
 
