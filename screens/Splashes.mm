@@ -97,6 +97,8 @@
         [spriteSheet addChild:namesSprite  z:21];
         [namesSprite runAction:[CCFadeIn actionWithDuration:1.8]];
     } else if(time == 140){
+#ifdef DEBUG
+#else
         UInt32 propertySize;
         audioIsAlreadyPlaying = 0;
         propertySize = sizeof(UInt32);
@@ -108,14 +110,19 @@
             introAudio.volume = .4;
             [introAudio play];
         }
+#endif
     } else if(time == 280){
         [namesSprite runAction:[CCFadeOut actionWithDuration:1]];
         [namesBG runAction:[CCFadeOut actionWithDuration:1]];
+#ifdef DEBUG
+        [self runAction:[CCSequence actions:[CCDelayTime actionWithDuration:1], [CCCallFunc actionWithTarget:self selector:@selector(switchSceneTitle)], nil]];
+#else
         if(audioIsAlreadyPlaying){
             [self runAction:[CCSequence actions:[CCDelayTime actionWithDuration:1], [CCCallFunc actionWithTarget:self selector:@selector(switchSceneTitle)], nil]];
         } else {
             [self runAction:[CCSequence actions:[CCDelayTime actionWithDuration:1], nil]];
         }
+#endif
     }
 
     [logoBG setPosition:CGPointMake(cloudAnchor.x + (5 * sinf(time * .01)), cloudAnchor.y)];
