@@ -162,6 +162,7 @@
 #else
     [[SimpleAudioEngine sharedEngine] resumeBackgroundMusic];
 #endif
+    pauseLock = false;
 }
 
 -(void)restartScene{
@@ -2152,8 +2153,13 @@
 
 //the "GAME LOOP"
 -(void) tick: (ccTime) dt {
-    if([[HotDogManager sharedManager] isPaused]){
-        [self pauseButton:[NSNumber numberWithBool:true]];
+    if([[HotDogManager sharedManager] isPaused] && !pauseLock){
+        if(_droppedCount >= DROPPED_MAX - 1){
+            [self loseScene];
+        } else {
+            [self pauseButton:[NSNumber numberWithBool:true]];
+        }
+        pauseLock = true;
     }
     
     b2RayCastInput input;
