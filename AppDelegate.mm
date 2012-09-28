@@ -183,6 +183,7 @@
 #ifdef DEBUG
     [standardUserDefaults setInteger:0 forKey:@"introDone"]; //should be 0, is 1 for debugging
 #else
+    [CDAudioManager initAsynchronously: kAMM_FxPlusMusicIfNoOtherAudio];
     [[SimpleAudioEngine sharedEngine] preloadEffect:@"menu intro.mp3"];
     [[SimpleAudioEngine sharedEngine] preloadEffect:@"pause 3.mp3"];
     [[SimpleAudioEngine sharedEngine] preloadEffect:@"firecracker.mp3"];

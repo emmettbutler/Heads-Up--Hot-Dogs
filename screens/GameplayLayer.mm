@@ -1959,11 +1959,19 @@
         [[SimpleAudioEngine sharedEngine] setBackgroundMusicVolume:volBGM];
         [[SimpleAudioEngine sharedEngine] setEffectsVolume:volSFX];
         if(level->introAudio){
-            introAudio = [[CDAudioManager sharedManager] audioSourceForChannel:kASC_Right];
-            [introAudio load:level->introAudio];
-            introAudio.delegate = self;
-            introAudio.volume = volBGM;
-            [introAudio play];
+            UInt32 propertySize;
+            audioIsAlreadyPlaying = 0;
+            propertySize = sizeof(UInt32);
+            AudioSessionGetProperty(kAudioSessionProperty_OtherAudioIsPlaying, &propertySize, &audioIsAlreadyPlaying);
+            if(!audioIsAlreadyPlaying){
+                introAudio = [[CDAudioManager sharedManager] audioSourceForChannel:kASC_Right];
+                introAudio.delegate = self;
+                [introAudio load:level->introAudio];
+                introAudio.volume = volBGM;
+                [introAudio play];
+            } else {
+                [[SimpleAudioEngine sharedEngine] playBackgroundMusic:level->bgm loop:YES];
+            }
         } else {
             [[SimpleAudioEngine sharedEngine] playBackgroundMusic:level->bgm loop:YES];
         }
@@ -2301,7 +2309,7 @@
 #ifdef DEBUG
 #else
             [[SimpleAudioEngine sharedEngine] stopBackgroundMusic];
-            if(_sfxOn)
+            if(!audioIsAlreadyPlaying)
                 [[SimpleAudioEngine sharedEngine] playEffect:@"game over sting.mp3"];
 #endif
             [self runAction:[CCSequence actions:[CCDelayTime actionWithDuration:3], [CCCallFunc actionWithTarget:self selector:@selector(loseScene)], nil]];

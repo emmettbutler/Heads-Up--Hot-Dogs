@@ -52,6 +52,7 @@
     NSMutableArray *bgSprites, *floorBits, *xPositions, *dogTouches, *dogIcons, *floorHeights, *windParticles;
     NSString *slug;
     CGSize winSize;
+    UInt32 audioIsAlreadyPlaying;
     CDLongAudioSource *introAudio;
     CGRect _pauseButtonRect, _resumeRect, _restartRect, _levelRect;
     NSUserDefaults *standardUserDefaults;

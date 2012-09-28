@@ -20,6 +20,7 @@
     CGRect screen;
     CGSize winSize;
     Clouds *clouds;
+    UInt32 audioIsAlreadyPlaying;
 }
 
 +(CCScene *) scene;
