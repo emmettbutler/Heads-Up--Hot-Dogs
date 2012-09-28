@@ -27,7 +27,7 @@ static NSUserDefaults *standardUserDefaults;
     };
     
     struct levelProps{
-        NSString *bg, *bgm, *name, *slug, *func, *spritesheet, *thumbnail, *unlockTweet;
+        NSString *bg, *bgm, *name, *slug, *func, *spritesheet, *thumbnail, *unlockTweet, *introAudio;
         NSMutableArray *bgComponents, *characters, *activeComponents, *dogDeathAnimFrames;
         levelProps *next, *prev;
         int characterProbSum, maxDogs, highScore, unlockNextThreshold, highestTrophy;

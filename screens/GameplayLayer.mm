@@ -19,9 +19,9 @@
 #import "HotDogManager.h"
 
 #define DEGTORAD 0.0174532
-#define VOMIT_VEL 666 // diego thinks this should be 666, i think 66.6 makes more sense
+#define VOMIT_VEL 666
+#define VOMIT_PROBABILITY 666
 #define COP_RANGE 4
-#define VOMIT_PROBABILITY 500
 #define OVERLAYS_STOP 2
 #define WIND_PARTICLES 50
 #define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
@@ -683,6 +683,12 @@
             b->SetActive(false);
             [self explodeDog:self data:[NSValue valueWithPointer:b]];
         }
+    }
+}
+
+-(void)cdAudioSourceDidFinishPlaying:(CDLongAudioSource *)audioSource{
+    if(level->introAudio){
+        [[SimpleAudioEngine sharedEngine] playBackgroundMusic:level->bgm loop:YES];
     }
 }
 
@@ -1949,9 +1955,18 @@
         float volBGM = 0.3, volSFX = volBGM;
         if(level->bgmVol) volBGM = level->bgmVol;
         if(level->sfxVol) volSFX = level->sfxVol;
+        [[SimpleAudioEngine sharedEngine] stopBackgroundMusic];
         [[SimpleAudioEngine sharedEngine] setBackgroundMusicVolume:volBGM];
         [[SimpleAudioEngine sharedEngine] setEffectsVolume:volSFX];
-        [[SimpleAudioEngine sharedEngine] playBackgroundMusic:level->bgm loop:YES];
+        if(level->introAudio){
+            introAudio = [[CDAudioManager sharedManager] audioSourceForChannel:kASC_Right];
+            [introAudio load:level->introAudio];
+            introAudio.delegate = self;
+            introAudio.volume = volBGM;
+            [introAudio play];
+        } else {
+            [[SimpleAudioEngine sharedEngine] playBackgroundMusic:level->bgm loop:YES];
+        }
 #endif
         [spriteSheetLevel addChild:background z:-10];
 

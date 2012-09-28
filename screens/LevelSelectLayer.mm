@@ -426,6 +426,7 @@
         [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_nyc.plist"];
         lp->bg = @"BG_NYC.png";
         lp->bgm = @"02 - Dances With Weenies.mp3";
+        lp->introAudio = @"01 - Dances with Weenies (Intro).mp3";
         lp->gravity = -25.0f;
         lp->spritesheet = @"sprites_nyc";
         lp->personSpeedMul = .8;
@@ -772,6 +773,7 @@
         [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_chicago.plist"];
         lp->bg = @"Chicago_BG.png";
         lp->bgm = @"04 - Chaos Dog In The Windy City.mp3";
+        lp->introAudio = @"03 - Chaos Dog In The Windy City (Intro).mp3";
         lp->gravity = -27.0f;
         lp->spritesheet = @"sprites_chicago";
         lp->sfxVol = .8;
@@ -885,6 +887,7 @@
         [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_space.plist"];
         lp->bg = @"SpaceBG.png";
         lp->bgm = @"07 - Uchuu Kyoudog.mp3";
+        lp->introAudio = @"06 - Uchuu Kyoudog (Intro).mp3";
         lp->gravity = -40.0f;
         lp->spritesheet = @"sprites_space";
         lp->personSpeedMul = 1.1;
