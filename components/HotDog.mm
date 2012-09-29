@@ -124,7 +124,7 @@
     if(wienerFlashAnimFrames)
         ud->altAction3 = _flashAction;
     ud->deathDelay = deathDelay;
-    ud->deathSeq = NULL;
+    ud->deathSeq = nil;
     
     fixtureUserData *fUd1 = new fixtureUserData();
     fUd1->ogCollideFilters = 0;
