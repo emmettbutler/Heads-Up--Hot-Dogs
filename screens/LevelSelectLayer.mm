@@ -460,6 +460,7 @@
         lp->gravity = -25.0f;
         lp->spritesheet = @"sprites_nyc";
         lp->personSpeedMul = .8;
+        lp->maxDogs = 6;
         
         spcDogData *dd = new spcDogData();
         dd->riseSprite = @"Bagel_Rise.png";
@@ -549,6 +550,7 @@
         lp->personSpeedMul = 1;
         lp->restitutionMul = 1;
         lp->frictionMul = 1;
+        lp->maxDogs = 6;
         
         spcDogData *dd = new spcDogData();
         dd->riseSprite = @"Pasty_Rise.png";
@@ -659,6 +661,7 @@
         lp->personSpeedMul = 1;
         lp->restitutionMul = 1;
         lp->frictionMul = 1;
+        lp->maxDogs = 6;
         
         spcDogData *dd = new spcDogData();
         dd->riseSprite = @"Baozi_Rise.png";
@@ -741,7 +744,7 @@
         lp->spritesheet = @"sprites_japan";
         lp->dogDeathDelay = .001;
         lp->personSpeedMul = .7;
-        lp->maxDogs = 7;
+        lp->maxDogs = 5;
         lp->gravity = -17.0;
         lp->spawnInterval = 4.0;
         
@@ -810,7 +813,7 @@
         lp->personSpeedMul = 1;
         lp->restitutionMul = .8;
         lp->frictionMul = 1.1;
-        lp->maxDogs = 5;
+        lp->maxDogs = 6;
         lp->hasShiba = true;
         
         spcDogData *dd = new spcDogData();
@@ -923,6 +926,7 @@
         lp->personSpeedMul = 1.1;
         lp->restitutionMul = 1.3;
         lp->frictionMul = 100;
+        lp->maxDogs = 6;
         lp->hasShiba = true;
         
         spcDogData *dd = new spcDogData();
