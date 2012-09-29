@@ -374,7 +374,7 @@
 }
 
 -(void)switchScreenStartWithSlug:(NSString *)slug{
-    [[CCDirector sharedDirector] replaceScene:[CCTransitionRadialCW transitionWithDuration:.3 scene:[GameplayLayer sceneWithSlug:slug]]];
+    [[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:.3 scene:[GameplayLayer sceneWithSlug:slug]]];
 }
 
 -(void) dealloc{
