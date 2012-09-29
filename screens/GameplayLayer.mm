@@ -473,15 +473,17 @@
     id xAction = [CCCallFuncND actionWithTarget:self selector:@selector(playXAnimation:data:) data:[[NSValue valueWithPointer:dogBody] retain]];
     id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:[[NSValue valueWithPointer:dogBody] retain]];
     if(ud->altAction3)
-        ud->deathSeq = [CCSequence actions: delay, sleepAction, angleAction, ud->altAction3, lockAction, xAction, incAction, ud->altAction, destroyAction, nil];
+        ud->deathSeq = [[CCSequence actions: delay, sleepAction, angleAction, ud->altAction3, lockAction, xAction, incAction, ud->altAction, destroyAction, nil] retain];
     else
-        ud->deathSeq = [CCSequence actions: delay, sleepAction, angleAction, lockAction, xAction, incAction, ud->altAction, destroyAction, nil];
+        ud->deathSeq = [[CCSequence actions: delay, sleepAction, angleAction, lockAction, xAction, incAction, ud->altAction, destroyAction, nil] retain];
     [ud->sprite1 runAction:ud->deathSeq];
+    
+    ud->tintAction = [[CCTintTo actionWithDuration:ud->deathDelay+2 red:250 green:0 blue:0] retain];
     
     if(ud->sprite1.tag != S_SPCDOG){
         [ud->countdownLabel setVisible:true];
         [ud->sprite1 runAction:ud->countdownAction];
-        [ud->sprite1 runAction:[CCTintTo actionWithDuration:ud->deathDelay+2 red:250 green:0 blue:0]];
+        [ud->sprite1 runAction:ud->tintAction];
     }
 }
 

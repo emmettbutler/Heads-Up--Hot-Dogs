@@ -53,6 +53,7 @@
     
     bodyUserData *ud = (bodyUserData *)body->GetUserData();
     [ud->sprite1 stopAllActions];
+    ud->deathSeq = nil;
     ud->deathSeqLock = false;
     
     for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()){
@@ -101,6 +102,13 @@
             fixture->SetFilterData(filter);
             ud->collideFilter = filter.maskBits;
         }
+    }
+    
+    if(ud->deathSeq != nil){
+        [ud->sprite1 runAction:ud->deathSeq];
+        [ud->countdownLabel setVisible:true];
+        [ud->sprite1 runAction:ud->countdownAction];
+        [ud->sprite1 runAction:ud->tintAction];
     }
 }
 
