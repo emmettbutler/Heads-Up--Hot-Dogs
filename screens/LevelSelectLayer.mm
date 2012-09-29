@@ -123,6 +123,18 @@
             sprite.scaleY = IPAD_SCALE_FACTOR_Y;
         }
         [self addChild:sprite];
+        
+        float scale = 1;
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            scale = IPAD_SCALE_FACTOR_Y;
+        }
+        thumb = [CCSprite spriteWithSpriteFrameName:@"Philly_Thumb.png"];
+        thumb.position = ccp(winSize.width/2, winSize.height/2+(20*scale));
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            thumb.scaleX = IPAD_SCALE_FACTOR_X;
+            thumb.scaleY = IPAD_SCALE_FACTOR_Y;
+        }
+        [self addChild:thumb z:20];
 
         CCLabelTTF *label = [CCLabelTTF labelWithString:@"SELECT LEVEL" fontName:@"LostPet.TTF" fontSize:largeFontSize];
         [[label texture] setAliasTexParameters];
@@ -143,7 +155,10 @@
             fontSize = 45.0;
         }
         
-        nameLabel = [CCLabelTTF labelWithString:@"philadelphia\nhigh score: ######" dimensions:CGSizeMake(sprite.contentSize.width*sprite.scaleX, sprite.contentSize.height*sprite.scaleY) alignment:UITextAlignmentCenter fontName:@"LostPet.TTF" fontSize:fontSize];
+        lStructs = [[LevelSelectLayer buildLevels:[NSNumber numberWithInt:0]] retain];
+        level = (levelProps *)[(NSValue *)[lStructs objectAtIndex:curLevelIndex] pointerValue];
+        
+        nameLabel = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"%@\nhigh score: %d", level->name, level->highScore] dimensions:CGSizeMake(sprite.contentSize.width*sprite.scaleX, sprite.contentSize.height*sprite.scaleY) alignment:UITextAlignmentCenter fontName:@"LostPet.TTF" fontSize:fontSize];
         [[nameLabel texture] setAliasTexParameters];
         nameLabel.color = _color_pink;
         nameLabel.position = ccp(sprite.position.x, sprite.position.y-4*sprite.scaleY);
@@ -173,23 +188,11 @@
 
         rightArrowRect = CGRectMake((sprite.position.x-(sprite.contentSize.width*sprite.scaleX)/2), (sprite.position.y-(sprite.contentSize.height*sprite.scaleY)/2), (sprite.contentSize.width*sprite.scaleX+20), (sprite.contentSize.height*sprite.scaleY+300));
 
-        float scale = 1;
-        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
-            scale = IPAD_SCALE_FACTOR_Y;
-        }
-        thumb = [CCSprite spriteWithSpriteFrameName:@"Philly_Thumb.png"];
-        thumb.position = ccp(winSize.width/2, winSize.height/2+(20*scale));
-        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
-            thumb.scaleX = IPAD_SCALE_FACTOR_X;
-            thumb.scaleY = IPAD_SCALE_FACTOR_Y;
-        }
-        [self addChild:thumb];
-
         helpLabel = [CCLabelTTF labelWithString:@"Tap to start" fontName:@"LostPet.TTF" fontSize:22.0];
         [[helpLabel texture] setAliasTexParameters];
         helpLabel.color = _color_pink;
         helpLabel.position = ccp(winSize.width/2, thumb.position.y-((thumb.contentSize.height*thumb.scaleY)/2)+6);
-        [self addChild:helpLabel];
+        [self addChild:helpLabel z:25];
         
         CCSprite *button4 = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
         button4.scale = scale;
@@ -212,8 +215,6 @@
 //#endif
 
         thumbnailRect = CGRectMake((thumb.position.x-((thumb.contentSize.width*thumb.scaleX))/2), (thumb.position.y-(thumb.contentSize.height*thumb.scaleY)/2), ((thumb.contentSize.width*thumb.scaleX)+10), ((thumb.contentSize.height*thumb.scaleY)+10));
-
-        lStructs = [[LevelSelectLayer buildLevels:[NSNumber numberWithInt:0]] retain];
         
         for(NSValue *v in lStructs){
             levelProps *lp = (levelProps *)[v pointerValue];
@@ -231,17 +232,7 @@
 -(void) tick: (ccTime) dt {
     //CGSize size = [[CCDirector sharedDirector] winSize];
     time++;
-    level = (levelProps *)[(NSValue *)[lStructs objectAtIndex:curLevelIndex] pointerValue];
-
-    if(level->unlocked){
-        [thumb setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:level->thumbnail]];
-        [nameLabel setString:[NSString stringWithFormat:@"%@\nhigh score: %06d", level->name, level->highScore]];
-        [helpLabel setVisible:true];
-    } else {
-        [thumb setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"NoLevel.png"]];
-        [nameLabel setString:[NSString stringWithFormat:@"??????\nunlock: silver on %@", level->prev->name]];
-        [helpLabel setVisible:false];
-    }
+    
     [[nameLabel texture] setAliasTexParameters];
 }
 
@@ -255,6 +246,10 @@
     if(CGRectContainsPoint(_backRect, location)){
         [self switchSceneTitle];
     }
+}
+
+-(void)removeOldThumb{
+    [thumbOld removeFromParentAndCleanup:YES];
 }
 
 -(void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{
@@ -271,23 +266,57 @@
     //Minimum length of the swipe
     float swipeLength = ccpDistance(firstTouch, lastTouch);
     
+    float scale = 1;
+    if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+        scale = IPAD_SCALE_FACTOR_Y;
+    }
+    thumbOld = [CCSprite spriteWithSpriteFrameName:level->thumbnail];
+    thumbOld.position = ccp(winSize.width/2, winSize.height/2+(20*scale));
+    if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+        thumbOld.scaleX = IPAD_SCALE_FACTOR_X;
+        thumbOld.scaleY = IPAD_SCALE_FACTOR_Y;
+    }
+    [self addChild:thumbOld z:15];
+    
+    id transition = [CCTurnOffTiles actionWithSize:ccg(100, 70) duration:.3];
+
     if(CGRectContainsPoint(leftArrowRect, location) || (firstTouch.x < lastTouch.x && swipeLength > 60)){
         if(curLevelIndex > 0)
             curLevelIndex--;
         else curLevelIndex = unlockedCount;
+        [thumb runAction:[CCSequence actions:[transition reverse], [CCCallFunc actionWithTarget:self selector:@selector(removeOldThumb)], nil]];
     }
     else if(CGRectContainsPoint(rightArrowRect, location) || (firstTouch.x > lastTouch.x && swipeLength > 60)){
         if(curLevelIndex < unlockedCount)
             curLevelIndex++;
         else curLevelIndex = 0;
+        [thumb runAction:[transition reverse]];
     }
-    else if(CGRectContainsPoint(thumbnailRect, location)){
+    
+    level = (levelProps *)[(NSValue *)[lStructs objectAtIndex:curLevelIndex] pointerValue];
+    
+    if(level->unlocked){
+        [thumb setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:level->thumbnail]];
+        [nameLabel setString:[NSString stringWithFormat:@"%@\nhigh score: %06d", level->name, level->highScore]];
+        [helpLabel setVisible:true];
+    } else {
+        [thumb setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"NoLevel.png"]];
+        [nameLabel setString:[NSString stringWithFormat:@"??????\nunlock: silver on %@", level->prev->name]];
+        [helpLabel setVisible:false];
+    }
+    
+    if(CGRectContainsPoint(thumbnailRect, location)){
         SEL levelMethod = NSSelectorFromString(level->func);
-        CCSequence *seq = [CCSequence actions:[CCCallFunc actionWithTarget:self selector:@selector(addLoading)], [CCDelayTime actionWithDuration:.001], [CCCallFunc actionWithTarget:self selector:levelMethod], nil];
+        CCSequence *seq = [CCSequence actions:[CCCallFunc actionWithTarget:self selector:@selector(placeThumbOnTop)], [CCEaseIn actionWithAction:[CCScaleTo actionWithDuration:3 scaleX:15.0 scaleY:15.0] rate:2.0], [CCDelayTime actionWithDuration:.001], [CCCallFunc actionWithTarget:self selector:levelMethod], nil];
         
-        if(NO_LEVEL_LOCKS || level->unlocked)
-            [self runAction:seq];
+        if(NO_LEVEL_LOCKS || level->unlocked){
+            [thumb runAction:seq];
+        }
     }
+}
+
+-(void)placeThumbOnTop{
+    [self reorderChild:thumb z:100];
 }
 
 -(void)addLoading{
@@ -303,13 +332,13 @@
     CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"Lvl_TextBox.png"];
     sprite.position = ccp(winSize.width/2, (winSize.height/2));
     sprite.scale = scale;
-    [self addChild:sprite];
+    //[self addChild:sprite];
     
     loading = [[CCLabelTTF labelWithString:@"Loading..." fontName:@"LostPet.TTF" fontSize:fontSize] retain];
     loading.color = _color_pink;
     loading.position = ccp(winSize.width/2, winSize.height/2);
     [[loading texture] setAliasTexParameters];
-    [self addChild:loading];
+    //[self addChild:loading];
 }
 
 - (void)switchSceneTitle{

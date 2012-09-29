@@ -40,6 +40,7 @@ static NSUserDefaults *standardUserDefaults;
     ccColor3B _color_pink;
     NSMutableArray *lStructs;
     CGPoint firstTouch, lastTouch;
+    CCLayer *pixelsLayer;
     CCSpriteBatchNode *spritesheet;
     int curLevelIndex;
     levelProps *level;
@@ -48,7 +49,7 @@ static NSUserDefaults *standardUserDefaults;
     CGRect leftArrowRect, _backRect;
     CGRect thumbnailRect;
     CGSize winSize;
-    CCSprite *thumb, *background;
+    CCSprite *thumb, *background, *thumbOld;
     CCLabelTTF *scoreLabel, *loading;
     CCLabelTTF *nameLabel, *helpLabel;
 }
