@@ -158,7 +158,7 @@
         lStructs = [[LevelSelectLayer buildLevels:[NSNumber numberWithInt:0]] retain];
         level = (levelProps *)[(NSValue *)[lStructs objectAtIndex:curLevelIndex] pointerValue];
         
-        nameLabel = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"%@\nhigh score: %d", level->name, level->highScore] dimensions:CGSizeMake(sprite.contentSize.width*sprite.scaleX, sprite.contentSize.height*sprite.scaleY) alignment:UITextAlignmentCenter fontName:@"LostPet.TTF" fontSize:fontSize];
+        nameLabel = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"%@\nhigh score: %06d", level->name, level->highScore] dimensions:CGSizeMake(sprite.contentSize.width*sprite.scaleX, sprite.contentSize.height*sprite.scaleY) alignment:UITextAlignmentCenter fontName:@"LostPet.TTF" fontSize:fontSize];
         [[nameLabel texture] setAliasTexParameters];
         nameLabel.color = _color_pink;
         nameLabel.position = ccp(sprite.position.x, sprite.position.y-4*sprite.scaleY);
