@@ -1982,8 +1982,8 @@
         //basic game/box2d/cocos2d initialization
         _curPersonMaskBits = 0x1000;
         _wienerSpawnDelayTime = WIENER_SPAWN_START;
-        _maxDogsOnScreen = 6;
-        _levelMaxDogs = 6;
+        _maxDogsOnScreen = 3;
+        _levelMaxDogs = 5;
         dogNumberCounter = 0;
         if(level->maxDogs){
             _levelMaxDogs = level->maxDogs;
