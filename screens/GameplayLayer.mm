@@ -1257,7 +1257,7 @@
     }
     
     for(int i = 0; i < 4; i++){
-        [[HotDog alloc] init:[NSValue valueWithPointer:spriteSheetCommon]
+        HotDog *dog = [[HotDog alloc] init:[NSValue valueWithPointer:spriteSheetCommon]
                                  withWorld:[NSValue valueWithPointer:_world]
                               withLocation:[NSValue valueWithCGPoint:CGPointMake(loc.x, loc.y+(i*15))]
                                 withSpcDog:[NSValue valueWithPointer:NULL]
@@ -1266,6 +1266,11 @@
                              withDeathAnim:level->dogDeathAnimFrames
                            withFrictionMul:[NSNumber numberWithFloat:friction]
                         withRestitutionMul:[NSNumber numberWithFloat:restitution]];
+        b2Body *wienerBody = (b2Body *)[[dog getBody] pointerValue];
+        bodyUserData *ud = (bodyUserData *)wienerBody->GetUserData();
+        CCSprite *sprite = (CCSprite *)ud->sprite1;
+        [ud->countdownLabel setVisible:false];
+        [self addChild:ud->countdownLabel];
     }
 }
 
