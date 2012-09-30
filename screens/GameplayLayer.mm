@@ -221,6 +221,20 @@
 #endif
 }
 
+-(void)toggleSFX{
+    if([[HotDogManager sharedManager] sfxOn]){
+        [[HotDogManager sharedManager] setSFX:[NSNumber numberWithBool:false]];
+        [sfxLabel setString:@"SFX OFF"];
+    } else {
+        [[HotDogManager sharedManager] setSFX:[NSNumber numberWithBool:true]];
+        [sfxLabel setString:@"SFX ON"];
+#ifdef DEBUG
+#else
+        [[SimpleAudioEngine sharedEngine] playEffect:@"pause 3.mp3"];
+#endif
+    }
+}
+
 -(void) pauseButton:(NSNumber *)force{
     BOOL _pause = [[HotDogManager sharedManager] isPaused];
     if(!_pause || force.boolValue){
@@ -293,7 +307,7 @@
         
         button1.scale = scale;
         button1.position = ccp(winSize.width+200, winSize.height/2);
-        CGPoint button1Anchor = CGPointMake(buttonsX, winSize.height/2);
+        CGPoint button1Anchor = CGPointMake(buttonsX, winSize.height/2+button1.contentSize.height*button1.scaleY*.7);
         [_pauseLayer addChild:button1 z:81];
         [button1 runAction:[CCMoveTo actionWithDuration:slideSpeed position:button1Anchor]];
         CCLabelTTF *otherLabel = [CCLabelTTF labelWithString:@"RESTART" fontName:@"LostPet.TTF" fontSize:fontSize-1];
@@ -308,7 +322,7 @@
         CCSprite *button2 = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
         button2.scale = scale;
         button2.position = ccp(buttonsX, winSize.height+200);
-        CGPoint button2Anchor = CGPointMake(buttonsX, winSize.height/2+button2.contentSize.height*button2.scaleY*1.5);
+        CGPoint button2Anchor = CGPointMake(buttonsX, winSize.height/2+button2.contentSize.height*button2.scaleY*2.1);
         [_pauseLayer addChild:button2 z:81];
         [button2 runAction:[CCMoveTo actionWithDuration:slideSpeed position:button2Anchor]];
         otherLabel = [CCLabelTTF labelWithString:@"CONTINUE" fontName:@"LostPet.TTF" fontSize:fontSize-1];
@@ -323,7 +337,7 @@
         CCSprite *button3 = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
         button3.scale = scale;
         button3.position = ccp(buttonsX, -200);
-        CGPoint button3Anchor = CGPointMake(buttonsX, winSize.height/2-button3.contentSize.height*button3.scaleY*1.5);
+        CGPoint button3Anchor = CGPointMake(buttonsX, winSize.height/2-button3.contentSize.height*button3.scaleY*.7);
         [_pauseLayer addChild:button3 z:81];
         [button3 runAction:[CCMoveTo actionWithDuration:slideSpeed position:button3Anchor]];
         otherLabel = [CCLabelTTF labelWithString:@"LEVELS" fontName:@"LostPet.TTF" fontSize:fontSize-1];
@@ -334,6 +348,25 @@
         [_pauseLayer addChild:otherLabel z:82];
         [otherLabel runAction:[CCMoveTo actionWithDuration:slideSpeed position:label3Anchor]];
         _levelRect = CGRectMake((button3Anchor.x-(button3.contentSize.width*button3.scaleX)/2), (button3Anchor.y-(button3.contentSize.height*button3.scaleY)/2), (button3.contentSize.width*button3.scaleX+70), (button3.contentSize.height*button3.scaleY+70));
+        
+        CCSprite *button4 = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
+        button4.scale = scale;
+        button4.position = ccp(buttonsX, -200);
+        CGPoint button4Anchor = CGPointMake(buttonsX, winSize.height/2-button4.contentSize.height*button4.scaleY*2.1);
+        [_pauseLayer addChild:button4 z:81];
+        [button4 runAction:[CCMoveTo actionWithDuration:slideSpeed position:button4Anchor]];
+        NSString *sfxString = @"SFX OFF";
+        if([[HotDogManager sharedManager] sfxOn]){
+            sfxString = @"SFX ON";
+        }
+        sfxLabel = [CCLabelTTF labelWithString:sfxString fontName:@"LostPet.TTF" fontSize:fontSize-1];
+        [[sfxLabel texture] setAliasTexParameters];
+        sfxLabel.color = _color_pink;
+        CGPoint label4Anchor = CGPointMake(button4Anchor.x, button4Anchor.y-button4.scaleY);
+        sfxLabel.position = ccp(button4.position.x, button4.position.y-button4.scaleY);
+        [_pauseLayer addChild:sfxLabel z:82];
+        [sfxLabel runAction:[CCMoveTo actionWithDuration:slideSpeed position:label4Anchor]];
+        _sfxRect = CGRectMake((button4Anchor.x-(button4.contentSize.width*button4.scaleX)/2), (button4Anchor.y-(button4.contentSize.height*button4.scaleY)/2), (button4.contentSize.width*button4.scaleX+70), (button4.contentSize.height*button4.scaleY+70));
 
         _pauseMenu = [CCMenu menuWithItems: score, timeItem, peopleItem, savedItem, totalTimeItem, nil];
         CGPoint menuAnchor = CGPointMake(bgAnchor.x, winSize.height/2-10);
@@ -473,15 +506,17 @@
     id xAction = [CCCallFuncND actionWithTarget:self selector:@selector(playXAnimation:data:) data:[[NSValue valueWithPointer:dogBody] retain]];
     id destroyAction = [CCCallFuncND actionWithTarget:self selector:@selector(destroyWiener:data:) data:[[NSValue valueWithPointer:dogBody] retain]];
     if(ud->altAction3)
-        ud->deathSeq = [CCSequence actions: delay, sleepAction, angleAction, ud->altAction3, lockAction, xAction, incAction, ud->altAction, destroyAction, nil];
+        ud->deathSeq = [[CCSequence actions: delay, sleepAction, angleAction, ud->altAction3, lockAction, xAction, incAction, ud->altAction, destroyAction, nil] retain];
     else
-        ud->deathSeq = [CCSequence actions: delay, sleepAction, angleAction, lockAction, xAction, incAction, ud->altAction, destroyAction, nil];
+        ud->deathSeq = [[CCSequence actions: delay, sleepAction, angleAction, lockAction, xAction, incAction, ud->altAction, destroyAction, nil] retain];
     [ud->sprite1 runAction:ud->deathSeq];
     
-    if(ud->sprite1.tag != S_SPCDOG){
+    ud->tintAction = [[CCTintTo actionWithDuration:ud->deathDelay+2 red:250 green:0 blue:0] retain];
+    
+    if(ud->sprite1.tag != S_SPCDOG && level->slug != @"japan"){
         [ud->countdownLabel setVisible:true];
         [ud->sprite1 runAction:ud->countdownAction];
-        [ud->sprite1 runAction:[CCTintTo actionWithDuration:ud->deathDelay+2 red:250 green:0 blue:0]];
+        [ud->sprite1 runAction:ud->tintAction];
     }
 }
 
@@ -2167,6 +2202,8 @@
         pauseLock = true;
     }
     
+    _sfxOn = [[HotDogManager sharedManager] sfxOn];
+    
     b2RayCastInput input;
     float closestFraction = 1; //start with end of line as policeRayPoint2
     b2Vec2 intersectionNormal(0,0);
@@ -2823,6 +2860,7 @@
                 if(_sfxOn)
                     [[SimpleAudioEngine sharedEngine] playEffect:@"pause 3.mp3"];
 #endif
+                pauseLock = true;
                 [self pauseButton:[NSNumber numberWithBool:false]];
             }
             else{
@@ -2839,6 +2877,9 @@
         } else if(_pause && CGRectContainsPoint(_levelRect, touchLocation1)){
             _gameOver = true;
             [self levelSelect];
+            return;
+        } else if(_pause && CGRectContainsPoint(_sfxRect, touchLocation1)){
+            [self toggleSFX];
             return;
         }
         for(int i = 0; i < count; i++){ // for each touch

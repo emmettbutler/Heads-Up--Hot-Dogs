@@ -103,7 +103,7 @@
     CCAnimation *dogShotAnim = [CCAnimation animationWithFrames:wienerShotAnimFrames delay:.1f ];
     CCFiniteTimeAction *_shotAction = [[CCAnimate alloc] initWithAnimation:dogShotAnim restoreOriginalFrame:NO];
     
-    CCLabelTTF *count = [CCLabelTTF labelWithString:@"5" fontName:@"LostPet.TTF" fontSize:27.0];
+    CCLabelTTF *count = [CCLabelTTF labelWithString:@"5" fontName:@"LostPet.TTF" fontSize:27.0*sprite1.scaleX];
     count.color = _color_pink;
     CCAction *countAction = [[CCSequence actions:[CCCallFuncND actionWithTarget:self selector:@selector(setCountdownString:data:) data:@"3"],
                              [CCDelayTime actionWithDuration:1], [CCCallFuncND actionWithTarget:self selector:@selector(setCountdownString:data:) data:@"2"],
@@ -124,7 +124,7 @@
     if(wienerFlashAnimFrames)
         ud->altAction3 = _flashAction;
     ud->deathDelay = deathDelay;
-    ud->deathSeq = NULL;
+    ud->deathSeq = nil;
     
     fixtureUserData *fUd1 = new fixtureUserData();
     fUd1->ogCollideFilters = 0;

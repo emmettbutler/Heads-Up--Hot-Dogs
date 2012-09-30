@@ -40,7 +40,7 @@
     CCAction *_flag1RightAction, *_flag1LeftAction, *_flag2RightAction, *_flag2LeftAction, *_dustAction; // TODO - DEBT - these should belong to an object in /components
     CCFiniteTimeAction *_appearAction;
     CCSpriteBatchNode *spriteSheetCommon, *spriteSheetLevel, *spriteSheetCharacter;
-    CCLabelTTF *scoreLabel;
+    CCLabelTTF *scoreLabel, *sfxLabel;
     b2Vec2 policeRayPoint1, policeRayPoint2, windForce;
     CCLayerColor *_pauseLayer, *_flashLayer;
     SteamVent *vent1, *vent2;
@@ -54,7 +54,7 @@
     CGSize winSize;
     UInt32 audioIsAlreadyPlaying;
     CDLongAudioSource *introAudio;
-    CGRect _pauseButtonRect, _resumeRect, _restartRect, _levelRect;
+    CGRect _pauseButtonRect, _resumeRect, _restartRect, _levelRect, _sfxRect;
     NSUserDefaults *standardUserDefaults;
     NSInteger _sfxOn, _introDone, _savedHighScore;
     int _points, _droppedCount, time, _curPersonMaskBits, _peopleGrumped, _dogsSaved, _spcDogsSaved, _dogsOnscreen, _maxDogsOnScreen, _numWorldTouches, _levelMaxDogs, _dogsShotByCop, _dogsMissedByCop, windCounter, dogNumberCounter;
@@ -66,7 +66,7 @@
         float heightOffset2, widthOffset, lowerXOffset, lowerYOffset;
         CCLabelTTF *countdownLabel;
         NSString *_dog_fallSprite, *_dog_riseSprite, *_dog_grabSprite, *_dog_mainSprite, *aimFace;
-        CCAction *altAction, *walkRipple, *idleRipple, *altAction2, *altAction3, *altWalk, *altWalkFace, *idleAction, *defaultAction, *angryFaceWalkAction, *dogOnHeadTickleAction, *deathSeq, *shotSeq, *countdownAction;
+        CCAction *altAction, *walkRipple, *idleRipple, *altAction2, *altAction3, *altWalk, *altWalkFace, *idleAction, *defaultAction, *angryFaceWalkAction, *dogOnHeadTickleAction, *deathSeq, *shotSeq, *countdownAction, *tintAction;
         CCFiniteTimeAction *postStopAction, *_not_dogContact, *_not_dogOnHead, *_not_leaveScreen, *_not_leaveScreenFlash, *_not_spcContact, *_not_spcOnHead, *_not_spcLeaveScreen, *_vomitAction;
         float rippleXOffset, ogRippleXOffset, rippleYOffset, ogRippleYOffset, deathDelay, moveDelta; // the linear velocity of the person
         double targetAngle;
