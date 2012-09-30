@@ -191,7 +191,7 @@
     CCFiniteTimeAction *action = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO] times:1] retain];
     
     CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"new_record_1.png"];
-    sprite.position = ccp(winSize.width-sprite.contentSize.width/2, scoreLabel.position.y-sprite.contentSize.height*3);
+    sprite.position = ccp(winSize.width-sprite.contentSize.width/2, scoreLabel.position.y-sprite.contentSize.height*3.6);
     [spriteSheetCommon addChild:sprite];
     
     [sprite runAction:[CCSequence actions:action, [CCCallFuncN actionWithTarget:sprite selector:@selector(removeFromParentAndCleanup:)], nil]];

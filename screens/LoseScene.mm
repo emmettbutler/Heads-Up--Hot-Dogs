@@ -479,15 +479,14 @@
         if(_timePlayed > bestTime)
             [standardUserDefaults setInteger:_timePlayed forKey:@"bestTime"];
         
-        if(level->highestTrophy < res->trophyLevel){
+        if(res->trophyLevel < level->highestTrophy){
             level->highestTrophy = res->trophyLevel;
             [standardUserDefaults setInteger:level->highestTrophy forKey:[NSString stringWithFormat:@"trophy_%@", level->slug]];
         }
         if(res->trophyLevel <= 2 && !level->next->unlocked){
             NSInteger unlocked = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"unlocked%@", level->next->slug]];
+            [standardUserDefaults setInteger:1 forKey:[NSString stringWithFormat:@"unlocked%@", level->next->slug]];
             if(level->next->slug != level->slug && (!unlocked || unlocked == 0)){
-                [standardUserDefaults setInteger:1 forKey:[NSString stringWithFormat:@"unlocked%@", level->next->slug]];
-                
                 float scale = 1, fontSize = 20.0;
                 if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
                     scale = IPAD_SCALE_FACTOR_X;
