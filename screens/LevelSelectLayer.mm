@@ -307,7 +307,7 @@
     
     if(CGRectContainsPoint(thumbnailRect, location)){
         SEL levelMethod = NSSelectorFromString(level->func);
-        CCSequence *seq = [CCSequence actions:[CCCallFunc actionWithTarget:self selector:@selector(placeThumbOnTop)], [CCEaseIn actionWithAction:[CCScaleTo actionWithDuration:3 scaleX:15.0 scaleY:15.0] rate:2.0], [CCDelayTime actionWithDuration:.001], [CCCallFunc actionWithTarget:self selector:levelMethod], nil];
+        CCSequence *seq = [CCSequence actions:[CCCallFunc actionWithTarget:self selector:@selector(placeThumbOnTop)], [CCEaseIn actionWithAction:[CCScaleTo actionWithDuration:3 scaleX:15.0*thumb.scaleX scaleY:15.0*thumb.scaleY] rate:2.0], [CCDelayTime actionWithDuration:.001], [CCCallFunc actionWithTarget:self selector:levelMethod], nil];
         
         if(NO_LEVEL_LOCKS || level->unlocked){
             self.isTouchEnabled = false;
