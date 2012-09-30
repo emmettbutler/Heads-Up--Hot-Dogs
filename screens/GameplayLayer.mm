@@ -247,7 +247,7 @@
         
         _pauseLayer = [CCLayerColor layerWithColor:ccc4(190, 190, 190, 155) width:winSize.width height:winSize.height];
         _pauseLayer.anchorPoint = CGPointZero;
-        [self addChild:_pauseLayer z:80];
+        [self addChild:_pauseLayer z:800];
         
         CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"Pause_BG.png"];
         if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
@@ -373,7 +373,7 @@
         [_pauseMenu setPosition:ccp(-200, winSize.height/2-10)];
         [_pauseMenu alignItemsVerticallyWithPadding:5];
         [_pauseMenu runAction:[CCMoveTo actionWithDuration:slideSpeed position:menuAnchor]];
-        [self addChild:_pauseMenu z:81];
+        [self addChild:_pauseMenu z:801];
         
         [TestFlight passCheckpoint:@"Pause Menu"];
     }
