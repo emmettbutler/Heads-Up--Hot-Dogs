@@ -165,28 +165,31 @@
         [self addChild:nameLabel];
 
         //left
-        sprite = [CCSprite spriteWithSpriteFrameName:@"LvlArrow.png"];
-        sprite.position = ccp(sprite.contentSize.width, winSize.height/2);
+        leftArrow = [CCSprite spriteWithSpriteFrameName:@"LvlArrow.png"];
+        leftArrow.position = ccp(leftArrow.contentSize.width, winSize.height/2);
         if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
-            sprite.scaleX = IPAD_SCALE_FACTOR_X;
-            sprite.scaleY = IPAD_SCALE_FACTOR_Y;
-            sprite.position = ccp(sprite.position.x + 30, sprite.position.y);
+            leftArrow.scaleX = IPAD_SCALE_FACTOR_X;
+            leftArrow.scaleY = IPAD_SCALE_FACTOR_Y;
+            leftArrow.position = ccp(leftArrow.position.x + 30, leftArrow.position.y);
         }
-        [self addChild:sprite];
-        leftArrowRect = CGRectMake((sprite.position.x-(sprite.contentSize.width*sprite.scaleX)/2), (sprite.position.y-(sprite.contentSize.height*sprite.scaleY)/2), (sprite.contentSize.width*sprite.scaleX+20), (sprite.contentSize.height*sprite.scaleY+300));
+        leftArrowOGScaleX = leftArrow.scaleX;
+        leftArrowOGScaleY = leftArrow.scaleY;
+        [self addChild:leftArrow];
+        leftArrowRect = CGRectMake((leftArrow.position.x-(leftArrow.contentSize.width*leftArrow.scaleX)/2), (leftArrow.position.y-(leftArrow.contentSize.height*leftArrow.scaleY)/2), (leftArrow.contentSize.width*leftArrow.scaleX+20), (leftArrow.contentSize.height*leftArrow.scaleY+300));
 
         //right
-        sprite = [CCSprite spriteWithSpriteFrameName:@"LvlArrow.png"];
-        sprite.position = ccp(winSize.width-sprite.contentSize.width, winSize.height/2);
+        rightArrow = [CCSprite spriteWithSpriteFrameName:@"LvlArrow.png"];
+        rightArrow.position = ccp(winSize.width-rightArrow.contentSize.width, winSize.height/2);
         if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
-            sprite.scaleX = IPAD_SCALE_FACTOR_X;
-            sprite.scaleY = IPAD_SCALE_FACTOR_Y;
-            sprite.position = ccp(sprite.position.x - 30, sprite.position.y);
+            rightArrow.scaleX = IPAD_SCALE_FACTOR_X;
+            rightArrow.scaleY = IPAD_SCALE_FACTOR_Y;
+            rightArrow.position = ccp(rightArrow.position.x - 30, rightArrow.position.y);
         }
-        sprite.flipX = true;
-        [self addChild:sprite];
-
-        rightArrowRect = CGRectMake((sprite.position.x-(sprite.contentSize.width*sprite.scaleX)/2), (sprite.position.y-(sprite.contentSize.height*sprite.scaleY)/2), (sprite.contentSize.width*sprite.scaleX+20), (sprite.contentSize.height*sprite.scaleY+300));
+        rightArrow.flipX = true;
+        rightArrowOGScaleX = rightArrow.scaleX;
+        rightArrowOGScaleY = rightArrow.scaleY;
+        [self addChild:rightArrow];
+        rightArrowRect = CGRectMake((rightArrow.position.x-(rightArrow.contentSize.width*rightArrow.scaleX)/2), (rightArrow.position.y-(rightArrow.contentSize.height*rightArrow.scaleY)/2), (rightArrow.contentSize.width*rightArrow.scaleX+20), (rightArrow.contentSize.height*rightArrow.scaleY+300));
 
         helpLabel = [CCLabelTTF labelWithString:@"Tap to start" fontName:@"LostPet.TTF" fontSize:22.0];
         [[helpLabel texture] setAliasTexParameters];
@@ -241,6 +244,16 @@
     location = [[CCDirector sharedDirector] convertToGL:location];
 
     firstTouch = location;
+    
+    id action = [CCScaleBy actionWithDuration:.06 scale:.8];
+    
+    if(CGRectContainsPoint(leftArrowRect, location)){
+        if([leftArrow numberOfRunningActions] == 0)
+            [leftArrow runAction:[CCSequence actions:action, [action reverse], nil]];
+    } else if(CGRectContainsPoint(rightArrowRect, location)){
+        if([rightArrow numberOfRunningActions] == 0)
+            [rightArrow runAction:[CCSequence actions:action, [action reverse], nil]];
+    }
     
     if(CGRectContainsPoint(_backRect, location)){
         [self switchSceneTitle];

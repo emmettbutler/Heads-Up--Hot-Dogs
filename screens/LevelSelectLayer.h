@@ -44,13 +44,14 @@ static NSUserDefaults *standardUserDefaults;
     CCTurnOffTiles *transition;
     CCSpriteBatchNode *spritesheet;
     int curLevelIndex;
+    float leftArrowOGScaleX, leftArrowOGScaleY, rightArrowOGScaleX, rightArrowOGScaleY;
     levelProps *level;
     CGRect rightArrowRect;
     BOOL NO_LEVEL_LOCKS;
     CGRect leftArrowRect, _backRect;
     CGRect thumbnailRect;
     CGSize winSize;
-    CCSprite *thumb, *background, *thumbOld;
+    CCSprite *thumb, *background, *thumbOld, *rightArrow, *leftArrow;
     CCLabelTTF *scoreLabel, *loading;
     CCLabelTTF *nameLabel, *helpLabel;
 }

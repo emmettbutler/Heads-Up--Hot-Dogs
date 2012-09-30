@@ -2000,6 +2000,7 @@
         [[SimpleAudioEngine sharedEngine] setBackgroundMusicVolume:volBGM];
         [[SimpleAudioEngine sharedEngine] setEffectsVolume:volSFX];
         if(level->introAudio){
+            [[SimpleAudioEngine sharedEngine] preloadBackgroundMusic:level->bgm];
             UInt32 propertySize;
             audioIsAlreadyPlaying = 0;
             propertySize = sizeof(UInt32);
