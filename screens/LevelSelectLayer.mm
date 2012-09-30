@@ -271,6 +271,9 @@
         scale = IPAD_SCALE_FACTOR_Y;
     }
     thumbOld = [CCSprite spriteWithSpriteFrameName:level->thumbnail];
+    if(!level->unlocked){
+         thumbOld = [CCSprite spriteWithSpriteFrameName:@"NoLevel.png"];
+    }
     thumbOld.position = ccp(winSize.width/2, winSize.height/2+(20*scale));
     if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
         thumbOld.scaleX = IPAD_SCALE_FACTOR_X;
