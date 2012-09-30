@@ -2860,6 +2860,7 @@
                 if(_sfxOn)
                     [[SimpleAudioEngine sharedEngine] playEffect:@"pause 3.mp3"];
 #endif
+                pauseLock = true;
                 [self pauseButton:[NSNumber numberWithBool:false]];
             }
             else{
