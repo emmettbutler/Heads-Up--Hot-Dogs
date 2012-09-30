@@ -232,7 +232,6 @@
 -(void) tick: (ccTime) dt {
     //CGSize size = [[CCDirector sharedDirector] winSize];
     time++;
-    
     [[nameLabel texture] setAliasTexParameters];
 }
 
@@ -281,19 +280,21 @@
     }
     [self addChild:thumbOld z:15];
     
-    id transition = [CCTurnOffTiles actionWithSize:ccg(100, 70) duration:.3];
+    transition = [CCTurnOffTiles actionWithSize:ccg(100, 70) duration:.3];
 
     if(CGRectContainsPoint(leftArrowRect, location) || (firstTouch.x < lastTouch.x && swipeLength > 60)){
         if(curLevelIndex > 0)
             curLevelIndex--;
         else curLevelIndex = unlockedCount;
-        [thumb runAction:[CCSequence actions:[transition reverse], [CCCallFunc actionWithTarget:self selector:@selector(removeOldThumb)], nil]];
+        if([thumb numberOfRunningActions] == 0)
+            [thumb runAction:[CCSequence actions:[transition reverse], [CCCallFunc actionWithTarget:self selector:@selector(removeOldThumb)], nil]];
     }
     else if(CGRectContainsPoint(rightArrowRect, location) || (firstTouch.x > lastTouch.x && swipeLength > 60)){
         if(curLevelIndex < unlockedCount)
             curLevelIndex++;
         else curLevelIndex = 0;
-        [thumb runAction:[transition reverse]];
+        if([thumb numberOfRunningActions] == 0)
+            [thumb runAction:[transition reverse]];
     }
     
     level = (levelProps *)[(NSValue *)[lStructs objectAtIndex:curLevelIndex] pointerValue];
