@@ -23,7 +23,6 @@
 #define VOMIT_PROBABILITY 666
 #define COP_RANGE 4
 #define OVERLAYS_STOP 2
-#define WIND_PARTICLES 50
 #define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 
 #define SPAWN_LIMIT_DECREMENT_DELAY 2
@@ -968,7 +967,7 @@
 	float creationZone_Width =  winSize.width;
 	float creationZone_Height = winSize.height;
 	float densityRatio = (winSize.width*winSize.height)/(512*512);
-	for (int j=0; j<(WIND_PARTICLES*densityRatio); j++) {
+	for (int j=0; j<(_windParticles*densityRatio); j++) {
 		WindParticle *leaf = [[WindParticle alloc] init];
 		[self addChild:leaf];
 		[leaf setPosition:ccp(((CCRANDOM_0_1() + 0.01) * creationZone_Width),((CCRANDOM_0_1() + 0.01) * creationZone_Height))];
@@ -994,11 +993,11 @@
 	float densityRatio = (winSize.width*winSize.height)/(512*512);
 	
 	//create new objects
-	if (windParticles.count < WIND_PARTICLES*densityRatio) {
+	if (windParticles.count < _windParticles*densityRatio) {
 		float creationZone_Height = winSize.height;
 		float creationZone_Width =  (windForce.x < 0)?100.0f:-100.0f;
 		
-		for (uint j=0; j<((WIND_PARTICLES*densityRatio) - windParticles.count); j++) {
+		for (uint j=0; j<((_windParticles*densityRatio) - windParticles.count); j++) {
 			WindParticle* leaf = [[WindParticle alloc] init];
 			[self addChild:leaf];
 			float start_point = (windForce.x * 3 > 0) ? 0 : winSize.width;
@@ -1942,6 +1941,10 @@
             vent1 = [[SteamVent alloc] init:[NSValue valueWithPointer:spriteSheetCommon] withLevelSpriteSheet:[NSValue valueWithPointer:spriteSheetLevel] withPosition:[NSValue valueWithCGPoint:CGPointMake(winSize.width/4, winSize.height/8)]];
             vent2 = [[SteamVent alloc] init:[NSValue valueWithPointer:spriteSheetCommon] withLevelSpriteSheet:[NSValue valueWithPointer:spriteSheetLevel] withPosition:[NSValue valueWithCGPoint:CGPointMake(3*(winSize.width/4), winSize.height/8)]];
         } else if(level->slug == @"chicago"){
+            _windParticles = 42;
+            if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+                _windParticles = 30;
+            }
             windForce = b2Vec2(2.7, .2);
             [self createWind];
             [self schedule:@selector(updateWind:)];
