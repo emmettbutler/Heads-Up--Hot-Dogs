@@ -1220,15 +1220,15 @@
     particles.endColor = endColor;
     particles.life = .0000000005;
     if(_droppedCount == DROPPED_MAX){
-        particles.startSize = 10;
-        particles.startRadius = 5;
-        particles.endSize = 5;
-        particles.endRadius = 3;
+        particles.startSize = 10*hudScale;
+        particles.startRadius = 5*hudScale;
+        particles.endSize = 5*hudScale;
+        particles.endRadius = 3*hudScale;
     } else {
-        particles.startSize = .003;
-        particles.startRadius = .0005;
-        particles.endSize = .0005;
-        particles.endRadius = .0005;
+        particles.startSize = .003*hudScale;
+        particles.startRadius = .0005*hudScale;
+        particles.endSize = .0005*hudScale;
+        particles.endRadius = .0005*hudScale;
     }
     particles.speed = 120;
     particles.duration = .05;
