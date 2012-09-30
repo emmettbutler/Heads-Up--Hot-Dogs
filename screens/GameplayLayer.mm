@@ -529,7 +529,7 @@
     heartParticles.texture = [[CCTextureCache sharedTextureCache] textureForKey:[NSString stringWithFormat:@"Heart_Particle_%d.png", (arc4random() % 3) + 1]];
     heartParticles.blendFunc = (ccBlendFunc) {GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA};
     heartParticles.autoRemoveOnFinish = YES;
-    heartParticles.startSize = 1.0f;
+    heartParticles.startSize = 4.0f*hudScale;
     heartParticles.speed = 90.0f;
     heartParticles.anchorPoint = ccp(0.5f,0.5f);
     heartParticles.position = [loc CGPointValue];

@@ -227,16 +227,8 @@
         }
         
         firstTouch = CGPointMake(-1, -1);
-
-        [self schedule: @selector(tick:)];
     }
     return self;
-}
-
--(void) tick: (ccTime) dt {
-    //CGSize size = [[CCDirector sharedDirector] winSize];
-    time++;
-    [[nameLabel texture] setAliasTexParameters];
 }
 
 - (void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -332,6 +324,7 @@
             [thumb runAction:seq];
         }
     }
+    [[nameLabel texture] setAliasTexParameters];
 }
 
 -(void)placeThumbOnTop{
