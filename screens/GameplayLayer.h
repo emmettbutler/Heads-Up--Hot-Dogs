@@ -40,7 +40,7 @@
     CCAction *_flag1RightAction, *_flag1LeftAction, *_flag2RightAction, *_flag2LeftAction, *_dustAction; // TODO - DEBT - these should belong to an object in /components
     CCFiniteTimeAction *_appearAction;
     CCSpriteBatchNode *spriteSheetCommon, *spriteSheetLevel, *spriteSheetCharacter;
-    CCLabelTTF *scoreLabel;
+    CCLabelTTF *scoreLabel, *sfxLabel;
     b2Vec2 policeRayPoint1, policeRayPoint2, windForce;
     CCLayerColor *_pauseLayer, *_flashLayer;
     SteamVent *vent1, *vent2;
@@ -54,7 +54,7 @@
     CGSize winSize;
     UInt32 audioIsAlreadyPlaying;
     CDLongAudioSource *introAudio;
-    CGRect _pauseButtonRect, _resumeRect, _restartRect, _levelRect;
+    CGRect _pauseButtonRect, _resumeRect, _restartRect, _levelRect, _sfxRect;
     NSUserDefaults *standardUserDefaults;
     NSInteger _sfxOn, _introDone, _savedHighScore;
     int _points, _droppedCount, time, _curPersonMaskBits, _peopleGrumped, _dogsSaved, _spcDogsSaved, _dogsOnscreen, _maxDogsOnScreen, _numWorldTouches, _levelMaxDogs, _dogsShotByCop, _dogsMissedByCop, windCounter, dogNumberCounter;
