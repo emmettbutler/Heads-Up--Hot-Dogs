@@ -36,7 +36,7 @@ static NSUserDefaults *standardUserDefaults;
         spcDogData *specialDog;
     };
 
-    int time, unlockedCount;
+    int time, unlockedCount, lastTouchTime;
     ccColor3B _color_pink;
     NSMutableArray *lStructs;
     CGPoint firstTouch, lastTouch;
@@ -46,6 +46,7 @@ static NSUserDefaults *standardUserDefaults;
     int curLevelIndex;
     float leftArrowOGScaleX, leftArrowOGScaleY, rightArrowOGScaleX, rightArrowOGScaleY;
     levelProps *level;
+    NSMutableArray *enteredSwipes;
     CGRect rightArrowRect;
     BOOL NO_LEVEL_LOCKS;
     CGRect leftArrowRect, _backRect;

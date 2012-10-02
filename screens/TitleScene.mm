@@ -70,7 +70,7 @@
         [[label texture] setAliasTexParameters];
         label.color = _color_pink;
         label.position = ccp((label.contentSize.width/2)+6, winSize.height-(label.contentSize.height/2)-5);
-        [self addChild:label];
+        //[self addChild:label];
 
         float scale = 1;
         if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){

@@ -215,7 +215,7 @@
         CCMenuItem *item = [CCMenuItemLabel itemWithLabel:unlockAllLevelsLabel target:self selector:@selector(unlockAllLevels)];
         CCMenu *menu = [CCMenu menuWithItems:item, nil];
         menu.position = ccp(winSize.width-unlockAllLevelsLabel.contentSize.width/2, unlockAllLevelsLabel.contentSize.height);
-        [self addChild:menu];
+        //[self addChild:menu];
 //#endif
 
         thumbnailRect = CGRectMake((thumb.position.x-((thumb.contentSize.width*thumb.scaleX))/2), (thumb.position.y-(thumb.contentSize.height*thumb.scaleY)/2), ((thumb.contentSize.width*thumb.scaleX)+10), ((thumb.contentSize.height*thumb.scaleY)+10));
@@ -226,9 +226,21 @@
                 unlockedCount++;
         }
         
+        enteredSwipes = [[NSMutableArray alloc] init];
+        
         firstTouch = CGPointMake(-1, -1);
+        
+        [self schedule:@selector(tick:)];
     }
     return self;
+}
+
+-(void)tick:(id)sender{
+    time++;
+    if(time - lastTouchTime > 40){
+        [enteredSwipes release];
+        enteredSwipes = [[NSMutableArray alloc] init];
+    }
 }
 
 - (void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -237,24 +249,27 @@
     location = [[CCDirector sharedDirector] convertToGL:location];
 
     firstTouch = location;
-    
-    id action = [CCScaleBy actionWithDuration:.06 scale:.8];
-    
-    if(CGRectContainsPoint(leftArrowRect, location)){
-        if([leftArrow numberOfRunningActions] == 0)
-            [leftArrow runAction:[CCSequence actions:action, [action reverse], nil]];
-    } else if(CGRectContainsPoint(rightArrowRect, location)){
-        if([rightArrow numberOfRunningActions] == 0)
-            [rightArrow runAction:[CCSequence actions:action, [action reverse], nil]];
-    }
-    
-    if(CGRectContainsPoint(_backRect, location)){
-        [self switchSceneTitle];
-    }
 }
 
 -(void)removeOldThumb{
     [thumbOld removeFromParentAndCleanup:YES];
+}
+
+-(void)processLevelUnlockCheat{
+    BOOL cheat = true;
+    NSArray *cheatSwipeSequence = @[@"up", @"up", @"down", @"left", @"left", @"down", @"right", @"up"];
+    if([enteredSwipes count] == [cheatSwipeSequence count]){
+        for(int i = 0; i < [enteredSwipes count]; i++){
+            if(enteredSwipes[i] != cheatSwipeSequence[i]){
+                cheat = false;
+            }
+        }
+        [enteredSwipes release];
+        enteredSwipes = [[NSMutableArray alloc] init];
+        if(cheat){
+            [self unlockAllLevels];
+        }
+    }
 }
 
 -(void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{
@@ -267,9 +282,12 @@
     
     //Swipe Detection Part 2
     lastTouch = location;
+    lastTouchTime = time;
 
     //Minimum length of the swipe
     float swipeLength = ccpDistance(firstTouch, lastTouch);
+    float swipeLenX = abs(firstTouch.x - lastTouch.x);
+    float swipeLenY = abs(firstTouch.y - lastTouch.y);
     
     float scale = 1;
     if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
@@ -289,6 +307,10 @@
     transition = [CCTurnOffTiles actionWithSize:ccg(100, 70) duration:.3];
 
     if(CGRectContainsPoint(leftArrowRect, location) || (firstTouch.x < lastTouch.x && swipeLength > 60)){
+        if(firstTouch.x < lastTouch.x && swipeLength > 60 && swipeLenX > swipeLenY){
+            NSLog(@"swipe right");
+            [enteredSwipes addObject:@"right"];
+        }
         if(curLevelIndex > 0)
             curLevelIndex--;
         else curLevelIndex = unlockedCount;
@@ -296,12 +318,28 @@
             [thumb runAction:[CCSequence actions:[transition reverse], [CCCallFunc actionWithTarget:self selector:@selector(removeOldThumb)], nil]];
     }
     else if(CGRectContainsPoint(rightArrowRect, location) || (firstTouch.x > lastTouch.x && swipeLength > 60)){
+        if(firstTouch.x > lastTouch.x && swipeLength > 60 && swipeLenX > swipeLenY){
+            NSLog(@"swipe left");
+            [enteredSwipes addObject:@"left"];
+        }
         if(curLevelIndex < unlockedCount)
             curLevelIndex++;
         else curLevelIndex = 0;
         if([thumb numberOfRunningActions] == 0)
             [thumb runAction:[transition reverse]];
     }
+    if(firstTouch.y > lastTouch.y && swipeLength > 60 && swipeLenX < swipeLenY){
+        NSLog(@"swipe down");
+        [enteredSwipes addObject:@"down"];
+    } else if(firstTouch.y < lastTouch.y && swipeLength > 60 && swipeLenX < swipeLenY){
+        NSLog(@"swipe up");
+        [enteredSwipes addObject:@"up"];
+    }
+    for(int i = 0; i < [enteredSwipes count]; i++){
+        NSLog(@"swipes %@", enteredSwipes[i]);
+    }
+    
+    [self processLevelUnlockCheat];
     
     level = (levelProps *)[(NSValue *)[lStructs objectAtIndex:curLevelIndex] pointerValue];
     
@@ -315,6 +353,8 @@
         [helpLabel setVisible:false];
     }
     
+    if(swipeLength > 60) return;
+    
     if(CGRectContainsPoint(thumbnailRect, location)){
         SEL levelMethod = NSSelectorFromString(level->func);
         CCSequence *seq = [CCSequence actions:[CCCallFunc actionWithTarget:self selector:@selector(placeThumbOnTop)], [CCEaseIn actionWithAction:[CCScaleTo actionWithDuration:3 scaleX:15.0*thumb.scaleX scaleY:15.0*thumb.scaleY] rate:2.0], [CCDelayTime actionWithDuration:.001], [CCCallFunc actionWithTarget:self selector:levelMethod], nil];
@@ -323,6 +363,19 @@
             self.isTouchEnabled = false;
             [thumb runAction:seq];
         }
+    }
+    id action = [CCScaleBy actionWithDuration:.06 scale:.8];
+    
+    if(CGRectContainsPoint(leftArrowRect, location)){
+        if([leftArrow numberOfRunningActions] == 0)
+            [leftArrow runAction:[CCSequence actions:action, [action reverse], nil]];
+    } else if(CGRectContainsPoint(rightArrowRect, location)){
+        if([rightArrow numberOfRunningActions] == 0)
+            [rightArrow runAction:[CCSequence actions:action, [action reverse], nil]];
+    }
+    
+    if(CGRectContainsPoint(_backRect, location)){
+        [self switchSceneTitle];
     }
     [[nameLabel texture] setAliasTexParameters];
 }
