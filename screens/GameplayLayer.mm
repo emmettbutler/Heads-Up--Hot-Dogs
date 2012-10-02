@@ -223,15 +223,18 @@
 -(void)toggleSFX{
     if([[HotDogManager sharedManager] sfxOn]){
         [[HotDogManager sharedManager] setSFX:[NSNumber numberWithBool:false]];
+        [[NSUserDefaults standardUserDefaults] setInteger:0 forKey:@"sfxon"];
         [sfxLabel setString:@"SFX OFF"];
     } else {
         [[HotDogManager sharedManager] setSFX:[NSNumber numberWithBool:true]];
+        [[NSUserDefaults standardUserDefaults] setInteger:1 forKey:@"sfxon"];
         [sfxLabel setString:@"SFX ON"];
 #ifdef DEBUG
 #else
         [[SimpleAudioEngine sharedEngine] playEffect:@"pause 3.mp3"];
 #endif
     }
+    [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 -(void) pauseButton:(NSNumber *)force{
