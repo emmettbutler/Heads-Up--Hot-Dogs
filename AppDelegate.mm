@@ -50,6 +50,8 @@
 
 - (void) applicationDidFinishLaunching:(UIApplication*)application
 {
+    [[HotDogManager sharedManager] customEvent:@"game_load_start" st1:@"game_load" st2:NULL level:NULL value:NULL data:NULL];
+    double startTime = [[NSDate date] timeIntervalSince1970];
 	// Init the window
 	window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	
@@ -205,6 +207,7 @@
     [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_menus.plist"];
     [[CCDirector sharedDirector] setDisplayFPS:NO];
     
+    [[HotDogManager sharedManager] customEvent:@"game_load_complete" st1:@"game_load" st2:NULL level:NULL value:[[NSDate date] timeIntervalSince1970] - startTime data:NULL];
 	// Run the intro Scene
 	[[CCDirector sharedDirector] runWithScene:[Splashes scene]];
 }
