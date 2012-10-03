@@ -1894,6 +1894,11 @@
             }
         }
         
+        NSInteger totalGames = [standardUserDefaults integerForKey:@"totalGames"];
+        if(!totalGames)
+            totalGames = 0;
+        [[HotDogManager sharedManager] customEvent:@"game_start" st1:@"gameplays" st2:@"game_start" level:level->number value:NULL data:@{@"game_number": [NSNumber numberWithInt:totalGames]}];
+        
         level->characters = [CharBuilder buildCharacters:level->slug];
         level->characterProbSum = 0;
         for(NSValue *v in level->characters){
@@ -2207,6 +2212,15 @@
             [self pauseButton:[NSNumber numberWithBool:true]];
         }
         pauseLock = true;
+    }
+    
+    if(time == 15*60){
+        NSInteger totalGames = [standardUserDefaults integerForKey:@"totalGames"];
+        if(totalGames && totalGames > 1)
+            [standardUserDefaults setInteger:totalGames+1 forKey:@"totalGames"];
+        else
+            [standardUserDefaults setInteger:1 forKey:@"totalGames"];
+        [standardUserDefaults synchronize];
     }
     
     _sfxOn = [[HotDogManager sharedManager] sfxOn];
@@ -2868,6 +2882,7 @@
                     [[SimpleAudioEngine sharedEngine] playEffect:@"pause 3.mp3"];
 #endif
                 pauseLock = true;
+                [[HotDogManager sharedManager] customEvent:@"game_end_paused" st1:@"gameplays" st2:@"game_end" level:level->number value:_points data:NULL];
                 [self pauseButton:[NSNumber numberWithBool:false]];
             }
             else{
@@ -2879,10 +2894,12 @@
             return;
         } else if(_pause && CGRectContainsPoint(_restartRect, touchLocation1)){
             _gameOver = true;
+            [[HotDogManager sharedManager] customEvent:@"game_end_retry_from_pause_menu" st1:@"gameplays" st2:@"game_end" level:level->number value:_points data:NULL];
             [self restartScene];
             return;
         } else if(_pause && CGRectContainsPoint(_levelRect, touchLocation1)){
             _gameOver = true;
+            [[HotDogManager sharedManager] customEvent:@"game_end_levels_from_pause_menu" st1:@"gameplays" st2:@"game_end" level:level->number value:_points data:NULL];
             [self levelSelect];
             return;
         } else if(_pause && CGRectContainsPoint(_sfxRect, touchLocation1)){

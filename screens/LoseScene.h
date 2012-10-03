@@ -40,6 +40,7 @@
     NSInteger highScore;
     ALuint sting;
     float elmtScale;
+    int _numberOfTotalGamesPlayed;
     AchievementReporter *reporter;
     GKLeaderboardViewController *leaderboardController;
     GKAchievementViewController *achievementController;

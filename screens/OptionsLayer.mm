@@ -30,6 +30,7 @@
 
 -(void)openHomepage{
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"http://headsuphotdogs.com"]];
+    [[HotDogManager sharedManager] customEvent:@"official_site_clicked" st1:@"options" st2:NULL level:NULL value:NULL data:NULL];
 }
 
 -(void)diegoSocial{
@@ -49,10 +50,12 @@
 #else
         [[SimpleAudioEngine sharedEngine] playEffect:@"pause 3.mp3"];
 #endif
+        [[HotDogManager sharedManager] customEvent:@"sfx_turned_on" st1:@"options" st2:NULL level:NULL value:NULL data:NULL];
     } else {
         [[NSUserDefaults standardUserDefaults] setInteger:0 forKey:@"sfxon"];
         [sfxLabel setString:@"SFX off"];
         sfxOn = 0;
+        [[HotDogManager sharedManager] customEvent:@"sfx_turned_off" st1:@"options" st2:NULL level:NULL value:NULL data:NULL];
     }
     [[sfxLabel texture] setAliasTexParameters];
     [[NSUserDefaults standardUserDefaults] synchronize];
@@ -341,8 +344,10 @@
         [self openHomepage];
     } else if(CGRectContainsPoint(_creditsRect, touchLocation1)){
         [self showCredits];
+        [[HotDogManager sharedManager] customEvent:@"credits" st1:@"options" st2:NULL level:NULL value:NULL data:NULL];
     } else if(CGRectContainsPoint(_scoresRect, touchLocation1)){
         [self clearScoresWindow];
+        [[HotDogManager sharedManager] customEvent:@"clear_scores" st1:@"options" st2:NULL level:NULL value:NULL data:NULL];
     } else if(CGRectContainsPoint(_sfxRect, touchLocation1)){
         [self flipSFX];
     } else if(CGRectContainsPoint(_startRect, touchLocation1)){

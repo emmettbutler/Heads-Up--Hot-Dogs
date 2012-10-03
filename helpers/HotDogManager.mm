@@ -8,6 +8,7 @@
 
 
 #import "HotDogManager.h"
+#import "Kontagent/Kontagent.h"
 
 static HotDogManager *sharedInstance = nil;
 
@@ -30,6 +31,21 @@ static HotDogManager *sharedInstance = nil;
         _inGame = [NSNumber numberWithBool:false];
         return self;
     }
+}
+
+-(void)customEvent:(NSString *)name st1:(NSString *)st1 st2:(NSString *)st2 level:(int)level value:(int)value data:(NSDictionary *)data{
+    KTParamMap* paramMap = [[[KTParamMap alloc] init] autorelease];
+    [paramMap put:@"st1" value:st1];
+    if(st2)
+        [paramMap put:@"st2" value:st2];
+    if(level)
+        [paramMap put:@"l" value:[NSString stringWithFormat:@"%d",level]];
+    if(value)
+        [paramMap put:@"v" value:[NSString stringWithFormat:@"%d",value]];
+    if(data)
+        [paramMap put:@"data" value:[NSString stringWithFormat:@"%@", data]];
+    NSLog(@"Reported custom event %@", name);
+    [Kontagent customEvent:name optionalParams:paramMap];
 }
 
 -(void)setPause:(NSNumber *)pause{

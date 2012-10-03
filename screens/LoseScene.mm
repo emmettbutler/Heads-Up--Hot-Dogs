@@ -441,6 +441,8 @@
         highScore = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"highScore%@", level->slug]];
         NSInteger bestTime = [standardUserDefaults integerForKey:@"bestTime"];
         NSInteger overallTime = [standardUserDefaults integerForKey:@"overallTime"];
+        NSInteger totalGames = [standardUserDefaults integerForKey:@"totalGames"];
+        _numberOfTotalGamesPlayed = totalGames;
         _lock = 1;
         
         endResult *res = [self buildResult];
@@ -483,9 +485,15 @@
             level->highestTrophy = res->trophyLevel;
             [standardUserDefaults setInteger:level->highestTrophy forKey:[NSString stringWithFormat:@"trophy_%@", level->slug]];
         }
+        if(res->trophyLevel > 3){
+            [[HotDogManager sharedManager] customEvent:@"game_end_failure" st1:@"gameplays" st2:@"game_end" level:level->number value:_score data:@{@"dog_awarded": res->trophy}];
+        } else {
+            [[HotDogManager sharedManager] customEvent:@"game_end_success" st1:@"gameplays" st2:@"game_end" level:level->number value:_score data:@{@"dog_awarded": res->trophy}];
+        }
         if(res->trophyLevel <= 2 && !level->next->unlocked){
             NSInteger unlocked = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"unlocked%@", level->next->slug]];
             [standardUserDefaults setInteger:1 forKey:[NSString stringWithFormat:@"unlocked%@", level->next->slug]];
+            [[HotDogManager sharedManager] customEvent:[NSString stringWithFormat:@"level_up_%@", level->slug] st1:@"level_up" st2:NULL level:NULL value:_timePlayed/60 data:@{@"game_number": [NSNumber numberWithInt:_numberOfTotalGamesPlayed]}];
             if(level->next->slug != level->slug && (!unlocked || unlocked == 0)){
                 float scale = 1, fontSize = 20.0;
                 if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
@@ -547,6 +555,7 @@
     }
     
     if(CGRectContainsPoint(_twitterRect,location)){
+        [[HotDogManager sharedManager] customEvent:@"twitter_score_posted" st1:@"player_interaction" st2:NULL level:level->number value:_score data:@{@"game_number": [NSNumber numberWithInt:_numberOfTotalGamesPlayed]}];
         [self tweetButtonPressed:self];
     } else if(CGRectContainsPoint(_gcRect, location)){
         //[self showGameCenterAchievements];

@@ -209,12 +209,16 @@
     location = [[CCDirector sharedDirector] convertToGL:location];
      
     if(CGRectContainsPoint(_startRect, location)){
+        [[HotDogManager sharedManager] customEvent:@"levels" st1:@"screens" st2:NULL level:NULL value:NULL data:NULL];
         [self switchSceneStart];
     } else if(CGRectContainsPoint(_optionsRect, location)){
+        [[HotDogManager sharedManager] customEvent:@"options" st1:@"screens" st2:NULL level:NULL value:NULL data:NULL];
         [self switchSceneOptions];
     } else if(CGRectContainsPoint(_moreGamesRect, location)){
+        [[HotDogManager sharedManager] customEvent:@"more_games_link" st1:@"screens" st2:NULL level:NULL value:NULL data:NULL];
         [self showASGMoreGamesView];
     } else if(CGRectContainsPoint(_newsRect, location)){
+        [[HotDogManager sharedManager] customEvent:@"news_popup" st1:@"screens" st2:NULL level:NULL value:NULL data:NULL];
         [self showASGNewsView];
     }
 }
