@@ -303,8 +303,6 @@
         thumbOld.scaleY = IPAD_SCALE_FACTOR_Y;
     }
     [self addChild:thumbOld z:15];
-    
-    transition = [CCTurnOffTiles actionWithSize:ccg(100, 70) duration:.3];
 
     if(CGRectContainsPoint(leftArrowRect, location) || (firstTouch.x < lastTouch.x && swipeLength > 60)){
         if(firstTouch.x < lastTouch.x && swipeLength > 60 && swipeLenX > swipeLenY){
@@ -315,7 +313,7 @@
             curLevelIndex--;
         else curLevelIndex = unlockedCount;
         if([thumb numberOfRunningActions] == 0)
-            [thumb runAction:[CCSequence actions:[transition reverse], [CCCallFunc actionWithTarget:self selector:@selector(removeOldThumb)], nil]];
+            [thumb runAction:[CCSequence actions:[[CCTurnOffTiles actionWithSize:ccg(16, 11) duration:.3] reverse], [CCCallFunc actionWithTarget:self selector:@selector(removeOldThumb)], nil]];
     }
     else if(CGRectContainsPoint(rightArrowRect, location) || (firstTouch.x > lastTouch.x && swipeLength > 60)){
         if(firstTouch.x > lastTouch.x && swipeLength > 60 && swipeLenX > swipeLenY){
@@ -326,7 +324,7 @@
             curLevelIndex++;
         else curLevelIndex = 0;
         if([thumb numberOfRunningActions] == 0)
-            [thumb runAction:[transition reverse]];
+            [thumb runAction:[[CCTurnOffTiles actionWithSize:ccg(16, 11) duration:.3] reverse]];
     }
     if(firstTouch.y > lastTouch.y && swipeLength > 60 && swipeLenX < swipeLenY){
         NSLog(@"swipe down");

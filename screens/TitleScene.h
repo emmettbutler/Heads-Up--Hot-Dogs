@@ -8,6 +8,7 @@
 
 #import "cocos2d.h"
 #import <SimpleAudioEngine.h>
+#import "Clouds.h"
 
 @interface TitleLayer : CCLayer <CDLongAudioSourceDelegate>
 {
@@ -25,6 +26,7 @@
     ALuint soundId;
     CDSoundEngine *engine;
     float time;
+    Clouds *clouds;
 }
 
 +(CCScene *) scene;

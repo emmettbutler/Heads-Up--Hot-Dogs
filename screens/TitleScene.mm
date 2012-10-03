@@ -58,7 +58,7 @@
             [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"menu 2.mp3" loop:YES];
 #endif
         
-        [[Clouds alloc] initWithLayer:[NSValue valueWithPointer:self]];
+        clouds = [[Clouds alloc] initWithLayer:[NSValue valueWithPointer:self]];
         
         spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_menus.png"];
         [self addChild:spriteSheet];
@@ -231,6 +231,7 @@
 
 -(void) dealloc{
     [myController release];
+    [clouds release];
     [super dealloc];
 }
 
