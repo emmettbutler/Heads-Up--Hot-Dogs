@@ -51,7 +51,7 @@
 - (void) applicationDidFinishLaunching:(UIApplication*)application
 {
     [[HotDogManager sharedManager] customEvent:@"game_load_start" st1:@"game_load" st2:NULL level:NULL value:NULL data:NULL];
-    double startTime = [[NSDate date] timeIntervalSince1970];
+    startTime = [[NSDate date] timeIntervalSince1970];
 	// Init the window
 	window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	
@@ -239,7 +239,7 @@
 
 -(void) applicationDidEnterBackground:(UIApplication*)application {
     NSLog(@"didEnterBackground");
-    [[HotDogManager sharedManager] customEvent:@"user_quit_app" st1:@"useraction" st2:NULL level:NULL value:NULL data:NULL];
+    [[HotDogManager sharedManager] customEvent:@"user_quit_app" st1:@"useraction" st2:NULL level:NULL value:startTime data:NULL];
     [Kontagent stopSession];
 	[[CCDirector sharedDirector] stopAnimation];
     [[CCDirector sharedDirector] pause];
@@ -247,6 +247,7 @@
 
 -(void) applicationWillEnterForeground:(UIApplication*)application {
     NSLog(@"willEnterForeground");
+    startTime = [[NSDate date] timeIntervalSince1970];
     [Kontagent startSession:KONTAGENT_KEY mode:kKontagentSDKMode_PRODUCTION shouldSendApplicationAddedAutomatically:YES];
     [[CCDirector sharedDirector] startAnimation];
     if([[HotDogManager sharedManager] isInGame] && ![[HotDogManager sharedManager] isPaused]){
@@ -259,7 +260,7 @@
 	CCDirector *director = [CCDirector sharedDirector];
     
     NSLog(@"Application HEADS UP HOT DOGS exiting");
-    [[HotDogManager sharedManager] customEvent:@"user_quit_app" st1:@"useraction" st2:NULL level:NULL value:NULL data:NULL];
+    [[HotDogManager sharedManager] customEvent:@"user_quit_app" st1:@"useraction" st2:NULL level:NULL value:startTime data:NULL];
     [Kontagent stopSession];
 	[[director openGLView] removeFromSuperview];
 	[viewController release];

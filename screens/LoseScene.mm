@@ -492,6 +492,8 @@
             NSInteger unlocked = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"unlocked%@", level->next->slug]];
             [standardUserDefaults setInteger:1 forKey:[NSString stringWithFormat:@"unlocked%@", level->next->slug]];
             [[HotDogManager sharedManager] customEvent:[NSString stringWithFormat:@"level_up_%@", level->slug] st1:@"level_up" st2:NULL level:NULL value:_timePlayed/60 data:@{@"game_number": [NSNumber numberWithInt:_numberOfTotalGamesPlayed]}];
+            [[HotDogManager sharedManager] customEvent:@"user_level_positions" st1:@"useractions" st2:NULL level:level->number value:-1 data:NULL];
+            [[HotDogManager sharedManager] customEvent:@"user_level_positions" st1:@"useractions" st2:NULL level:level->next->number value:1 data:NULL];
             if(level->next->slug != level->slug && (!unlocked || unlocked == 0)){
                 float scale = 1, fontSize = 20.0;
                 if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){

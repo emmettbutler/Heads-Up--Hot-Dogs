@@ -15,6 +15,7 @@
 	UIWindow			*window;
 	RootViewController	*viewController;
     NSUserDefaults *standardUserDefaults;
+    double startTime;
 }
 
 -(RootViewController *)getRootViewController;
