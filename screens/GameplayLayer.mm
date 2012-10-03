@@ -8,7 +8,6 @@
 
 #import "GameplayLayer.h"
 #import "TitleScene.h"
-#import "TestFlight.h"
 #import "LoseScene.h"
 #import "LevelSelectLayer.h"
 #import "PointNotify.h"
@@ -16,6 +15,7 @@
 #import "Overlay.h"
 #import "UIDefs.h"
 #import "WindParticle.h"
+#import "TestFlight.h"
 #import "HotDogManager.h"
 
 #define DEGTORAD 0.0174532
@@ -62,7 +62,6 @@
 }
 
 - (void)loseScene{
-    [TestFlight passCheckpoint:@"Game Over"];
 #ifdef DEBUG
 #else
     [[SimpleAudioEngine sharedEngine] stopBackgroundMusic];
@@ -376,8 +375,6 @@
         [_pauseMenu alignItemsVerticallyWithPadding:5];
         [_pauseMenu runAction:[CCMoveTo actionWithDuration:slideSpeed position:menuAnchor]];
         [self addChild:_pauseMenu z:801];
-        
-        [TestFlight passCheckpoint:@"Pause Menu"];
     }
 }
 
@@ -2189,8 +2186,6 @@
         _wallsBody->CreateFixture(&wallsBoxDef);
         wallsBox.Set(upperRightCorner, lowerRightCorner);
         _wallsBody->CreateFixture(&wallsBoxDef);
-
-        [TestFlight passCheckpoint:@"Game Started"];
         
         //_points = 50000;
         //_droppedCount = 5;

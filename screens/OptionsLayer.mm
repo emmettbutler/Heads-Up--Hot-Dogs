@@ -9,7 +9,6 @@
 #import "GameplayLayer.h"
 #import "TitleScene.h"
 #import "OptionsLayer.h"
-#import "TestFlight.h"
 #import "LevelSelectLayer.h"
 #import "Clouds.h"
 #import "UIDefs.h"
@@ -21,7 +20,6 @@
 
 +(CCScene *) scene{
 	CCScene *scene = [CCScene node];
-    CCLOG(@"in scenewithData");
 	OptionsLayer *layer;
     layer = [OptionsLayer node];
 	[scene addChild:layer];
@@ -306,8 +304,6 @@
         otherLabel.position = ccp(button2.position.x, button2.position.y-1);
         [self addChild:otherLabel z:11];
         _titleRect = CGRectMake((button2.position.x-(button2.contentSize.width*button2.scaleX)/2), (button2.position.y-(button2.contentSize.height*button2.scaleY)/2), (button2.contentSize.width*button2.scaleX+70), (button2.contentSize.height*button2.scaleY+70));
-        
-        [TestFlight passCheckpoint:@"Options Screen"];
         
         [self schedule: @selector(tick:)];
     }

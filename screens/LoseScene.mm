@@ -33,7 +33,7 @@
         {
             NSLog(@"Error submitting high score to leaderboard");
         } else {
-            [TestFlight passCheckpoint:@"Score reported to GC"];
+            
         }
     }];
 }
@@ -419,8 +419,6 @@
         [[gcButton texture] setAliasTexParameters];
         [self addChild:gcButton z:10];
         _gcRect = CGRectMake((gcButton.position.x-(gcButton.scaleX*gcButton.contentSize.width)/2), (gcButton.position.y-(gcButton.scaleY*gcButton.contentSize.height)/2), (gcButton.scaleX*gcButton.contentSize.width+10), (gcButton.scaleY*gcButton.contentSize.height+10));
-        
-        [TestFlight passCheckpoint:@"Game Over Screen"];
         
         [self schedule: @selector(tick:)];
     }

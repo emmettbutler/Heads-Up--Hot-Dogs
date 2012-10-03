@@ -9,13 +9,13 @@
 #import "TitleScene.h"
 #import "GameplayLayer.h"
 #import "OptionsLayer.h"
-#import "TestFlight.h"
 #import "LevelSelectLayer.h"
 #import "Clouds.h"
 #import "UIDefs.h"
 #import "ASNewsFeed.h"
 #import "AppDelegate.h"
 #import "HotDogManager.h"
+#import "TestFlight.h"
 
 #define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 
@@ -44,8 +44,6 @@
             [[NSUserDefaults standardUserDefaults] setInteger:1 forKey:@"sfxon"];
             [[NSUserDefaults standardUserDefaults] synchronize];
         }
-        
-        [TestFlight passCheckpoint:@"Title Screen"];
 #ifdef DEBUG
         NSLog(@"DEBUG MODE ON");
         CCLabelTTF *dlabel = [CCLabelTTF labelWithString:@"DEBUG" fontName:@"LostPet.TTF" fontSize:30.0];
