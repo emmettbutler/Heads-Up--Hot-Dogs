@@ -268,6 +268,7 @@
         [enteredSwipes release];
         enteredSwipes = [[NSMutableArray alloc] init];
         if(cheat){
+            [[HotDogManager sharedManager] customEvent:@"unlock_all_levels_cheat" st1:@"player_interaction" st2:NULL level:NULL value:NULL data:NULL];
             [self unlockAllLevels];
         }
     }
