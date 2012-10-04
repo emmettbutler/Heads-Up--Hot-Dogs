@@ -828,7 +828,7 @@
     lp->enabled = true;
     lp->slug = @"japan";
     lp->name = @"Yamanashi";
-    lp->unlockNextThreshold = 7000;
+    lp->unlockNextThreshold = 10000;
     lp->func = @"switchScreenJapan";
     lp->thumbnail = @"Japan_Thumb.png";
     lp->unlockTweet = @"I was ready to relax in a calming Japanese hot spring in @HeadsUpHotDogs";
@@ -1009,7 +1009,7 @@
     lp->enabled = false;
     lp->slug = @"space";
     lp->name = @"Space Station";
-    lp->unlockNextThreshold = 10000;
+    lp->unlockNextThreshold = 12000;
     lp->thumbnail = @"Space_Thumb.png";
     lp->func = @"switchScreenSpace";
     lp->unlockTweet = @"We sent a frankfurter to the moon in @HeadsUpHotDogs";
