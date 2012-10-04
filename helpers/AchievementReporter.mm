@@ -7,6 +7,7 @@
 //
 
 #import "AchievementReporter.h"
+#import "HotDogManager.h"
 
 
 @implementation AchievementReporter
@@ -16,7 +17,11 @@
     GKAchievement *achievement = [self getAchievementForIdentifier:identifier];
     if(achievement && achievement.percentComplete < 100){
         achievement.percentComplete = percent;
-        achievement.showsCompletionBanner = YES;
+        if([[HotDogManager sharedManager] isInGame]){
+            achievement.showsCompletionBanner = YES;
+        } else {
+            achievement.showsCompletionBanner = NO;
+        }
         [achievement reportAchievementWithCompletionHandler:^(NSError *error){
             if(error != nil){
                 NSLog(@"Error reporting achievement to game center: %@", identifier);

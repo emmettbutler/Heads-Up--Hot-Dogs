@@ -41,6 +41,7 @@
 -(void)showGameCenterLeaderboard{
     leaderboardController = [[GKLeaderboardViewController alloc] init];
     if (leaderboardController != nil){
+        leaderboardController.category = level->slug;
         AppDelegate *ad = [[UIApplication sharedApplication] delegate];
         UIViewController *rootViewController = (UIViewController *)ad.getRootViewController;
         leaderboardController.leaderboardDelegate = self;
