@@ -41,7 +41,7 @@ static NSUserDefaults *standardUserDefaults;
     NSMutableArray *lStructs;
     CGPoint firstTouch, lastTouch;
     CCLayer *pixelsLayer;
-    CCTurnOffTiles *transition;
+    CCFiniteTimeAction *transition;
     CCSpriteBatchNode *spritesheet;
     int curLevelIndex;
     float leftArrowOGScaleX, leftArrowOGScaleY, rightArrowOGScaleX, rightArrowOGScaleY;

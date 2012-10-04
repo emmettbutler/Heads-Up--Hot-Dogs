@@ -230,6 +230,7 @@
         enteredSwipes = [[NSMutableArray alloc] init];
         
         firstTouch = CGPointMake(-1, -1);
+        transition = [[[CCTurnOffTiles actionWithSize:ccg(16, 11) duration:.3] reverse] retain];
         
         [self schedule:@selector(tick:)];
     }
@@ -315,7 +316,7 @@
             curLevelIndex--;
         else curLevelIndex = unlockedCount;
         if([thumb numberOfRunningActions] == 0)
-            [thumb runAction:[CCSequence actions:[[CCTurnOffTiles actionWithSize:ccg(16, 11) duration:.3] reverse], [CCCallFunc actionWithTarget:self selector:@selector(removeOldThumb)], nil]];
+            [thumb runAction:[CCSequence actions:transition, [CCCallFunc actionWithTarget:self selector:@selector(removeOldThumb)], nil]];
     }
     else if(CGRectContainsPoint(rightArrowRect, location) || (firstTouch.x > lastTouch.x && swipeLength > 60)){
         if(firstTouch.x > lastTouch.x && swipeLength > 60 && swipeLenX > swipeLenY){
@@ -326,7 +327,7 @@
             curLevelIndex++;
         else curLevelIndex = 0;
         if([thumb numberOfRunningActions] == 0)
-            [thumb runAction:[[CCTurnOffTiles actionWithSize:ccg(16, 11) duration:.3] reverse]];
+            [thumb runAction:transition];
     }
     if(firstTouch.y > lastTouch.y && swipeLength > 60 && swipeLenX < swipeLenY){
         NSLog(@"swipe down");
