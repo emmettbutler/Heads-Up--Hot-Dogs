@@ -242,6 +242,7 @@
     time++;
     [self processLevelUnlockCheat];
     [self processVomitCheat];
+    [self processBigHeadCheat];
     if(time - lastTouchTime > 50){
         [enteredSwipes release];
         enteredSwipes = [[NSMutableArray alloc] init];
@@ -285,6 +286,16 @@
         if([self processCheat:cheatSwipeSequence]){
             [[HotDogManager sharedManager] customEvent:@"hell_businessman_cheat" st1:@"player_interaction" st2:NULL level:NULL value:NULL data:NULL];
             vomitCheatActive = [NSNumber numberWithBool:true];
+        }
+    }
+}
+
+-(void)processBigHeadCheat{
+    NSArray *cheatSwipeSequence = @[@"l", @"r"];
+    if([enteredSwipes count] == [cheatSwipeSequence count] && time - lastTouchTime > 30){
+        if([self processCheat:cheatSwipeSequence]){
+            [[HotDogManager sharedManager] customEvent:@"big_head_cheat" st1:@"player_interaction" st2:NULL level:NULL value:NULL data:NULL];
+            bigHeadCheatActive = [NSNumber numberWithBool:true];
         }
     }
 }
@@ -462,7 +473,7 @@
 }
 
 -(void)switchScreenStartWithSlug:(NSString *)slug{
-    [[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:.3 scene:[GameplayLayer sceneWithSlug:slug andVomitCheat:vomitCheatActive]]];
+    [[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:.3 scene:[GameplayLayer sceneWithSlug:slug andVomitCheat:vomitCheatActive andBigHeadCheat:bigHeadCheatActive]]];
 }
 
 -(void) dealloc{

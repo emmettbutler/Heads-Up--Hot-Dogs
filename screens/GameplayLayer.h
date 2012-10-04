@@ -59,7 +59,7 @@
     NSInteger _sfxOn, _introDone, _savedHighScore;
     int _points, _droppedCount, time, _curPersonMaskBits, _peopleGrumped, _dogsSaved, _spcDogsSaved, _dogsOnscreen, _maxDogsOnScreen, _numWorldTouches, _levelMaxDogs, _dogsShotByCop, _dogsMissedByCop, windCounter, dogNumberCounter, _windParticles, _vomitProb;
     float spriteScaleX, spriteScaleY, pointNotifyScale, _wienerSpawnDelayTime, _levelSpawnInterval, _subwayForce, FLOOR1_HT, FLOOR2_HT, FLOOR3_HT, FLOOR4_HT,hudScale, introAudioDuration;
-    BOOL _shootLock, _policeOnScreen, _muncherOnScreen, _gameOver, _hasDroppedDog, _fgIsDark, _scoreNotifyLock, _player_hasTickled, pauseLock, vomitCheatActivated;
+    BOOL _shootLock, _policeOnScreen, _muncherOnScreen, _gameOver, _hasDroppedDog, _fgIsDark, _scoreNotifyLock, _player_hasTickled, pauseLock, vomitCheatActivated, bigHeadCheatActivated;
 
     struct bodyUserData {
         CCSprite *sprite1, *sprite2, *angryFace, *ripples, *overlaySprite, *howToPlaySprite;
@@ -144,7 +144,7 @@
 @property (nonatomic, retain) CCSprite *target;
 
 // returns a CCScene that contains the HelloWorldLayer as the only child
-+(CCScene *) sceneWithSlug:(NSString *)levelSlug andVomitCheat:(NSNumber *)vomitCheatActivated;
++(CCScene *) sceneWithSlug:(NSString *)levelSlug andVomitCheat:(NSNumber *)vomitCheatActivated andBigHeadCheat:(NSNumber *)bigHeadsActivated;
 -(id) initWithSlug:(NSString *)levelSlug;
 
 @end

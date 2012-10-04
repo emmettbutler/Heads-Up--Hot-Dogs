@@ -21,6 +21,7 @@
 #define DEGTORAD 0.0174532
 #define VOMIT_VEL 666
 #define COP_RANGE 4
+#define BIG_HEAD_SIZE 1.6
 #define OVERLAYS_STOP 2
 #define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 
@@ -39,13 +40,14 @@
 @synthesize wiener = _wiener;
 @synthesize target = _target;
 
-+(CCScene *) sceneWithSlug:(NSString *)levelSlug andVomitCheat:(NSNumber *)vomitCheatActivated {
++(CCScene *) sceneWithSlug:(NSString *)levelSlug andVomitCheat:(NSNumber *)vomitCheatActivated andBigHeadCheat:(NSNumber *)bigHeadsActivated{
     
     CCScene *scene = [CCScene node];
     CCLOG(@"sceneWithData slug: %@", levelSlug);
     GameplayLayer *layer = [[GameplayLayer alloc] initWithSlug:levelSlug andVomitCheat:vomitCheatActivated];
     layer->slug = levelSlug;
     layer->vomitCheatActivated = vomitCheatActivated.boolValue;
+    layer->bigHeadCheatActivated = bigHeadsActivated.boolValue;
     [scene addChild: layer];
     return scene;
 }
@@ -173,7 +175,7 @@
         [self removeAllChildrenWithCleanup:YES];
         [[CCDirector sharedDirector] resume];
     }
-    [[CCDirector sharedDirector] replaceScene:[GameplayLayer sceneWithSlug:level->slug andVomitCheat:[NSNumber numberWithBool:false]]];
+    [[CCDirector sharedDirector] replaceScene:[GameplayLayer sceneWithSlug:level->slug andVomitCheat:[NSNumber numberWithBool:false] andBigHeadCheat:[NSNumber numberWithBool:false]]];
 }
 
 -(void)presentNewHighScoreNotify{
@@ -1457,10 +1459,18 @@
     _personLower.scale = scale;
     [[_personLower texture] setAliasTexParameters];
     self.personUpper = [CCSprite spriteWithSpriteFrameName:person->upperSprite];
-    _personUpper.scale = scale;
+    if(bigHeadCheatActivated){
+        _personUpper.scale = scale*BIG_HEAD_SIZE;
+    } else {
+        _personUpper.scale = scale;
+    }
     [[_personUpper texture] setAliasTexParameters];
     self.personUpperOverlay = [CCSprite spriteWithSpriteFrameName:person->upperOverlaySprite];
-    _personUpperOverlay.scale = scale;
+    if(bigHeadCheatActivated){
+        _personUpperOverlay.scale = scale*BIG_HEAD_SIZE;
+    } else {
+        _personUpperOverlay.scale = scale;
+    }
     [[_personUpperOverlay texture] setAliasTexParameters];
     if(person->rippleSprite){
         self.rippleSprite = [CCSprite spriteWithSpriteFrameName:person->rippleSprite];
@@ -1671,6 +1681,8 @@
     ud->altWalk = _altWalkAction;
     ud->altWalkFace = _altFaceWalkAction;
     ud->heightOffset2 = person->heightOffset*scale;
+    if(bigHeadCheatActivated)
+        ud->heightOffset2 = person->heightOffset*scale*(BIG_HEAD_SIZE*.79);
     ud->altAction = _walkFaceAction;
     ud->postStopAction = _postStopAction;
     ud->idleAction = _idleAction;
@@ -1741,7 +1753,11 @@
 
     //fixture for head hitbox
     b2PolygonShape personShape;
-    personShape.SetAsBox((scale*person->hitboxWidth)/PTM_RATIO, (scale*person->hitboxHeight)/PTM_RATIO, b2Vec2(scale*person->hitboxCenterX, scale*person->hitboxCenterY), 0);
+    float bigHeadScale = 1;
+    if(bigHeadCheatActivated){
+        bigHeadScale = BIG_HEAD_SIZE*.85;
+    }
+    personShape.SetAsBox((scale*bigHeadScale*person->hitboxWidth)/PTM_RATIO, (scale*person->hitboxHeight)/PTM_RATIO, b2Vec2(scale*person->hitboxCenterX, scale*bigHeadScale*person->hitboxCenterY), 0);
     b2FixtureDef personShapeDef;
     personShapeDef.shape = &personShape;
     personShapeDef.density = 0;
