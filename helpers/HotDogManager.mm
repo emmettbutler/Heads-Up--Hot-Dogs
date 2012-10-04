@@ -73,7 +73,7 @@ static HotDogManager *sharedInstance = nil;
     }
 }
 -(BOOL)shouldReportScores{
-    return [_dontReportScores boolValue];
+    return ![_dontReportScores boolValue];
 }
 
 -(void)setInGame:(NSNumber *)inGame{

@@ -467,6 +467,7 @@
             [reporter reportAchievementIdentifier:[NSString stringWithFormat:@"gold_%@", level->slug] percentComplete:100];
         }
         
+        NSLog(@"Should report scores: %d", [[HotDogManager sharedManager] shouldReportScores]);
         if([[HotDogManager sharedManager] shouldReportScores]){
             if(_score > highScore){
                 _setNewHighScore = true;
@@ -534,7 +535,7 @@
 }
 
 - (void)switchSceneRestart{
-    [[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:.3 scene:[GameplayLayer sceneWithSlug:slug andVomitCheat:[NSNumber numberWithBool:false]]]];
+    [[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:.3 scene:[GameplayLayer sceneWithSlug:slug andVomitCheat:[NSNumber numberWithBool:false] andBigHeadCheat:[NSNumber numberWithBool:false]]]];
 }
 
 - (void)switchSceneLevel{
