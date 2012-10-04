@@ -279,8 +279,8 @@
 }
 
 -(void)processVomitCheat{
-    NSArray *cheatSwipeSequence = @[@"l", @"r", @"r", @"r", @"l", @"u", @"u", @"d", @"r", @"l", @"r", @"d", @"l", @"r", @"r", @"d", @"u"];
-    if([enteredSwipes count] == [cheatSwipeSequence count] && time - lastTouchTime > 20){
+    NSArray *cheatSwipeSequence = @[@"l", @"r", @"r", @"d", @"l", @"r", @"r", @"d", @"u", @"l", @"r", @"u", @"d", @"d"];
+    if([enteredSwipes count] == [cheatSwipeSequence count] && time - lastTouchTime > 30){
         if([self processCheat:cheatSwipeSequence]){
             [[HotDogManager sharedManager] customEvent:@"hell_businessman_cheat" st1:@"player_interaction" st2:NULL level:NULL value:NULL data:NULL];
             vomitCheatActive = [NSNumber numberWithBool:true];
@@ -290,7 +290,7 @@
 
 -(void)processLevelUnlockCheat{
     NSArray *cheatSwipeSequence = @[@"u", @"u", @"d", @"l", @"l", @"d", @"r", @"u"];
-    if([enteredSwipes count] == [cheatSwipeSequence count] && time - lastTouchTime > 20){
+    if([enteredSwipes count] == [cheatSwipeSequence count] && time - lastTouchTime > 30){
         if([self processCheat:cheatSwipeSequence]){
             [[HotDogManager sharedManager] customEvent:@"unlock_all_levels_cheat" st1:@"player_interaction" st2:NULL level:NULL value:NULL data:NULL];
             [self unlockAllLevels];
