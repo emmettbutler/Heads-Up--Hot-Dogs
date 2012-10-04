@@ -215,7 +215,11 @@
     [[HotDogManager sharedManager] setPause:[NSNumber numberWithBool:true]];
 #ifdef DEBUG
 #else
-    [[SimpleAudioEngine sharedEngine] pauseBackgroundMusic];
+    if(introAudio && introAudio.isPlaying){
+        [introAudio pause];
+    } else {
+        [[SimpleAudioEngine sharedEngine] pauseBackgroundMusic];
+    }
 #endif
 }
 
