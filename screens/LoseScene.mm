@@ -467,15 +467,18 @@
             [reporter reportAchievementIdentifier:[NSString stringWithFormat:@"gold_%@", level->slug] percentComplete:100];
         }
         
-        if(_score > highScore){
-            _setNewHighScore = true;
-            [standardUserDefaults setInteger:_score forKey:[NSString stringWithFormat:@"highScore%@", level->slug]];
-            highScore = _score;
-            // max 6 digits
-            if(highScore > 999999)
-                highScore = 999999;
-            [self reportScore:highScore forCategory:level->slug];
+        if([[HotDogManager sharedManager] shouldReportScores]){
+            if(_score > highScore){
+                _setNewHighScore = true;
+                [standardUserDefaults setInteger:_score forKey:[NSString stringWithFormat:@"highScore%@", level->slug]];
+                highScore = _score;
+                // max 6 digits
+                if(highScore > 999999)
+                    highScore = 999999;
+                [self reportScore:highScore forCategory:level->slug];
+            }
         }
+        [[HotDogManager sharedManager] setDontReportScores:[NSNumber numberWithBool:false]];
         if(_timePlayed > bestTime)
             [standardUserDefaults setInteger:_timePlayed forKey:@"bestTime"];
         

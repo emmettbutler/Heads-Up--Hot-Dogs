@@ -29,6 +29,7 @@ static HotDogManager *sharedInstance = nil;
         _pause = [NSNumber numberWithBool:false];
         _sfxOn = [NSNumber numberWithBool:false];
         _inGame = [NSNumber numberWithBool:false];
+        _dontReportScores = [NSNumber numberWithBool:false];
         return self;
     }
 }
@@ -61,6 +62,18 @@ static HotDogManager *sharedInstance = nil;
     @synchronized(self) {
         return [_pause boolValue];
     }
+}
+
+-(void)setDontReportScores:(NSNumber *)set{
+    @synchronized(self) {
+        if (_dontReportScores != set) {
+            [set release];
+            _dontReportScores = [set retain];
+        }
+    }
+}
+-(BOOL)shouldReportScores{
+    return [_dontReportScores boolValue];
 }
 
 -(void)setInGame:(NSNumber *)inGame{

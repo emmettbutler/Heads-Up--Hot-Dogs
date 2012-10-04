@@ -270,6 +270,7 @@
     [enteredSwipes release];
     enteredSwipes = [[NSMutableArray alloc] init];
     if(cheat){
+        [[HotDogManager sharedManager] setDontReportScores:[NSNumber numberWithBool:true]];
 #ifdef DEBUG
 #else
         [[SimpleAudioEngine sharedEngine] playEffect:@"100pts.mp3"];

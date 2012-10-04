@@ -8,7 +8,7 @@
 
 
 @interface HotDogManager : NSObject {
-    NSNumber *_pause, *_sfxOn, *_inGame;
+    NSNumber *_pause, *_sfxOn, *_inGame, *_dontReportScores;
 }
 
 +(HotDogManager *)sharedManager;
@@ -18,6 +18,9 @@
 -(BOOL)sfxOn;
 -(void)setInGame:(NSNumber *)inGame;
 -(BOOL)isInGame;
+-(void)setDontReportScores:(NSNumber *)set;
+-(BOOL)shouldReportScores;
 -(void)customEvent:(NSString *)name st1:(NSString *)st1 st2:(NSString *)st2 level:(int)level value:(int)value data:(NSDictionary *)data;
+
 
 @end
