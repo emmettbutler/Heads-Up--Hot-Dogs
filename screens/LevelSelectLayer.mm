@@ -269,11 +269,17 @@
     }
     [enteredSwipes release];
     enteredSwipes = [[NSMutableArray alloc] init];
+    if(cheat){
+#ifdef DEBUG
+#else
+        [[SimpleAudioEngine sharedEngine] playEffect:@"100pts.mp3"];
+#endif
+    }
     return cheat;
 }
 
 -(void)processVomitCheat{
-    NSArray *cheatSwipeSequence = @[@"l", @"r", @"r", @"r", @"l", @"u", @"u", @"d", @"r", @"l", @"r", @"d", @"l", @"r", @"r"];
+    NSArray *cheatSwipeSequence = @[@"l", @"r", @"r", @"r", @"l", @"u", @"u", @"d", @"r", @"l", @"r", @"d", @"l", @"r", @"r", @"d", @"u"];
     if([enteredSwipes count] == [cheatSwipeSequence count] && time - lastTouchTime > 20){
         if([self processCheat:cheatSwipeSequence]){
             [[HotDogManager sharedManager] customEvent:@"hell_businessman_cheat" st1:@"player_interaction" st2:NULL level:NULL value:NULL data:NULL];
