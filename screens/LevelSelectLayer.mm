@@ -152,9 +152,9 @@
         }
         [self addChild:sprite];
         
-        float fontSize = 20.0;
+        float fontSize = 18.0;
         if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
-            fontSize = 45.0;
+            fontSize = 40.0;
         }
         
         lStructs = [[LevelSelectLayer buildLevels:[NSNumber numberWithInt:0]] retain];
