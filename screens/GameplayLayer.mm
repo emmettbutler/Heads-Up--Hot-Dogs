@@ -205,6 +205,7 @@
         [self removeAllChildrenWithCleanup:YES];
         [[CCDirector sharedDirector] resume];
     }
+    [[SimpleAudioEngine sharedEngine] stopBackgroundMusic];
     [[HotDogManager sharedManager] setPause:[NSNumber numberWithBool:false]];
     // sometimes this causes a crash but I'm not sure why
     [[CCDirector sharedDirector] replaceScene:[LevelSelectLayer scene]];
