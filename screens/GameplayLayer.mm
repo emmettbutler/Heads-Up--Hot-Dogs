@@ -298,7 +298,7 @@
         label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"Total playtime: %02d:%02d:%02d", totalHours, totalMinutes%60, totalTime%60] fontName:@"LostPet.TTF" fontSize:fontSize];
         label.color = _color_pink;
         CCMenuItem *totalTimeItem = [CCMenuItemLabel itemWithLabel:label];
-        label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"People grumped: %d", _peopleGrumped] fontName:@"LostPet.TTF" fontSize:fontSize];
+        label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"Noggins topped: %d", _peopleGrumped] fontName:@"LostPet.TTF" fontSize:fontSize];
         label.color = _color_pink;
         CCMenuItem *peopleItem = [CCMenuItemLabel itemWithLabel:label];
         label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"Franks saved: %d", _dogsSaved] fontName:@"LostPet.TTF" fontSize:fontSize];
