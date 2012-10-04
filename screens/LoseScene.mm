@@ -75,7 +75,7 @@
 
     [tweetSheet setInitialText:[tweets objectAtIndex:arc4random() % [tweets count]]];
     //[tweetSheet addImage:[UIImage imageNamed:@"Icon_Head_big.png"]];
-    [tweetSheet addURL:[NSURL URLWithString:@"http://headsuphotdogs.com"]];
+    [tweetSheet addURL:[NSURL URLWithString:@"http://asw.im/7cz09a"]];
     
     UIViewController* myController = [[UIViewController alloc] init];
     [[[CCDirector sharedDirector] openGLView] addSubview:myController.view];
