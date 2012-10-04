@@ -531,7 +531,7 @@
 }
 
 - (void)switchSceneRestart{
-    [[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:.3 scene:[GameplayLayer sceneWithSlug:slug]]];
+    [[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:.3 scene:[GameplayLayer sceneWithSlug:slug andVomitCheat:[NSNumber numberWithBool:false]]]];
 }
 
 - (void)switchSceneLevel{

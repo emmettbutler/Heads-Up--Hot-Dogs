@@ -20,7 +20,6 @@
 
 #define DEGTORAD 0.0174532
 #define VOMIT_VEL 666
-#define VOMIT_PROBABILITY 666
 #define COP_RANGE 4
 #define OVERLAYS_STOP 2
 #define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
@@ -40,12 +39,13 @@
 @synthesize wiener = _wiener;
 @synthesize target = _target;
 
-+(CCScene *) sceneWithSlug:(NSString *)levelSlug {
++(CCScene *) sceneWithSlug:(NSString *)levelSlug andVomitCheat:(NSNumber *)vomitCheatActivated {
     
     CCScene *scene = [CCScene node];
     CCLOG(@"sceneWithData slug: %@", levelSlug);
-    GameplayLayer *layer = [[GameplayLayer alloc] initWithSlug:levelSlug];
+    GameplayLayer *layer = [[GameplayLayer alloc] initWithSlug:levelSlug andVomitCheat:vomitCheatActivated];
     layer->slug = levelSlug;
+    layer->vomitCheatActivated = vomitCheatActivated.boolValue;
     [scene addChild: layer];
     return scene;
 }
@@ -173,7 +173,7 @@
         [self removeAllChildrenWithCleanup:YES];
         [[CCDirector sharedDirector] resume];
     }
-    [[CCDirector sharedDirector] replaceScene:[GameplayLayer sceneWithSlug:level->slug]];
+    [[CCDirector sharedDirector] replaceScene:[GameplayLayer sceneWithSlug:level->slug andVomitCheat:[NSNumber numberWithBool:false]]];
 }
 
 -(void)presentNewHighScoreNotify{
@@ -1076,7 +1076,7 @@
         if(b->GetUserData() && b->GetUserData() != (void*)100){
             if([excludeBody pointerValue] == b) continue;
             bodyUserData *ud = (bodyUserData*)b->GetUserData();
-            if((ud->sprite1.tag >= S_BUSMAN && ud->sprite1.tag <= S_TOPPSN) || ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG || ud->sprite1.tag == S_COPARM){
+            if(((ud->sprite1.tag >= S_BUSMAN && ud->sprite1.tag <= S_TOPPSN) && !ud->_busman_isVomiting) || ud->sprite1.tag == S_HOTDOG || ud->sprite1.tag == S_SPCDOG || ud->sprite1.tag == S_COPARM ){
                 if(color.intValue == 1){
                     [ud->sprite1 setColor:spcDogFlashColor];
                     [ud->sprite2 setColor:spcDogFlashColor];
@@ -1307,7 +1307,7 @@
                         withRestitutionMul:[NSNumber numberWithFloat:restitution]];
         b2Body *wienerBody = (b2Body *)[[dog getBody] pointerValue];
         bodyUserData *ud = (bodyUserData *)wienerBody->GetUserData();
-        CCSprite *sprite = (CCSprite *)ud->sprite1;
+        //CCSprite *sprite = (CCSprite *)ud->sprite1;
         [ud->countdownLabel setVisible:false];
         [self addChild:ud->countdownLabel];
     }
@@ -1396,6 +1396,9 @@
     personStruct *p;
     for(NSValue *v in level->characters){
         p = (personStruct *)[v pointerValue];
+        if(p->slug == @"busman" && vomitCheatActivated){
+            break;
+        }
         if(choice < p->frequency){
             break;
         }
@@ -1659,7 +1662,7 @@
         ud->rippleYOffset = person->rippleYOffset*scale;
         ud->ogRippleYOffset = person->rippleYOffset*scale;
     }
-    if(person->vomitAnimFrames && arc4random() % VOMIT_PROBABILITY == 1){
+    if(person->vomitAnimFrames && arc4random() % _vomitProb == 1){
         ud->_busman_willVomit = true;
         ud->_vomitAction = _vomitAction;
     }
@@ -1872,7 +1875,7 @@
     [self runAction:sequence];
 }
 
--(id) initWithSlug:(NSString *)levelSlug {
+-(id) initWithSlug:(NSString *)levelSlug andVomitCheat:(NSNumber *)vomitCheat{
     if( (self=[super init])) {
         winSize = [CCDirector sharedDirector].winSize;
         [[HotDogManager sharedManager] setInGame:[NSNumber numberWithBool:true]];
@@ -2048,6 +2051,10 @@
             _levelSpawnInterval = level->spawnInterval;
         }
         _shootLock = NO;
+        _vomitProb = 666;
+        if(vomitCheat.boolValue){
+            _vomitProb = 2;
+        }
 
         //contact listener init
         personDogContactListener = new PersonDogContactListener();

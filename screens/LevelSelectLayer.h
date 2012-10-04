@@ -40,6 +40,7 @@ static NSUserDefaults *standardUserDefaults;
     ccColor3B _color_pink;
     NSMutableArray *lStructs;
     CGPoint firstTouch, lastTouch;
+    NSNumber *vomitCheatActive;
     CCLayer *pixelsLayer;
     CCFiniteTimeAction *transition;
     CCSpriteBatchNode *spritesheet;

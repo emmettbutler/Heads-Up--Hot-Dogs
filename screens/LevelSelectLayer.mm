@@ -231,6 +231,7 @@
         
         firstTouch = CGPointMake(-1, -1);
         transition = [[[CCTurnOffTiles actionWithSize:ccg(16, 11) duration:.3] reverse] retain];
+        vomitCheatActive = [NSNumber numberWithBool:false];
         
         [self schedule:@selector(tick:)];
     }
@@ -239,7 +240,9 @@
 
 -(void)tick:(id)sender{
     time++;
-    if(time - lastTouchTime > 40){
+    [self processLevelUnlockCheat];
+    [self processVomitCheat];
+    if(time - lastTouchTime > 50){
         [enteredSwipes release];
         enteredSwipes = [[NSMutableArray alloc] init];
     }
@@ -257,18 +260,32 @@
     [thumbOld removeFromParentAndCleanup:YES];
 }
 
--(void)processLevelUnlockCheat{
+-(BOOL)processCheat:(NSArray *)seq{
     BOOL cheat = true;
-    NSArray *cheatSwipeSequence = @[@"up", @"up", @"down", @"left", @"left", @"down", @"right", @"up"];
-    if([enteredSwipes count] == [cheatSwipeSequence count]){
-        for(int i = 0; i < [enteredSwipes count]; i++){
-            if(enteredSwipes[i] != cheatSwipeSequence[i]){
-                cheat = false;
-            }
+    for(int i = 0; i < [enteredSwipes count]; i++){
+        if(enteredSwipes[i] != seq[i]){
+            cheat = false;
         }
-        [enteredSwipes release];
-        enteredSwipes = [[NSMutableArray alloc] init];
-        if(cheat){
+    }
+    [enteredSwipes release];
+    enteredSwipes = [[NSMutableArray alloc] init];
+    return cheat;
+}
+
+-(void)processVomitCheat{
+    NSArray *cheatSwipeSequence = @[@"l", @"r", @"r", @"r", @"l", @"u", @"u", @"d", @"r", @"l", @"r", @"d", @"l", @"r", @"r"];
+    if([enteredSwipes count] == [cheatSwipeSequence count] && time - lastTouchTime > 20){
+        if([self processCheat:cheatSwipeSequence]){
+            [[HotDogManager sharedManager] customEvent:@"hell_businessman_cheat" st1:@"player_interaction" st2:NULL level:NULL value:NULL data:NULL];
+            vomitCheatActive = [NSNumber numberWithBool:true];
+        }
+    }
+}
+
+-(void)processLevelUnlockCheat{
+    NSArray *cheatSwipeSequence = @[@"u", @"u", @"d", @"l", @"l", @"d", @"r", @"u"];
+    if([enteredSwipes count] == [cheatSwipeSequence count] && time - lastTouchTime > 20){
+        if([self processCheat:cheatSwipeSequence]){
             [[HotDogManager sharedManager] customEvent:@"unlock_all_levels_cheat" st1:@"player_interaction" st2:NULL level:NULL value:NULL data:NULL];
             [self unlockAllLevels];
         }
@@ -310,7 +327,7 @@
     if(CGRectContainsPoint(leftArrowRect, location) || (firstTouch.x < lastTouch.x && swipeLength > 60)){
         if(firstTouch.x < lastTouch.x && swipeLength > 60 && swipeLenX > swipeLenY){
             NSLog(@"swipe right");
-            [enteredSwipes addObject:@"right"];
+            [enteredSwipes addObject:@"r"];
         }
         if(curLevelIndex > 0)
             curLevelIndex--;
@@ -321,7 +338,7 @@
     else if(CGRectContainsPoint(rightArrowRect, location) || (firstTouch.x > lastTouch.x && swipeLength > 60)){
         if(firstTouch.x > lastTouch.x && swipeLength > 60 && swipeLenX > swipeLenY){
             NSLog(@"swipe left");
-            [enteredSwipes addObject:@"left"];
+            [enteredSwipes addObject:@"l"];
         }
         if(curLevelIndex < unlockedCount)
             curLevelIndex++;
@@ -331,16 +348,14 @@
     }
     if(firstTouch.y > lastTouch.y && swipeLength > 60 && swipeLenX < swipeLenY){
         NSLog(@"swipe down");
-        [enteredSwipes addObject:@"down"];
+        [enteredSwipes addObject:@"d"];
     } else if(firstTouch.y < lastTouch.y && swipeLength > 60 && swipeLenX < swipeLenY){
         NSLog(@"swipe up");
-        [enteredSwipes addObject:@"up"];
+        [enteredSwipes addObject:@"u"];
     }
     for(int i = 0; i < [enteredSwipes count]; i++){
         NSLog(@"swipes %@", enteredSwipes[i]);
     }
-    
-    [self processLevelUnlockCheat];
     
     level = (levelProps *)[(NSValue *)[lStructs objectAtIndex:curLevelIndex] pointerValue];
     
@@ -440,7 +455,7 @@
 }
 
 -(void)switchScreenStartWithSlug:(NSString *)slug{
-    [[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:.3 scene:[GameplayLayer sceneWithSlug:slug]]];
+    [[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:.3 scene:[GameplayLayer sceneWithSlug:slug andVomitCheat:vomitCheatActive]]];
 }
 
 -(void) dealloc{
