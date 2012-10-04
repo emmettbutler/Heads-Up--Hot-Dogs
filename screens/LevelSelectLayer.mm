@@ -291,7 +291,7 @@
 }
 
 -(void)processBigHeadCheat{
-    NSArray *cheatSwipeSequence = @[@"l", @"r"];
+    NSArray *cheatSwipeSequence = @[@"l", @"l", @"u", @"d", @"d", @"r", @"l", @"u", @"r", @"d"];
     if([enteredSwipes count] == [cheatSwipeSequence count] && time - lastTouchTime > 30){
         if([self processCheat:cheatSwipeSequence]){
             [[HotDogManager sharedManager] customEvent:@"big_head_cheat" st1:@"player_interaction" st2:NULL level:NULL value:NULL data:NULL];
