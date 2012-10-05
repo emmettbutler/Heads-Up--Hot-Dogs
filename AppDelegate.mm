@@ -50,6 +50,28 @@
 
 - (void) applicationDidFinishLaunching:(UIApplication*)application
 {
+    // kontagent -----------------------------------------------------------------------
+#ifdef DEBUG
+    [Kontagent debugEnabled];
+#endif
+    [Kontagent startSession:KONTAGENT_KEY mode:kKontagentSDKMode_PRODUCTION shouldSendApplicationAddedAutomatically:YES];
+    
+    // create and save unique ID
+    NSString *savedUuid = [standardUserDefaults stringForKey:@"uuid"];
+    NSString *uuid = savedUuid;
+    if(!savedUuid){
+        uuid = [self GetUUID];
+        [standardUserDefaults setObject:uuid forKey:@"uuid"];
+        //[Kontagent revenueTracking:99 optionalParams:nil];
+    }
+    
+    KTParamMap* paramMap = [[[KTParamMap alloc] init] autorelease];
+    [paramMap put:@"v_maj" value:VERSION_STRING];
+    [Kontagent sendDeviceInformation:paramMap];
+    //[paramMap put:@"s" value:uuid];
+    //[Kontagent applicationAdded:paramMap];
+    // ---------------------------------------------------------------------------------
+    
     [[HotDogManager sharedManager] customEvent:@"game_load_start" st1:@"game_load" st2:NULL level:NULL value:NULL data:NULL];
     startTime = [[NSDate date] timeIntervalSince1970];
 	// Init the window
@@ -124,28 +146,6 @@
 	[self removeStartupFlicker];
 	
     [[director openGLView] setMultipleTouchEnabled:YES];
-    
-    // kontagent -----------------------------------------------------------------------
-#ifdef DEBUG
-    [Kontagent debugEnabled];
-#endif
-    [Kontagent startSession:KONTAGENT_KEY mode:kKontagentSDKMode_PRODUCTION shouldSendApplicationAddedAutomatically:YES];
-    
-    // create and save unique ID
-    NSString *savedUuid = [standardUserDefaults stringForKey:@"uuid"];
-    NSString *uuid = savedUuid;
-    if(!savedUuid){
-        uuid = [self GetUUID];
-        [standardUserDefaults setObject:uuid forKey:@"uuid"];
-        //[Kontagent revenueTracking:99 optionalParams:nil];
-    }
-        
-    KTParamMap* paramMap = [[[KTParamMap alloc] init] autorelease];
-    [paramMap put:@"v_maj" value:VERSION_STRING];
-    [Kontagent sendDeviceInformation:paramMap];
-    //[paramMap put:@"s" value:uuid];
-    //[Kontagent applicationAdded:paramMap];
-    // ---------------------------------------------------------------------------------
 
     NSLog(@"Version: %@", [[UIDevice currentDevice] systemVersion]);
     if(SYSTEM_VERSION_LESS_THAN(@"6.0")){
