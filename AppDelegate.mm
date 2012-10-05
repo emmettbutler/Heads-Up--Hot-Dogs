@@ -54,7 +54,7 @@
 #ifdef DEBUG
     [Kontagent debugEnabled];
 #endif
-    [Kontagent startSession:KONTAGENT_KEY mode:kKontagentSDKMode_TEST shouldSendApplicationAddedAutomatically:YES];
+    [Kontagent startSession:KONTAGENT_KEY mode:kKontagentSDKMode_PRODUCTION shouldSendApplicationAddedAutomatically:YES];
     
     // create and save unique ID
     NSString *savedUuid = [standardUserDefaults stringForKey:@"uuid"];
