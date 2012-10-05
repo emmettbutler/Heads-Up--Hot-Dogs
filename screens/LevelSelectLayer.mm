@@ -50,7 +50,7 @@
             prevIndex++;
         l->next = (levelProps *)[(NSValue *)[levelStructs objectAtIndex:nextIndex] pointerValue];
         l->prev = (levelProps *)[(NSValue *)[levelStructs objectAtIndex:prevIndex] pointerValue];
-        l->number = [levelStructs indexOfObject:v];
+        l->number = [levelStructs indexOfObject:v] + 1;
         
         int unlocked = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"unlocked%@", l->slug]];
         int prevTrophyLevel = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"trophy_%@", l->prev->slug]];
