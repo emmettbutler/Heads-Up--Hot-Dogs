@@ -37,10 +37,10 @@
         }
         NSLog(@"Winsize: %0.2f x %0.2f", windowWidth, windowHeight);
         
-        clouds = [[Clouds alloc] initWithLayer:[NSValue valueWithPointer:self]];
-        
         spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_menus.png"];
         [self addChild:spriteSheet];
+        
+        clouds = [[Clouds alloc] initWithLayer:[NSValue valueWithPointer:self] andSpritesheet:[NSValue valueWithPointer:spriteSheet]];
         
         CCSprite *background = [CCSprite spriteWithSpriteFrameName:@"Splash_BG_clean.png"];
         background.anchorPoint = CGPointZero;

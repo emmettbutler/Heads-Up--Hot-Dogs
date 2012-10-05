@@ -316,10 +316,9 @@
         _color_blue = ccc3(6, 110, 163);
         _color_darkblue = ccc3(14, 168, 248);
         
-        [[Clouds alloc] initWithLayer:[NSValue valueWithPointer:self]];
-        
         spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_menus.png"];
         [self addChild:spriteSheet];
+        [[Clouds alloc] initWithLayer:[NSValue valueWithPointer:self] andSpritesheet:[NSValue valueWithPointer:spriteSheet]];
         
         float headerFontSize = IPHONE_HEADER_TEXT_SIZE;
         float scale = 1;

@@ -101,11 +101,10 @@
         float largeFontSize = IPHONE_HEADER_TEXT_SIZE;
 
         _color_pink = ccc3(255, 62, 166);
-        
-        [[Clouds alloc] initWithLayer:[NSValue valueWithPointer:self]];
 
         spritesheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_menus.png"];
         [self addChild:spritesheet];
+        [[Clouds alloc] initWithLayer:[NSValue valueWithPointer:self] andSpritesheet:[NSValue valueWithPointer:spritesheet]];
 
         background = [CCSprite spriteWithSpriteFrameName:@"Splash_BG_clean.png"];
         background.anchorPoint = CGPointZero;

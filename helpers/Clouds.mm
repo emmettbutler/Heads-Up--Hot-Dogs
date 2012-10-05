@@ -12,11 +12,11 @@
 
 @implementation Clouds
 
--(Clouds *)initWithLayer:(NSValue *)s{
+-(Clouds *)initWithLayer:(NSValue *)s andSpritesheet:(NSValue *)sheet{
     CGSize size = [[CCDirector sharedDirector] winSize];
-    CCLayer *parent = (CCLayer *)[s pointerValue];
-    self->spritesheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_menus.png"];
-    [parent addChild:self->spritesheet];
+    //CCLayer *parent = (CCLayer *)[s pointerValue];
+    self->spritesheet = (CCSpriteBatchNode *)[sheet pointerValue];
+    //[parent addChild:self->spritesheet];
     
     float scale = 1, windowWidth = size.width, windowHeight = size.height;
     if(!(size.width > size.height)){

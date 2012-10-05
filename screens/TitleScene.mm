@@ -56,10 +56,10 @@
             [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"menu 2.mp3" loop:YES];
 #endif
         
-        clouds = [[Clouds alloc] initWithLayer:[NSValue valueWithPointer:self]];
-        
         spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_menus.png"];
         [self addChild:spriteSheet];
+        
+        clouds = [[Clouds alloc] initWithLayer:[NSValue valueWithPointer:self] andSpritesheet:[NSValue valueWithPointer:spriteSheet]];
         
         // color definitions
         _color_pink = ccc3(255, 62, 166);

@@ -192,11 +192,9 @@
             scale = IPAD_SCALE_FACTOR_X;
         }
         
-        [[Clouds alloc] initWithLayer:[NSValue valueWithPointer:self]];
-        
-        [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_common.plist"];
-        spriteSheetCommon = [CCSpriteBatchNode batchNodeWithFile:@"sprites_common.png"];
-        [self addChild:spriteSheetCommon];
+        spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_menus.png"];
+        [self addChild:spriteSheet];
+        [[Clouds alloc] initWithLayer:[NSValue valueWithPointer:self] andSpritesheet:[NSValue valueWithPointer:spriteSheet]];
         
         CCSprite *background = [CCSprite spriteWithSpriteFrameName:@"Splash_BG_clean.png"];
         background.anchorPoint = CGPointZero;
