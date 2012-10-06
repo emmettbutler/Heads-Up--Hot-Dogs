@@ -239,7 +239,7 @@
 
 -(void) applicationDidEnterBackground:(UIApplication*)application {
     NSLog(@"didEnterBackground");
-    [[HotDogManager sharedManager] customEvent:@"user_quit_app" st1:@"useraction" st2:NULL level:NULL value:[[HotDogManager sharedManager] getStartTime] data:NULL];
+    [[HotDogManager sharedManager] customEvent:@"user_quit_app" st1:@"useraction" st2:NULL level:NULL value:[[HotDogManager sharedManager] getTotalAppOpenTime] data:NULL];
     [Kontagent stopSession];
 	[[CCDirector sharedDirector] stopAnimation];
     [[CCDirector sharedDirector] pause];
@@ -260,7 +260,7 @@
 	CCDirector *director = [CCDirector sharedDirector];
     
     NSLog(@"Application HEADS UP HOT DOGS exiting");
-    [[HotDogManager sharedManager] customEvent:@"user_quit_app" st1:@"useraction" st2:NULL level:NULL value:[[HotDogManager sharedManager] getStartTime] data:NULL];
+    [[HotDogManager sharedManager] customEvent:@"user_quit_app" st1:@"useraction" st2:NULL level:NULL value:[[HotDogManager sharedManager] getTotalAppOpenTime] data:NULL];
     [Kontagent stopSession];
 	[[director openGLView] removeFromSuperview];
 	[viewController release];

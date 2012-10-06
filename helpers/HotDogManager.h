@@ -22,6 +22,7 @@
 -(BOOL)shouldReportScores;
 -(void)customEvent:(NSString *)name st1:(NSString *)st1 st2:(NSString *)st2 level:(int)level value:(int)value data:(NSDictionary *)data;
 -(int)getStartTime;
+-(int)getTotalAppOpenTime;
 
 
 @end

@@ -54,6 +54,10 @@ static HotDogManager *sharedInstance = nil;
     return _startTime.intValue;
 }
 
+-(int)getTotalAppOpenTime{
+    return [[NSDate date] timeIntervalSince1970] - _startTime.intValue;
+}
+
 -(void)setPause:(NSNumber *)pause{
     @synchronized(self) {
         if (_pause != pause) {
