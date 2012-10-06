@@ -30,6 +30,7 @@ static HotDogManager *sharedInstance = nil;
         _sfxOn = [NSNumber numberWithBool:false];
         _inGame = [NSNumber numberWithBool:false];
         _dontReportScores = [NSNumber numberWithBool:false];
+        _startTime = [NSNumber numberWithInt:[[NSDate date] timeIntervalSince1970]];
         return self;
     }
 }
@@ -47,6 +48,10 @@ static HotDogManager *sharedInstance = nil;
         [paramMap put:@"data" value:[NSString stringWithFormat:@"%@", data]];
     NSLog(@"Reported custom event %@", name);
     [Kontagent customEvent:name optionalParams:paramMap];
+}
+
+-(int)getStartTime{
+    return _startTime.intValue;
 }
 
 -(void)setPause:(NSNumber *)pause{
