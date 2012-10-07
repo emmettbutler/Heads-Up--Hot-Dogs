@@ -30,7 +30,7 @@ static HotDogManager *sharedInstance = nil;
         _sfxOn = [NSNumber numberWithBool:false];
         _inGame = [NSNumber numberWithBool:false];
         _dontReportScores = [NSNumber numberWithBool:false];
-        _startTime = [NSNumber numberWithInt:[[NSDate date] timeIntervalSince1970]];
+        _startTime = [[NSNumber numberWithInt:[[NSDate date] timeIntervalSince1970]] retain];
         return self;
     }
 }

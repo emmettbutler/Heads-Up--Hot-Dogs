@@ -239,6 +239,7 @@
 
 -(void) applicationDidEnterBackground:(UIApplication*)application {
     NSLog(@"didEnterBackground");
+    NSLog(@"totalTimeOpen: %d", [[HotDogManager sharedManager] getTotalAppOpenTime]);
     [[HotDogManager sharedManager] customEvent:@"user_quit_app" st1:@"useraction" st2:NULL level:NULL value:[[HotDogManager sharedManager] getTotalAppOpenTime] data:NULL];
     [Kontagent stopSession];
 	[[CCDirector sharedDirector] stopAnimation];
