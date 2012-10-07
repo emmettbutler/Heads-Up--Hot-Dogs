@@ -271,7 +271,7 @@
     
     NSLog(@"Grade: %0.2f", grade.floatValue);
     
-    if(grade.floatValue > 1.2){
+    if(grade.floatValue > 1.6){
         res->trophy = @"Trophy_Gold.png";
         res->trophyLevel = 1;
         res->dogName = @"GOLD DOG";
