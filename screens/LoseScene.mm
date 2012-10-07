@@ -263,14 +263,8 @@
         savedPerGrump = 0;
     float grumpedPerTime = ((float)_peopleGrumped / (float)_timePlayed) * 100.0;
     
-    NSLog(@"diff: %0.2f", difference);
-    NSLog(@"saved per grump: %0.2f", savedPerGrump);
-    NSLog(@"grumped per time: %0.2f", grumpedPerTime);
-    
     NSNumber *grade = [NSNumber numberWithFloat:(difference + grumpedPerTime + savedPerGrump)];
-    
-    NSLog(@"Grade: %0.2f", grade.floatValue);
-    
+
     if(grade.floatValue > 1.6){
         res->trophy = @"Trophy_Gold.png";
         res->trophyLevel = 1;
@@ -300,10 +294,36 @@
     return res;
 }
 
+-(void)presentLevelUnlockedNotify{
+    _unlockLayer = [CCLayerColor layerWithColor:ccc4(190, 190, 190, 155) width:winSize.width height:winSize.height];
+    _unlockLayer.anchorPoint = CGPointZero;
+    [self addChild:_unlockLayer z:200];
+    
+    levelBox = [CCSprite spriteWithSpriteFrameName:@"Lvl_TextBox.png"];
+    levelBox.position = ccp(-200, (winSize.height/2));
+    CGPoint unlockAnchor = CGPointMake(winSize.width/2, winSize.height/2);
+    levelBox.scale = scale;
+    [self addChild:levelBox z:201];
+    
+    levelLabel2 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"New level unlocked\n%@", level->next->name] dimensions:CGSizeMake(levelBox.contentSize.width*levelBox.scaleX*.9,levelBox.contentSize.height*levelBox.scaleY*.8) alignment:UITextAlignmentCenter fontName:@"LostPet.TTF" fontSize:fontSize];
+    [[levelLabel2 texture] setAliasTexParameters];
+    levelLabel2.color = _color_pink;
+    levelLabel2.position = levelBox.position;
+    CGPoint unlockTextAnchor = CGPointMake(winSize.width/2, winSize.height/2+2);
+    [self addChild:levelLabel2 z:202];
+    
+    [levelBox runAction:[CCSequence actions:[CCMoveTo actionWithDuration:.3 position:unlockAnchor], [CCDelayTime actionWithDuration:2], [CCFadeOut actionWithDuration:.5], [CCCallFunc actionWithTarget:self selector:@selector(removeUnlockLayer)], nil]];
+    [levelLabel2 runAction:[CCSequence actions:[CCMoveTo actionWithDuration:.3 position:unlockTextAnchor], [CCDelayTime actionWithDuration:2], [CCFadeOut actionWithDuration:.5], nil]];
+}
+
+-(void)removeUnlockLayer{
+    [_unlockLayer runAction:[CCFadeOut actionWithDuration:.2]];
+}
+
 -(id) init{
     if ((self = [super init])){
         touchLock = false;
-        CGSize winSize = [CCDirector sharedDirector].winSize;
+        winSize = [CCDirector sharedDirector].winSize;
         self.isTouchEnabled = YES;
         [[HotDogManager sharedManager] setPause:[NSNumber numberWithBool:false]];
         [[HotDogManager sharedManager] setInGame:[NSNumber numberWithBool:false]];
@@ -321,11 +341,11 @@
         [[Clouds alloc] initWithLayer:[NSValue valueWithPointer:self] andSpritesheet:[NSValue valueWithPointer:spriteSheet]];
         
         float headerFontSize = IPHONE_HEADER_TEXT_SIZE;
-        float scale = 1;
+        scale = 1;
         if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
             scale = IPAD_SCALE_FACTOR_X;
         }
-        float fontSize = scale*22.0;
+        fontSize = scale*22.0;
         
         CCSprite *background = [CCSprite spriteWithSpriteFrameName:@"Splash_BG_clean.png"];
         background.anchorPoint = CGPointZero;
@@ -506,18 +526,9 @@
                     fontSize *= IPAD_SCALE_FACTOR_X;
                 }
                 
-                levelBox = [CCSprite spriteWithSpriteFrameName:@"Lvl_TextBox.png"];
-                levelBox.position = ccp(winSize.width/2, (winSize.height/2));
-                levelBox.scale = scale;
-                [self addChild:levelBox];
-                
                 [reporter reportAchievementIdentifier:[NSString stringWithFormat:@"unlock_%@", level->next->slug] percentComplete:100];
-        
-                levelLabel2 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"New level unlocked\n%@", level->next->name] dimensions:CGSizeMake(levelBox.contentSize.width*levelBox.scaleX*.9,levelBox.contentSize.height*levelBox.scaleY*.8) alignment:UITextAlignmentCenter fontName:@"LostPet.TTF" fontSize:fontSize];
-                [[levelLabel2 texture] setAliasTexParameters];
-                levelLabel2.color = _color_pink;
-                levelLabel2.position = levelBox.position;
-                [self addChild:levelLabel2];
+                
+                [self presentLevelUnlockedNotify];
             }
         }
         
@@ -549,15 +560,6 @@
     location = [[CCDirector sharedDirector] convertToGL:location];
     
     CCLOG(@"Touch: %0.2f x %0.2f", location.x, location.y);
-    
-    if(levelBox){
-        if(!touchLock){
-            touchLock = true;
-            [levelLabel1 removeFromParentAndCleanup:YES];
-            [levelLabel2 removeFromParentAndCleanup:YES];
-            [levelBox removeFromParentAndCleanup:YES];
-        }
-    }
     
     if(CGRectContainsPoint(_twitterRect,location)){
         [[HotDogManager sharedManager] customEvent:@"twitter_score_posted" st1:@"player_interaction" st2:NULL level:level->number value:_score data:@{@"game_number": [NSNumber numberWithInt:_numberOfTotalGamesPlayed]}];

@@ -38,14 +38,16 @@
     CCSprite *levelBox, *bubble, *charFace, *trophy;
     CCLabelTTF *levelLabel1, *levelLabel2;
     NSInteger highScore;
+    CCLayerColor *_unlockLayer;
     ALuint sting;
-    float elmtScale;
+    float elmtScale, scale, fontSize;
     int _numberOfTotalGamesPlayed;
     AchievementReporter *reporter;
     GKLeaderboardViewController *leaderboardController;
     GKAchievementViewController *achievementController;
     BOOL touchLock, _setNewHighScore;
     CGRect _twitterRect, _replayRect, _quitRect, _gcRect;
+    CGSize winSize;
     NSString *slug;
     NSMutableArray *tweets;
     ccColor3B _color_pink, _color_blue, _color_darkblue;
