@@ -205,18 +205,24 @@
     UITouch *myTouch = [touches anyObject];
     CGPoint location = [myTouch locationInView:[myTouch view]];
     location = [[CCDirector sharedDirector] convertToGL:location];
+    
+    NSInteger highestUnlocked = [standardUserDefaults integerForKey:@"highestLevelUnlocked"];
+    NSLog(@"highestLevelUnlocked: %d", highestUnlocked);
+    if(!highestUnlocked){
+        highestUnlocked = 1;
+    }
      
     if(CGRectContainsPoint(_startRect, location)){
-        [[HotDogManager sharedManager] customEvent:@"levels" st1:@"screens" st2:NULL level:NULL value:NULL data:NULL];
+        [[HotDogManager sharedManager] customEvent:@"levels" st1:@"screens" st2:NULL level:highestUnlocked value:NULL data:NULL];
         [self switchSceneStart];
     } else if(CGRectContainsPoint(_optionsRect, location)){
-        [[HotDogManager sharedManager] customEvent:@"options" st1:@"screens" st2:NULL level:NULL value:NULL data:NULL];
+        [[HotDogManager sharedManager] customEvent:@"options" st1:@"screens" st2:NULL level:highestUnlocked value:NULL data:NULL];
         [self switchSceneOptions];
     } else if(CGRectContainsPoint(_moreGamesRect, location)){
-        [[HotDogManager sharedManager] customEvent:@"more_games_link" st1:@"screens" st2:NULL level:NULL value:NULL data:NULL];
+        [[HotDogManager sharedManager] customEvent:@"more_games_link" st1:@"screens" st2:NULL level:highestUnlocked value:NULL data:NULL];
         [self showASGMoreGamesView];
     } else if(CGRectContainsPoint(_newsRect, location)){
-        [[HotDogManager sharedManager] customEvent:@"news_popup" st1:@"screens" st2:NULL level:NULL value:NULL data:NULL];
+        [[HotDogManager sharedManager] customEvent:@"news_popup" st1:@"screens" st2:NULL level:highestUnlocked value:NULL data:NULL];
         [self showASGNewsView];
     }
 }
