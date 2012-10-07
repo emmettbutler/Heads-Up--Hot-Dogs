@@ -50,6 +50,10 @@ static HotDogManager *sharedInstance = nil;
     [Kontagent customEvent:name optionalParams:paramMap];
 }
 
+-(void)resetStartTime{
+    _startTime = [[NSNumber numberWithInt:[[NSDate date] timeIntervalSince1970]] retain];
+}
+
 -(int)getStartTime{
     return _startTime.intValue;
 }

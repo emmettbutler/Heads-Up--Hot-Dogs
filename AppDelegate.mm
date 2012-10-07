@@ -248,7 +248,7 @@
 
 -(void) applicationWillEnterForeground:(UIApplication*)application {
     NSLog(@"willEnterForeground");
-    startTime = [[NSDate date] timeIntervalSince1970];
+    [[HotDogManager sharedManager] resetStartTime];
     [Kontagent startSession:KONTAGENT_KEY mode:kKontagentSDKMode_PRODUCTION shouldSendApplicationAddedAutomatically:YES];
     [[CCDirector sharedDirector] startAnimation];
     if([[HotDogManager sharedManager] isInGame] && ![[HotDogManager sharedManager] isPaused]){
