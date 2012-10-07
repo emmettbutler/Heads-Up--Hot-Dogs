@@ -1955,12 +1955,27 @@
         
         bgSprites = [[NSMutableArray alloc] init];
         
+        if(level->slug == @"london"){
+            for(NSValue *v in level->bgComponents){
+                bgComponent *bgc = (bgComponent *)[v pointerValue];
+                if(bgc->sprite){
+                    [bgSprites addObject:[NSValue valueWithPointer:bgc->sprite]];
+                    [self addChild:bgc->sprite];
+                } else if(bgc->label){
+                    [self addChild:bgc->label];
+                }
+            }
+        }
         [self addChild:spriteSheetLevel];
-        for(NSValue *v in level->bgComponents){
-            bgComponent *bgc = (bgComponent *)[v pointerValue];
-            if(bgc->sprite){
-                [bgSprites addObject:[NSValue valueWithPointer:bgc->sprite]];
-                [self addChild:bgc->sprite];
+        if(level->slug != @"london"){
+            for(NSValue *v in level->bgComponents){
+                bgComponent *bgc = (bgComponent *)[v pointerValue];
+                if(bgc->sprite){
+                    [bgSprites addObject:[NSValue valueWithPointer:bgc->sprite]];
+                    [self addChild:bgc->sprite];
+                } else if(bgc->label){
+                    [self addChild:bgc->label];
+                }
             }
         }
         [self addChild:spriteSheetCharacter];
@@ -2002,6 +2017,8 @@
             window3CycleAction = [[CCSequence actions:bgc->startingAction, bgc->loopingAction, bgc->stoppingAction, nil] retain];
             bgc = (bgComponent *)[[level->bgComponents objectAtIndex:3] pointerValue];
             window4CycleAction = [[CCSequence actions:bgc->startingAction, bgc->loopingAction, bgc->stoppingAction, nil] retain];
+            bgc = (bgComponent *)[[level->bgComponents objectAtIndex:4] pointerValue];
+            stationNameCycleAction = [[CCSequence actions:bgc->startingAction, bgc->resetAction, bgc->stoppingAction, nil] retain];
         }
 
         background = [CCSprite spriteWithSpriteFrameName:level->bg];
@@ -2340,7 +2357,7 @@
         } if(!(time % [vent2 getInterval])){
             [vent2 startBlowing];
         }
-    } else if (level->slug == @"london" && !(time % 500)){
+    } else if (level->slug == @"london" && !(time % 600)){
         bgComponent *bgc = (bgComponent *)[[level->bgComponents objectAtIndex:0] pointerValue];
         if([bgc->sprite numberOfRunningActions] == 0){
             [bgc->sprite runAction:window1CycleAction];
@@ -2350,6 +2367,8 @@
             [bgc->sprite runAction:window3CycleAction];
             bgc = (bgComponent *)[[level->bgComponents objectAtIndex:3] pointerValue];
             [bgc->sprite runAction:window4CycleAction];
+            bgc = (bgComponent *)[[level->bgComponents objectAtIndex:4] pointerValue];
+            [bgc->label runAction:stationNameCycleAction];
         }
     } else if(level->slug == @"china"){
         for(NSValue *v in bgSprites){

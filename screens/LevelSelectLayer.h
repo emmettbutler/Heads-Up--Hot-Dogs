@@ -22,8 +22,8 @@ static NSUserDefaults *standardUserDefaults;
         CCLabelTTF *label; // one or the other
         CCSprite *sprite;
         NSMutableArray *anim1, *anim2, *anim3;
-        CGPoint position;
-        CCFiniteTimeAction *startingAction, *loopingAction, *stoppingAction;
+        CGPoint position, anchorPoint;
+        CCFiniteTimeAction *startingAction, *loopingAction, *stoppingAction, *resetAction;
     };
     
     struct levelProps{

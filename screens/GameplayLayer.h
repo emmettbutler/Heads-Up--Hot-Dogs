@@ -46,7 +46,7 @@
     SteamVent *vent1, *vent2;
     Firecracker *firecracker;
     Shiba *shiba;
-    CCAction *window1CycleAction, *window2CycleAction, *window3CycleAction, *window4CycleAction;
+    CCAction *window1CycleAction, *window2CycleAction, *window3CycleAction, *window4CycleAction, *stationNameCycleAction;
     CCMenu *_pauseMenu;
     ccColor3B _color_pink, spcDogFlashColor, satanColor;
     NSMutableArray *bgSprites, *floorBits, *xPositions, *dogTouches, *dogIcons, *floorHeights, *windParticles;
