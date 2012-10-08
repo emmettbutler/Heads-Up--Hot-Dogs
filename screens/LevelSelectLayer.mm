@@ -52,6 +52,10 @@
         l->prev = (levelProps *)[(NSValue *)[levelStructs objectAtIndex:prevIndex] pointerValue];
         l->number = [levelStructs indexOfObject:v] + 1;
         
+        l->highestTrophy = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"trophy_%@", l->slug]];
+        if(l->highestTrophy < 1 || l->highestTrophy > 5)
+            l->highestTrophy = 6;
+        
         int unlocked = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"unlocked%@", l->slug]];
         int prevTrophyLevel = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"trophy_%@", l->prev->slug]];
         if((prevTrophyLevel && prevTrophyLevel <= 2) || l->slug == @"philly"){
@@ -136,6 +140,17 @@
             thumb.scaleY = IPAD_SCALE_FACTOR_Y;
         }
         [self addChild:thumb z:20];
+        
+        NSInteger trophyLevel = [[NSUserDefaults standardUserDefaults] integerForKey:@"trophy_philly"];
+        trophy = [CCSprite spriteWithSpriteFrameName:[self resolveTrophyLevel:trophyLevel]];
+        trophy.scale = .37;
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            trophy.scale *= IPAD_SCALE_FACTOR_X;
+        }
+        trophy.position = ccp(winSize.width*.317, winSize.height*.195);
+        if(trophyLevel < 1 || trophyLevel > 5)
+            [trophy setVisible:false];
+        [self addChild:trophy z:21];
 
         CCLabelTTF *label = [CCLabelTTF labelWithString:@"SELECT LEVEL" fontName:@"LostPet.TTF" fontSize:largeFontSize];
         [[label texture] setAliasTexParameters];
@@ -375,15 +390,22 @@
     }
     
     level = (levelProps *)[(NSValue *)[lStructs objectAtIndex:curLevelIndex] pointerValue];
+    NSInteger trophyLevel = [[NSUserDefaults standardUserDefaults] integerForKey:[NSString stringWithFormat:@"trophy_%@", level->slug]];
     
     if(level->unlocked){
         [thumb setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:level->thumbnail]];
         [nameLabel setString:[NSString stringWithFormat:@"%@\nhigh score: %06d", level->name, level->highScore]];
         [helpLabel setVisible:true];
+        [trophy setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[self resolveTrophyLevel:trophyLevel]]];
+        if(trophyLevel >= 1 && trophyLevel <= 5)
+            [trophy setVisible:true];
+        else
+            [trophy setVisible:false];
     } else {
         [thumb setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:@"NoLevel.png"]];
         [nameLabel setString:[NSString stringWithFormat:@"??????\nunlock: silver on %@", level->prev->name]];
         [helpLabel setVisible:false];
+        [trophy setVisible:false];
     }
     
     if(swipeLength > 60) return;
@@ -411,6 +433,19 @@
         [self switchSceneTitle];
     }
     [[nameLabel texture] setAliasTexParameters];
+}
+
+-(NSString *)resolveTrophyLevel:(NSInteger)l{
+    if(l == 1)
+        return @"Trophy_Gold.png";
+    else if(l == 2)
+        return @"Trophy_Silver.png";
+    else if(l == 3)
+        return @"Trophy_Bronze.png";
+    else if(l == 4)
+        return @"Trophy_Wood.png";
+    else
+        return @"Trophy_Cardboard.png";
 }
 
 -(void)placeThumbOnTop{

@@ -2232,8 +2232,10 @@
         wallsBox.Set(upperRightCorner, lowerRightCorner);
         _wallsBody->CreateFixture(&wallsBoxDef);
         
-        //_points = 50000;
-        //_droppedCount = 5;
+#ifdef DEBUG
+        _points = arc4random() % 30000;
+        _droppedCount = 5;
+#endif
         
         //schedule callbacks for dogs, people, and game value decrements
         [self spawnCallback];

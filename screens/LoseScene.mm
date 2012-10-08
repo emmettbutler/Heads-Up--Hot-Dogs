@@ -305,11 +305,11 @@
     levelBox.scale = scale;
     [self addChild:levelBox z:201];
     
-    levelLabel2 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"New level unlocked\n%@", level->next->name] dimensions:CGSizeMake(levelBox.contentSize.width*levelBox.scaleX*.9,levelBox.contentSize.height*levelBox.scaleY*.8) alignment:UITextAlignmentCenter fontName:@"LostPet.TTF" fontSize:fontSize];
+    levelLabel2 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"%@ unlocked!", level->next->name] dimensions:CGSizeMake(levelBox.contentSize.width*levelBox.scaleX*.9,levelBox.contentSize.height*levelBox.scaleY*.8) alignment:UITextAlignmentCenter fontName:@"LostPet.TTF" fontSize:fontSize*1.05];
     [[levelLabel2 texture] setAliasTexParameters];
     levelLabel2.color = _color_pink;
     levelLabel2.position = levelBox.position;
-    CGPoint unlockTextAnchor = CGPointMake(winSize.width/2, winSize.height/2+2);
+    CGPoint unlockTextAnchor = CGPointMake(winSize.width/2, winSize.height/2-7);
     [self addChild:levelLabel2 z:202];
     
     [levelBox runAction:[CCSequence actions:[CCMoveTo actionWithDuration:.3 position:unlockAnchor], [CCDelayTime actionWithDuration:2], [CCFadeOut actionWithDuration:.5], [CCCallFunc actionWithTarget:self selector:@selector(removeUnlockLayer)], nil]];
@@ -503,6 +503,8 @@
         if(_timePlayed > bestTime)
             [standardUserDefaults setInteger:_timePlayed forKey:@"bestTime"];
         
+        NSLog(@"result trophy: %d", res->trophyLevel);
+        NSLog(@"level highest trophy: %d", level->highestTrophy);
         if(res->trophyLevel < level->highestTrophy){
             level->highestTrophy = res->trophyLevel;
             [standardUserDefaults setInteger:level->highestTrophy forKey:[NSString stringWithFormat:@"trophy_%@", level->slug]];
@@ -520,14 +522,7 @@
             [[HotDogManager sharedManager] customEvent:@"user_level_positions" st1:@"useractions" st2:NULL level:level->number value:-1 data:NULL];
             [[HotDogManager sharedManager] customEvent:@"user_level_positions" st1:@"useractions" st2:NULL level:level->next->number value:1 data:NULL];
             if(level->next->slug != level->slug && (!unlocked || unlocked == 0)){
-                float scale = 1, fontSize = 20.0;
-                if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
-                    scale = IPAD_SCALE_FACTOR_X;
-                    fontSize *= IPAD_SCALE_FACTOR_X;
-                }
-                
                 [reporter reportAchievementIdentifier:[NSString stringWithFormat:@"unlock_%@", level->next->slug] percentComplete:100];
-                
                 [self presentLevelUnlockedNotify];
             }
         }
