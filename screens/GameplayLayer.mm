@@ -2233,7 +2233,8 @@
         _wallsBody->CreateFixture(&wallsBoxDef);
         
 #ifdef DEBUG
-        _points = arc4random() % 30000;
+        _points = 50000;
+        //_points = arc4random() % 30000;
         _droppedCount = 5;
 #endif
         

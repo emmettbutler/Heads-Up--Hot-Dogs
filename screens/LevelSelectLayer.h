@@ -50,12 +50,12 @@ static NSUserDefaults *standardUserDefaults;
     NSMutableArray *enteredSwipes;
     CGRect rightArrowRect;
     BOOL NO_LEVEL_LOCKS;
-    CGRect leftArrowRect, _backRect;
+    CGRect leftArrowRect, _backRect, _headsRect;
     CGRect thumbnailRect;
     CGSize winSize;
     CCSprite *thumb, *background, *thumbOld, *rightArrow, *leftArrow, *trophy;
     CCLabelTTF *scoreLabel, *loading;
-    CCLabelTTF *nameLabel, *helpLabel;
+    CCLabelTTF *nameLabel, *helpLabel, *bigHeadToggleLabel;
 }
 
 +(NSMutableArray *)buildLevels:(NSNumber *)full;

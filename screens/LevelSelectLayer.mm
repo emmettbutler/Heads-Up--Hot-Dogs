@@ -174,6 +174,15 @@
         lStructs = [[LevelSelectLayer buildLevels:[NSNumber numberWithInt:0]] retain];
         level = (levelProps *)[(NSValue *)[lStructs objectAtIndex:curLevelIndex] pointerValue];
         
+        BOOL allGoldTrophies = true;
+        for(NSValue *v in lStructs){
+            levelProps *l = (levelProps *)[v pointerValue];
+            if(l->highestTrophy != 1){
+                allGoldTrophies = false;
+                break;
+            }
+        }
+        
         nameLabel = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"%@\nhigh score: %06d", level->name, level->highScore] dimensions:CGSizeMake(sprite.contentSize.width*sprite.scaleX, sprite.contentSize.height*sprite.scaleY) alignment:UITextAlignmentCenter fontName:@"LostPet.TTF" fontSize:fontSize];
         [[nameLabel texture] setAliasTexParameters];
         nameLabel.color = _color_pink;
@@ -223,6 +232,26 @@
         label.position = ccp(button4.position.x, button4.position.y-1);
         [self addChild:label z:11];
         _backRect = CGRectMake((button4.position.x-(button4.contentSize.width*button4.scaleX)/2), (button4.position.y-(button4.contentSize.height*button4.scaleY)/2), (button4.contentSize.width*button4.scaleX+70), (button4.contentSize.height*button4.scaleY+70));
+        
+        if(allGoldTrophies){
+            CCSprite *button5 = [CCSprite spriteWithSpriteFrameName:@"MenuItems_BG.png"];
+            button5.scale = scale;
+            button5.position = ccp(winSize.width-button4.contentSize.width/2*button4.scaleX*1.1, button4.contentSize.height*button4.scaleY*.6);
+            [self addChild:button5 z:10];
+            label = [CCLabelTTF labelWithString:@"Big Heads" fontName:@"LostPet.TTF" fontSize:fontSize];
+            [[label texture] setAliasTexParameters];
+            label.color = _color_pink;
+            label.position = ccp(button5.position.x, button5.position.y-1);
+            [self addChild:label z:11];
+            _headsRect = CGRectMake((button5.position.x-(button5.contentSize.width*button5.scaleX)/2), (button5.position.y-(button5.contentSize.height*button5.scaleY)/2), (button5.contentSize.width*button5.scaleX+70), (button5.contentSize.height*button5.scaleY+70));
+            
+            bigHeadToggleLabel = [CCLabelTTF labelWithString:@"OFF" fontName:@"LostPet.TTF" fontSize:fontSize];
+            bigHeadToggleLabel.position = ccp(button5.position.x+button5.contentSize.width*.3, button5.position.y+button5.contentSize.height/2+10);
+            bigHeadToggleLabel.color = _color_pink;
+            [self addChild:bigHeadToggleLabel];
+        } else {
+            _headsRect = CGRectMake(0, 0, -1, -1);
+        }
         
 //#ifdef TEST
         CCLabelTTF *unlockAllLevelsLabel = [CCLabelTTF labelWithString:@"Unlock all levels" fontName:@"LostPet.TTF" fontSize:25.0];
@@ -390,14 +419,13 @@
     }
     
     level = (levelProps *)[(NSValue *)[lStructs objectAtIndex:curLevelIndex] pointerValue];
-    NSInteger trophyLevel = [[NSUserDefaults standardUserDefaults] integerForKey:[NSString stringWithFormat:@"trophy_%@", level->slug]];
     
     if(level->unlocked){
         [thumb setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:level->thumbnail]];
         [nameLabel setString:[NSString stringWithFormat:@"%@\nhigh score: %06d", level->name, level->highScore]];
         [helpLabel setVisible:true];
-        [trophy setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[self resolveTrophyLevel:trophyLevel]]];
-        if(trophyLevel >= 1 && trophyLevel <= 5)
+        [trophy setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[self resolveTrophyLevel:level->highestTrophy]]];
+        if(level->highestTrophy >= 1 && level->highestTrophy <= 5)
             [trophy setVisible:true];
         else
             [trophy setVisible:false];
@@ -431,6 +459,14 @@
     
     if(CGRectContainsPoint(_backRect, location)){
         [self switchSceneTitle];
+    } else if(CGRectContainsPoint(_headsRect, location)){
+        if(bigHeadCheatActive.boolValue){
+            [bigHeadToggleLabel setString:@"OFF"];
+            bigHeadCheatActive = [NSNumber numberWithBool:false];
+        } else {
+            [bigHeadToggleLabel setString:@"ON"];
+            bigHeadCheatActive = [NSNumber numberWithBool:true];
+        }
     }
     [[nameLabel texture] setAliasTexParameters];
 }
