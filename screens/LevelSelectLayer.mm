@@ -140,17 +140,6 @@
             thumb.scaleY = IPAD_SCALE_FACTOR_Y;
         }
         [self addChild:thumb z:20];
-        
-        NSInteger trophyLevel = [[NSUserDefaults standardUserDefaults] integerForKey:@"trophy_philly"];
-        trophy = [CCSprite spriteWithSpriteFrameName:[self resolveTrophyLevel:trophyLevel]];
-        trophy.scale = .37;
-        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
-            trophy.scale *= IPAD_SCALE_FACTOR_X;
-        }
-        trophy.position = ccp(winSize.width*.317, winSize.height*.195);
-        if(trophyLevel < 1 || trophyLevel > 5)
-            [trophy setVisible:false];
-        [self addChild:trophy z:21];
 
         CCLabelTTF *label = [CCLabelTTF labelWithString:@"SELECT LEVEL" fontName:@"LostPet.TTF" fontSize:largeFontSize];
         [[label texture] setAliasTexParameters];
@@ -186,8 +175,23 @@
         nameLabel = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"%@\nhigh score: %06d", level->name, level->highScore] dimensions:CGSizeMake(sprite.contentSize.width*sprite.scaleX, sprite.contentSize.height*sprite.scaleY) alignment:UITextAlignmentCenter fontName:@"LostPet.TTF" fontSize:fontSize];
         [[nameLabel texture] setAliasTexParameters];
         nameLabel.color = _color_pink;
-        nameLabel.position = ccp(sprite.position.x, sprite.position.y-4*sprite.scaleY);
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            nameLabel.position = ccp(sprite.position.x, sprite.position.y-4*sprite.scaleY*1.2);
+        } else {
+            nameLabel.position = ccp(sprite.position.x, sprite.position.y-4*sprite.scaleY);
+        }
         [self addChild:nameLabel];
+        
+        NSInteger trophyLevel = [[NSUserDefaults standardUserDefaults] integerForKey:@"trophy_philly"];
+        trophy = [CCSprite spriteWithSpriteFrameName:[self resolveTrophyLevel:trophyLevel]];
+        trophy.scale = .37;
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            trophy.scale *= IPAD_SCALE_FACTOR_X;
+        }
+        trophy.position = ccp(nameLabel.position.x-(nameLabel.contentSize.width*.38), winSize.height*.195);
+        if(trophyLevel < 1 || trophyLevel > 5)
+            [trophy setVisible:false];
+        [self addChild:trophy z:21];
 
         //left
         leftArrow = [CCSprite spriteWithSpriteFrameName:@"LvlArrow.png"];
@@ -799,25 +803,29 @@
             bgc->stoppingAction = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO] times:1] retain];
             [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
         }
+        float fontSize = 15.0;
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            fontSize *= IPAD_SCALE_FACTOR_X;
+        }
         bgc = new bgComponent();
-        bgc->label = [CCLabelTTF labelWithString:@"EMMETT SUX St" fontName:@"LostPet.TTF" fontSize:20.0];
+        bgc->label = [CCLabelTTF labelWithString:@"FRANKSBURY PARK" fontName:@"LostPet.TTF" fontSize:fontSize];
         bgc->anchorPoint = CGPointMake(winSize.width*.755, winSize.height*.68);
         bgc->label.position = bgc->anchorPoint;
         bgc->startingAction = [CCSequence actions:[CCCallFuncND actionWithTarget:self selector:@selector(labelSetPosition:data:) data:[[NSArray arrayWithObjects:[[NSValue valueWithPointer:bgc->label] retain], [[NSValue valueWithCGPoint:ccp(winSize.width*.755, winSize.height*.68)] retain], nil] retain]],
                                [CCDelayTime actionWithDuration:.12f],
-                               [CCCallFuncND actionWithTarget:self selector:@selector(labelSetPosition:data:) data:[[NSArray arrayWithObjects:[[NSValue valueWithPointer:bgc->label] retain], [[NSValue valueWithCGPoint:ccp(winSize.width*.755, winSize.height*.68)] retain], nil] retain]],
+                               [CCCallFuncND actionWithTarget:self selector:@selector(labelSetPosition:data:) data:[[NSArray arrayWithObjects:[[NSValue valueWithPointer:bgc->label] retain], [[NSValue valueWithCGPoint:ccp(winSize.width*.753, winSize.height*.68)] retain], nil] retain]],
                                [CCDelayTime actionWithDuration:.12f],
-                               [CCCallFuncND actionWithTarget:self selector:@selector(labelSetPosition:data:) data:[[NSArray arrayWithObjects:[[NSValue valueWithPointer:bgc->label] retain], [[NSValue valueWithCGPoint:ccp(winSize.width*.752, winSize.height*.68)] retain], nil] retain]],
+                               [CCCallFuncND actionWithTarget:self selector:@selector(labelSetPosition:data:) data:[[NSArray arrayWithObjects:[[NSValue valueWithPointer:bgc->label] retain], [[NSValue valueWithCGPoint:ccp(winSize.width*.7463, winSize.height*.68)] retain], nil] retain]],
                                [CCDelayTime actionWithDuration:.12f],
-                               [CCCallFuncND actionWithTarget:self selector:@selector(labelSetPosition:data:) data:[[NSArray arrayWithObjects:[[NSValue valueWithPointer:bgc->label] retain], [[NSValue valueWithCGPoint:ccp(winSize.width*.735, winSize.height*.68)] retain], nil] retain]],
+                               [CCCallFuncND actionWithTarget:self selector:@selector(labelSetPosition:data:) data:[[NSArray arrayWithObjects:[[NSValue valueWithPointer:bgc->label] retain], [[NSValue valueWithCGPoint:ccp(winSize.width*.7327, winSize.height*.68)] retain], nil] retain]],
                                [CCDelayTime actionWithDuration:.12f],
-                               [CCCallFuncND actionWithTarget:self selector:@selector(labelSetPosition:data:) data:[[NSArray arrayWithObjects:[[NSValue valueWithPointer:bgc->label] retain], [[NSValue valueWithCGPoint:ccp(winSize.width*.728, winSize.height*.68)] retain], nil] retain]],
+                               [CCCallFuncND actionWithTarget:self selector:@selector(labelSetPosition:data:) data:[[NSArray arrayWithObjects:[[NSValue valueWithPointer:bgc->label] retain], [[NSValue valueWithCGPoint:ccp(winSize.width*.734, winSize.height*.68)] retain], nil] retain]],
                                [CCDelayTime actionWithDuration:.12f],
-                               [CCCallFuncND actionWithTarget:self selector:@selector(labelSetPosition:data:) data:[[NSArray arrayWithObjects:[[NSValue valueWithPointer:bgc->label] retain], [[NSValue valueWithCGPoint:ccp(winSize.width*.725, winSize.height*.68)] retain], nil] retain]],
+                               [CCCallFuncND actionWithTarget:self selector:@selector(labelSetPosition:data:) data:[[NSArray arrayWithObjects:[[NSValue valueWithPointer:bgc->label] retain], [[NSValue valueWithCGPoint:ccp(winSize.width*.7277, winSize.height*.68)] retain], nil] retain]],
                                [CCDelayTime actionWithDuration:.12f],
-                               [CCCallFuncND actionWithTarget:self selector:@selector(labelSetPosition:data:) data:[[NSArray arrayWithObjects:[[NSValue valueWithPointer:bgc->label] retain], [[NSValue valueWithCGPoint:ccp(winSize.width*.715, winSize.height*.68)] retain], nil] retain]],
+                               [CCCallFuncND actionWithTarget:self selector:@selector(labelSetPosition:data:) data:[[NSArray arrayWithObjects:[[NSValue valueWithPointer:bgc->label] retain], [[NSValue valueWithCGPoint:ccp(winSize.width*.7131, winSize.height*.68)] retain], nil] retain]],
                                [CCDelayTime actionWithDuration:.12f],
-                               [CCCallFuncND actionWithTarget:self selector:@selector(labelSetPosition:data:) data:[[NSArray arrayWithObjects:[[NSValue valueWithPointer:bgc->label] retain], [[NSValue valueWithCGPoint:ccp(winSize.width*.66, winSize.height*.68)] retain], nil] retain]],
+                               [CCCallFuncND actionWithTarget:self selector:@selector(labelSetPosition:data:) data:[[NSArray arrayWithObjects:[[NSValue valueWithPointer:bgc->label] retain], [[NSValue valueWithCGPoint:ccp(winSize.width*.665, winSize.height*.68)] retain], nil] retain]],
                                [CCDelayTime actionWithDuration:.12f],
                                [CCCallFuncND actionWithTarget:self selector:@selector(labelSetPosition:data:) data:[[NSArray arrayWithObjects:[[NSValue valueWithPointer:bgc->label] retain], [[NSValue valueWithCGPoint:ccp(winSize.width*.58, winSize.height*.68)] retain], nil] retain]],
                                [CCDelayTime actionWithDuration:.12f],
@@ -830,7 +838,26 @@
                                [CCCallFuncND actionWithTarget:self selector:@selector(labelSetPosition:data:) data:[[NSArray arrayWithObjects:[[NSValue valueWithPointer:bgc->label] retain], [[NSValue valueWithCGPoint:ccp(-50, winSize.height*.68)] retain], nil] retain]],
                                [CCDelayTime actionWithDuration:.12f],nil];
         bgc->resetAction = [CCSequence actions:[CCDelayTime actionWithDuration:.12*7*10], [CCCallFuncND actionWithTarget:self selector:@selector(resetLabel:data:) data:[[NSValue valueWithPointer:bgc->label] retain]], nil];
-        bgc->stoppingAction = [CCMoveTo actionWithDuration:.75 position:bgc->anchorPoint];
+        bgc->stoppingAction = [CCSequence actions:[CCCallFuncND actionWithTarget:self selector:@selector(labelSetPosition:data:) data:[[NSArray arrayWithObjects:[[NSValue valueWithPointer:bgc->label] retain], [[NSValue valueWithCGPoint:ccp(winSize.width*1.98, winSize.height*.68)] retain], nil] retain]],
+                               [CCDelayTime actionWithDuration:.12f],
+                               [CCCallFuncND actionWithTarget:self selector:@selector(labelSetPosition:data:) data:[[NSArray arrayWithObjects:[[NSValue valueWithPointer:bgc->label] retain], [[NSValue valueWithCGPoint:ccp(winSize.width*1.98, winSize.height*.68)] retain], nil] retain]],
+                               [CCDelayTime actionWithDuration:.12f],
+                               [CCCallFuncND actionWithTarget:self selector:@selector(labelSetPosition:data:) data:[[NSArray arrayWithObjects:[[NSValue valueWithPointer:bgc->label] retain], [[NSValue valueWithCGPoint:ccp(winSize.width*1.98, winSize.height*.68)] retain], nil] retain]],
+                               [CCDelayTime actionWithDuration:.12f],
+                               [CCCallFuncND actionWithTarget:self selector:@selector(labelSetPosition:data:) data:[[NSArray arrayWithObjects:[[NSValue valueWithPointer:bgc->label] retain], [[NSValue valueWithCGPoint:ccp(winSize.width*1.02, winSize.height*.68)] retain], nil] retain]],
+                               [CCDelayTime actionWithDuration:.12f],
+                               [CCCallFuncND actionWithTarget:self selector:@selector(labelSetPosition:data:) data:[[NSArray arrayWithObjects:[[NSValue valueWithPointer:bgc->label] retain], [[NSValue valueWithCGPoint:ccp(winSize.width*.9, winSize.height*.68)] retain], nil] retain]],
+                               [CCDelayTime actionWithDuration:.12f],
+                               [CCCallFuncND actionWithTarget:self selector:@selector(labelSetPosition:data:) data:[[NSArray arrayWithObjects:[[NSValue valueWithPointer:bgc->label] retain], [[NSValue valueWithCGPoint:ccp(winSize.width*.83, winSize.height*.68)] retain], nil] retain]],
+                               [CCDelayTime actionWithDuration:.12f],
+                               [CCCallFuncND actionWithTarget:self selector:@selector(labelSetPosition:data:) data:[[NSArray arrayWithObjects:[[NSValue valueWithPointer:bgc->label] retain], [[NSValue valueWithCGPoint:ccp(winSize.width*.798, winSize.height*.68)] retain], nil] retain]],
+                               [CCDelayTime actionWithDuration:.12f],
+                               [CCCallFuncND actionWithTarget:self selector:@selector(labelSetPosition:data:) data:[[NSArray arrayWithObjects:[[NSValue valueWithPointer:bgc->label] retain], [[NSValue valueWithCGPoint:ccp(winSize.width*.778, winSize.height*.68)] retain], nil] retain]],
+                               [CCDelayTime actionWithDuration:.12f],
+                               [CCCallFuncND actionWithTarget:self selector:@selector(labelSetPosition:data:) data:[[NSArray arrayWithObjects:[[NSValue valueWithPointer:bgc->label] retain], [[NSValue valueWithCGPoint:ccp(winSize.width*.755, winSize.height*.68)] retain], nil] retain]],
+                               [CCDelayTime actionWithDuration:.12f],
+                               [CCCallFuncND actionWithTarget:self selector:@selector(labelSetPosition:data:) data:[[NSArray arrayWithObjects:[[NSValue valueWithPointer:bgc->label] retain], [[NSValue valueWithCGPoint:ccp(winSize.width*.755, winSize.height*.68)] retain], nil] retain]],
+                               [CCDelayTime actionWithDuration:.12f], nil];
         [lp->bgComponents addObject:[NSValue valueWithPointer:bgc]];
     }
     [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_london.plist"];
@@ -839,7 +866,7 @@
 
 +(void)resetLabel:(id)sender data:(NSValue *)label{
     static int i = 0;
-    NSArray *stationNames = @[@"DIEGO=DAD", @"DOGSEX", @"CHIPS"];
+    NSArray *stationNames = @[@"RANDALL SQUARE", @"PICCALILLI CIRCUS", @"FLY PARK CORNER", @"TIGHTSBRIDGE", @"FRANKSBURY PARK"];
     CGSize winSize = [CCDirector sharedDirector].winSize;
     CCLabelTTF *l = (CCLabelTTF *)[label pointerValue];
     //[l setVisible:false];
@@ -855,6 +882,9 @@
 
 +(void)labelSetPosition:(id)sender data:(NSArray *)array{
     //CGSize winSize = [CCDirector sharedDirector].winSize;
+    static int i = 0;
+    //NSLog(@"iteration %d", i);
+    i++;
     CCLabelTTF *l = (CCLabelTTF *)[[array objectAtIndex:0] pointerValue];
     CGPoint pos = [[array objectAtIndex:1] CGPointValue];
     [l setPosition:pos];
