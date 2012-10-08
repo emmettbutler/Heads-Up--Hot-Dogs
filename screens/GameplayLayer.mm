@@ -2233,9 +2233,9 @@
         _wallsBody->CreateFixture(&wallsBoxDef);
         
 #ifdef DEBUG
-        _points = 50000;
+        //_points = 50000;
         //_points = arc4random() % 30000;
-        _droppedCount = 5;
+        //_droppedCount = 5;
 #endif
         
         //schedule callbacks for dogs, people, and game value decrements
