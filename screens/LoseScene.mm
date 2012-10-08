@@ -503,8 +503,6 @@
         if(_timePlayed > bestTime)
             [standardUserDefaults setInteger:_timePlayed forKey:@"bestTime"];
         
-        NSLog(@"result trophy: %d", res->trophyLevel);
-        NSLog(@"level highest trophy: %d", level->highestTrophy);
         if(res->trophyLevel < level->highestTrophy){
             level->highestTrophy = res->trophyLevel;
             [standardUserDefaults setInteger:level->highestTrophy forKey:[NSString stringWithFormat:@"trophy_%@", level->slug]];
