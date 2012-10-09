@@ -40,13 +40,14 @@
         fallSprite = dd->fallSprite;
         mainSprite = dd->mainSprite;
         grabSprite = dd->grabSprite;
-        deathDelay = .5;
+        deathDelay = delay.floatValue;
         tag = S_SPCDOG;
-        wienerDeathAnimFrames = dd->deathAnimFrames;
-        wienerFlashAnimFrames = dd->flashAnimFrames;
         if(deathAnimFrames){
             wienerDeathAnimFrames = deathAnimFrames;
             wienerFlashAnimFrames = NULL;
+        } else {
+            wienerDeathAnimFrames = dd->deathAnimFrames;
+            wienerFlashAnimFrames = dd->flashAnimFrames;
         }
         wienerShotAnimFrames = dd->shotAnimFrames;
     }
