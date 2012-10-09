@@ -40,7 +40,7 @@
         fallSprite = dd->fallSprite;
         mainSprite = dd->mainSprite;
         grabSprite = dd->grabSprite;
-        deathDelay = delay.floatValue;
+        deathDelay = (delay.floatValue < .5) ? delay.floatValue : .5;
         tag = S_SPCDOG;
         if(deathAnimFrames){
             wienerDeathAnimFrames = deathAnimFrames;
