@@ -190,8 +190,14 @@
     CCAnimation *anim = [CCAnimation animationWithFrames:frames delay:.08f];
     CCFiniteTimeAction *action = [[CCRepeat actionWithAction:[CCAnimate actionWithAnimation:anim restoreOriginalFrame:NO] times:1] retain];
     
+    float scale = 1.0;
+    if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+        scale = IPAD_SCALE_FACTOR_X;
+    }
+    
     CCSprite *sprite = [CCSprite spriteWithSpriteFrameName:@"new_record_1.png"];
-    sprite.position = ccp(winSize.width-sprite.contentSize.width/2, scoreLabel.position.y-sprite.contentSize.height*3.6);
+    sprite.scale = scale;
+    sprite.position = ccp(winSize.width-sprite.scale*sprite.contentSize.width/2, scoreLabel.position.y-sprite.scale*sprite.contentSize.height*3.6);
     [spriteSheetCommon addChild:sprite];
     
     [sprite runAction:[CCSequence actions:action, [CCCallFuncN actionWithTarget:sprite selector:@selector(removeFromParentAndCleanup:)], nil]];
