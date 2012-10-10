@@ -38,7 +38,7 @@
    
     if(full.boolValue) [[CCSpriteFrameCache sharedSpriteFrameCache] removeSpriteFramesFromFile:@"sprites_common.plist"];
 
-    NSLog(@"Loading levels...");
+    DLog(@"Loading levels...");
     for(NSValue *v in levelStructs){
         levelProps *l = (levelProps *)[v pointerValue];
         l->highScore = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"highScore%@", l->slug]];
@@ -59,7 +59,7 @@
         int unlocked = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"unlocked%@", l->slug]];
         int prevTrophyLevel = [standardUserDefaults integerForKey:[NSString stringWithFormat:@"trophy_%@", l->prev->slug]];
         if((prevTrophyLevel && prevTrophyLevel <= 2) || l->slug == @"philly"){
-            NSLog(@"Level %@ unlocked", l->name);
+            DLog(@"Level %@ unlocked", l->name);
             [standardUserDefaults setInteger:1 forKey:[NSString stringWithFormat:@"unlocked%@", l->slug]];
             unlocked = 1;
         }
@@ -67,7 +67,7 @@
 
         if(unlocked) l->unlocked = true;
     }
-    NSLog(@"Done");
+    DLog(@"Done");
     return levelStructs;
 }
 
@@ -391,7 +391,7 @@
 
     if(CGRectContainsPoint(leftArrowRect, location) || (firstTouch.x < lastTouch.x && swipeLength > 60)){
         if(firstTouch.x < lastTouch.x && swipeLength > 60 && swipeLenX > swipeLenY){
-            NSLog(@"swipe right");
+            DLog(@"swipe right");
             [enteredSwipes addObject:@"r"];
         }
         if(curLevelIndex > 0)
@@ -402,7 +402,7 @@
     }
     else if(CGRectContainsPoint(rightArrowRect, location) || (firstTouch.x > lastTouch.x && swipeLength > 60)){
         if(firstTouch.x > lastTouch.x && swipeLength > 60 && swipeLenX > swipeLenY){
-            NSLog(@"swipe left");
+            DLog(@"swipe left");
             [enteredSwipes addObject:@"l"];
         }
         if(curLevelIndex < unlockedCount)
@@ -412,14 +412,14 @@
             [thumb runAction:transition];
     }
     if(firstTouch.y > lastTouch.y && swipeLength > 60 && swipeLenX < swipeLenY){
-        NSLog(@"swipe down");
+        DLog(@"swipe down");
         [enteredSwipes addObject:@"d"];
     } else if(firstTouch.y < lastTouch.y && swipeLength > 60 && swipeLenX < swipeLenY){
-        NSLog(@"swipe up");
+        DLog(@"swipe up");
         [enteredSwipes addObject:@"u"];
     }
     for(int i = 0; i < [enteredSwipes count]; i++){
-        NSLog(@"swipes %@", enteredSwipes[i]);
+        DLog(@"swipes %@", enteredSwipes[i]);
     }
     
     level = (levelProps *)[(NSValue *)[lStructs objectAtIndex:curLevelIndex] pointerValue];
@@ -883,7 +883,7 @@
 +(void)labelSetPosition:(id)sender data:(NSArray *)array{
     //CGSize winSize = [CCDirector sharedDirector].winSize;
     static int i = 0;
-    //NSLog(@"iteration %d", i);
+    //DLog(@"iteration %d", i);
     i++;
     CCLabelTTF *l = (CCLabelTTF *)[[array objectAtIndex:0] pointerValue];
     CGPoint pos = [[array objectAtIndex:1] CGPointValue];

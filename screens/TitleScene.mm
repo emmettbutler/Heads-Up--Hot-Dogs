@@ -17,8 +17,6 @@
 #import "HotDogManager.h"
 #import "TestFlight.h"
 
-#define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
-
 @implementation TitleLayer
 
 @synthesize titleAnimAction = _titleAnimAction;
@@ -45,7 +43,7 @@
             [[NSUserDefaults standardUserDefaults] synchronize];
         }
 #ifdef DEBUG
-        NSLog(@"DEBUG MODE ON");
+        DLog(@"DEBUG MODE ON");
         CCLabelTTF *dlabel = [CCLabelTTF labelWithString:@"DEBUG" fontName:@"LostPet.TTF" fontSize:30.0];
         [[dlabel texture] setAliasTexParameters];
         dlabel.position = ccp(winSize.width-(dlabel.contentSize.width/2)-6, winSize.height-(dlabel.contentSize.height/2)-5);
@@ -207,7 +205,6 @@
     location = [[CCDirector sharedDirector] convertToGL:location];
     
     NSInteger highestUnlocked = [standardUserDefaults integerForKey:@"highestLevelUnlocked"];
-    NSLog(@"highestLevelUnlocked: %d", highestUnlocked);
     if(!highestUnlocked){
         highestUnlocked = 1;
     }
@@ -228,8 +225,6 @@
 }
 
 - (void)switchSceneStart{
-    NSInteger introDone = [standardUserDefaults integerForKey:@"introDone"];
-    NSLog(@"introDone: %d", introDone);
     [[CCDirector sharedDirector] replaceScene:[CCTransitionSlideInT transitionWithDuration:.5 scene:[LevelSelectLayer scene]]];
 }
 

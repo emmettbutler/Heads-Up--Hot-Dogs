@@ -165,7 +165,7 @@ void GLESDraw::DrawPoint(const b2Vec2& p, float32 size, const b2Color& color)
 
 void GLESDraw::DrawString(int x, int y, const char *string, ...)
 {
-//	NSLog(@"DrawString: unsupported: %s", string);
+//	DLog(@"DrawString: unsupported: %s", string);
 	//printf(string);
 	/* Unsupported as yet. Could replace with bitmap font renderer at a later date */
 }

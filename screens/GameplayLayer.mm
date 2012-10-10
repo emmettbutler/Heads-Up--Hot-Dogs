@@ -23,7 +23,6 @@
 #define COP_RANGE 4
 #define BIG_HEAD_SIZE 1.6
 #define OVERLAYS_STOP 2
-#define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 
 #define SPAWN_LIMIT_DECREMENT_DELAY 2
 #define SPECIAL_DOG_PROBABILITY 25
@@ -179,7 +178,7 @@
 }
 
 -(void)presentNewHighScoreNotify{
-    NSLog(@"New high score!");
+    DLog(@"New high score!");
     
     NSMutableArray *frames = [[NSMutableArray alloc] init];
     for(int i = 1; i < 15; i++){

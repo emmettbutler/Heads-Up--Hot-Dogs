@@ -68,7 +68,7 @@
     }
     
     [[newsFeedTVC view] setFrame:tvcRect];
-    //NSLog(@"newsFeedTVC frame: %f, %f, %f, %f", [[newsFeedTVC view] frame].origin.x, [[newsFeedTVC view] frame].origin.y, [[newsFeedTVC view] frame].size.width, [[newsFeedTVC view] frame].size.height);
+    //DLog(@"newsFeedTVC frame: %f, %f, %f, %f", [[newsFeedTVC view] frame].origin.x, [[newsFeedTVC view] frame].origin.y, [[newsFeedTVC view] frame].size.width, [[newsFeedTVC view] frame].size.height);
     [self.view insertSubview:[newsFeedTVC view] belowSubview:headerImage];
     
 }

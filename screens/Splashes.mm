@@ -23,19 +23,19 @@
 
 -(id) init{
     if ((self = [super init])){
-        NSLog(@"Splash screens start");
+        DLog(@"Splash screens start");
         [[HotDogManager sharedManager] setInGame:[NSNumber numberWithBool:false]];
         [[HotDogManager sharedManager] setPause:[NSNumber numberWithBool:false]];
         
         scaleX = 1, scaleY = 1;
         winSize = [[CCDirector sharedDirector] winSize];
         float windowWidth = winSize.width, windowHeight = winSize.height;
-        NSLog(@"Winsize: %0.2f x %0.2f", windowWidth, windowHeight);
+        DLog(@"Winsize: %0.2f x %0.2f", windowWidth, windowHeight);
         if(!(winSize.width > winSize.height)){
             windowWidth = winSize.height;
             windowHeight = winSize.width;
         }
-        NSLog(@"Winsize: %0.2f x %0.2f", windowWidth, windowHeight);
+        DLog(@"Winsize: %0.2f x %0.2f", windowWidth, windowHeight);
         
         spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"sprites_menus.png"];
         [self addChild:spriteSheet];

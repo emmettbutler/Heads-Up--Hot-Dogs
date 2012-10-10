@@ -7,6 +7,7 @@
 //
 
 #import "AchievementReporter.h"
+#import "UIDefs.h"
 #import "HotDogManager.h"
 
 
@@ -24,9 +25,9 @@
         }
         [achievement reportAchievementWithCompletionHandler:^(NSError *error){
             if(error != nil){
-                NSLog(@"Error reporting achievement to game center: %@", identifier);
+                DLog(@"Error reporting achievement to game center: %@", identifier);
             } else {
-                NSLog(@"Reported achievement to game center: %@", identifier);
+                DLog(@"Reported achievement to game center: %@", identifier);
             }
             // if showsCompletionHandler doesn't end up working, use this instead (however, in prod, this should be commented)
             // this might lead to confusion, but it seems like an ok fallback?
@@ -43,8 +44,8 @@
     
     [GKAchievement loadAchievementsWithCompletionHandler:^(NSArray *achievements, NSError *error){
         if (error != nil){
-            NSLog(@"Error retrieving achievement progress");
-        } else { NSLog(@"Loaded achievements successfully"); }
+            DLog(@"Error retrieving achievement progress");
+        } else { DLog(@"Loaded achievements successfully"); }
         if (achievements != nil){
             for (GKAchievement* achievement in achievements){
                 [achievementsDictionary setObject:achievement forKey:achievement.identifier];

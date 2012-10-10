@@ -163,14 +163,14 @@ An uncaught exception means that your application is in an unknown state and the
              My Apps Custom uncaught exception catcher, we do special stuff here, and TestFlight takes care of the rest
             **/
             void HandleExceptions(NSException *exception) {
-                NSLog(@"This is where we save the application data during a exception");
+                DLog(@"This is where we save the application data during a exception");
                 // Save application data on crash
             }
             /*
              My Apps Custom signal catcher, we do special stuff here, and TestFlight takes care of the rest
             **/
             void SignalHandler(int sig) {
-                NSLog(@"This is where we save the application data during a signal");
+                DLog(@"This is where we save the application data during a signal");
                 // Save application data on crash
             }
 
@@ -197,13 +197,13 @@ You do not need to add the above code if your application does not use exception
 
 11. Remote Logging
 
-To perform remote logging you can use the TFLog method which logs in a few different methods described below. In order to make the transition from NSLog to TFLog easy we have used the same method signature for TFLog as NSLog. You can easily switch over to TFLog by adding the following macro to your header
+To perform remote logging you can use the TFLog method which logs in a few different methods described below. In order to make the transition from DLog to TFLog easy we have used the same method signature for TFLog as DLog. You can easily switch over to TFLog by adding the following macro to your header
 
-    #define NSLog TFLog
+    #define DLog TFLog
 
-That will do a switch from NSLog to TFLog, if you want more information, such as file name and line number you can use a macro like
+That will do a switch from DLog to TFLog, if you want more information, such as file name and line number you can use a macro like
 
-    #define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
+    #define DLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 
 Which will produce output that looks like
 

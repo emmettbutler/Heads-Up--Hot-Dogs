@@ -8,6 +8,7 @@
 
 
 #import "HotDogManager.h"
+#import "UIDefs.h"
 #import "Kontagent/Kontagent.h"
 
 static HotDogManager *sharedInstance = nil;
@@ -46,7 +47,7 @@ static HotDogManager *sharedInstance = nil;
         [paramMap put:@"v" value:[NSString stringWithFormat:@"%d",value]];
     if(data)
         [paramMap put:@"data" value:[NSString stringWithFormat:@"%@", data]];
-    NSLog(@"Reported custom event %@", name);
+    DLog(@"Reported custom event %@", name);
     [Kontagent customEvent:name optionalParams:paramMap];
 }
 

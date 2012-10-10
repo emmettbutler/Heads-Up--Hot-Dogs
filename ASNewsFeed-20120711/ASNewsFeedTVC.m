@@ -34,14 +34,14 @@
         [newsFeedArray retain];
         [dataSource release];
         
-        NSLog(@"news - %@", newsFeedArray);
+        DLog(@"news - %@", newsFeedArray);
         
         self.tableView.backgroundColor = [UIColor clearColor];
         self.tableView.opaque = NO;
         self.tableView.backgroundView = nil;
         self.tableView.separatorColor = [UIColor clearColor];
         
-        //NSLog(@"init: %f, %f, %f, %f", [self.tableView frame].origin.x, [self.tableView frame].origin.y, [self.tableView frame].size.width, [self.tableView frame].size.height);
+        //DLog(@"init: %f, %f, %f, %f", [self.tableView frame].origin.x, [self.tableView frame].origin.y, [self.tableView frame].size.width, [self.tableView frame].size.height);
         
         [[self tableView] reloadData];
     }
@@ -170,18 +170,18 @@
     [learnMoreButton addTarget:self action:@selector(openURL:) forControlEvents:UIControlEventTouchUpInside];
     
     CGSize constraint = CGSizeMake(LABEL_WIDTH, 20000.0f);
-    //NSLog(@"constraint size - %f, %f", constraint.width, constraint.height);
+    //DLog(@"constraint size - %f, %f", constraint.width, constraint.height);
     
     //frame is relative to the container
-    //NSLog(@"\ntitle:\nx: %f\ny: %f\nwidth: %f\nheight: %f", [title frame].origin.x, [title frame].origin.y, [title frame].size.width, [title frame].size.height);
-    //NSLog(@"description pos - %f, %f", [description frame].origin.x, description.frame.origin.y);
+    //DLog(@"\ntitle:\nx: %f\ny: %f\nwidth: %f\nheight: %f", [title frame].origin.x, [title frame].origin.y, [title frame].size.width, [title frame].size.height);
+    //DLog(@"description pos - %f, %f", [description frame].origin.x, description.frame.origin.y);
     
     //size of the title and description with line breaks and all that
     CGSize titleSize = [[title text] sizeWithFont:[UIFont boldSystemFontOfSize:16] constrainedToSize:constraint lineBreakMode:UILineBreakModeWordWrap];
     CGSize descriptionSize = [[description text] sizeWithFont:[UIFont systemFontOfSize:15] constrainedToSize:constraint lineBreakMode:UILineBreakModeWordWrap];
     
-    //NSLog(@"\ntitleSize:\nwidth: %f\nheight: %f", titleSize.width, titleSize.height);
-    //NSLog(@"\ndescriptionSize:\nwidth: %f\nheight: %f", descriptionSize.width, descriptionSize.height);
+    //DLog(@"\ntitleSize:\nwidth: %f\nheight: %f", titleSize.width, titleSize.height);
+    //DLog(@"\ndescriptionSize:\nwidth: %f\nheight: %f", descriptionSize.width, descriptionSize.height);
     
     //resize the title based on the titleSize
     CGRect newFrame = title.frame;
@@ -215,7 +215,7 @@
         totalHeight += TITLE_HEIGHT;
     }
     
-    //NSLog(@"totalHeight - %f", totalHeight);
+    //DLog(@"totalHeight - %f", totalHeight);
     
     return totalHeight;
 }

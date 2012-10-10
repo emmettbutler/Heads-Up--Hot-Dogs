@@ -147,15 +147,15 @@
 	
     [[director openGLView] setMultipleTouchEnabled:YES];
 
-    NSLog(@"Version: %@", [[UIDevice currentDevice] systemVersion]);
+    DLog(@"Version: %@", [[UIDevice currentDevice] systemVersion]);
     if(SYSTEM_VERSION_LESS_THAN(@"6.0")){
         // game center
         GKLocalPlayer *localPlayer = [GKLocalPlayer localPlayer];
         [localPlayer authenticateWithCompletionHandler:^(NSError *error) {
             if (localPlayer.isAuthenticated){
-                NSLog(@"Player %@ recognized", localPlayer.alias);
+                DLog(@"Player %@ recognized", localPlayer.alias);
             } else {
-                NSLog(@"Player not authenticated");
+                DLog(@"Player not authenticated");
             }
         }];
     } else {
@@ -221,13 +221,13 @@
 
 // resignActive and becomeActive are called with home button double-taps
 - (void)applicationWillResignActive:(UIApplication *)application {
-    NSLog(@"willResignActive");
+    DLog(@"willResignActive");
 	[[CCDirector sharedDirector] pause];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-    NSLog(@"didBecomeActive");
-    NSLog(@"paused: %d", [[HotDogManager sharedManager] isPaused]);
+    DLog(@"didBecomeActive");
+    DLog(@"paused: %d", [[HotDogManager sharedManager] isPaused]);
     if(![[HotDogManager sharedManager] isPaused]){
         [[CCDirector sharedDirector] resume];
     }
@@ -238,8 +238,8 @@
 }
 
 -(void) applicationDidEnterBackground:(UIApplication*)application {
-    NSLog(@"didEnterBackground");
-    NSLog(@"totalTimeOpen: %d", [[HotDogManager sharedManager] getTotalAppOpenTime]);
+    DLog(@"didEnterBackground");
+    DLog(@"totalTimeOpen: %d", [[HotDogManager sharedManager] getTotalAppOpenTime]);
     [[HotDogManager sharedManager] customEvent:@"user_quit_app" st1:@"useraction" st2:NULL level:NULL value:[[HotDogManager sharedManager] getTotalAppOpenTime] data:NULL];
     [Kontagent stopSession];
 	[[CCDirector sharedDirector] stopAnimation];
@@ -247,7 +247,7 @@
 }
 
 -(void) applicationWillEnterForeground:(UIApplication*)application {
-    NSLog(@"willEnterForeground");
+    DLog(@"willEnterForeground");
     [[HotDogManager sharedManager] resetStartTime];
     [Kontagent startSession:KONTAGENT_KEY mode:kKontagentSDKMode_PRODUCTION shouldSendApplicationAddedAutomatically:YES];
     [[CCDirector sharedDirector] startAnimation];
@@ -260,7 +260,7 @@
 -(void)applicationWillTerminate:(UIApplication *)application {
 	CCDirector *director = [CCDirector sharedDirector];
     
-    NSLog(@"Application HEADS UP HOT DOGS exiting");
+    DLog(@"Application HEADS UP HOT DOGS exiting");
     [[HotDogManager sharedManager] customEvent:@"user_quit_app" st1:@"useraction" st2:NULL level:NULL value:[[HotDogManager sharedManager] getTotalAppOpenTime] data:NULL];
     [Kontagent stopSession];
 	[[director openGLView] removeFromSuperview];

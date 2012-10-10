@@ -19,8 +19,6 @@
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 
-#define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
-
 @implementation LoseLayer
 
 - (void) reportScore: (int64_t) score forCategory: (NSString*) category
@@ -31,7 +29,7 @@
     [scoreReporter reportScoreWithCompletionHandler:^(NSError *error) {
         if (error != nil)
         {
-            NSLog(@"Error submitting high score to leaderboard");
+            DLog(@"Error submitting high score to leaderboard");
         } else {
             
         }
@@ -47,7 +45,7 @@
         leaderboardController.leaderboardDelegate = self;
         [rootViewController presentModalViewController:leaderboardController animated:YES];
     } else {
-        NSLog(@"Game center view not found");
+        DLog(@"Game center view not found");
     }
 }
 
@@ -59,7 +57,7 @@
         achievementController.achievementDelegate = self;
         [rootViewController presentModalViewController:achievementController animated:YES];
     } else {
-        NSLog(@"Game center view not found");
+        DLog(@"Game center view not found");
     }
 }
 
@@ -465,7 +463,7 @@
         
         endResult *res = [self buildResult];
         
-        NSLog(@"Trophy: %@", res->trophy);
+        DLog(@"Trophy: %@", res->trophy);
         [trophy setDisplayFrame:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:res->trophy]];
         [trophy setVisible:true];
         
@@ -487,7 +485,7 @@
             [reporter reportAchievementIdentifier:[NSString stringWithFormat:@"gold_%@", level->slug] percentComplete:100];
         }
         
-        NSLog(@"Should report scores: %d", [[HotDogManager sharedManager] shouldReportScores]);
+        DLog(@"Should report scores: %d", [[HotDogManager sharedManager] shouldReportScores]);
         if([[HotDogManager sharedManager] shouldReportScores]){
             if(_score > highScore){
                 _setNewHighScore = true;

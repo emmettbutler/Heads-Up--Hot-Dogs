@@ -159,7 +159,7 @@ static ASNewsFeed *sharedNewsFeedManager = nil;
         // Calls parseNewsFeed when it loaded successfully
         [sharedNewsFeedManager setNewsFeedData:[NSMutableData data]];
     } else {
-        //NSLog(@"Feed load - connection failed");
+        //DLog(@"Feed load - connection failed");
     }
 }
 
@@ -181,7 +181,7 @@ static ASNewsFeed *sharedNewsFeedManager = nil;
     //determines how to save and display the loaded feed
     //if there's no previously archived news feed
     if (!loadedNewsFeedDict) {
-        //NSLog(@"no previous news feed");
+        //DLog(@"no previous news feed");
         
         //save the feed to the app's disk
         [sharedNewsFeedManager archiveFeed];
@@ -196,14 +196,14 @@ static ASNewsFeed *sharedNewsFeedManager = nil;
     else {
         //if archived dict and the news feed loaded are the same
         if ([loadedNewsFeedDict isEqualToDictionary:readNewsFeedDict]) {
-            //NSLog(@"feed is the same");
+            //DLog(@"feed is the same");
             
             //get the news items amount from the archive
             [sharedNewsFeedManager setNewItemsAmount:[sharedNewsFeedManager loadArchivedNewItemsAmount]];
         }
         //if archived dict and the new feed loaded in are different
         else {
-            //NSLog(@"feed is different");
+            //DLog(@"feed is different");
             
             //save the feed to the app's disk
             [sharedNewsFeedManager archiveFeed];
@@ -248,14 +248,14 @@ static ASNewsFeed *sharedNewsFeedManager = nil;
         
         for (NSString *key in [newsFeedArray objectAtIndex:i]) {
             [dict setObject:[[newsFeedArray objectAtIndex:i] objectForKey:key] forKey:key];
-            //NSLog(@"key - %@", key);
+            //DLog(@"key - %@", key);
             
             if ([key isEqualToString:@"devices"]) {
                 NSString *devices = [NSString stringWithString:[[newsFeedArray objectAtIndex:i] objectForKey:key]];
-                //NSLog(@"devices - %@", [devices lowercaseString]);
+                //DLog(@"devices - %@", [devices lowercaseString]);
                 
                 if ([devices isEqualToString:@""]) {
-                    //NSLog(@"for all devices");
+                    //DLog(@"for all devices");
                     goto inner;
                 }
                 
@@ -263,12 +263,12 @@ static ASNewsFeed *sharedNewsFeedManager = nil;
                 currentDevice = [currentDevice stringByReplacingOccurrencesOfString:@" Simulator" withString:@""];
                 currentDevice = [currentDevice stringByReplacingOccurrencesOfString:@" touch" withString:@""];
                 currentDevice = [currentDevice stringByReplacingOccurrencesOfString:@" Touch" withString:@""];
-                //NSLog(@"currentDevice - %@", currentDevice);
+                //DLog(@"currentDevice - %@", currentDevice);
                 
                 NSRange textRange = [[devices lowercaseString] rangeOfString:[currentDevice lowercaseString]];
                 
                 if (textRange.location == NSNotFound) {
-                    //NSLog(@"not for this device");
+                    //DLog(@"not for this device");
                     dict = nil;
                     [key release];
                     key = nil;
@@ -278,20 +278,20 @@ static ASNewsFeed *sharedNewsFeedManager = nil;
             
             if ([key isEqualToString:@"apps"]) {
                 NSString *apps = [NSString stringWithString:[[newsFeedArray objectAtIndex:i] objectForKey:key]];
-                //NSLog(@"apps - %@", apps);
+                //DLog(@"apps - %@", apps);
                 
                 if ([apps isEqualToString:@""]) {
-                    //NSLog(@"for all apps");
+                    //DLog(@"for all apps");
                     goto inner;
                 }
                 
                 NSString *currentApp = [NSString stringWithString:[sharedNewsFeedManager appId]];
-                //NSLog(@"currentApp - %@", currentApp);
+                //DLog(@"currentApp - %@", currentApp);
                 
                 NSRange textRange = [[apps lowercaseString] rangeOfString:[currentApp lowercaseString]];
                 
                 if (textRange.location == NSNotFound) {
-                    //NSLog(@"not for this app");
+                    //DLog(@"not for this app");
                     dict = nil;
                     [key release];
                     key = nil;
@@ -313,7 +313,7 @@ static ASNewsFeed *sharedNewsFeedManager = nil;
     }
     
     newsFeedArray = nil;
-    //NSLog(@"datasource = %@", internalDataSource);
+    //DLog(@"datasource = %@", internalDataSource);
     
     //call the delegate for alerting that the feed loaded
     [[sharedNewsFeedManager newsFeedDataSource] newsFeedDidLoadWithDataSource:internalDataSource];
@@ -354,7 +354,7 @@ static ASNewsFeed *sharedNewsFeedManager = nil;
     //archive it to file
     [NSKeyedArchiver archiveRootObject:newsFeedTempDict toFile:newsFeedPath];
     
-    //NSLog(@"feed archived");
+    //DLog(@"feed archived");
 }
 
 - (void)archiveNewItemsAmount {
@@ -370,7 +370,7 @@ static ASNewsFeed *sharedNewsFeedManager = nil;
     //archive new items amount to file
     [NSKeyedArchiver archiveRootObject:[NSNumber numberWithInt:newsFeedTempItemAmount] toFile:newsFeedItemsAmountPath];
     
-    //NSLog(@"newItemsAmount archived");
+    //DLog(@"newItemsAmount archived");
 }
 
 - (NSMutableDictionary *)loadArchivedFeed {
@@ -386,13 +386,13 @@ static ASNewsFeed *sharedNewsFeedManager = nil;
     //if there's a news feed that's been saved before
     //unarchive it into the newsFeedDict
     if (newsFeedTempDict) {
-        //NSLog(@"loaded archived files: newsFeedTempDict");
+        //DLog(@"loaded archived files: newsFeedTempDict");
         
         return newsFeedTempDict;
     }
     //otherwise return null
     else {
-        //NSLog(@"no news feed to load");
+        //DLog(@"no news feed to load");
         
         return nil;
     }
@@ -411,13 +411,13 @@ static ASNewsFeed *sharedNewsFeedManager = nil;
     //if there's a news feed that's been saved before
     //unarchive it into the newsFeedDict
     if (newsFeedTempItemAmount) {
-        //NSLog(@"loaded archived files: newsFeedTempItemAmount");
+        //DLog(@"loaded archived files: newsFeedTempItemAmount");
         
         return [newsFeedTempItemAmount intValue];
     }
     //otherwise return 0
     else {
-        //NSLog(@"no new items amount to load");
+        //DLog(@"no new items amount to load");
         
         return 0;
     }
@@ -451,12 +451,12 @@ static ASNewsFeed *sharedNewsFeedManager = nil;
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
     [[sharedNewsFeedManager newsFeedData] setLength:0];
-    //NSLog(@"didReceiveResponse : %@", [sharedNewsFeedManager newsFeedData]);
+    //DLog(@"didReceiveResponse : %@", [sharedNewsFeedManager newsFeedData]);
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
     [[sharedNewsFeedManager newsFeedData] appendData:data];
-    //NSLog(@"didReceiveData : %@", [sharedNewsFeedManager newsFeedData]);
+    //DLog(@"didReceiveData : %@", [sharedNewsFeedManager newsFeedData]);
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
@@ -466,12 +466,12 @@ static ASNewsFeed *sharedNewsFeedManager = nil;
     feedLoading = NO;
     
     // inform the user
-    //NSLog(@"Connection failed! Error - %@ %@", [error localizedDescription], [[error userInfo] objectForKey:NSURLErrorFailingURLStringErrorKey]);
+    //DLog(@"Connection failed! Error - %@ %@", [error localizedDescription], [[error userInfo] objectForKey:NSURLErrorFailingURLStringErrorKey]);
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
     // do something with the data
-    //NSLog(@"Feed load succeeded! Received %d bytes of data", [[sharedNewsFeedManager newsFeedData] length]);
+    //DLog(@"Feed load succeeded! Received %d bytes of data", [[sharedNewsFeedManager newsFeedData] length]);
     
     [sharedNewsFeedManager parseNewsFeed];
     
@@ -482,7 +482,7 @@ static ASNewsFeed *sharedNewsFeedManager = nil;
 }
 
 - (void)dealloc {
-    NSLog(@"dealloc");
+    DLog(@"dealloc");
     [[sharedNewsFeedManager newsFeedDict] release];
     sharedNewsFeedManager.newsFeedDict = nil;
     [[sharedNewsFeedManager newsFeedData] release];
