@@ -486,14 +486,15 @@
         }
         
         DLog(@"Should report scores: %d", [[HotDogManager sharedManager] shouldReportScores]);
-        if([[HotDogManager sharedManager] shouldReportScores]){
-            if(_score > highScore){
-                _setNewHighScore = true;
-                [standardUserDefaults setInteger:_score forKey:[NSString stringWithFormat:@"highScore%@", level->slug]];
-                highScore = _score;
-                // max 6 digits
-                if(highScore > 999999)
-                    highScore = 999999;
+        
+        if(_score > highScore){
+            _setNewHighScore = true;
+            [standardUserDefaults setInteger:_score forKey:[NSString stringWithFormat:@"highScore%@", level->slug]];
+            highScore = _score;
+            // max 6 digits
+            if(highScore > 999999)
+                highScore = 999999;
+            if([[HotDogManager sharedManager] shouldReportScores]){
                 [self reportScore:highScore forCategory:level->slug];
             }
         }

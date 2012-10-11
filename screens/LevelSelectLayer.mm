@@ -317,7 +317,6 @@
     [enteredSwipes release];
     enteredSwipes = [[NSMutableArray alloc] init];
     if(cheat){
-        [[HotDogManager sharedManager] setDontReportScores:[NSNumber numberWithBool:true]];
 #ifdef DEBUG
 #else
         [[SimpleAudioEngine sharedEngine] playEffect:@"100pts.mp3"];
@@ -342,6 +341,7 @@
         if([self processCheat:cheatSwipeSequence]){
             [[HotDogManager sharedManager] customEvent:@"big_head_cheat" st1:@"player_interaction" st2:NULL level:NULL value:NULL data:NULL];
             bigHeadCheatActive = [NSNumber numberWithBool:true];
+            [[HotDogManager sharedManager] setDontReportScores:[NSNumber numberWithBool:true]];
         }
     }
 }
