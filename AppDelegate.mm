@@ -82,20 +82,15 @@
 	
 	
 	CCDirector *director = [CCDirector sharedDirector];
-	
-	// Init the View Controller
 	viewController = [[RootViewController alloc] initWithNibName:nil bundle:nil];
 	viewController.wantsFullScreenLayout = YES;
 	
-	//
 	// Create the EAGLView manually
 	//  1. Create a RGB565 format. Alternative: RGBA8
 	//	2. depth format of 0 bit. Use 16 or 24 bit for 3d effects, like CCPageTurnTransition
-	//
-	//
 	EAGLView *glView = [EAGLView viewWithFrame:[window bounds]
 								   pixelFormat:kEAGLColorFormatRGBA8
-								   depthFormat:GL_DEPTH_COMPONENT24_OES
+								   depthFormat:GL_DEPTH_COMPONENT16_OES
 						];
 	
 	// attach the openglView to the director
@@ -124,14 +119,14 @@
     [[CCDirector sharedDirector] setDisplayFPS:NO];
     [[CCDirector sharedDirector] setDepthTest:NO];
 	
-	
 	[viewController setView:glView];
     [window setRootViewController:viewController];
 	[window makeKeyAndVisible];
 	
 	// Default texture format for PNG/BMP/TIFF/JPEG/GIF images
 	// It can be RGBA8888, RGBA4444, RGB5_A1, RGB565
-	[CCTexture2D setDefaultAlphaPixelFormat:kCCTexture2DPixelFormat_RGBA8888];
+	//[CCTexture2D setDefaultAlphaPixelFormat:kCCTexture2DPixelFormat_RGBA8888];
+    [CCTexture2D setDefaultAlphaPixelFormat:kTexture2DPixelFormat_RGBA4444];
 
 	standardUserDefaults = [NSUserDefaults standardUserDefaults];
 	[self removeStartupFlicker];
@@ -188,8 +183,6 @@
     NSInteger timesPlayed = [standardUserDefaults integerForKey:@"timesPlayed"];
     [standardUserDefaults setInteger:++timesPlayed forKey:@"timesPlayed"];
     [standardUserDefaults synchronize];
-   
-    [CCTexture2D setDefaultAlphaPixelFormat:kTexture2DPixelFormat_RGBA4444];
     
     // must be called before any other call to the director
     if( ! [CCDirector setDirectorType:kCCDirectorTypeDisplayLink] )
