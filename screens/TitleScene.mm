@@ -133,7 +133,7 @@
             dogLogo.scale = 2;
         }
         dogLogo.position = ccp(winSize.width/2, winSize.height+100);
-        [spriteSheet addChild:dogLogo];
+        [spriteSheet addChild:dogLogo z:3];
         dogLogoAnchor = CGPointMake(dogLogo.position.x, winSize.height*.53);
         
         swooshLogo = [CCSprite spriteWithSpriteFrameName:@"HeadsUp.png"];
@@ -141,7 +141,7 @@
             swooshLogo.scale = 2;
         }
         swooshLogo.position = ccp(-1*(swooshLogo.contentSize.width), winSize.height*.85);
-        [spriteSheet addChild:swooshLogo];
+        [spriteSheet addChild:swooshLogo z:3];
         
         [swooshLogo runAction:[CCMoveTo actionWithDuration:.4 position:CGPointMake(winSize.width/2, swooshLogo.position.y)]];
         [dogLogo runAction:[CCEaseOut actionWithAction:[CCMoveTo actionWithDuration:.6 position:dogLogoAnchor] rate:.5]];

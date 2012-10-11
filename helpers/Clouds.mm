@@ -32,17 +32,17 @@
     self->cloud1.position = ccp(windowWidth+24, windowHeight/2-71);
     self->cloud1.scale = scale;
     [[self->cloud1 texture] setAliasTexParameters];
-    [self->spritesheet addChild:self->cloud1];
+    [self->spritesheet addChild:self->cloud1 z:1];
     
     self->cloud2 = [CCSprite spriteWithSpriteFrameName:@"Cloud_3.png"];
     self->cloud2.position = ccp(42, windowHeight);
     self->cloud2.scale = scale;
-    [self->spritesheet addChild:self->cloud2];
+    [self->spritesheet addChild:self->cloud2 z:1];
     
     self->cloud3 = [CCSprite spriteWithSpriteFrameName:@"Cloud_2.png"];
     self->cloud3.position = ccp(-6, 17);
     self->cloud3.scale = scale;
-    [self->spritesheet addChild:self->cloud3];
+    [self->spritesheet addChild:self->cloud3 z:1];
     
     [self->cloud1 runAction:[CCMoveTo actionWithDuration:90 position:CGPointMake(0, self->cloud1.position.y)]];
     [self->cloud2 runAction:[CCMoveTo actionWithDuration:80 position:CGPointMake(windowWidth, self->cloud2.position.y)]];
