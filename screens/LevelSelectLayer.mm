@@ -85,7 +85,6 @@
     if ((self = [super init])){
         standardUserDefaults = [NSUserDefaults standardUserDefaults];
         winSize = [[CCDirector sharedDirector] winSize];
-        [[CCDirector sharedDirector] setDisplayFPS:NO];
         [[HotDogManager sharedManager] setPause:[NSNumber numberWithBool:false]];
         [[HotDogManager sharedManager] setInGame:[NSNumber numberWithBool:false]];
 #ifdef DEBUG
