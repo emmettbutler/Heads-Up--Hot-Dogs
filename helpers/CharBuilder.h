@@ -31,7 +31,7 @@
         float restitution;
         float framerate;
         float friction;
-        float heightOffset;
+        float heightOffset, widthOffset;
         float lowerArmAngle;
         float upperArmAngle;
         float armJointXOffset;

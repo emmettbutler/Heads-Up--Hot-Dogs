@@ -1695,6 +1695,13 @@
     ud->ogCollideFilters = _curPersonMaskBits;
     ud->moveDelta = moveDelta*level->personSpeedMul;
     ud->pointValue = person->pointValue;
+    if(person->widthOffset){
+        if(_personUpper.flipX){
+             ud->widthOffset = -1*person->widthOffset;
+        } else {
+             ud->widthOffset = person->widthOffset;
+        }
+    }
     ud->howToPlaySpriteYOffset = 195*scale;
     // point notifiers
     ud->_not_dogContact = (CCFiniteTimeAction *)[(NSValue *)[notifiers objectAtIndex:contactActionIndex] pointerValue];
@@ -2652,7 +2659,7 @@
                 ud->sprite2.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
             }
             if(ud->angryFace != NULL){
-                ud->angryFace.position = CGPointMake((b->GetPosition().x)*PTM_RATIO,
+                ud->angryFace.position = CGPointMake((b->GetPosition().x+ud->widthOffset)*PTM_RATIO,
                                                    (b->GetPosition().y+ud->heightOffset2)*PTM_RATIO);
                 ud->angryFace.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
             }

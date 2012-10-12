@@ -909,7 +909,7 @@
         [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_china.plist"];
         lp->bg = @"China_BG.png";
         lp->bgm = @"chinatown full.mp3";
-        lp->bgmVol = .7;
+        lp->bgmVol = .6;
         lp->gravity = -22.0f;
         lp->spritesheet = @"sprites_china";
         lp->personSpeedMul = 1;
