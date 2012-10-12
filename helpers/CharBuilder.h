@@ -15,19 +15,7 @@
         NSString *upperSprite, *slug, *spritesheet, *lowerSprite, *upperOverlaySprite, *rippleSprite, *armSprite, *targetSprite;
         float hitboxWidth, hitboxHeight, hitboxCenterX, hitboxCenterY, moveDelta, sensorHeight, sensorWidth, restitution, framerate, friction, heightOffset, widthOffset, lowerArmAngle, upperArmAngle, armJointXOffset, rippleXOffset, rippleYOffset;
         BOOL flipSprites;
-        NSMutableArray *walkAnimFrames;
-        NSMutableArray *idleAnimFrames; 
-        NSMutableArray *faceWalkAnimFrames;
-        NSMutableArray *faceDogWalkAnimFrames;
-        NSMutableArray *rippleWalkAnimFrames;
-        NSMutableArray *rippleIdleAnimFrames;
-        NSMutableArray *specialAnimFrames;
-        NSMutableArray *specialFaceAnimFrames;
-        NSMutableArray *armShootAnimFrames;
-        NSMutableArray *altWalkAnimFrames;
-        NSMutableArray *altFaceWalkAnimFrames;
-        NSMutableArray *postStopAnimFrames;
-        NSMutableArray *vomitAnimFrames;
+        NSMutableArray *walkAnimFrames, *idleAnimFrames, *faceWalkAnimFrames, *faceDogWalkAnimFrames, *rippleWalkAnimFrames, *rippleIdleAnimFrames, *specialAnimFrames, *specialFaceAnimFrames, *armShootAnimFrames, *altWalkAnimFrames, *altFaceWalkAnimFrames, *postStopAnimFrames, *vomitAnimFrames;
     };
 }
 
