@@ -196,6 +196,12 @@
         s->good = @"We're in the pipe, five by five.";
         s->other1 = @"I wonder what spring is like on mars and stuff, tra la...";
         s->other2 = @"I wonder what spring is like on mars and stuff, tra la...";
+    } else if (characterName == @"Lion"){
+        s->bad = @"This doesn't bode well for the new year.";
+        s->ok = @"You're working hard. Let's work even harder!";
+        s->good = @"Congratulations and be prosperous!";
+        s->other1 = @"It's really hot under here. What the heck.";
+        s->other2 = @"Those firecrackers look dangerous! Watch out!";
     }
     
     if(arc4random() % 4 == 1){
@@ -241,6 +247,8 @@
         [faces addObject:[NSValue valueWithPointer:[self buildFace:@"YoungProfesh" withGrade:grade]]];
     if([charSlugs containsObject:@"astronaut"])
         [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Astronaut" withGrade:grade]]];
+    //if([charSlugs containsObject:@"lion"])
+    //    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Lion" withGrade:grade]]];
     //if([charSlugs containsObject:@"professor"])
         //[faces addObject:[NSValue valueWithPointer:[self buildFace:@"Professor" withGrade:grade]]];
     
