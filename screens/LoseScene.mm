@@ -235,7 +235,7 @@
         [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Cop" withGrade:grade]]];
     if([charSlugs containsObject:@"crpunk"])
         [faces addObject:[NSValue valueWithPointer:[self buildFace:@"CrustPunk" withGrade:grade]]];
-    if([charSlugs containsObject:@"jogger"])
+    if([charSlugs containsObject:@"jogger"]) 
         [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Jogger" withGrade:grade]]];
     if([charSlugs containsObject:@"nudie"])
         [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Nudie" withGrade:grade]]];

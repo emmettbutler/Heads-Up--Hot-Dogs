@@ -11,35 +11,9 @@
 
 @interface CharBuilder : NSObject {
     struct personStruct {
-        NSString *slug;
-        NSString *spritesheet;
-        int tag;
-        int armTag;
-        NSString *upperSprite;
-        NSString *lowerSprite;
-        NSString *upperOverlaySprite;
-        NSString *rippleSprite;
-        NSString *armSprite;
-        NSString *targetSprite;
-        float hitboxWidth;
-        float hitboxHeight;
-        float hitboxCenterX;
-        float hitboxCenterY;
-        float moveDelta;
-        float sensorHeight;
-        float sensorWidth;
-        float restitution;
-        float framerate;
-        float friction;
-        float heightOffset, widthOffset;
-        float lowerArmAngle;
-        float upperArmAngle;
-        float armJointXOffset;
-        int fTag;
-        int frequency;
-        float rippleXOffset;
-        float rippleYOffset;
-        int pointValue;
+        int tag, armTag, pointValue, fTag, frequency;
+        NSString *upperSprite, *slug, *spritesheet, *lowerSprite, *upperOverlaySprite, *rippleSprite, *armSprite, *targetSprite;
+        float hitboxWidth, hitboxHeight, hitboxCenterX, hitboxCenterY, moveDelta, sensorHeight, sensorWidth, restitution, framerate, friction, heightOffset, widthOffset, lowerArmAngle, upperArmAngle, armJointXOffset, rippleXOffset, rippleYOffset;
         BOOL flipSprites;
         NSMutableArray *walkAnimFrames;
         NSMutableArray *idleAnimFrames; 
