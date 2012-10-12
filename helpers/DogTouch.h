@@ -11,13 +11,11 @@
 #import "box2d.h"
 
 @interface DogTouch : NSObject {
-    NSValue *dog;
+    NSValue *dog, *mj, *world;
     b2Vec2 location;
     b2MouseJoint *mouseJoint;
-    NSValue *mj;
     NSNumber *hash;
     BOOL toDeleteFlag;
-    NSValue *world;
 }
 
 -(DogTouch *)initWithBody:(NSValue *)b andMouseJoint:(NSValue *)j andWorld:(NSValue *)w andHash:(NSValue *)h;

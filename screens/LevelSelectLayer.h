@@ -36,7 +36,7 @@ static NSUserDefaults *standardUserDefaults;
         spcDogData *specialDog;
     };
 
-    int time, unlockedCount, lastTouchTime;
+    int time, unlockedCount, lastTouchTime, curLevelIndex;
     ccColor3B _color_pink;
     NSMutableArray *lStructs;
     CGPoint firstTouch, lastTouch;
@@ -44,18 +44,14 @@ static NSUserDefaults *standardUserDefaults;
     CCLayer *pixelsLayer;
     CCFiniteTimeAction *transition;
     CCSpriteBatchNode *spritesheet;
-    int curLevelIndex;
     float leftArrowOGScaleX, leftArrowOGScaleY, rightArrowOGScaleX, rightArrowOGScaleY;
     levelProps *level;
     NSMutableArray *enteredSwipes;
-    CGRect rightArrowRect;
     BOOL NO_LEVEL_LOCKS;
-    CGRect leftArrowRect, _backRect, _headsRect;
-    CGRect thumbnailRect;
+    CGRect leftArrowRect, _backRect, _headsRect, thumbnailRect, rightArrowRect;
     CGSize winSize;
     CCSprite *thumb, *background, *thumbOld, *rightArrow, *leftArrow, *trophy;
-    CCLabelTTF *scoreLabel, *loading;
-    CCLabelTTF *nameLabel, *helpLabel, *bigHeadToggleLabel;
+    CCLabelTTF *scoreLabel, *loading, *nameLabel, *helpLabel, *bigHeadToggleLabel;
 }
 
 +(NSMutableArray *)buildLevels:(NSNumber *)full;

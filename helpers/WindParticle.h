@@ -5,8 +5,7 @@
 @interface WindParticle : CCSprite {
     
 @private
-	float   velocityX;
-	float   velocityY;	
+	float   velocityX, velocityY;
 }
 
 -(void) setSpeed: (float)speed;

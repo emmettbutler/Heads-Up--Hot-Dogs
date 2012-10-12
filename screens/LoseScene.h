@@ -20,8 +20,7 @@
     };
     
     struct endResult{
-        NSString *trophy;
-        NSString *dogName;
+        NSString *trophy, *dogName;
         CCSprite *head;
         int grade, trophyLevel;
         face *f;
@@ -31,20 +30,16 @@
         NSString *good, *ok, *bad, *other1, *other2;
     };
     
-    int _score, _timePlayed, _peopleGrumped, _dogsSaved, _lock, _shotByCop, _missedByCop, time;
-    CCLabelTTF *scoreLine, *timeLine, *dogsLine, *peopleLine, *highScoreLine;
-    CCLabelTTF *scoreNotify, *timeNotify, *summary;
+    int _score, _timePlayed, _peopleGrumped, _dogsSaved, _lock, _shotByCop, _missedByCop, time, _numberOfTotalGamesPlayed;
+    CCLabelTTF *scoreLine, *timeLine, *dogsLine, *peopleLine, *highScoreLine, *scoreNotify, *timeNotify, *summary, *levelLabel1, *levelLabel2;
     CCSpriteBatchNode *spriteSheet;
     CCSprite *levelBox, *bubble, *charFace, *trophy;
-    CCLabelTTF *levelLabel1, *levelLabel2;
     NSInteger highScore;
     CCLayerColor *_unlockLayer;
     ALuint sting;
     float elmtScale, scale, fontSize;
-    int _numberOfTotalGamesPlayed;
     AchievementReporter *reporter;
-    GKLeaderboardViewController *leaderboardController;
-    GKAchievementViewController *achievementController;
+    GKLeaderboardViewController *leaderboardController, *achievementController;
     BOOL touchLock, _setNewHighScore;
     CGRect _twitterRect, _replayRect, _quitRect, _gcRect;
     CGSize winSize;
