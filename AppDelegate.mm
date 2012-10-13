@@ -191,6 +191,11 @@
     [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"sprites_menus.plist"];
     [[CCDirector sharedDirector] setDisplayFPS:NO];
     
+    [[CCTextureCache sharedTextureCache] textureForKey:@"Heart_Particle_1.png"];
+    [[CCTextureCache sharedTextureCache] textureForKey:@"Heart_Particle_2.png"];
+    [[CCTextureCache sharedTextureCache] textureForKey:@"Heart_Particle_3.png"];
+    [[CCTextureCache sharedTextureCache] textureForKey:@"Heart_Particle_4.png"];
+    
     [[HotDogManager sharedManager] customEvent:@"game_load_complete" st1:@"game_load" st2:NULL level:NULL value:[[NSDate date] timeIntervalSince1970] - startTime data:NULL];
 	// Run the intro Scene
 	[[CCDirector sharedDirector] runWithScene:[Splashes scene]];
