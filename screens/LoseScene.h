@@ -39,7 +39,8 @@
     ALuint sting;
     float elmtScale, scale, fontSize;
     AchievementReporter *reporter;
-    GKLeaderboardViewController *leaderboardController, *achievementController;
+    GKLeaderboardViewController *leaderboardController;
+    GKAchievementViewController *achievementController;
     BOOL touchLock, _setNewHighScore;
     CGRect _twitterRect, _replayRect, _quitRect, _gcRect;
     CGSize winSize;
