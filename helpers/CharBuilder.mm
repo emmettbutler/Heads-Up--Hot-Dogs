@@ -108,7 +108,7 @@
     c->hitboxWidth = 24.0;
     c->hitboxHeight = .0001;
     c->hitboxCenterX = 0;
-    c->hitboxCenterY = 4;
+    c->hitboxCenterY = 3.8;
     c->moveDelta = 3.6;
     c->sensorHeight = 2.5f;
     c->sensorWidth = 1.5f;
@@ -269,7 +269,7 @@
     c->hitboxWidth = 24.0;
     c->hitboxHeight = .0001;
     c->hitboxCenterX = 0;
-    c->hitboxCenterY = 3.7;
+    c->hitboxCenterY = 3.5;
     c->moveDelta = 6.5;
     c->sensorHeight = 1.3f;
     c->sensorWidth = 1.5f;
@@ -328,7 +328,7 @@
     c->hitboxWidth = 26.0;
     c->hitboxHeight = .0001;
     c->hitboxCenterX = 0;
-    c->hitboxCenterY = 4.0;
+    c->hitboxCenterY = 3.8;
     c->moveDelta = 3.7;
     c->sensorHeight = 1.3f;
     c->sensorWidth = 1.5f;
@@ -387,7 +387,7 @@
     c->hitboxWidth = 20.0;
     c->hitboxHeight = .0001;
     c->hitboxCenterX = 0;
-    c->hitboxCenterY = 3.2;
+    c->hitboxCenterY = 3.0;
     c->moveDelta = 3;
     c->sensorHeight = 2.0f;
     c->sensorWidth = 1.5f;
@@ -447,7 +447,7 @@
     c->hitboxWidth = 20.0;
     c->hitboxHeight = .0001;
     c->hitboxCenterX = 0;
-    c->hitboxCenterY = 3.8;
+    c->hitboxCenterY = 3.6;
     c->moveDelta = 4.7;
     c->sensorHeight = 2.0f;
     c->sensorWidth = 1.5f;
@@ -507,7 +507,7 @@
     c->hitboxWidth = 22.0;
     c->hitboxHeight = .0001;
     c->hitboxCenterX = 0;
-    c->hitboxCenterY = 4.0;
+    c->hitboxCenterY = 3.8;
     c->moveDelta = 2.7;
     c->sensorHeight = 2.0f;
     c->sensorWidth = 1.5f;
@@ -602,7 +602,7 @@
     c->hitboxWidth = 20.0;
     c->hitboxHeight = .0001;
     c->hitboxCenterX = 0;
-    c->hitboxCenterY = 3.7;
+    c->hitboxCenterY = 3.5;
     c->moveDelta = 3.7;
     c->sensorHeight = 2.0f;
     c->sensorWidth = 1.5f;
@@ -743,7 +743,7 @@
     c->hitboxWidth = 28.0;
     c->hitboxHeight = .0001;
     c->hitboxCenterX = 0;
-    c->hitboxCenterY = 3.8;
+    c->hitboxCenterY = 3.6;
     c->moveDelta = 3.1;
     c->sensorHeight = 2.0f;
     c->sensorWidth = 1.5f;
