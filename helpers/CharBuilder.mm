@@ -728,6 +728,11 @@
 +(personStruct *)lion{
     personStruct *c = new personStruct();
     
+    float scale = 1;
+    if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+        scale = IPAD_SCALE_FACTOR_X;
+    }
+    
     c->slug = @"lion";
     c->lowerSprite = @"Lion_Run_1.png";
     c->upperSprite = @"Lion_Head_NoDog_1.png";
@@ -749,7 +754,7 @@
     c->frequency = 6;
     c->fTag = F_PRFHED;
     c->heightOffset = 2.78f;
-    c->widthOffset = 0.36;
+    c->widthOffset = 0.36 * scale;
     c->rippleXOffset = -.012;
     c->rippleYOffset = -1.125;
     c->walkAnimFrames = [[NSMutableArray alloc] init];

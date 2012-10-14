@@ -247,10 +247,10 @@
         [faces addObject:[NSValue valueWithPointer:[self buildFace:@"YoungProfesh" withGrade:grade]]];
     if([charSlugs containsObject:@"astronaut"])
         [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Astronaut" withGrade:grade]]];
-    //if([charSlugs containsObject:@"lion"])
-    //    [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Lion" withGrade:grade]]];
-    //if([charSlugs containsObject:@"professor"])
-        //[faces addObject:[NSValue valueWithPointer:[self buildFace:@"Professor" withGrade:grade]]];
+    if([charSlugs containsObject:@"lion"])
+        [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Lion" withGrade:grade]]];
+    if([charSlugs containsObject:@"professor"])
+        [faces addObject:[NSValue valueWithPointer:[self buildFace:@"Professor" withGrade:grade]]];
     
     return faces;
 }
