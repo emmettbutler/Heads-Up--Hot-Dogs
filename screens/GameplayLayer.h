@@ -64,7 +64,7 @@
     struct bodyUserData {
         CCSprite *sprite1, *sprite2, *angryFace, *ripples, *overlaySprite, *howToPlaySprite;
         float heightOffset2, widthOffset, lowerXOffset, lowerYOffset;
-        CCLabelTTF *countdownLabel;
+        CCLabelTTF *countdownLabel, *countdownShadowLabel;
         NSString *_dog_fallSprite, *_dog_riseSprite, *_dog_grabSprite, *_dog_mainSprite, *aimFace;
         CCAction *altAction, *walkRipple, *idleRipple, *altAction2, *altAction3, *altWalk, *altWalkFace, *idleAction, *defaultAction, *angryFaceWalkAction, *dogOnHeadTickleAction, *deathSeq, *shotSeq, *countdownAction, *tintAction;
         CCFiniteTimeAction *postStopAction, *_not_dogContact, *_not_dogOnHead, *_not_leaveScreen, *_not_leaveScreenFlash, *_not_spcContact, *_not_spcOnHead, *_not_spcLeaveScreen, *_vomitAction;

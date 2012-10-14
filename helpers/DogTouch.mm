@@ -23,6 +23,7 @@
     [ud->sprite1 stopAllActions];
     [ud->sprite1 setColor:ccc3(255, 255, 255)];
     [ud->countdownLabel setVisible:false];
+    [ud->countdownShadowLabel setVisible:false];
     ud->deathSeqLock = false;
     ud->grabbed = true;
     ud->aimedAt = false;
@@ -78,6 +79,7 @@
     
     ud->grabbed = false;
     [ud->countdownLabel setVisible:false];
+    [ud->countdownShadowLabel setVisible:false];
     body->SetLinearVelocity(b2Vec2(body->GetLinearVelocity().x/5.0, body->GetLinearVelocity().y/5.0));
     body->SetFixedRotation(false);
     
@@ -107,6 +109,7 @@
     if(ud->deathSeq != nil){
         [ud->sprite1 runAction:ud->deathSeq];
         [ud->countdownLabel setVisible:true];
+        [ud->countdownShadowLabel setVisible:true];
         [ud->sprite1 runAction:ud->countdownAction];
         [ud->sprite1 runAction:ud->tintAction];
     }

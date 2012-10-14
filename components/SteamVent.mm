@@ -98,6 +98,7 @@
                 [ud->sprite1 stopAllActions];
                 ud->deathSeqLock = false;
                 [ud->countdownLabel setVisible:false];
+                [ud->countdownShadowLabel setVisible:false];
             }
         }
     }

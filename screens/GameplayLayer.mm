@@ -526,6 +526,7 @@
     
     if(ud->sprite1.tag != S_SPCDOG && level->slug != @"japan"){
         [ud->countdownLabel setVisible:true];
+        [ud->countdownShadowLabel setVisible:true];
         [ud->sprite1 runAction:ud->countdownAction];
         [ud->sprite1 runAction:ud->tintAction];
     }
@@ -1265,6 +1266,7 @@
         [dogSprite stopAllActions];
         [dogSprite removeFromParentAndCleanup:YES];
         [ud->countdownLabel removeFromParentAndCleanup:YES];
+        [ud->countdownShadowLabel removeFromParentAndCleanup:YES];
         [ud->howToPlaySprite removeFromParentAndCleanup:YES];
         [ud->overlaySprite removeFromParentAndCleanup:YES];
         _world->DestroyBody(dogBody);
@@ -1316,6 +1318,8 @@
         bodyUserData *ud = (bodyUserData *)wienerBody->GetUserData();
         //CCSprite *sprite = (CCSprite *)ud->sprite1;
         [ud->countdownLabel setVisible:false];
+        [ud->countdownShadowLabel setVisible:false];
+        [self addChild:ud->countdownShadowLabel];
         [self addChild:ud->countdownLabel];
     }
 }
@@ -1353,6 +1357,8 @@
     bodyUserData *ud = (bodyUserData *)wienerBody->GetUserData();
     CCSprite *sprite = (CCSprite *)ud->sprite1;
     [ud->countdownLabel setVisible:false];
+    [ud->countdownShadowLabel setVisible:false];
+    [self addChild:ud->countdownShadowLabel];
     [self addChild:ud->countdownLabel];
     
     wienerBody->SetAwake(false);
@@ -2501,6 +2507,7 @@
                     }
                 }
                 [ud->countdownLabel setVisible:false];
+                [ud->countdownShadowLabel setVisible:false];
                 if(!ud->hasTouchedHead && !_gameOver){
                     NSMutableArray *plusPointsParams = [[NSMutableArray alloc] initWithCapacity:4];
                     [plusPointsParams addObject:[NSNumber numberWithInt:pBody->GetPosition().x*PTM_RATIO]];
@@ -2612,6 +2619,7 @@
                 }
                 if(ud->countdownLabel != NULL){
                     [ud->countdownLabel removeFromParentAndCleanup:YES];
+                    [ud->countdownShadowLabel removeFromParentAndCleanup:YES];
                 }
                 _world->DestroyBody(b);
                 ud = NULL;
@@ -2670,6 +2678,7 @@
             }
             if(ud->countdownLabel != NULL){
                 ud->countdownLabel.position = CGPointMake(b->GetPosition().x*PTM_RATIO+20*ud->sprite1.scaleX, b->GetPosition().y*PTM_RATIO+20*ud->sprite1.scaleY);
+                ud->countdownShadowLabel.position = CGPointMake(b->GetPosition().x*PTM_RATIO+18*ud->sprite1.scaleX, b->GetPosition().y*PTM_RATIO+18*ud->sprite1.scaleY);
             }
             if(ud->sprite1 != NULL){
                 if(_gameOver && ud->sprite1.tag != S_HOTDOG && ud->sprite1.tag != S_SPCDOG){

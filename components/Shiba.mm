@@ -121,6 +121,7 @@
     [ud->sprite1 removeFromParentAndCleanup:YES];
     [ud->howToPlaySprite removeFromParentAndCleanup:YES];
     [ud->countdownLabel removeFromParentAndCleanup:YES];
+    [ud->countdownShadowLabel removeFromParentAndCleanup:YES];
     self->world->DestroyBody(body);
 }
 

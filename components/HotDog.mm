@@ -106,6 +106,7 @@
     
     CCLabelTTF *count = [CCLabelTTF labelWithString:@"5" fontName:@"LostPet.TTF" fontSize:27.0*sprite1.scaleX];
     count.color = _color_pink;
+    CCLabelTTF *countShadow = [CCLabelTTF labelWithString:@"5" fontName:@"LostPet.TTF" fontSize:27.0*sprite1.scaleX];
     CCAction *countAction = [[CCSequence actions:[CCCallFuncND actionWithTarget:self selector:@selector(setCountdownString:data:) data:@"3"],
                              [CCDelayTime actionWithDuration:1], [CCCallFuncND actionWithTarget:self selector:@selector(setCountdownString:data:) data:@"2"],
                              [CCDelayTime actionWithDuration:1], [CCCallFuncND actionWithTarget:self selector:@selector(setCountdownString:data:) data:@"1"],nil] retain];
@@ -118,6 +119,7 @@
     ud->_dog_mainSprite = mainSprite;
     ud->_dog_grabSprite = grabSprite;
     ud->countdownLabel = count;
+    ud->countdownShadowLabel = countShadow;
     ud->countdownAction = countAction;
     ud->altAction = _deathAction;
     ud->altAction2 = _shotAction;
@@ -198,6 +200,7 @@
 -(void)setCountdownString:(id)sender data:(NSString *)string{
     bodyUserData *ud = (bodyUserData *)self->worldBody->GetUserData();
     [ud->countdownLabel setString:string];
+    [ud->countdownShadowLabel setString:string];
 }
 
 -(void)setDogDisplayFrame{
