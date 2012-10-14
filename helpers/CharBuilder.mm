@@ -192,7 +192,7 @@
     c->hitboxWidth = 22.5;
     c->hitboxHeight = .0001;
     c->hitboxCenterX = 0;
-    c->hitboxCenterY = 4.1;
+    c->hitboxCenterY = 3.8;
     c->moveDelta = 5;
     c->sensorHeight = 2.0f;
     c->sensorWidth = 1.5f;
