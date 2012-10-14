@@ -169,7 +169,7 @@
     pauseTitle.position = ccp((sprite.position.x), height);
     [creditsLayer addChild:pauseTitle z:81];
     
-    label = [CCLabelTTF labelWithString:@"Emmett Butler: design & program\nDiego Garcia: design & art\nMusic: Benjamin Carignan - \"Space Boyfriend\"\nLuke Silas - \"knife city\"\nTesters: Nick Johnson, Dave Mauro, Nina Freeman, Sam Bosma, Grace Yang, Mike Bartnett, Aaron Koenigsberg, Zach Cimafonte, Noah Lemen\nSpecial thanks to Muhammed Ali Khan and Anna Anthropy" dimensions:CGSizeMake(sprite.contentSize.width*sprite.scaleX*.9, sprite.contentSize.height*sprite.scaleY*.9) alignment:UITextAlignmentLeft fontName:@"LostPet.TTF" fontSize:fontSize];
+    label = [CCLabelTTF labelWithString:@"Emmett Butler: design & program\nDiego Garcia: design & art\nMusic: Benjamin Carignan - \"Space Boyfriend\"\nLuke Silas - \"knife city\"\nTesters: Nick Johnson, Dave Mauro, Nina Freeman, Sam Bosma, Kali Ciesemier, Grace Yang, Mike Bartnett, Aaron Koenigsberg, Zach Cimafonte, Noah Lemen\nSpecial thanks to Muhammed Ali Khan and Anna Anthropy" dimensions:CGSizeMake(sprite.contentSize.width*sprite.scaleX*.9, sprite.contentSize.height*sprite.scaleY*.9) alignment:UITextAlignmentLeft fontName:@"LostPet.TTF" fontSize:fontSize];
     label.position = ccp(sprite.position.x, sprite.position.y*.86);
     label.color = _color_pink;
     [[label texture] setAliasTexParameters];
