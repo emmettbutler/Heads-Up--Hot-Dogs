@@ -127,6 +127,7 @@
 
 -(BOOL)eatDog:(NSValue *)d{
     self->hasEatenDog = true;
+    
     b2Body *dogBody = (b2Body *)[d pointerValue];
     bodyUserData *ud = (bodyUserData *)dogBody->GetUserData();
     

@@ -2797,7 +2797,7 @@
                             [dog setOffHeadCollisionFilters];
                         [self perFrameLevelDogEffects:[NSValue valueWithPointer:b]];
                         
-                        if([shiba dogIsInHitbox:[NSValue valueWithPointer:b]] && ![shiba hasEatenDog]){
+                        if(![shiba hasEatenDog] && [shiba dogIsInHitbox:[NSValue valueWithPointer:b]]){
                             if(!ud->grabbed && [shiba eatDog:[NSValue valueWithPointer:b]]){
                                 [reporter reportAchievementIdentifier:@"shiba" percentComplete:100];
                                 [self incrementDroppedCount:self data:[NSValue valueWithPointer:b]];
