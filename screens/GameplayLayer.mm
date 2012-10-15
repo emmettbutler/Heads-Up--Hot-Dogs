@@ -1325,8 +1325,11 @@
 }
 
 -(void)putDog:(id)sender data:(NSNumber *)type {
-    int SIDE_BUFFER = 40, DOG_SPAWN_MINHT = 2*(winSize.height/3);
-    CGPoint location = CGPointMake(arc4random() % (int)(SIDE_BUFFER+(winSize.width-(2*SIDE_BUFFER))), DOG_SPAWN_MINHT+(arc4random() % (int)(winSize.height-DOG_SPAWN_MINHT)));
+    int SIDE_BUFFER = 55, DOG_SPAWN_MINHT = 2*(winSize.height/3);
+    float spawnX = SIDE_BUFFER + arc4random() % (int)(winSize.width-(2*SIDE_BUFFER));
+    float spawnY = DOG_SPAWN_MINHT+(arc4random() % (int)(winSize.height-DOG_SPAWN_MINHT));
+    DLog(@"spawned dog at %0.2f x %0.2f", spawnX, spawnY);
+    CGPoint location = CGPointMake(spawnX, spawnY);
     
     spcDogData *dd = NULL;
     if ((type.intValue == 1 && _peopleGrumped > OVERLAYS_STOP)){
