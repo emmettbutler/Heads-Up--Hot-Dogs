@@ -18,6 +18,7 @@
 #import "Kontagent/Kontagent.h"
 #import "UIDefs.h"
 #import "HotDogManager.h"
+#import "LevelSelectLayer.h"
 
 #define KONTAGENT_KEY @"315132246f7a4f3ab619276a35ea6407" // qa
 //#define KONTAGENT_KEY @"40a5b05ff49e43b2afa8a863eeb320c3" // prod
@@ -251,6 +252,8 @@
     if([[HotDogManager sharedManager] isInGame] && ![[HotDogManager sharedManager] isPaused]){
         [[HotDogManager sharedManager] setPause:[NSNumber numberWithBool:true]];
         [[CCDirector sharedDirector] resume];
+    } else if([[HotDogManager sharedManager] isOnLevelScreen]){
+        [[CCDirector sharedDirector] replaceScene:[LevelSelectLayer scene]];
     }
 }
 

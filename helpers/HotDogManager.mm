@@ -29,6 +29,7 @@ static HotDogManager *sharedInstance = nil;
         [super init];
         _pause = [NSNumber numberWithBool:false];
         _sfxOn = [NSNumber numberWithBool:true];
+        _levelScreen = [NSNumber numberWithBool:false];
         _inGame = [NSNumber numberWithBool:false];
         _dontReportScores = [NSNumber numberWithBool:false];
         _startTime = [[NSNumber numberWithInt:[[NSDate date] timeIntervalSince1970]] retain];
@@ -75,6 +76,21 @@ static HotDogManager *sharedInstance = nil;
 -(BOOL)isPaused{
     @synchronized(self) {
         return [_pause boolValue];
+    }
+}
+
+-(void)setLevelScreen:(NSNumber *)s{
+    @synchronized(self) {
+        if (_levelScreen != s) {
+            [s release];
+            _levelScreen = [s retain];
+        }
+    }
+}
+
+-(BOOL)isOnLevelScreen{
+    @synchronized(self) {
+        return [_levelScreen boolValue];
     }
 }
 

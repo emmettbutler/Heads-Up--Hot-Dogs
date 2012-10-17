@@ -87,6 +87,7 @@
         winSize = [[CCDirector sharedDirector] winSize];
         [[HotDogManager sharedManager] setPause:[NSNumber numberWithBool:false]];
         [[HotDogManager sharedManager] setInGame:[NSNumber numberWithBool:false]];
+        [[HotDogManager sharedManager] setLevelScreen:[NSNumber numberWithBool:true]];
 #ifdef DEBUG
 #else
         [SimpleAudioEngine sharedEngine].backgroundMusicVolume = .4;
@@ -551,6 +552,7 @@
 
 -(void) dealloc{
     [lStructs release];
+    [[HotDogManager sharedManager] setLevelScreen:[NSNumber numberWithBool:false]];
     [super dealloc];
 }
 

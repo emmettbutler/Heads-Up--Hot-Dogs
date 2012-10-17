@@ -8,7 +8,7 @@
 
 
 @interface HotDogManager : NSObject {
-    NSNumber *_pause, *_sfxOn, *_inGame, *_dontReportScores, *_startTime;
+    NSNumber *_pause, *_sfxOn, *_inGame, *_dontReportScores, *_startTime, *_levelScreen;
 }
 
 +(HotDogManager *)sharedManager;
@@ -24,5 +24,7 @@
 -(int)getStartTime;
 -(int)getTotalAppOpenTime;
 -(void)resetStartTime;
+-(BOOL)isOnLevelScreen;
+-(void)setLevelScreen:(NSNumber *)s;
 
 @end
