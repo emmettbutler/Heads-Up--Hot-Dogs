@@ -249,7 +249,7 @@
             _headsRect = CGRectMake((button5.position.x-(button5.contentSize.width*button5.scaleX)/2), (button5.position.y-(button5.contentSize.height*button5.scaleY)/2), (button5.contentSize.width*button5.scaleX+70), (button5.contentSize.height*button5.scaleY+70));
             
             bigHeadToggleLabel = [CCLabelTTF labelWithString:@"OFF" fontName:@"LostPet.TTF" fontSize:fontSize];
-            bigHeadToggleLabel.position = ccp(button5.position.x+button5.contentSize.width*.3, button5.position.y+button5.contentSize.height/2+10);
+            bigHeadToggleLabel.position = ccp(button5.position.x+button5.contentSize.width*button5.scaleX*.3, button5.position.y+button5.contentSize.height*button5.scaleY/2+10*scale);
             bigHeadToggleLabel.color = _color_pink;
             [self addChild:bigHeadToggleLabel];
         } else {

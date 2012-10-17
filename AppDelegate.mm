@@ -164,6 +164,13 @@
     
 #ifdef DEBUG
     [standardUserDefaults setInteger:0 forKey:@"introDone"]; //should be 0, is 1 for debugging
+    [standardUserDefaults setInteger:1 forKey:@"trophy_philly"];
+    [standardUserDefaults setInteger:1 forKey:@"trophy_nyc"];
+    [standardUserDefaults setInteger:1 forKey:@"trophy_london"];
+    [standardUserDefaults setInteger:1 forKey:@"trophy_chicago"];
+    [standardUserDefaults setInteger:1 forKey:@"trophy_china"];
+    [standardUserDefaults setInteger:1 forKey:@"trophy_space"];
+    [standardUserDefaults setInteger:1 forKey:@"trophy_japan"];
 #else
     [[CDAudioManager sharedManager] setResignBehavior:kAMRBStopPlay autoHandle:YES];
     [[SimpleAudioEngine sharedEngine] preloadEffect:@"menu intro.mp3"];
