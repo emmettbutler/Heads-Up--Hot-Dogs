@@ -130,7 +130,7 @@
         F_PNKSEN    =   105, // sensor above crust punk's head
         F_JOGSEN    =   106, // sensor above jogger's head
         F_PROSEN    =   107, // sensor above young pro's head
-        F_TOPSEN    =   110, // top head sensor tag, this must be TOPSEN > COPSEN > BUSSEN with only sensor tags between
+        F_TOPSEN    =   120, // top head sensor tag, this must be TOPSEN > COPSEN > BUSSEN with only sensor tags between
     };
     
     PersonDogContactListener *personDogContactListener;
