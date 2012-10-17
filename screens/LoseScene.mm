@@ -492,6 +492,9 @@
         if(res->dogName == @"GOLD DOG"){
             [reporter reportAchievementIdentifier:[NSString stringWithFormat:@"gold_%@", level->slug] percentComplete:100];
         }
+        if(_score == 0){
+            [reporter reportAchievementIdentifier:@"nopoints" percentComplete:100];
+        }
         
         DLog(@"Should report scores: %d", [[HotDogManager sharedManager] shouldReportScores]);
         
