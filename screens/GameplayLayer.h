@@ -57,7 +57,7 @@
     CGRect _pauseButtonRect, _resumeRect, _restartRect, _levelRect, _sfxRect;
     NSUserDefaults *standardUserDefaults;
     NSInteger _sfxOn, _introDone, _savedHighScore;
-    int _points, _droppedCount, time, _curPersonMaskBits, _peopleGrumped, _dogsSaved, _spcDogsSaved, _dogsOnscreen, _maxDogsOnScreen, _numWorldTouches, _levelMaxDogs, _dogsShotByCop, _dogsMissedByCop, windCounter, dogNumberCounter, _windParticles, _vomitProb;
+    int _points, _droppedCount, time, _curPersonMaskBits, _peopleGrumped, _dogsSaved, _spcDogsSaved, _dogsOnscreen, _maxDogsOnScreen, _numWorldTouches, _levelMaxDogs, _dogsShotByCop, _dogsMissedByCop, windCounter, dogNumberCounter, _windParticles, _vomitProb, _pointIncreaseInterval;
     float spriteScaleX, spriteScaleY, pointNotifyScale, _wienerSpawnDelayTime, _levelSpawnInterval, _subwayForce, FLOOR1_HT, FLOOR2_HT, FLOOR3_HT, FLOOR4_HT,hudScale, introAudioDuration;
     BOOL _shootLock, _policeOnScreen, _muncherOnScreen, _gameOver, _hasDroppedDog, _fgIsDark, _scoreNotifyLock, _player_hasTickled, pauseLock, vomitCheatActivated, bigHeadCheatActivated;
 

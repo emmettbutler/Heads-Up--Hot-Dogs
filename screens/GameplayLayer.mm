@@ -1671,6 +1671,11 @@
         default: contactActionIndex = 1;
             break;
     }
+    
+    float moveDeltaScale = 1;
+    if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+        moveDeltaScale = 1.15;
+    }
 
     //set up userdata structs
     bodyUserData *ud = new bodyUserData();
@@ -1702,7 +1707,7 @@
     ud->idleAction = _idleAction;
     ud->collideFilter = _curPersonMaskBits;
     ud->ogCollideFilters = _curPersonMaskBits;
-    ud->moveDelta = moveDelta*level->personSpeedMul;
+    ud->moveDelta = moveDelta*level->personSpeedMul*moveDeltaScale;
     ud->pointValue = person->pointValue;
     if(person->widthOffset){
         if(_personUpper.flipX){
@@ -2093,6 +2098,10 @@
         //basic game/box2d/cocos2d initialization
         _curPersonMaskBits = 0x1000;
         _wienerSpawnDelayTime = WIENER_SPAWN_START;
+        _pointIncreaseInterval = 40;
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+            _pointIncreaseInterval = 80;
+        }
         _maxDogsOnScreen = 3;
         _levelMaxDogs = 5;
         dogNumberCounter = 0;
@@ -2730,7 +2739,7 @@
                     if(!ud->_busman_isVomiting && !ud->_nudie_isStopped){
                         [self setFace:[NSValue valueWithPointer:b]];
                     }
-                    if(!(time % 40) && ud->dogsOnHead && !_gameOver){
+                    if(!(time % _pointIncreaseInterval) && ud->dogsOnHead && !_gameOver){
                         // get some points if a dog is on a head
                         if(!b) continue;
                         _points += ud->dogsOnHead * 25;
