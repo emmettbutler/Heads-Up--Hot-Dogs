@@ -2100,7 +2100,7 @@
         _wienerSpawnDelayTime = WIENER_SPAWN_START;
         _pointIncreaseInterval = 40;
         if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
-            _pointIncreaseInterval = 80;
+            _pointIncreaseInterval = 60;
         }
         _maxDogsOnScreen = 3;
         _levelMaxDogs = 5;
