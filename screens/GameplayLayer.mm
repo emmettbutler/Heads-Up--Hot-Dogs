@@ -2281,10 +2281,10 @@
     if([[HotDogManager sharedManager] isPaused] && !pauseLock){
         if(_droppedCount >= DROPPED_MAX - 1){
             [self loseScene];
-        } else {
+        } else if(time > 4){
             [self pauseButton:[NSNumber numberWithBool:true]];
+            pauseLock = true;
         }
-        pauseLock = true;
     }
     
     if(time == 15*60){
