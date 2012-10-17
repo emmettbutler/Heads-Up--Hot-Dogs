@@ -40,6 +40,7 @@
 -(void)flipSFX{
     if(!sfxOn){
         [[NSUserDefaults standardUserDefaults] setInteger:1 forKey:@"sfxon"];
+        [[HotDogManager sharedManager] setSFX:[NSNumber numberWithBool:true]];
         [sfxLabel setString:@"SFX on"];
         sfxOn = 1;
 #ifdef DEBUG
@@ -49,10 +50,12 @@
         [[HotDogManager sharedManager] customEvent:@"sfx_turned_on" st1:@"options" st2:NULL level:NULL value:NULL data:NULL];
     } else {
         [[NSUserDefaults standardUserDefaults] setInteger:0 forKey:@"sfxon"];
+        [[HotDogManager sharedManager] setSFX:[NSNumber numberWithBool:false]];
         [sfxLabel setString:@"SFX off"];
         sfxOn = 0;
         [[HotDogManager sharedManager] customEvent:@"sfx_turned_off" st1:@"options" st2:NULL level:NULL value:NULL data:NULL];
     }
+    DLog(@"SFX ON: %d", sfxOn);
     [[sfxLabel texture] setAliasTexParameters];
     [[NSUserDefaults standardUserDefaults] synchronize];
     
@@ -180,7 +183,9 @@
     if ((self = [super init])){
         CGSize winSize = [[CCDirector sharedDirector] winSize];
         [[HotDogManager sharedManager] setInGame:[NSNumber numberWithBool:false]];
-        sfxOn = [[NSUserDefaults standardUserDefaults] integerForKey:@"sfxon"];
+        //sfxOn = [[NSUserDefaults standardUserDefaults] integerForKey:@"sfxon"];
+        sfxOn = [[HotDogManager sharedManager] sfxOn];
+        DLog(@"SFX ON: %d", sfxOn);
         self.isTouchEnabled = true;
         
         _color_pink = ccc3(255, 62, 166);
@@ -268,9 +273,9 @@
         [[sfxButton texture] setAliasTexParameters];
         [self addChild:sfxButton z:10];
         _sfxRect = CGRectMake((sfxButton.position.x-(sfxButton.scaleX*sfxButton.contentSize.width)/2), (sfxButton.position.y-(sfxButton.scaleY*sfxButton.contentSize.height)/2), (sfxButton.scaleX*sfxButton.contentSize.width+10), (sfxButton.scaleY*sfxButton.contentSize.height+10));
-        if(sfxOn)
+        if(sfxOn == true)
             sfxLabel = [CCLabelTTF labelWithString:@"SFX on" fontName:@"LostPet.TTF" fontSize:fontSize];
-        else
+        else if(sfxOn == false)
             sfxLabel = [CCLabelTTF labelWithString:@"SFX off" fontName:@"LostPet.TTF" fontSize:fontSize];
         [[sfxLabel texture] setAliasTexParameters];
         sfxLabel.color = _color_pink;

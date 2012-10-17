@@ -182,6 +182,7 @@
 #endif
     NSInteger timesPlayed = [standardUserDefaults integerForKey:@"timesPlayed"];
     [standardUserDefaults setInteger:++timesPlayed forKey:@"timesPlayed"];
+    [[NSUserDefaults standardUserDefaults] setInteger:1 forKey:@"sfxon"];
     [standardUserDefaults synchronize];
     
     // must be called before any other call to the director

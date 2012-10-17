@@ -28,7 +28,7 @@ static HotDogManager *sharedInstance = nil;
     @synchronized(self) {
         [super init];
         _pause = [NSNumber numberWithBool:false];
-        _sfxOn = [NSNumber numberWithBool:false];
+        _sfxOn = [NSNumber numberWithBool:true];
         _inGame = [NSNumber numberWithBool:false];
         _dontReportScores = [NSNumber numberWithBool:false];
         _startTime = [[NSNumber numberWithInt:[[NSDate date] timeIntervalSince1970]] retain];
