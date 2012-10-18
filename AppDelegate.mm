@@ -19,8 +19,8 @@
 #import "UIDefs.h"
 #import "HotDogManager.h"
 
-#define KONTAGENT_KEY @"315132246f7a4f3ab619276a35ea6407" // qa
-//#define KONTAGENT_KEY @"40a5b05ff49e43b2afa8a863eeb320c3" // prod
+//#define KONTAGENT_KEY @"315132246f7a4f3ab619276a35ea6407" // qa
+#define KONTAGENT_KEY @"40a5b05ff49e43b2afa8a863eeb320c3" // prod
 
 @implementation AppDelegate
 
