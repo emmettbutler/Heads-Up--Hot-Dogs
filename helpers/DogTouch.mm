@@ -45,15 +45,22 @@
 
 -(void)moveTouch:(NSValue *)l{
     b2Body *body = (b2Body *)[self->dog pointerValue];
+    //CGSize winSize = [[CCDirector sharedDirector] winSize];
+    if(body == NULL || body->GetType() != b2_dynamicBody) return;
     
     b2Vec2 *locationW = (b2Vec2 *)[l pointerValue];
     b2Vec2 locationWorld = *locationW;
     //self->mouseJoint->SetTarget(locationWorld);
     b2MouseJoint *joint = (b2MouseJoint *)[self->mj pointerValue];
-    joint->SetTarget(locationWorld);
+    //float buffer = 1.5;
+    // the commented conditional here is a frantic last-minute attempt to fix a dog-dragging border detection crash
+    //if(locationWorld.x > buffer && locationWorld.x < winSize.width/PTM_RATIO - buffer && locationWorld.y > buffer && locationWorld.y < winSize.height/PTM_RATIO - buffer){
+        joint->SetTarget(locationWorld);
+    //}
     
     bodyUserData *ud = (bodyUserData *)body->GetUserData();
     [ud->sprite1 stopAllActions];
+    [ud->sprite1 setColor:ccc3(255, 255, 255)];
     ud->deathSeq = nil;
     ud->deathSeqLock = false;
     
@@ -65,7 +72,8 @@
             // the original filter data has been saved in the fixture's ogCollideFilter field
             // so that on touch end, we can restore its original collision state
             filter = fixture->GetFilterData();
-            filter.maskBits = 0x0000;
+            //filter.maskBits = 0x00000000000000;
+            filter.maskBits = WALLS | SCREENFLOOR | !FLOOR1 | !FLOOR2 | !FLOOR3 | !FLOOR4;
             fixture->SetFilterData(filter);
             break;
         }
@@ -75,6 +83,7 @@
 -(void)removeTouch{
     b2Filter filter;
     b2Body *body = (b2Body *)[self->dog pointerValue];
+    if(body == NULL || body->GetType() != b2_dynamicBody) return;
     bodyUserData *ud = (bodyUserData *)body->GetUserData();
     
     ud->grabbed = false;
@@ -83,10 +92,10 @@
     body->SetLinearVelocity(b2Vec2(body->GetLinearVelocity().x/5.0, body->GetLinearVelocity().y/5.0));
     body->SetFixedRotation(false);
     
-    if(body->GetPosition().y < .8 && body->GetPosition().x < .5)
-        body->SetTransform(b2Vec2(body->GetPosition().x, 1.8), 0);
-    if(body->GetPosition().x < 1)
-        body->SetTransform(b2Vec2(1.5, body->GetPosition().y), 0);
+    //if(body->GetPosition().y < .8 && body->GetPosition().x < .5)
+    //    body->SetTransform(b2Vec2(body->GetPosition().x, 1.8), 0);
+    //if(body->GetPosition().x < 1)
+    //    body->SetTransform(b2Vec2(1.5, body->GetPosition().y), 0);
     
     b2World *_world = (b2World *)[self->world pointerValue];
     b2MouseJoint *joint = (b2MouseJoint *)[self->mj pointerValue];
