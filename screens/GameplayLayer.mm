@@ -43,6 +43,7 @@
     
     CCScene *scene = [CCScene node];
     CCLOG(@"sceneWithData slug: %@", levelSlug);
+    // since init is called before bigheadcheatactivated is set, the first person has a normal size head
     GameplayLayer *layer = [[GameplayLayer alloc] initWithSlug:levelSlug andVomitCheat:vomitCheatActivated];
     layer->slug = levelSlug;
     layer->vomitCheatActivated = vomitCheatActivated.boolValue;
