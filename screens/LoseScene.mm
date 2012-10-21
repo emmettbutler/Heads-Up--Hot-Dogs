@@ -497,6 +497,9 @@
         }
         
         DLog(@"Should report scores: %d", [[HotDogManager sharedManager] shouldReportScores]);
+        if([[HotDogManager sharedManager] shouldReportScores]){
+            [self reportScore:highScore forCategory:level->slug];
+        }
         
         if(_score > highScore){
             _setNewHighScore = true;
@@ -505,9 +508,6 @@
             // max 6 digits
             if(highScore > 999999)
                 highScore = 999999;
-            if([[HotDogManager sharedManager] shouldReportScores]){
-                [self reportScore:highScore forCategory:level->slug];
-            }
         }
         [[HotDogManager sharedManager] setDontReportScores:[NSNumber numberWithBool:false]];
         if(_timePlayed > bestTime)
