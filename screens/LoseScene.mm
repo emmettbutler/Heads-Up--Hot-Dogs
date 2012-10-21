@@ -498,7 +498,7 @@
         
         DLog(@"Should report scores: %d", [[HotDogManager sharedManager] shouldReportScores]);
         if([[HotDogManager sharedManager] shouldReportScores]){
-            [self reportScore:highScore forCategory:level->slug];
+            [self reportScore:_score forCategory:level->slug];
         }
         
         if(_score > highScore){
