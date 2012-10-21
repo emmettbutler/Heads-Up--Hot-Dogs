@@ -84,10 +84,11 @@
         FLOOR2  = 0x0002,
         FLOOR3  = 0x0004,
         FLOOR4  = 0x0008,
-        WALLS   = 0x0010,
+        WALLS   = 0x0020,
         WIENER  = 0x0040,
         BODYBOX = 0x0080, // character bodies
-        SENSOR  = 0x0020,
+        //SENSOR  = 0x0020,
+        SCREENFLOOR = 0x0010,
     };
     
     enum _spriteTags {
@@ -131,6 +132,7 @@
         F_JOGSEN    =   106, // sensor above jogger's head
         F_PROSEN    =   107, // sensor above young pro's head
         F_TOPSEN    =   120, // top head sensor tag, this must be TOPSEN > COPSEN > BUSSEN with only sensor tags between
+        F_SCREENFLOOR = 150,
     };
     
     PersonDogContactListener *personDogContactListener;

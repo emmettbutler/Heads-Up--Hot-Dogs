@@ -43,6 +43,7 @@
     
     CCScene *scene = [CCScene node];
     CCLOG(@"sceneWithData slug: %@", levelSlug);
+    // since init is called before bigheadcheatactivated is set, the first person has a normal size head
     GameplayLayer *layer = [[GameplayLayer alloc] initWithSlug:levelSlug andVomitCheat:vomitCheatActivated];
     layer->slug = levelSlug;
     layer->vomitCheatActivated = vomitCheatActivated.boolValue;
@@ -1819,7 +1820,7 @@
     personHeadSensorShapeDef.shape = &personHeadSensorShape;
     personHeadSensorShapeDef.userData = fUd3;
     personHeadSensorShapeDef.isSensor = true;
-    personHeadSensorShapeDef.filter.categoryBits = SENSOR;
+    //personHeadSensorShapeDef.filter.categoryBits = SENSOR;
     personHeadSensorShapeDef.filter.maskBits = WIENER;
     _personBody->CreateFixture(&personHeadSensorShapeDef);
 
@@ -2238,6 +2239,21 @@
         groundBoxDef.filter.categoryBits = FLOOR4;
         groundBox.Set(b2Vec2(-30,FLOOR4_HT), b2Vec2((winSize.width+60)/PTM_RATIO, FLOOR4_HT));
         _groundBody->CreateFixture(&groundBoxDef);
+        
+        // SPECIAL COLLIDE LAYER FOR BOUNDARY DETECTION ON GROUND
+        fixtureUserData *sFud = new fixtureUserData();
+        sFud->tag = F_SCREENFLOOR;
+        b2BodyDef screenFloorDef;
+        screenFloorDef.position.Set(0,0);
+        b2Body *screenFloorBody = _world->CreateBody(&screenFloorDef);
+        b2EdgeShape screenFloorBox;
+        b2FixtureDef screenFloorBoxDef;
+        screenFloorBoxDef.shape = &screenFloorBox;
+        screenFloorBody = _world->CreateBody(&screenFloorDef);
+        screenFloorBoxDef.filter.categoryBits = SCREENFLOOR;
+        screenFloorBoxDef.userData = sFud;
+        screenFloorBox.Set(b2Vec2(-30,0), b2Vec2((winSize.width+60)/PTM_RATIO, 0));
+        screenFloorBody->CreateFixture(&screenFloorBoxDef);
 
         fixtureUserData *fUd2 = new fixtureUserData();
         fUd2->tag = F_WALLS;
@@ -3129,6 +3145,7 @@
 }
 
 - (void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+    DLog(@"TouchesEnded");
     if(_gameOver) return;
 
     _numWorldTouches -= [touches count];
@@ -3156,6 +3173,7 @@
 }
 
 - (void)ccTouchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
+    DLog(@"TouchesCancelled");
     [self ccTouchesEnded:touches withEvent:event];
 }
 

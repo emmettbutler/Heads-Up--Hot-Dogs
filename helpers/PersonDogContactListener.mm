@@ -33,6 +33,8 @@ void PersonDogContactListener::BeginContact(b2Contact* contact){
 	bool isBWall = fBUd->tag == 101;
     bool isASensor = fAUd->tag >= 103 && fAUd->tag <= 110;
 	bool isBSensor = fBUd->tag >= 103 && fBUd->tag <= 110;
+    bool isAScreenFloor = fAUd->tag == F_SCREENFLOOR;
+	bool isBScreenFloor = fBUd->tag == F_SCREENFLOOR;
     
     PersonDogContact personDogContact;
     
@@ -83,6 +85,16 @@ void PersonDogContactListener::BeginContact(b2Contact* contact){
         contacts.push_back(personDogContact);
     }
     else if(isBDog && isAWall){
+    	personDogContact.fixtureA = contact->GetFixtureB();
+        personDogContact.fixtureB = contact->GetFixtureA();
+        contacts.push_back(personDogContact);
+    }
+    else if(isADog && isBScreenFloor){
+    	personDogContact.fixtureA = contact->GetFixtureA();
+        personDogContact.fixtureB = contact->GetFixtureB();
+        contacts.push_back(personDogContact);
+    }
+    else if(isBDog && isAScreenFloor){
     	personDogContact.fixtureA = contact->GetFixtureB();
         personDogContact.fixtureB = contact->GetFixtureA();
         contacts.push_back(personDogContact);
