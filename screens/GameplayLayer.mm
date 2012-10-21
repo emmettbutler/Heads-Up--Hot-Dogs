@@ -2571,7 +2571,7 @@
                 }
 #ifdef DEBUG
 #else
-                if(level->slug == @"japan"){
+                if(level->slug == @"japan" && _sfxOn){
                     [[SimpleAudioEngine sharedEngine] playEffect:@"water splash loud.mp3" pitch:1.0 pan:0.0 gain:0.2];
                 }
 #endif
