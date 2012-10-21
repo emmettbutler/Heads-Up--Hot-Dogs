@@ -21,8 +21,8 @@
 -(DogTouch *)initWithBody:(NSValue *)b andMouseJoint:(NSValue *)j andWorld:(NSValue *)w andHash:(NSValue *)h;
 -(b2MouseJoint *)getMouseJoint;
 -(NSNumber *)getHash;
--(void)moveTouch:(NSValue *)l;
--(void)removeTouch;;
+-(void)moveTouch:(NSValue *)l topFloor:(float)topFloor;
+-(void)removeTouch:(float)topFloor;
 -(BOOL)isFlaggedForDeletion;
 -(void)flagForDeletion;
 

@@ -2566,7 +2566,7 @@
                     [ud->sprite1 stopAction:ud->shotSeq];
                     _dogsMissedByCop++;
                 }
-                if(!ud->deathSeqLock){
+                if(!ud->deathSeqLock && !ud->grabbed && [ud->sprite1 numberOfRunningActions] == 0){
                     [self runDogDeathAction:[NSValue valueWithPointer:dogBody]];
                 }
 #ifdef DEBUG
@@ -3119,9 +3119,9 @@
         DogTouch *dt = (DogTouch *)[v pointerValue];
         NSNumber *hash = [[dt getHash] retain];
         if(hash.intValue == [touch1 hash]){
-            [dt moveTouch:[[NSValue valueWithPointer:&locations[0]]retain]];
+            [dt moveTouch:[[NSValue valueWithPointer:&locations[0]]retain] topFloor:FLOOR4_HT];
         } else if(count >= 2 && touch2 && hash.intValue == [touch2 hash]){
-            [dt moveTouch:[[NSValue valueWithPointer:&locations[1]]retain]];
+            [dt moveTouch:[[NSValue valueWithPointer:&locations[1]]retain] topFloor:FLOOR4_HT];
         }
     }
     
@@ -3155,7 +3155,7 @@
             DogTouch *dt = (DogTouch *)[v pointerValue];
             NSNumber *hash = [[dt getHash] retain];
             if([touch hash] == hash.intValue){
-                [dt removeTouch];
+                [dt removeTouch:FLOOR4_HT];
                 [dt flagForDeletion];
             }
         }
