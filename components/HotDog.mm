@@ -252,7 +252,7 @@
             // this is the case in which a dog is not on a person's head.
             // we set the filters to their original value (all people, floor, and walls)
             b2Filter dogFilter = fixture->GetFilterData();
-            dogFilter.maskBits = dogFilter.maskBits & 0xffef;
+            dogFilter.maskBits = dogFilter.maskBits & 0xffef; // coupled to the definition of the enum for collide filters (bad)
             fixture->SetFilterData(dogFilter);
             ud->collideFilter = dogFilter.maskBits;
             break;

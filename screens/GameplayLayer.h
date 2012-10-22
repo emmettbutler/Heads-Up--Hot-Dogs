@@ -84,11 +84,11 @@
         FLOOR2  = 0x0002,
         FLOOR3  = 0x0004,
         FLOOR4  = 0x0008,
-        WALLS   = 0x0020,
+        WALLS   = 0x0010,
         WIENER  = 0x0040,
         BODYBOX = 0x0080, // character bodies
         //SENSOR  = 0x0020,
-        SCREENFLOOR = 0x0010,
+        SCREENFLOOR = 0x0020,
     };
     
     enum _spriteTags {
