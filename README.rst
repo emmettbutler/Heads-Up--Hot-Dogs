@@ -40,13 +40,13 @@ Each hot dog in Heads Up! is represented by a single physics body. Each one
 has two attached fixtures:
 
 - One fixture (the "collision" fixture) is the same size as the hot dog sprite,
-and is set to collide with people and walls. This is also the fixture at which
-the cop character aims his gun.
+  and is set to collide with people and walls. This is also the fixture at which
+  the cop character aims his gun.
 - The other fixture (the "grab" fixture) does not collide with anything, and is
-about five times taller and wider than the dog's sprite.
-It's used to detect touches on the hot dog. This fixture was added since grabbing
-dogs by their relatively small collide filter proved to be annoyingly
-difficult.
+  about five times taller and wider than the dog's sprite.
+  It's used to detect touches on the hot dog. This fixture was added since grabbing
+  dogs by their relatively small collide filter proved to be annoyingly
+  difficult.
 
 When a hot dog is spawned, it may only collide with the walls,
 the ceiling, and one of the four levels of floor (chosen randomly). Once it hits
@@ -66,15 +66,15 @@ People (with the exception of the cop) also consist of a single physics body
 with two fixtures:
 
 - The "hitbox" fixture is a nearly two-dimensional (very thin) fixture that only collides
-with hot dogs. It is positioned individually for each person sprite so that it
-is approximately at their forehead level. This fixture is essentially a flat
-shelf on the head of each person - flat to avoid the situation in which a dog
-is pushed forward by someone's face.
+  with hot dogs. It is positioned individually for each person sprite so that it
+  is approximately at their forehead level. This fixture is essentially a flat
+  shelf on the head of each person - flat to avoid the situation in which a dog
+  is pushed forward by someone's face.
 - The "walking" fixture is a square fixture (the size of the person's sprite
-minus the head) that collides with one of the four floor surfaces. The people
-in Heads Up! are literally "sliding" across the frictionless flat
-ground surfaces. Truthfully, these fixtures probably don't need to be any bigger
-than thin horizontal slivers.
+  minus the head) that collides with one of the four floor surfaces. The people
+  in Heads Up! are literally "sliding" across the frictionless flat
+  ground surfaces. Truthfully, these fixtures probably don't need to be any bigger
+  than thin horizontal slivers.
 
 Special Characters
 ------------------
@@ -90,8 +90,7 @@ essence, the requirements were as follows:
 
 - Don't allow one person to knock a dog off of another's head
 - Allow hot dogs full range of motion while they're on a head
-- Don't allow a person to knock a dog away while it's above another person's
-head after it's bounced.
+- Don't allow a person to knock a dog away while it's above another person's head after it's bounced.
 
 Each new person who walks onscreen is given a different collision filter than
 all of the others on screen. This is controlled by a counter which loops to
