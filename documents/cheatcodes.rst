@@ -9,6 +9,9 @@ a friend is playing on their phone, I can say "hey check THIS out" and suddenly 
 into Spicy Chorizo Hell Mode*. Yes, this is a self-centered view of my role as the
 developer. Sorry. It's fun.
 
+Also, cheat codes are a dying breed, and including some makes Heads Up feel all the
+more "retro" (as much as that description stinks)
+
 So the codes are secret, and obviously I'm not revealing them here. But I had fun
 implementing the cheat code recognizer.
 
