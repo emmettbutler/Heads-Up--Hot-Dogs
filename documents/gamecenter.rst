@@ -54,7 +54,9 @@ achievements and check this dictionary before reporting.
 The dictionary is loaded with game center's stored achievements when the app loads,
 so we know which the player has done already. The reporter class then contains a
 test for completion in the dictionary, and only if the achievement has not been
-completed is the score reported. Obvioously, the dictionary gets updated each time
+completed is the score reported. This check happens within the ``reporter`` object's
+``reportAchievementIdentifier`` method, so I don't have to worry about locking it
+externally. Obvioously, the dictionary gets updated each time
 an achievement is reported to game center.
 
 That pretty well alleviates the problem of reporting the same achievement multiple

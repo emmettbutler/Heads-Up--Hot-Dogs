@@ -4,6 +4,8 @@
 
 import sys
 import os.path
+import re
+
 from creole.rest2html.clean_writer import rest2html
 
 if len(sys.argv) < 2:
@@ -15,10 +17,10 @@ try:
         path,name = os.path.split(sys.argv[1])
         name = "%s.html" % name.split('.')[0]
         f = open(name, "w+")
-        f.write(rest2html(text.read()))
+        text = re.sub("tt>", "code>", rest2html(text.read()))
+        f.write(text)
         f.close()
         print "Wrote new file %s" % name
-    text.close()
 except IOError as e:
     print "File not found!"
     sys.exit()
