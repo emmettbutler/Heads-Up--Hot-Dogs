@@ -45,9 +45,27 @@ sfx on/off, app running time, functions for reporting analytics events, and some
 
 Another awesome side effect of this is that now that the app always knows if it's
 paused or not, I can let it run in the background and display the pause screen
-if the user leaves and comes back in the middle of a round. Beyond being pretty
-cool, I feel like this might improve engagement or retention or some other
-marketing word.
+if the user leaves and comes back in the middle of a round. This actually works by
+always resuming the game loop upon the app entering the foreground, and then checking
+within the game loop whether to display a pause screen. Something like
+
+.. code-block:: c
+
+    // in the game loop...
+    if([[HotDogManager sharedManager] isPaused] && !pauseLock){
+        // display the ingame pause screen and freeze the action
+        [self pauseButton:[NSNumber numberWithBool:true]];
+        // make sure we only send the pause command once
+        pauseLock = true;
+    }
+
+When the app enters the background, ``isPaused`` gets set true.
+Then as soon as the app comes back up, one cycle of the main loop runs and then this
+code gets hit, freezing the action before the second loop.
+
+Beyond being pretty cool, I feel like this  functionality might improve engagement
+or retention or some other marketing word since the user isn't always forced to
+restart their games when they get phone calls or whatever.
 
 This was my first time using a singleton, and if the idea had occurred to me sooner,
 I probably could have done an even better job of storing all of the global state in
