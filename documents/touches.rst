@@ -75,19 +75,25 @@ Look at this code:
 .. code-block:: c
 
     // in CCTouchesMoved
+
     for(NSValue *v in dogTouches){
         // stored as NSValues
+
         DogTouch *dt = (DogTouch *)[v pointerValue];
         // get the touch hash for this stored touch
+
         NSNumber *hash = [[dt getHash] retain];
         // compare the currently processed UITouch with this DogTouch by hash
+
         if(hash.intValue == [touch1 hash]){
             [dt moveTouch:[[NSValue valueWithPointer:&locations[0]]retain] topFloor:FLOOR4_HT];
         } else if(count >= 2 && touch2 && hash.intValue == [touch2 hash]){
             [dt moveTouch:[[NSValue valueWithPointer:&locations[1]]retain] topFloor:FLOOR4_HT];
         }
         // have to pass in the height of the top floor here, since moveTouch needs
+
         // to know about it and it varies across platforms (iPad, iPhone)
+
     }
 
 dogTouches is an NSArray of NSValues containing pointers to DogTouch objects, which
@@ -100,14 +106,18 @@ This code deals with a touch event ending (ie a finger being pulled off the scre
 .. code-block:: c
 
     // the cocoa touch events that just ended
+
     for(UITouch *touch in touches){
         // our stored touch objects
+
         for(NSValue *v in dogTouches){
             DogTouch *dt = (DogTouch *)[v pointerValue];
             NSNumber *hash = [[dt getHash] retain];
             // if the touch that just ended has the same hash,
+
             if([touch hash] == hash.intValue){
                 // drop the hot dog associated with that touch
+
                 [dt removeTouch:FLOOR4_HT];
                 [dt flagForDeletion];
             }
