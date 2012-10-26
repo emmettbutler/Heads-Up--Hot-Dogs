@@ -74,3 +74,5 @@ the next project.
 
 I've thought of so, so many ways I could refactor this code and make it way nicer.
 Effort probably better spent on making the next project awesome, though.
+
+*~emmett*

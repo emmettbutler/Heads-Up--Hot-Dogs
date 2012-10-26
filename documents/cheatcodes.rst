@@ -75,4 +75,6 @@ So, in the final version of that bit, I check the larger component of the swipe
 vector, which I imagine is very similar to what Cocoa's recognizers do for directional
 swipes.
 
+*~emmett*
+
 *\*Spicy Chorizo Hell Mode may or may not actually exist*

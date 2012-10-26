@@ -126,3 +126,5 @@ This code deals with a touch event ending (ie a finger being pulled off the scre
 
 With this implementation, dog grabbing is faster, more responsive, and less buggy
 (and dare I say more fun?) than it ever was during testing. Much better.
+
+*~emmett*

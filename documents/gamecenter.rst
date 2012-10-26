@@ -59,6 +59,30 @@ completed is the score reported. This check happens within the ``reporter`` obje
 externally. Obvioously, the dictionary gets updated each time
 an achievement is reported to game center.
 
+.. code-block:: c
+
+    -(void)reportAchievementIdentifier:(NSString*)identifier percentComplete:(float)percent{
+        GKAchievement *achievement = [self getAchievementForIdentifier:identifier];
+        if(achievement && achievement.percentComplete < 100){
+            achievement.percentComplete = percent;
+            if([[HotDogManager sharedManager] isInGame]){
+                achievement.showsCompletionBanner = YES;
+            } else {
+                achievement.showsCompletionBanner = NO;
+            }
+            [achievement reportAchievementWithCompletionHandler:^(NSError *error){
+                if(error != nil){
+                    DLog(@"Error reporting achievement to game center: %@", identifier);
+                } else {
+                    DLog(@"Reported achievement to game center: %@", identifier);
+                }
+            }];
+        }
+    }
+
 That pretty well alleviates the problem of reporting the same achievement multiple
 times, and it allows me to write simple, friendly code to define achievement conditions
 instead of defining a tangle of lock variables.
+
+
+*~emmett*

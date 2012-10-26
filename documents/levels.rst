@@ -105,8 +105,8 @@ based on the ``slug`` field.
             }
         }
 
-Looks like it might make more sense to pass in the whole struct here rather than
-loading all of them and discarding all but one.
+*Looks like it might make more sense to pass in the whole struct here rather than
+loading all of them and discarding all but one.*
 
 The ``slug`` field of the level struct is also useful for storing persistent data
 like high scores and unlocked levels. Cocoa allows apps to store a plist file full
@@ -158,6 +158,8 @@ rare). I might show that code in another post, but this one has enough code alre
 So there's a whirlwind tour of the level-storing logic in Heads Up. There's a lot
 of it, and aside from the game logic itself, this implementation probably took
 the most effort out of any in the app.
+
+*~emmett*
 
 *\*Disclaimer: I realized how bad an idea this was long before I would have tried it.
 Don't worry.*
