@@ -1,6 +1,6 @@
 This is part of a series of stories about implementation details in Heads Up, since
 I think it's important to reflect on and record lessons learned after a project of
-this size. Workiing on the same project for 11 months yielded a lot of new knowledge
+this size. Working on the same project for 11 months yielded a lot of new knowledge
 for me, and I want to make sure I capture as much of it as possible in writing.
 
 It would have been really awesome to be writing these as I was first coming up with
@@ -37,6 +37,7 @@ might look like this
 .. code-block:: c
 
     // reports an achievement when the player survives for two minutes without losing a hotdog
+
     if(!_hasDroppedDog){
         if(time/60 > 240){
             [reporter reportAchievementIdentifier:@"nodrops_240" percentComplete:100];
