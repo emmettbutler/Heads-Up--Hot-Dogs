@@ -8,24 +8,22 @@
 
 /* Begin PBXBuildFile section */
 		AA05029F2843E0DF00E34D92 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA05029E2843E0DF00E34D92 /* AppDelegate.swift */; };
-		AA0502A12843E0DF00E34D92 /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = AA0502A02843E0DF00E34D92 /* GameScene.sks */; };
-		AA0502A32843E0DF00E34D92 /* Actions.sks in Resources */ = {isa = PBXBuildFile; fileRef = AA0502A22843E0DF00E34D92 /* Actions.sks */; };
 		AA0502A52843E0DF00E34D92 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0502A42843E0DF00E34D92 /* GameScene.swift */; };
 		AA0502A72843E0DF00E34D92 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0502A62843E0DF00E34D92 /* GameViewController.swift */; };
 		AA0502AA2843E0DF00E34D92 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA0502A82843E0DF00E34D92 /* Main.storyboard */; };
 		AA0502AC2843E0E300E34D92 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA0502AB2843E0E300E34D92 /* Assets.xcassets */; };
+		AA0502B62844301700E34D92 /* SplashScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0502B52844301700E34D92 /* SplashScene.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		AA05029B2843E0DF00E34D92 /* huhdremaster.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = huhdremaster.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA05029E2843E0DF00E34D92 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		AA0502A02843E0DF00E34D92 /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
-		AA0502A22843E0DF00E34D92 /* Actions.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Actions.sks; sourceTree = "<group>"; };
 		AA0502A42843E0DF00E34D92 /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 		AA0502A62843E0DF00E34D92 /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		AA0502A92843E0DF00E34D92 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		AA0502AB2843E0E300E34D92 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AA0502AD2843E0E300E34D92 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AA0502B52844301700E34D92 /* SplashScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScene.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,9 +57,8 @@
 			isa = PBXGroup;
 			children = (
 				AA05029E2843E0DF00E34D92 /* AppDelegate.swift */,
-				AA0502A02843E0DF00E34D92 /* GameScene.sks */,
-				AA0502A22843E0DF00E34D92 /* Actions.sks */,
 				AA0502A42843E0DF00E34D92 /* GameScene.swift */,
+				AA0502B52844301700E34D92 /* SplashScene.swift */,
 				AA0502A62843E0DF00E34D92 /* GameViewController.swift */,
 				AA0502A82843E0DF00E34D92 /* Main.storyboard */,
 				AA0502AB2843E0E300E34D92 /* Assets.xcassets */,
@@ -128,9 +125,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA0502AA2843E0DF00E34D92 /* Main.storyboard in Resources */,
-				AA0502A12843E0DF00E34D92 /* GameScene.sks in Resources */,
 				AA0502AC2843E0E300E34D92 /* Assets.xcassets in Resources */,
-				AA0502A32843E0DF00E34D92 /* Actions.sks in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -142,6 +137,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA0502A52843E0DF00E34D92 /* GameScene.swift in Sources */,
+				AA0502B62844301700E34D92 /* SplashScene.swift in Sources */,
 				AA0502A72843E0DF00E34D92 /* GameViewController.swift in Sources */,
 				AA05029F2843E0DF00E34D92 /* AppDelegate.swift in Sources */,
 			);
