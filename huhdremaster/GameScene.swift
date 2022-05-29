@@ -14,13 +14,11 @@ class GameScene: SKScene {
     private var spinnyNode : SKShapeNode?
     
     override func didMove(to view: SKView) {
-        
-        // Get label node from scene and store it for use later
-        self.label = self.childNode(withName: "//helloLabel") as? SKLabelNode
-        if let label = self.label {
-            label.alpha = 0.0
-            label.run(SKAction.fadeIn(withDuration: 2.0))
-        }
+        let displaySize: CGRect = UIScreen.main.bounds
+        let background = SKSpriteNode(imageNamed: "Splash_BG_clean.png")
+        background.xScale = displaySize.width / background.size.width
+        background.yScale = displaySize.height / background.size.height
+        addChild(background)
         
         // Create shape node to use during mouse interaction
         let w = (self.size.width + self.size.height) * 0.05
