@@ -13,6 +13,7 @@ class SplashScene: SKScene {
     let fadeIn: SKAction = SKAction.fadeIn(withDuration: 1)
     let namesBackground: SKSpriteNode = SKSpriteNode(imageNamed: "CreatedBy_Cloud.png")
     let namesSprite: SKSpriteNode = SKSpriteNode(imageNamed: "CreatedBy_Names.png")
+    var playIntroSound: SKAction = SKAction.playSoundFileNamed("menu intro.mp3", waitForCompletion: false)
     
     override func didMove(to view: SKView) {
         anchorPoint = CGPoint(x:0.5, y:0.5)
@@ -56,6 +57,7 @@ class SplashScene: SKScene {
         if (self.startTime == 0) {
             self.startTime = currentTime
         }
+        let secondsPassed = round((currentTime - self.startTime) * 10) / 10.0
         
         logoBackground.position = CGPoint(x:CGFloat(5 * sinf(Float(currentTime))),
                                           y:0)
@@ -64,17 +66,25 @@ class SplashScene: SKScene {
         namesSprite.position = CGPoint(x:CGFloat(5 * sinf(Float(currentTime))),
                                        y:0)
         
-        if (phase == 0 && round((currentTime - self.startTime) * 10) / 10.0 == 1.5) {
+        if (phase == 0 && secondsPassed == 1.5) {
             phase = 1
             logoBackground.run(fadeOut)
             mainLogo.run(fadeOut)
             namesBackground.run(fadeIn)
             namesSprite.run(fadeIn)
         }
-        
-        if (currentTime - self.startTime > 3) {
+        if (phase == 1 && secondsPassed == 3) {
+            phase = 2
+            run(playIntroSound)
+        }
+        if (phase == 2 && secondsPassed == 4.5) {
+            phase = 3
+            namesBackground.run(fadeOut)
+            namesSprite.run(fadeOut)
+        }
+        if (phase == 3 && secondsPassed == 5.5) {
             let controller = self.view?.window?.rootViewController as! GameViewController
-            //controller.changeScene()
+            controller.changeScene()
         }
     }
 }

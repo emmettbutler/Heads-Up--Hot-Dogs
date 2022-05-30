@@ -14,6 +14,34 @@
 		AA0502AC2843E0E300E34D92 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA0502AB2843E0E300E34D92 /* Assets.xcassets */; };
 		AA0502B62844301700E34D92 /* SplashScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0502B52844301700E34D92 /* SplashScene.swift */; };
 		AA0502B828444B2B00E34D92 /* BackgroundClouds.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0502B728444B2B00E34D92 /* BackgroundClouds.swift */; };
+		AA05032C284463F000E34D92 /* menu intro.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AA0502F3284463EF00E34D92 /* menu intro.mp3 */; };
+		AA05034A2844663200E34D92 /* 05 - Gourmet Dog Japon.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AA05032F2844662B00E34D92 /* 05 - Gourmet Dog Japon.mp3 */; };
+		AA05034B2844663200E34D92 /* hot dog disappear.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AA0503302844662B00E34D92 /* hot dog disappear.mp3 */; };
+		AA05034C2844663200E34D92 /* gunshot 1.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AA0503312844662B00E34D92 /* gunshot 1.mp3 */; };
+		AA05034D2844663200E34D92 /* 07 - Uchuu Kyoudog.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AA0503322844662B00E34D92 /* 07 - Uchuu Kyoudog.mp3 */; };
+		AA05034E2844663200E34D92 /* 03 - Chaos Dog In The Windy City (Intro).mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AA0503332844662C00E34D92 /* 03 - Chaos Dog In The Windy City (Intro).mp3 */; };
+		AA05034F2844663200E34D92 /* 25pts.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AA0503342844662C00E34D92 /* 25pts.mp3 */; };
+		AA0503502844663200E34D92 /* gameplay 2.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AA0503352844662C00E34D92 /* gameplay 2.mp3 */; };
+		AA0503512844663200E34D92 /* 50pts.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AA0503362844662C00E34D92 /* 50pts.mp3 */; };
+		AA0503522844663200E34D92 /* gameplay 1.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AA0503372844662D00E34D92 /* gameplay 1.mp3 */; };
+		AA0503532844663200E34D92 /* 01 - Dances with Weenies (Intro).mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AA0503382844662D00E34D92 /* 01 - Dances with Weenies (Intro).mp3 */; };
+		AA0503542844663200E34D92 /* hot dog on head.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AA0503392844662D00E34D92 /* hot dog on head.mp3 */; };
+		AA0503552844663200E34D92 /* hot dog save.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AA05033A2844662D00E34D92 /* hot dog save.mp3 */; };
+		AA0503562844663200E34D92 /* 08 - Uchuu Kyoudog (Credits).mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AA05033B2844662E00E34D92 /* 08 - Uchuu Kyoudog (Credits).mp3 */; };
+		AA0503572844663200E34D92 /* menu 2.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AA05033C2844662E00E34D92 /* menu 2.mp3 */; };
+		AA0503582844663200E34D92 /* train tracks.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AA05033D2844662E00E34D92 /* train tracks.mp3 */; };
+		AA0503592844663200E34D92 /* chinatown full.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AA05033E2844662F00E34D92 /* chinatown full.mp3 */; };
+		AA05035A2844663200E34D92 /* 04 - Chaos Dog In The Windy City.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AA05033F2844662F00E34D92 /* 04 - Chaos Dog In The Windy City.mp3 */; };
+		AA05035B2844663200E34D92 /* pause 3.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AA0503402844662F00E34D92 /* pause 3.mp3 */; };
+		AA05035C2844663200E34D92 /* game over sting.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AA0503412844663000E34D92 /* game over sting.mp3 */; };
+		AA05035D2844663200E34D92 /* 06 - Uchuu Kyoudog (Intro).mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AA0503422844663000E34D92 /* 06 - Uchuu Kyoudog (Intro).mp3 */; };
+		AA05035E2844663200E34D92 /* 100pts.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AA0503432844663000E34D92 /* 100pts.mp3 */; };
+		AA05035F2844663200E34D92 /* firecracker.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AA0503442844663000E34D92 /* firecracker.mp3 */; };
+		AA0503602844663200E34D92 /* 02 - Dances With Weenies.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AA0503452844663100E34D92 /* 02 - Dances With Weenies.mp3 */; };
+		AA0503612844663200E34D92 /* credits.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AA0503462844663100E34D92 /* credits.mp3 */; };
+		AA0503622844663200E34D92 /* dog bark.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AA0503472844663100E34D92 /* dog bark.mp3 */; };
+		AA0503632844663200E34D92 /* water splash loud.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AA0503482844663200E34D92 /* water splash loud.mp3 */; };
+		AA0503642844663200E34D92 /* hot dog appear 1.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AA0503492844663200E34D92 /* hot dog appear 1.mp3 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +54,34 @@
 		AA0502AD2843E0E300E34D92 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AA0502B52844301700E34D92 /* SplashScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScene.swift; sourceTree = "<group>"; };
 		AA0502B728444B2B00E34D92 /* BackgroundClouds.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundClouds.swift; sourceTree = "<group>"; };
+		AA0502F3284463EF00E34D92 /* menu intro.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "menu intro.mp3"; sourceTree = "<group>"; };
+		AA05032F2844662B00E34D92 /* 05 - Gourmet Dog Japon.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "05 - Gourmet Dog Japon.mp3"; sourceTree = "<group>"; };
+		AA0503302844662B00E34D92 /* hot dog disappear.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "hot dog disappear.mp3"; sourceTree = "<group>"; };
+		AA0503312844662B00E34D92 /* gunshot 1.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "gunshot 1.mp3"; sourceTree = "<group>"; };
+		AA0503322844662B00E34D92 /* 07 - Uchuu Kyoudog.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "07 - Uchuu Kyoudog.mp3"; sourceTree = "<group>"; };
+		AA0503332844662C00E34D92 /* 03 - Chaos Dog In The Windy City (Intro).mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "03 - Chaos Dog In The Windy City (Intro).mp3"; sourceTree = "<group>"; };
+		AA0503342844662C00E34D92 /* 25pts.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = 25pts.mp3; sourceTree = "<group>"; };
+		AA0503352844662C00E34D92 /* gameplay 2.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "gameplay 2.mp3"; sourceTree = "<group>"; };
+		AA0503362844662C00E34D92 /* 50pts.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = 50pts.mp3; sourceTree = "<group>"; };
+		AA0503372844662D00E34D92 /* gameplay 1.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "gameplay 1.mp3"; sourceTree = "<group>"; };
+		AA0503382844662D00E34D92 /* 01 - Dances with Weenies (Intro).mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "01 - Dances with Weenies (Intro).mp3"; sourceTree = "<group>"; };
+		AA0503392844662D00E34D92 /* hot dog on head.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "hot dog on head.mp3"; sourceTree = "<group>"; };
+		AA05033A2844662D00E34D92 /* hot dog save.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "hot dog save.mp3"; sourceTree = "<group>"; };
+		AA05033B2844662E00E34D92 /* 08 - Uchuu Kyoudog (Credits).mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "08 - Uchuu Kyoudog (Credits).mp3"; sourceTree = "<group>"; };
+		AA05033C2844662E00E34D92 /* menu 2.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "menu 2.mp3"; sourceTree = "<group>"; };
+		AA05033D2844662E00E34D92 /* train tracks.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "train tracks.mp3"; sourceTree = "<group>"; };
+		AA05033E2844662F00E34D92 /* chinatown full.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "chinatown full.mp3"; sourceTree = "<group>"; };
+		AA05033F2844662F00E34D92 /* 04 - Chaos Dog In The Windy City.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "04 - Chaos Dog In The Windy City.mp3"; sourceTree = "<group>"; };
+		AA0503402844662F00E34D92 /* pause 3.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "pause 3.mp3"; sourceTree = "<group>"; };
+		AA0503412844663000E34D92 /* game over sting.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "game over sting.mp3"; sourceTree = "<group>"; };
+		AA0503422844663000E34D92 /* 06 - Uchuu Kyoudog (Intro).mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "06 - Uchuu Kyoudog (Intro).mp3"; sourceTree = "<group>"; };
+		AA0503432844663000E34D92 /* 100pts.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = 100pts.mp3; sourceTree = "<group>"; };
+		AA0503442844663000E34D92 /* firecracker.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = firecracker.mp3; sourceTree = "<group>"; };
+		AA0503452844663100E34D92 /* 02 - Dances With Weenies.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "02 - Dances With Weenies.mp3"; sourceTree = "<group>"; };
+		AA0503462844663100E34D92 /* credits.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = credits.mp3; sourceTree = "<group>"; };
+		AA0503472844663100E34D92 /* dog bark.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "dog bark.mp3"; sourceTree = "<group>"; };
+		AA0503482844663200E34D92 /* water splash loud.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "water splash loud.mp3"; sourceTree = "<group>"; };
+		AA0503492844663200E34D92 /* hot dog appear 1.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "hot dog appear 1.mp3"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +114,7 @@
 		AA05029D2843E0DF00E34D92 /* huhdremaster */ = {
 			isa = PBXGroup;
 			children = (
+				AA05032E2844652C00E34D92 /* sounds */,
 				AA05029E2843E0DF00E34D92 /* AppDelegate.swift */,
 				AA0502A42843E0DF00E34D92 /* GameScene.swift */,
 				AA0502B52844301700E34D92 /* SplashScene.swift */,
@@ -68,6 +125,41 @@
 				AA0502B728444B2B00E34D92 /* BackgroundClouds.swift */,
 			);
 			path = huhdremaster;
+			sourceTree = "<group>";
+		};
+		AA05032E2844652C00E34D92 /* sounds */ = {
+			isa = PBXGroup;
+			children = (
+				AA0503382844662D00E34D92 /* 01 - Dances with Weenies (Intro).mp3 */,
+				AA0503452844663100E34D92 /* 02 - Dances With Weenies.mp3 */,
+				AA0503332844662C00E34D92 /* 03 - Chaos Dog In The Windy City (Intro).mp3 */,
+				AA05033F2844662F00E34D92 /* 04 - Chaos Dog In The Windy City.mp3 */,
+				AA05032F2844662B00E34D92 /* 05 - Gourmet Dog Japon.mp3 */,
+				AA0503422844663000E34D92 /* 06 - Uchuu Kyoudog (Intro).mp3 */,
+				AA0503322844662B00E34D92 /* 07 - Uchuu Kyoudog.mp3 */,
+				AA05033B2844662E00E34D92 /* 08 - Uchuu Kyoudog (Credits).mp3 */,
+				AA0503342844662C00E34D92 /* 25pts.mp3 */,
+				AA0503362844662C00E34D92 /* 50pts.mp3 */,
+				AA0503432844663000E34D92 /* 100pts.mp3 */,
+				AA05033E2844662F00E34D92 /* chinatown full.mp3 */,
+				AA0503462844663100E34D92 /* credits.mp3 */,
+				AA0503472844663100E34D92 /* dog bark.mp3 */,
+				AA0503442844663000E34D92 /* firecracker.mp3 */,
+				AA0503412844663000E34D92 /* game over sting.mp3 */,
+				AA0503372844662D00E34D92 /* gameplay 1.mp3 */,
+				AA0503352844662C00E34D92 /* gameplay 2.mp3 */,
+				AA0503312844662B00E34D92 /* gunshot 1.mp3 */,
+				AA0503492844663200E34D92 /* hot dog appear 1.mp3 */,
+				AA0503302844662B00E34D92 /* hot dog disappear.mp3 */,
+				AA0503392844662D00E34D92 /* hot dog on head.mp3 */,
+				AA05033A2844662D00E34D92 /* hot dog save.mp3 */,
+				AA05033C2844662E00E34D92 /* menu 2.mp3 */,
+				AA0503402844662F00E34D92 /* pause 3.mp3 */,
+				AA05033D2844662E00E34D92 /* train tracks.mp3 */,
+				AA0503482844663200E34D92 /* water splash loud.mp3 */,
+				AA0502F3284463EF00E34D92 /* menu intro.mp3 */,
+			);
+			path = sounds;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -127,8 +219,36 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA0503552844663200E34D92 /* hot dog save.mp3 in Resources */,
+				AA0503632844663200E34D92 /* water splash loud.mp3 in Resources */,
+				AA05034C2844663200E34D92 /* gunshot 1.mp3 in Resources */,
+				AA0503542844663200E34D92 /* hot dog on head.mp3 in Resources */,
+				AA05035D2844663200E34D92 /* 06 - Uchuu Kyoudog (Intro).mp3 in Resources */,
+				AA0503612844663200E34D92 /* credits.mp3 in Resources */,
 				AA0502AA2843E0DF00E34D92 /* Main.storyboard in Resources */,
 				AA0502AC2843E0E300E34D92 /* Assets.xcassets in Resources */,
+				AA05034E2844663200E34D92 /* 03 - Chaos Dog In The Windy City (Intro).mp3 in Resources */,
+				AA05034F2844663200E34D92 /* 25pts.mp3 in Resources */,
+				AA0503592844663200E34D92 /* chinatown full.mp3 in Resources */,
+				AA0503522844663200E34D92 /* gameplay 1.mp3 in Resources */,
+				AA05035B2844663200E34D92 /* pause 3.mp3 in Resources */,
+				AA0503622844663200E34D92 /* dog bark.mp3 in Resources */,
+				AA0503582844663200E34D92 /* train tracks.mp3 in Resources */,
+				AA05035F2844663200E34D92 /* firecracker.mp3 in Resources */,
+				AA0503602844663200E34D92 /* 02 - Dances With Weenies.mp3 in Resources */,
+				AA05034B2844663200E34D92 /* hot dog disappear.mp3 in Resources */,
+				AA05035C2844663200E34D92 /* game over sting.mp3 in Resources */,
+				AA05032C284463F000E34D92 /* menu intro.mp3 in Resources */,
+				AA0503512844663200E34D92 /* 50pts.mp3 in Resources */,
+				AA05035E2844663200E34D92 /* 100pts.mp3 in Resources */,
+				AA0503572844663200E34D92 /* menu 2.mp3 in Resources */,
+				AA05034A2844663200E34D92 /* 05 - Gourmet Dog Japon.mp3 in Resources */,
+				AA05035A2844663200E34D92 /* 04 - Chaos Dog In The Windy City.mp3 in Resources */,
+				AA0503562844663200E34D92 /* 08 - Uchuu Kyoudog (Credits).mp3 in Resources */,
+				AA0503502844663200E34D92 /* gameplay 2.mp3 in Resources */,
+				AA0503532844663200E34D92 /* 01 - Dances with Weenies (Intro).mp3 in Resources */,
+				AA05034D2844663200E34D92 /* 07 - Uchuu Kyoudog.mp3 in Resources */,
+				AA0503642844663200E34D92 /* hot dog appear 1.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
