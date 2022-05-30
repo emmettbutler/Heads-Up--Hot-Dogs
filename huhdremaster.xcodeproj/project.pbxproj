@@ -42,6 +42,7 @@
 		AA0503622844663200E34D92 /* dog bark.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AA0503472844663100E34D92 /* dog bark.mp3 */; };
 		AA0503632844663200E34D92 /* water splash loud.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AA0503482844663200E34D92 /* water splash loud.mp3 */; };
 		AA0503642844663200E34D92 /* hot dog appear 1.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AA0503492844663200E34D92 /* hot dog appear 1.mp3 */; };
+		AAA3D06628452380008AC525 /* LostPet.TTF in Resources */ = {isa = PBXBuildFile; fileRef = AAA3D06528452380008AC525 /* LostPet.TTF */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -82,6 +83,7 @@
 		AA0503472844663100E34D92 /* dog bark.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "dog bark.mp3"; sourceTree = "<group>"; };
 		AA0503482844663200E34D92 /* water splash loud.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "water splash loud.mp3"; sourceTree = "<group>"; };
 		AA0503492844663200E34D92 /* hot dog appear 1.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "hot dog appear 1.mp3"; sourceTree = "<group>"; };
+		AAA3D06528452380008AC525 /* LostPet.TTF */ = {isa = PBXFileReference; lastKnownFileType = file; path = LostPet.TTF; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -114,6 +116,7 @@
 		AA05029D2843E0DF00E34D92 /* huhdremaster */ = {
 			isa = PBXGroup;
 			children = (
+				AAA3D06528452380008AC525 /* LostPet.TTF */,
 				AA05032E2844652C00E34D92 /* sounds */,
 				AA05029E2843E0DF00E34D92 /* AppDelegate.swift */,
 				AA0502A42843E0DF00E34D92 /* GameScene.swift */,
@@ -231,6 +234,7 @@
 				AA05034F2844663200E34D92 /* 25pts.mp3 in Resources */,
 				AA0503592844663200E34D92 /* chinatown full.mp3 in Resources */,
 				AA0503522844663200E34D92 /* gameplay 1.mp3 in Resources */,
+				AAA3D06628452380008AC525 /* LostPet.TTF in Resources */,
 				AA05035B2844663200E34D92 /* pause 3.mp3 in Resources */,
 				AA0503622844663200E34D92 /* dog bark.mp3 in Resources */,
 				AA0503582844663200E34D92 /* train tracks.mp3 in Resources */,
