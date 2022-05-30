@@ -1,56 +1,53 @@
 import SpriteKit
 import GameplayKit
 
-class SplashScene: SKScene {
+class SplashScene: BaseScene {
     var startTime:Double = 0
     var phase:Int = 0
-    var scaleFactor: CGFloat = 1
-    let logoBackground: SKSpriteNode = SKSpriteNode(imageNamed: "Logo_Cloud.png")
+    let logoBackground: BaseSprite = BaseSprite(imageNamed: "Logo_Cloud.png")
     var backgroundClouds: BackgroundClouds? = nil
-    let mainLogo: SKSpriteNode = SKSpriteNode(imageNamed: "ASg_Logo.png")
+    let mainLogo: BaseSprite = BaseSprite(imageNamed: "ASg_Logo.png")
     let logoAnchor: CGPoint = CGPoint(x: 10, y: -20)
     let fadeOut: SKAction = SKAction.fadeOut(withDuration: 1)
     let fadeIn: SKAction = SKAction.fadeIn(withDuration: 1)
-    let namesBackground: SKSpriteNode = SKSpriteNode(imageNamed: "CreatedBy_Cloud.png")
-    let namesSprite: SKSpriteNode = SKSpriteNode(imageNamed: "CreatedBy_Names.png")
+    let namesBackground: BaseSprite = BaseSprite(imageNamed: "CreatedBy_Cloud.png")
+    let namesSprite: BaseSprite = BaseSprite(imageNamed: "CreatedBy_Names.png")
     var playIntroSound: SKAction = SKAction.playSoundFileNamed("menu intro.mp3", waitForCompletion: false)
+    
+    override init() {
+        super.init()
+        for sprite in [logoBackground, mainLogo, namesBackground, namesSprite] {
+            sprite.setScene(scene: self)
+        }
+    }
+    
+    override init(size: CGSize) {
+        super.init(size: size)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+       fatalError("init(coder:) has not been implemented")
+    }
     
     override func didMove(to view: SKView) {
         anchorPoint = CGPoint(x:0.5, y:0.5)
-        let displaySize: CGRect = UIScreen.main.bounds
-        if (UIDevice.current.userInterfaceIdiom == .pad) {
-            scaleFactor = 2
-        }
         
         let background = SKSpriteNode(imageNamed: "Splash_BG_clean.png")
-        background.xScale = displaySize.width / background.size.width
-        background.yScale = displaySize.height / background.size.height
+        background.xScale = UIScreen.main.bounds.width / background.size.width
+        background.yScale = UIScreen.main.bounds.height / background.size.height
         background.zPosition = 0
         addChild(background)
         
         backgroundClouds = BackgroundClouds(scene:self)
         
         logoBackground.zPosition = 20
-        logoBackground.xScale = scaleFactor
-        logoBackground.yScale = scaleFactor
-        addChild(logoBackground)
-        
         mainLogo.zPosition = 21
-        mainLogo.xScale = scaleFactor
-        mainLogo.yScale = scaleFactor
-        addChild(mainLogo)
         
         namesBackground.alpha = 0
-        namesBackground.xScale = scaleFactor
-        namesBackground.yScale = scaleFactor
         namesBackground.zPosition = 20
-        addChild(namesBackground)
         
         namesSprite.alpha = 0
         namesSprite.zPosition = 21
-        namesSprite.xScale = scaleFactor
-        namesSprite.yScale = scaleFactor
-        addChild(namesSprite)
     }
     
     override func update(_ currentTime: TimeInterval) {
