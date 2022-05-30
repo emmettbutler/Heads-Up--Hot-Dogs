@@ -11,11 +11,12 @@ import SpriteKit
 class TextButton {
     let buttonBackground: BaseSprite = BaseSprite(imageNamed: "MenuItems_BG.png")
     let buttonText: BaseText = BaseText()
+    var touchZone: CGRect = CGRect(x: 0, y: 0, width: 0, height: 0)
+    let touchZoneScaleFactor: CGFloat = 1.5
     var _scene: BaseScene?
     
     init(text: String) {
         buttonText.text = text
-        buttonText.text = "Start"
     }
     
     func setScene(scene: BaseScene) {
@@ -33,5 +34,11 @@ class TextButton {
         buttonBackground.position = position
         buttonText.position = CGPoint(x:buttonBackground.position.x,
                                       y:buttonBackground.position.y - 8 * _scene!.scaleFactor)
+        let touchZoneWidth = buttonBackground.calculateAccumulatedFrame().width * touchZoneScaleFactor
+        let touchZoneHeight = buttonBackground.calculateAccumulatedFrame().height * touchZoneScaleFactor
+        touchZone = CGRect(x: buttonBackground.position.x - touchZoneWidth / 2,
+                           y: buttonBackground.position.y - touchZoneHeight / 2,
+                           width: touchZoneWidth,
+                           height: touchZoneHeight)
     }
 }

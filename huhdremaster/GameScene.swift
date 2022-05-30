@@ -13,13 +13,16 @@ class GameScene: BaseScene {
     let dogLogo: BaseSprite = BaseSprite(imageNamed: "HotDogs.png")
     let swooshLogo: BaseSprite = BaseSprite(imageNamed: "HeadsUp.png")
     let startButton: TextButton = TextButton(text: "Start")
+    let optionsButton: TextButton = TextButton(text: "Options")
     
     override init() {
         super.init()
         for sprite in [dogLogo, swooshLogo] {
             sprite.setScene(scene: self)
         }
-        startButton.setScene(scene: self)
+        for button in [startButton, optionsButton] {
+            button.setScene(scene: self)
+        }
     }
     
     override init(size: CGSize) {
@@ -50,11 +53,20 @@ class GameScene: BaseScene {
         swooshLogo.run(SKAction.move(to: CGPoint(x:-50, y:swooshLogo.position.y), duration: 0.4))
         
         startButton.setZ(zPosition: 21)
-        startButton.setPosition(position: CGPoint(x:0, y:dogLogo.calculateAccumulatedFrame().height / -2 - 70 * scaleFactor))
+        startButton.setPosition(position: CGPoint(x:UIScreen.main.bounds.width / -4,
+                                                  y:dogLogo.calculateAccumulatedFrame().height / -2 - 55 * scaleFactor))
+        
+        optionsButton.setZ(zPosition: 21)
+        optionsButton.setPosition(position: CGPoint(x:UIScreen.main.bounds.width / 4,
+                                                    y:dogLogo.calculateAccumulatedFrame().height / -2 - 55 * scaleFactor))
     }
     
     func touchDown(atPoint pos : CGPoint) {
-        
+        if startButton.touchZone.contains(pos) {
+            print("start")
+        } else if optionsButton.touchZone.contains(pos) {
+            print("options")
+        }
     }
     
     func touchMoved(toPoint pos : CGPoint) {
