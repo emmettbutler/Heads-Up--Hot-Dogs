@@ -4,10 +4,20 @@ import GameplayKit
 class OptionsScene: BaseScene {
     var backgroundClouds: BackgroundClouds? = nil
     let backButton: TextButton = TextButton(text: "Options Back")
+    let overlay: BaseSprite = BaseSprite(imageNamed: "Options_Overlay.png")
+    let creditsButton: TextButton = TextButton(text: "Credits", image: "Options_Btn.png")
+    let scoresButton: TextButton = TextButton(text: "Clear Scores", image: "Options_Btn.png")
+    let sfxButton: TextButton = TextButton(text: "SFX Off", image: "Options_Btn.png")
+    let creditsBackground:SKSpriteNode = SKSpriteNode(imageNamed: "Pause_BG.png")
+    let creditsTitle: BaseText = BaseText()
+    let creditsText: BaseText = BaseText()
     
     override init() {
         super.init()
-        backButton.setScene(scene: self)
+        overlay.setScene(scene: self)
+        for button in [backButton, creditsButton, scoresButton, sfxButton] {
+            button.setScene(scene: self)
+        }
     }
     
     override init(size: CGSize) {
@@ -26,14 +36,50 @@ class OptionsScene: BaseScene {
         
         backgroundClouds = BackgroundClouds(scene:self)
         
+        overlay.zPosition = 2
+        
         backButton.setZ(zPosition: 21)
-        backButton.setPosition(position: CGPoint(x:0, y:0))
+        backButton.setPosition(position: CGPoint(x:UIScreen.main.bounds.width / -2 + backButton.buttonBackground.calculateAccumulatedFrame().width + 20 * scaleFactor,
+                                                 y:UIScreen.main.bounds.height / -4))
+        
+        scoresButton.setZ(zPosition: 21)
+        scoresButton.setPosition(position: CGPoint(x:0, y:creditsButton.buttonBackground.calculateAccumulatedFrame().height * 2))
+        
+        creditsButton.setZ(zPosition: 21)
+        creditsButton.setPosition(position: CGPoint(x:0, y:0))
+        
+        sfxButton.setZ(zPosition: 21)
+        sfxButton.setPosition(position: CGPoint(x:0, y:creditsButton.buttonBackground.calculateAccumulatedFrame().height * -2))
+        
+        creditsBackground.xScale = UIScreen.main.bounds.width / creditsBackground.size.width
+        creditsBackground.yScale = UIScreen.main.bounds.height / creditsBackground.size.height
+        creditsBackground.zPosition = 80
+        creditsBackground.isHidden = true
+        addChild(creditsBackground)
+        
+        creditsTitle.text = "Credits"
+        creditsTitle.position = CGPoint(x: 0,
+                                        y: UIScreen.main.bounds.height / 2 - creditsTitle.calculateAccumulatedFrame().height - 10 * scaleFactor)
+        creditsTitle.zPosition = 81
+        creditsTitle.isHidden = true
+        creditsTitle.setScene(scene: self)
+        
+        creditsText.text = "Emmett Butler: design & program\nDiego Garcia: design & art\nMusic: Benjamin Carignan - \"Space Boyfriend\"\nLuke Silas - \"knife city\"\nTesters: Nick Johnson, Dave Mauro, Nina Freeman, Sam Bosma, Kali Ciesemier, Grace Yang, Mike Bartnett, Aaron Koenigsberg, Zach Cimafonte, Noah Lemen\nSpecial thanks to Muhammed Ali Khan and Anna Anthropy"
+        creditsText.position = CGPoint(x: 0, y: 0)
+        creditsText.preferredMaxLayoutWidth = UIScreen.main.bounds.width * 0.9
+        creditsText.zPosition = 81
+        creditsText.numberOfLines = 0
+        creditsText.isHidden = true
+        creditsText.setScene(scene: self)
     }
     
     func touchDown(atPoint pos : CGPoint) {
         if backButton.touchZone.contains(pos) {
             let controller = self.view?.window?.rootViewController as! GameViewController
             controller.changeScene(key: nil)
+        }
+        if (creditsBackground.parent == nil && creditsButton.touchZone.contains(pos)) || creditsBackground.parent != nil {
+            toggleCredits()
         }
     }
     
@@ -63,5 +109,11 @@ class OptionsScene: BaseScene {
     
     override func update(_ currentTime: TimeInterval) {
         
+    }
+    
+    func toggleCredits() {
+        creditsBackground.isHidden = !creditsBackground.isHidden
+        creditsTitle.isHidden = !creditsTitle.isHidden
+        creditsText.isHidden = !creditsText.isHidden
     }
 }

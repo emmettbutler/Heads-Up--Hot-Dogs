@@ -9,7 +9,7 @@ import SpriteKit
 
 
 class TextButton {
-    let buttonBackground: BaseSprite = BaseSprite(imageNamed: "MenuItems_BG.png")
+    var buttonBackground: BaseSprite = BaseSprite(imageNamed: "MenuItems_BG.png")
     let buttonText: BaseText = BaseText()
     var touchZone: CGRect = CGRect(x: 0, y: 0, width: 0, height: 0)
     let touchZoneScaleFactor: CGFloat = 1.5
@@ -17,6 +17,11 @@ class TextButton {
     
     init(text: String) {
         buttonText.text = text
+    }
+    
+    convenience init(text: String, image: String) {
+        self.init(text: text)
+        buttonBackground = BaseSprite(imageNamed: image)
     }
     
     func setScene(scene: BaseScene) {
