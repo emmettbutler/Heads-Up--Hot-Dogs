@@ -19,7 +19,7 @@ class SplashScene: SKScene {
         anchorPoint = CGPoint(x:0.5, y:0.5)
         let displaySize: CGRect = UIScreen.main.bounds
         if (UIDevice.current.userInterfaceIdiom == .pad) {
-            scaleFactor = 1.68
+            scaleFactor = 2
         }
         
         let background = SKSpriteNode(imageNamed: "Splash_BG_clean.png")

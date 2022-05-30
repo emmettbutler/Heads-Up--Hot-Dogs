@@ -31,7 +31,7 @@ class GameViewController: UIViewController {
             case is SplashScene:
                 scene = GameScene()
             default:
-                scene = SplashScene()
+                scene = GameScene()
         }
         
         scene.scaleMode = .resizeFill
