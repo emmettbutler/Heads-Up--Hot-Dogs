@@ -5,6 +5,7 @@ class SplashScene: SKScene {
     var startTime:Double = 0
     var phase:Int = 0
     let logoBackground: SKSpriteNode = SKSpriteNode(imageNamed: "Logo_Cloud.png")
+    var backgroundClouds: BackgroundClouds? = nil
     let mainLogo: SKSpriteNode = SKSpriteNode(imageNamed: "ASg_Logo.png")
     let logoAnchor: CGPoint = CGPoint(x: 10, y: -20)
     let fadeOut: SKAction = SKAction.fadeOut(withDuration: 1)
@@ -19,7 +20,10 @@ class SplashScene: SKScene {
         let background = SKSpriteNode(imageNamed: "Splash_BG_clean.png")
         background.xScale = displaySize.width / background.size.width
         background.yScale = displaySize.height / background.size.height
+        background.zPosition = 0
         addChild(background)
+        
+        backgroundClouds = BackgroundClouds(scene:self)
         
         logoBackground.zPosition = 20
         addChild(logoBackground)

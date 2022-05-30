@@ -13,6 +13,7 @@
 		AA0502AA2843E0DF00E34D92 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA0502A82843E0DF00E34D92 /* Main.storyboard */; };
 		AA0502AC2843E0E300E34D92 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA0502AB2843E0E300E34D92 /* Assets.xcassets */; };
 		AA0502B62844301700E34D92 /* SplashScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0502B52844301700E34D92 /* SplashScene.swift */; };
+		AA0502B828444B2B00E34D92 /* BackgroundClouds.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0502B728444B2B00E34D92 /* BackgroundClouds.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +25,7 @@
 		AA0502AB2843E0E300E34D92 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AA0502AD2843E0E300E34D92 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AA0502B52844301700E34D92 /* SplashScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScene.swift; sourceTree = "<group>"; };
+		AA0502B728444B2B00E34D92 /* BackgroundClouds.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundClouds.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +65,7 @@
 				AA0502A82843E0DF00E34D92 /* Main.storyboard */,
 				AA0502AB2843E0E300E34D92 /* Assets.xcassets */,
 				AA0502AD2843E0E300E34D92 /* Info.plist */,
+				AA0502B728444B2B00E34D92 /* BackgroundClouds.swift */,
 			);
 			path = huhdremaster;
 			sourceTree = "<group>";
@@ -138,6 +141,7 @@
 			files = (
 				AA0502A52843E0DF00E34D92 /* GameScene.swift in Sources */,
 				AA0502B62844301700E34D92 /* SplashScene.swift in Sources */,
+				AA0502B828444B2B00E34D92 /* BackgroundClouds.swift in Sources */,
 				AA0502A72843E0DF00E34D92 /* GameViewController.swift in Sources */,
 				AA05029F2843E0DF00E34D92 /* AppDelegate.swift in Sources */,
 			);
