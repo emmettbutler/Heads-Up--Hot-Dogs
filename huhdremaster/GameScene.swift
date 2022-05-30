@@ -12,14 +12,14 @@ class GameScene: BaseScene {
     var backgroundClouds: BackgroundClouds? = nil
     let dogLogo: BaseSprite = BaseSprite(imageNamed: "HotDogs.png")
     let swooshLogo: BaseSprite = BaseSprite(imageNamed: "HeadsUp.png")
-    let startButton: BaseSprite = BaseSprite(imageNamed: "MenuItems_BG.png")
-    let startText: SKLabelNode = SKLabelNode(text: "Start")
+    let startButton: TextButton = TextButton(text: "Start")
     
     override init() {
         super.init()
-        for sprite in [dogLogo, swooshLogo, startButton] {
+        for sprite in [dogLogo, swooshLogo] {
             sprite.setScene(scene: self)
         }
+        startButton.setScene(scene: self)
     }
     
     override init(size: CGSize) {
@@ -49,14 +49,8 @@ class GameScene: BaseScene {
                                       y:dogLogo.calculateAccumulatedFrame().height / 2 + swooshLogo.calculateAccumulatedFrame().height / 2 + 20)
         swooshLogo.run(SKAction.move(to: CGPoint(x:-50, y:swooshLogo.position.y), duration: 0.4))
         
-        startButton.zPosition = 21
-        startButton.position = CGPoint(x:0, y:dogLogo.calculateAccumulatedFrame().height / -2 - 70 * scaleFactor)
-        startText.position = CGPoint(x:startButton.position.x, y:startButton.position.y - 8 * scaleFactor)
-        startText.zPosition = 22
-        startText.fontName = "M46_LOSTPET"
-        startText.fontSize = 22 * scaleFactor
-        startText.fontColor = UIColor(red: 255/255, green: 62/255, blue: 166/255, alpha: 1)
-        addChild(startText)
+        startButton.setZ(zPosition: 21)
+        startButton.setPosition(position: CGPoint(x:0, y:dogLogo.calculateAccumulatedFrame().height / -2 - 70 * scaleFactor))
     }
     
     func touchDown(atPoint pos : CGPoint) {

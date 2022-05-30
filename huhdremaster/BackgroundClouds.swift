@@ -11,7 +11,8 @@ class BackgroundClouds {
         cloud1.run(SKAction.move(to: CGPoint(x:0, y:cloud1.position.y), duration: 90))
         cloud1.setScene(scene: scene)
         
-        cloud2.position = CGPoint(x:-1 * UIScreen.main.bounds.width / 2, y:UIScreen.main.bounds.height / 2 - 50 * scene.scaleFactor)
+        cloud2.position = CGPoint(x:-1 * UIScreen.main.bounds.width / 2,
+                                  y:UIScreen.main.bounds.height / 2 - 50 * scene.scaleFactor)
         cloud2.zPosition = 1
         cloud2.run(SKAction.move(to: CGPoint(x:UIScreen.main.bounds.width / 2, y:cloud2.position.y), duration: 80))
         cloud2.setScene(scene: scene)
