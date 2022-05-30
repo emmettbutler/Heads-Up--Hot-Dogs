@@ -81,7 +81,7 @@ class SplashScene: BaseScene {
         }
         if (phase == 3 && secondsPassed == 5.5) {
             let controller = self.view?.window?.rootViewController as! GameViewController
-            controller.changeScene()
+            controller.changeScene(key: nil)
         }
     }
 }

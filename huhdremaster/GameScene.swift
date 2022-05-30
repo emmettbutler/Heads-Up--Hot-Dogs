@@ -62,11 +62,11 @@ class GameScene: BaseScene {
     }
     
     func touchDown(atPoint pos : CGPoint) {
+        let controller = self.view?.window?.rootViewController as! GameViewController
         if startButton.touchZone.contains(pos) {
-            let controller = self.view?.window?.rootViewController as! GameViewController
-            controller.changeScene()
+            controller.changeScene(key: "levels")
         } else if optionsButton.touchZone.contains(pos) {
-            print("options")
+            controller.changeScene(key: "options")
         }
     }
     

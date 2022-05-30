@@ -48,6 +48,7 @@
 		AAA3D06C284540E1008AC525 /* BaseText.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA3D06B284540E1008AC525 /* BaseText.swift */; };
 		AAA3D06E28454252008AC525 /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA3D06D28454252008AC525 /* Button.swift */; };
 		AAA3D07028454CE3008AC525 /* LevelSelectScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA3D06F28454CE3008AC525 /* LevelSelectScene.swift */; };
+		AAA3D07228454E68008AC525 /* OptionsScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA3D07128454E68008AC525 /* OptionsScene.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -94,6 +95,7 @@
 		AAA3D06B284540E1008AC525 /* BaseText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseText.swift; sourceTree = "<group>"; };
 		AAA3D06D28454252008AC525 /* Button.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
 		AAA3D06F28454CE3008AC525 /* LevelSelectScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelSelectScene.swift; sourceTree = "<group>"; };
+		AAA3D07128454E68008AC525 /* OptionsScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionsScene.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -141,6 +143,7 @@
 				AAA3D06B284540E1008AC525 /* BaseText.swift */,
 				AAA3D06D28454252008AC525 /* Button.swift */,
 				AAA3D06F28454CE3008AC525 /* LevelSelectScene.swift */,
+				AAA3D07128454E68008AC525 /* OptionsScene.swift */,
 			);
 			path = huhdremaster;
 			sourceTree = "<group>";
@@ -279,6 +282,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA0502A52843E0DF00E34D92 /* GameScene.swift in Sources */,
+				AAA3D07228454E68008AC525 /* OptionsScene.swift in Sources */,
 				AAA3D06C284540E1008AC525 /* BaseText.swift in Sources */,
 				AA0502B62844301700E34D92 /* SplashScene.swift in Sources */,
 				AAA3D06A28453CF2008AC525 /* BaseScene.swift in Sources */,

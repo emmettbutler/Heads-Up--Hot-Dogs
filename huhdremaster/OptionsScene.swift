@@ -1,9 +1,9 @@
 import SpriteKit
 import GameplayKit
 
-class LevelSelectScene: BaseScene {
+class OptionsScene: BaseScene {
     var backgroundClouds: BackgroundClouds? = nil
-    let backButton: TextButton = TextButton(text: "Levels Back")
+    let backButton: TextButton = TextButton(text: "Options Back")
     
     override init() {
         super.init()

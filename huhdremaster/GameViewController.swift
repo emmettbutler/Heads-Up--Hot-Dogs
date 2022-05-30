@@ -17,7 +17,7 @@ class GameViewController: UIViewController {
         super.viewDidLoad()
         
         if let view = self.view as! SKView? {
-            self.changeScene()
+            self.changeScene(key: nil)
             
             view.ignoresSiblingOrder = true
             view.showsFPS = true
@@ -25,13 +25,22 @@ class GameViewController: UIViewController {
         }
     }
     
-    func changeScene() {
-        var scene:SKScene
+    func changeScene(key: String?) {
+        var scene:SKScene = SplashScene()
+        
         switch self.currentScene {
             case is SplashScene:
                 scene = GameScene()
             case is GameScene:
-                scene = LevelSelectScene()
+                if key == "levels" {
+                    scene = LevelSelectScene()
+                } else if key == "options" {
+                    scene = OptionsScene()
+                }
+            case is LevelSelectScene:
+                scene = GameScene()
+            case is OptionsScene:
+                scene = GameScene()
             default:
                 scene = SplashScene()
         }
