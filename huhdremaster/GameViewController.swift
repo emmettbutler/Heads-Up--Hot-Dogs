@@ -30,8 +30,10 @@ class GameViewController: UIViewController {
         switch self.currentScene {
             case is SplashScene:
                 scene = GameScene()
+            case is GameScene:
+                scene = LevelSelectScene()
             default:
-                scene = GameScene()
+                scene = SplashScene()
         }
         
         scene.scaleMode = .resizeFill
