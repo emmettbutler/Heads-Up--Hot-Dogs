@@ -30,8 +30,6 @@ class GameViewController: UIViewController {
         switch self.currentScene {
             case is SplashScene:
                 scene = GameScene()
-            case is GameScene:
-                scene = GameScene()
             default:
                 scene = SplashScene()
         }
