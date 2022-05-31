@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		AA05029F2843E0DF00E34D92 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA05029E2843E0DF00E34D92 /* AppDelegate.swift */; };
-		AA0502A52843E0DF00E34D92 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0502A42843E0DF00E34D92 /* GameScene.swift */; };
 		AA0502A72843E0DF00E34D92 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0502A62843E0DF00E34D92 /* GameViewController.swift */; };
 		AA0502AA2843E0DF00E34D92 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA0502A82843E0DF00E34D92 /* Main.storyboard */; };
 		AA0502AC2843E0E300E34D92 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA0502AB2843E0E300E34D92 /* Assets.xcassets */; };
@@ -43,6 +42,8 @@
 		AA0503632844663200E34D92 /* water splash loud.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AA0503482844663200E34D92 /* water splash loud.mp3 */; };
 		AA0503642844663200E34D92 /* hot dog appear 1.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AA0503492844663200E34D92 /* hot dog appear 1.mp3 */; };
 		AA5DC07C2845BE350041AAF7 /* Level.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5DC07B2845BE350041AAF7 /* Level.swift */; };
+		AA5DC07E2846AB730041AAF7 /* TitleScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5DC07D2846AB730041AAF7 /* TitleScene.swift */; };
+		AA5DC0802846ABDE0041AAF7 /* GameplayScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5DC07F2846ABDE0041AAF7 /* GameplayScene.swift */; };
 		AAA3D06628452380008AC525 /* LostPet.TTF in Resources */ = {isa = PBXBuildFile; fileRef = AAA3D06528452380008AC525 /* LostPet.TTF */; };
 		AAA3D068284530FB008AC525 /* BaseSprite.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA3D067284530FB008AC525 /* BaseSprite.swift */; };
 		AAA3D06A28453CF2008AC525 /* BaseScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA3D06928453CF2008AC525 /* BaseScene.swift */; };
@@ -55,7 +56,6 @@
 /* Begin PBXFileReference section */
 		AA05029B2843E0DF00E34D92 /* huhdremaster.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = huhdremaster.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA05029E2843E0DF00E34D92 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		AA0502A42843E0DF00E34D92 /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 		AA0502A62843E0DF00E34D92 /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		AA0502A92843E0DF00E34D92 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		AA0502AB2843E0E300E34D92 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -91,6 +91,8 @@
 		AA0503482844663200E34D92 /* water splash loud.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "water splash loud.mp3"; sourceTree = "<group>"; };
 		AA0503492844663200E34D92 /* hot dog appear 1.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "hot dog appear 1.mp3"; sourceTree = "<group>"; };
 		AA5DC07B2845BE350041AAF7 /* Level.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Level.swift; sourceTree = "<group>"; };
+		AA5DC07D2846AB730041AAF7 /* TitleScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TitleScene.swift; sourceTree = "<group>"; };
+		AA5DC07F2846ABDE0041AAF7 /* GameplayScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameplayScene.swift; sourceTree = "<group>"; };
 		AAA3D06528452380008AC525 /* LostPet.TTF */ = {isa = PBXFileReference; lastKnownFileType = file; path = LostPet.TTF; sourceTree = "<group>"; };
 		AAA3D067284530FB008AC525 /* BaseSprite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseSprite.swift; sourceTree = "<group>"; };
 		AAA3D06928453CF2008AC525 /* BaseScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseScene.swift; sourceTree = "<group>"; };
@@ -133,7 +135,6 @@
 				AAA3D06528452380008AC525 /* LostPet.TTF */,
 				AA05032E2844652C00E34D92 /* sounds */,
 				AA05029E2843E0DF00E34D92 /* AppDelegate.swift */,
-				AA0502A42843E0DF00E34D92 /* GameScene.swift */,
 				AA0502B52844301700E34D92 /* SplashScene.swift */,
 				AA0502A62843E0DF00E34D92 /* GameViewController.swift */,
 				AA0502A82843E0DF00E34D92 /* Main.storyboard */,
@@ -147,6 +148,8 @@
 				AAA3D06F28454CE3008AC525 /* LevelSelectScene.swift */,
 				AAA3D07128454E68008AC525 /* OptionsScene.swift */,
 				AA5DC07B2845BE350041AAF7 /* Level.swift */,
+				AA5DC07D2846AB730041AAF7 /* TitleScene.swift */,
+				AA5DC07F2846ABDE0041AAF7 /* GameplayScene.swift */,
 			);
 			path = huhdremaster;
 			sourceTree = "<group>";
@@ -284,7 +287,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AA0502A52843E0DF00E34D92 /* GameScene.swift in Sources */,
 				AAA3D07228454E68008AC525 /* OptionsScene.swift in Sources */,
 				AAA3D06C284540E1008AC525 /* BaseText.swift in Sources */,
 				AA0502B62844301700E34D92 /* SplashScene.swift in Sources */,
@@ -296,6 +298,8 @@
 				AAA3D06E28454252008AC525 /* Button.swift in Sources */,
 				AA05029F2843E0DF00E34D92 /* AppDelegate.swift in Sources */,
 				AAA3D07028454CE3008AC525 /* LevelSelectScene.swift in Sources */,
+				AA5DC07E2846AB730041AAF7 /* TitleScene.swift in Sources */,
+				AA5DC0802846ABDE0041AAF7 /* GameplayScene.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
