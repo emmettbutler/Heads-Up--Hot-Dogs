@@ -2,7 +2,6 @@ import SpriteKit
 import GameplayKit
 
 class SplashScene: BaseScene {
-    var startTime:Double = 0
     var phase:Int = 0
     let logoBackground: BaseSprite = BaseSprite(imageNamed: "Logo_Cloud.png")
     var backgroundClouds: BackgroundClouds? = nil

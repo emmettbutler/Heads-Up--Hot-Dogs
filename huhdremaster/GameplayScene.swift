@@ -3,6 +3,7 @@ import GameplayKit
 
 class GameplayScene: BaseScene {
     var level: Level? = nil
+    var lastHotDogSpawnTime: TimeInterval = 0
     
     override init() {
         super.init()
@@ -57,6 +58,22 @@ class GameplayScene: BaseScene {
     }
     
     override func update(_ currentTime: TimeInterval) {
-        
+        if (self.startTime == 0) {
+            self.startTime = currentTime
+        }
+        let secondsPassed: Double = round((currentTime - self.startTime) * 10) / 10.0
+        if secondsPassed.truncatingRemainder(dividingBy: 2) == 0 {
+            spawnHotDog(currentTime: currentTime)
+        }
+    }
+    
+    func spawnHotDog(currentTime: TimeInterval) {
+        if (currentTime - lastHotDogSpawnTime < 1) {
+            return
+        }
+        let hotDog: BaseSprite = BaseSprite(imageNamed: "dog54x12.png")
+        hotDog.setRandomPosition()
+        hotDog.setScene(scene: self)
+        lastHotDogSpawnTime = currentTime
     }
 }

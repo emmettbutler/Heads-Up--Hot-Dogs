@@ -22,4 +22,9 @@ class BaseSprite: SKSpriteNode {
         scene.addChild(self)
         self._scene = scene
     }
+    
+    func setRandomPosition() {
+        self.position = CGPoint(x:Int.random(in:(Int)(UIScreen.main.bounds.width / -2)...(Int)(UIScreen.main.bounds.width / 2)),
+                                y:Int.random(in:(Int)(UIScreen.main.bounds.height / -2)...(Int)(UIScreen.main.bounds.height / 2)))
+    }
 }
