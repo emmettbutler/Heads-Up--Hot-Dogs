@@ -3,13 +3,14 @@ import GameplayKit
 
 class LevelSelectScene: BaseScene {
     var backgroundClouds: BackgroundClouds? = nil
-    let backButton: TextButton = TextButton(text: "Levels Back")
+    let backButton: TextButton = TextButton(text: "Back")
     let levelBand: BaseSprite = BaseSprite(imageNamed: "Lvl_Band.png")
     let phillyThumb: BaseSprite = BaseSprite(imageNamed: "Philly_Thumb.png")
     let levelTextBox: BaseSprite = BaseSprite(imageNamed: "Lvl_TextBox.png")
     let arrowLeft: BaseSprite = BaseSprite(imageNamed: "LvlArrow.png")
     let arrowRight: BaseSprite = BaseSprite(imageNamed: "LvlArrow.png")
     let titleText: BaseText = BaseText()
+    let levelText: BaseText = BaseText()
     
     override init() {
         super.init()
@@ -17,7 +18,9 @@ class LevelSelectScene: BaseScene {
             sprite.setScene(scene: self)
         }
         backButton.setScene(scene: self)
-        titleText.setScene(scene: self)
+        for text in [titleText, levelText] {
+            text.setScene(scene: self)
+        }
     }
     
     override init(size: CGSize) {
@@ -37,8 +40,7 @@ class LevelSelectScene: BaseScene {
         backgroundClouds = BackgroundClouds(scene:self)
         
         backButton.setZ(zPosition: 21)
-        backButton.setPosition(position: CGPoint(x:UIScreen.main.bounds.width / -2 + backButton.buttonBackground.calculateAccumulatedFrame().width + 20 * scaleFactor,
-                                                 y:UIScreen.main.bounds.height / -4))
+        backButton.setPosition(position: CGPoint(x:-200 * scaleFactor, y:-150 * scaleFactor))
         
         levelBand.zPosition = 20
         
@@ -47,6 +49,11 @@ class LevelSelectScene: BaseScene {
         
         levelTextBox.zPosition = 21
         levelTextBox.position = CGPoint(x: 0, y: -90 * scaleFactor)
+        levelText.zPosition = 22
+        levelText.text = "Philly\nHigh score: 000000"
+        levelText.numberOfLines = 0
+        levelText.position = CGPoint(x: levelTextBox.position.x, y: levelTextBox.position.y - levelTextBox.calculateAccumulatedFrame().height / 2)
+        levelText.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
         
         titleText.text = "SELECT LEVEL"
         titleText.zPosition = 21
