@@ -8,7 +8,7 @@
 import SpriteKit
 import GameplayKit
 
-class GameScene: BaseScene {
+class TitleScene: BaseScene {
     var backgroundClouds: BackgroundClouds? = nil
     let dogLogo: BaseSprite = BaseSprite(imageNamed: "HotDogs.png")
     let swooshLogo: BaseSprite = BaseSprite(imageNamed: "HeadsUp.png")

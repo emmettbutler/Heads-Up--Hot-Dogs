@@ -3,7 +3,7 @@ import GameplayKit
 
 class OptionsScene: BaseScene {
     var backgroundClouds: BackgroundClouds? = nil
-    let backButton: TextButton = TextButton(text: "Options Back")
+    let backButton: TextButton = TextButton(text: "Back")
     let overlay: BaseSprite = BaseSprite(imageNamed: "Options_Overlay.png")
     let creditsButton: TextButton = TextButton(text: "Credits", image: "Options_Btn.png")
     let scoresButton: TextButton = TextButton(text: "Clear Scores", image: "Options_Btn.png")
@@ -78,7 +78,9 @@ class OptionsScene: BaseScene {
             let controller = self.view?.window?.rootViewController as! GameViewController
             controller.changeScene(key: nil)
         }
-        if (creditsBackground.parent == nil && creditsButton.touchZone.contains(pos)) || creditsBackground.parent != nil {
+        if (creditsBackground.isHidden == true && creditsButton.touchZone.contains(pos)) ||
+            creditsBackground.isHidden == false
+        {
             toggleCredits()
         }
     }

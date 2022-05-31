@@ -4,10 +4,20 @@ import GameplayKit
 class LevelSelectScene: BaseScene {
     var backgroundClouds: BackgroundClouds? = nil
     let backButton: TextButton = TextButton(text: "Levels Back")
+    let levelBand: BaseSprite = BaseSprite(imageNamed: "Lvl_Band.png")
+    let phillyThumb: BaseSprite = BaseSprite(imageNamed: "Philly_Thumb.png")
+    let levelTextBox: BaseSprite = BaseSprite(imageNamed: "Lvl_TextBox.png")
+    let arrowLeft: BaseSprite = BaseSprite(imageNamed: "LvlArrow.png")
+    let arrowRight: BaseSprite = BaseSprite(imageNamed: "LvlArrow.png")
+    let titleText: BaseText = BaseText()
     
     override init() {
         super.init()
+        for sprite in [levelBand, phillyThumb, levelTextBox, arrowLeft, arrowRight] {
+            sprite.setScene(scene: self)
+        }
         backButton.setScene(scene: self)
+        titleText.setScene(scene: self)
     }
     
     override init(size: CGSize) {
@@ -27,7 +37,28 @@ class LevelSelectScene: BaseScene {
         backgroundClouds = BackgroundClouds(scene:self)
         
         backButton.setZ(zPosition: 21)
-        backButton.setPosition(position: CGPoint(x:0, y:0))
+        backButton.setPosition(position: CGPoint(x:UIScreen.main.bounds.width / -2 + backButton.buttonBackground.calculateAccumulatedFrame().width + 20 * scaleFactor,
+                                                 y:UIScreen.main.bounds.height / -4))
+        
+        levelBand.zPosition = 20
+        
+        phillyThumb.zPosition = 21
+        phillyThumb.position = CGPoint(x: 0, y: 20 * scaleFactor)
+        
+        levelTextBox.zPosition = 21
+        levelTextBox.position = CGPoint(x: 0, y: -90 * scaleFactor)
+        
+        titleText.text = "SELECT LEVEL"
+        titleText.zPosition = 21
+        titleText.fontSize = 40 * scaleFactor
+        titleText.position = CGPoint(x: 0, y: 150 * scaleFactor)
+        
+        arrowLeft.zPosition = 21
+        arrowLeft.position = CGPoint(x: -180 * scaleFactor, y:0)
+        
+        arrowRight.zPosition = 21
+        arrowRight.position = CGPoint(x: 180 * scaleFactor, y:0)
+        arrowRight.xScale *= -1
     }
     
     func touchDown(atPoint pos : CGPoint) {
