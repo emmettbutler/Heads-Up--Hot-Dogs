@@ -2,6 +2,7 @@ import SpriteKit
 import GameplayKit
 
 class GameplayScene: BaseScene {
+    var level: Level? = nil
     
     override init() {
         super.init()
@@ -17,10 +18,14 @@ class GameplayScene: BaseScene {
     
     convenience init(levelSlug: String) {
         self.init()
+        self.level = levelWithSlug(levelSlug: levelSlug)
     }
     
     override func didMove(to view: SKView) {
-        
+        let background = SKSpriteNode(imageNamed: self.level!.background)
+        background.xScale = UIScreen.main.bounds.width / background.size.width
+        background.yScale = UIScreen.main.bounds.height / background.size.height
+        addChild(background)
     }
     
     func touchDown(atPoint pos : CGPoint) {

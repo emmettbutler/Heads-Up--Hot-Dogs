@@ -49,8 +49,6 @@ class GameViewController: UIViewController {
                 scene = LevelSelectScene()
         }
         
-        scene.scaleMode = .resizeFill
-        scene.anchorPoint = CGPoint(x:0.5, y:0.5)
         if let view = self.view as! SKView? {
             view.presentScene(scene)
         }

@@ -5,6 +5,8 @@ class BaseScene: SKScene {
     
     override init() {
         super.init()
+        self.scaleMode = .resizeFill
+        self.anchorPoint = CGPoint(x:0.5, y:0.5)
     }
     
     override init(size: CGSize) {
@@ -17,5 +19,14 @@ class BaseScene: SKScene {
     
     func getAllLevels() -> Array<Level> {
         return [Philly(), NewYork()]
+    }
+    
+    func levelWithSlug(levelSlug: String) -> Level? {
+        for level in getAllLevels() {
+            if level.slug == levelSlug {
+                return level
+            }
+        }
+        return nil
     }
 }
