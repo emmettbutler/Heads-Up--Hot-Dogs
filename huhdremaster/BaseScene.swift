@@ -14,4 +14,8 @@ class BaseScene: SKScene {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    func getAllLevels() -> Array<Level> {
+        return [Philly(), NewYork()]
+    }
 }
