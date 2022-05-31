@@ -38,7 +38,11 @@ class GameViewController: UIViewController {
                     scene = OptionsScene()
                 }
             case is LevelSelectScene:
-                scene = TitleScene()
+                if key == "title" {
+                    scene = TitleScene()
+                } else {
+                    scene = GameplayScene(levelSlug: key!)
+                }
             case is OptionsScene:
                 scene = TitleScene()
             default:

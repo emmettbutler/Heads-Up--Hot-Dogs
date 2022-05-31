@@ -75,9 +75,9 @@ class LevelSelectScene: BaseScene {
     }
     
     func touchDown(atPoint pos : CGPoint) {
+        let controller = self.view?.window?.rootViewController as! GameViewController
         if backButton.touchZone.contains(pos) {
-            let controller = self.view?.window?.rootViewController as! GameViewController
-            controller.changeScene(key: nil)
+            controller.changeScene(key: "title")
         }
         if arrowLeft.contains(pos) {
             currentLevelIndex = currentLevelIndex == 0 ? allLevels!.count - 1 : currentLevelIndex - 1
@@ -87,6 +87,9 @@ class LevelSelectScene: BaseScene {
         }
         levelText.text = allLevels![currentLevelIndex].name + "\nHigh score: 000000"
         levelThumb.texture = SKTexture(imageNamed: allLevels![currentLevelIndex].thumbnail)
+        if levelThumb.contains(pos) {
+            controller.changeScene(key: allLevels![currentLevelIndex].slug)
+        }
     }
     
     func touchMoved(toPoint pos : CGPoint) {
