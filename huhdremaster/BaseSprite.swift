@@ -2,6 +2,7 @@ import SpriteKit
 
 class BaseSprite: SKSpriteNode {
     var _scene: BaseScene? = nil
+    var shouldBeDespawned: Bool = false
     
     init(imageNamed: String) {
         let texture = SKTexture(imageNamed: imageNamed)

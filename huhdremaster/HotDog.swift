@@ -8,11 +8,14 @@
 import SpriteKit
 
 class HotDog: BaseSprite {
+    static let categoryBitMask: UInt32 = 0b10000000
     let standardTexture: SKTexture = SKTexture(imageNamed: "dog54x12.png")
     let fallingTexture: SKTexture = SKTexture(imageNamed: "Dog_Fall.png")
     let risingTexture: SKTexture = SKTexture(imageNamed: "Dog_Rise.png")
     var isGrabbed: Bool = false
     var previousDragPosition: CGPoint = CGPoint(x:0, y:0)
+    var lastFloorContactTime: TimeInterval = -1
+    var lastGrabTime: TimeInterval = -1
     
     init(scene: BaseScene) {
         super.init(texture: standardTexture)
@@ -22,6 +25,7 @@ class HotDog: BaseSprite {
                                                         height: self.size.height))
         self.physicsBody?.restitution = 0.2
         self.physicsBody?.collisionBitMask = UInt32.random(in:0...3) | 0b1000
+        self.physicsBody?.categoryBitMask = HotDog.categoryBitMask
         self.zPosition = 30
         self.setScene(scene: scene)
     }
@@ -34,7 +38,20 @@ class HotDog: BaseSprite {
         super.init(coder:aDecoder)
     }
     
-    func update() {
+    func update(currentTime: TimeInterval) {
+        self.updateTexture()
+        self.resolveDespawnConditions(currentTime: currentTime)
+    }
+    
+    func resolveDespawnConditions(currentTime: TimeInterval) {
+        let timeSinceFloorContact: TimeInterval = currentTime - self.lastFloorContactTime
+        let timeSinceGrab: TimeInterval = currentTime - self.lastGrabTime
+        if self.lastFloorContactTime != -1 && !self.isGrabbed && timeSinceFloorContact > 3 && timeSinceGrab > 3 {
+            self.shouldBeDespawned = true
+        }
+    }
+    
+    func updateTexture() {
         if ((self.physicsBody?.velocity.dy)! < -10 && self.texture != fallingTexture) {
             self.texture = fallingTexture
         } else if ((self.physicsBody?.velocity.dy)! > 10 && self.texture != risingTexture) {
@@ -44,8 +61,14 @@ class HotDog: BaseSprite {
         }
     }
     
-    func grab() {
+    func contactedFloor(currentTime: TimeInterval) {
+        self.lastFloorContactTime = currentTime
+    }
+    
+    func grab(currentTime: TimeInterval) {
         self.isGrabbed = true
+        self.lastGrabTime = currentTime
+        self.lastFloorContactTime = -1
         self.physicsBody?.isDynamic = false
     }
     

@@ -1,10 +1,11 @@
 import SpriteKit
 import GameplayKit
 
-class GameplayScene: BaseScene {
+class GameplayScene: BaseScene, SKPhysicsContactDelegate {
     var level: Level? = nil
     var lastHotDogSpawnTime: TimeInterval = 0
     var allHotDogs: Array<HotDog> = []
+    let floorCategoryBitMasks: Array<UInt32> = [0, 1, 2, 3]
     
     override init() {
         super.init()
@@ -29,13 +30,26 @@ class GameplayScene: BaseScene {
         background.yScale = UIScreen.main.bounds.height / background.size.height
         addChild(background)
         
+        physicsWorld.contactDelegate = self
+        
         spawnBoundaries()
+    }
+    
+    func didBegin(_ contact: SKPhysicsContact) {
+        guard let nodeA = contact.bodyA.node else { return }
+        guard let nodeB = contact.bodyB.node else { return }
+        let nodeAIsFloor: Bool = self.floorCategoryBitMasks.contains(nodeA.physicsBody!.categoryBitMask)
+        let nodeBIsHotDog: Bool = nodeB.physicsBody?.categoryBitMask == HotDog.categoryBitMask
+        if (nodeAIsFloor && nodeBIsHotDog) {
+            let hotDog: HotDog = nodeB as! HotDog
+            hotDog.contactedFloor(currentTime: secondsPassed)
+        }
     }
     
     func touchDown(atPoint pos : CGPoint) {
         for hotDog in allHotDogs {
             if hotDog.contains(pos) {
-                hotDog.grab()
+                hotDog.grab(currentTime: secondsPassed)
             }
         }
     }
@@ -74,13 +88,22 @@ class GameplayScene: BaseScene {
         if (self.startTime == 0) {
             self.startTime = currentTime
         }
-        let secondsPassed: Double = round((currentTime - self.startTime) * 10) / 10.0
+        secondsPassed = round((currentTime - self.startTime) * 10) / 10.0
         if secondsPassed.truncatingRemainder(dividingBy: 2) == 0 {
             spawnHotDog(currentTime: currentTime)
         }
         
+        for child in self.children {
+            if child is BaseSprite && (child as! BaseSprite).shouldBeDespawned {
+                child.removeFromParent()
+                if child is HotDog {
+                    allHotDogs.remove(at: allHotDogs.firstIndex(of: child as! HotDog)!)
+                }
+            }
+        }
+        
         for hotDog in allHotDogs {
-            hotDog.update()
+            hotDog.update(currentTime: secondsPassed)
         }
     }
     
@@ -93,7 +116,7 @@ class GameplayScene: BaseScene {
     }
     
     func spawnBoundaries() {
-        for index in 0...3 {
+        for index in self.floorCategoryBitMasks {
             spawnFloor(index: UInt32(index))
         }
         spawnWall(xPos: UIScreen.main.bounds.width / 2)
@@ -110,6 +133,7 @@ class GameplayScene: BaseScene {
         ground.physicsBody = SKPhysicsBody(edgeChainFrom: pathToDraw)
         ground.physicsBody?.isDynamic = false
         ground.physicsBody?.categoryBitMask = index
+        ground.physicsBody?.contactTestBitMask = HotDog.categoryBitMask
         addChild(ground)
     }
     

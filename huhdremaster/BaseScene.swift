@@ -3,6 +3,7 @@ import SpriteKit
 class BaseScene: SKScene {
     let scaleFactor: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 2 : 1
     var startTime:Double = 0
+    var secondsPassed:Double = 0
     
     override init() {
         super.init()
