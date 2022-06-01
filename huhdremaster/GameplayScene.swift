@@ -39,11 +39,8 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
     func didBegin(_ contact: SKPhysicsContact) {
         guard let nodeA = contact.bodyA.node else { return }
         guard let nodeB = contact.bodyB.node else { return }
-        let nodeAIsFloor: Bool = GameplayScene.floorCategoryBitMasks.contains(nodeA.physicsBody!.categoryBitMask)
-        let nodeBIsHotDog: Bool = nodeB.physicsBody?.categoryBitMask == HotDog.categoryBitMask
-        if (nodeAIsFloor && nodeBIsHotDog) {
-            let hotDog: HotDog = nodeB as! HotDog
-            hotDog.contactedFloor(currentTime: secondsPassed)
+        if (GameplayScene.floorCategoryBitMasks.contains(nodeA.physicsBody!.categoryBitMask) && nodeB.physicsBody?.categoryBitMask == HotDog.categoryBitMask) {
+            (nodeB as! HotDog).contactedFloor(currentTime: secondsPassed)
         }
     }
     
