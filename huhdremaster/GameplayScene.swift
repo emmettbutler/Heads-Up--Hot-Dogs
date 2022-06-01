@@ -27,6 +27,10 @@ class GameplayScene: BaseScene {
         background.xScale = UIScreen.main.bounds.width / background.size.width
         background.yScale = UIScreen.main.bounds.height / background.size.height
         addChild(background)
+        
+        for index in 0...3 {
+            spawnFloor(index: UInt32(index))
+        }
     }
     
     func touchDown(atPoint pos : CGPoint) {
@@ -73,7 +77,27 @@ class GameplayScene: BaseScene {
         }
         let hotDog: BaseSprite = BaseSprite(imageNamed: "dog54x12.png")
         hotDog.setRandomPosition()
+        hotDog.physicsBody = SKPhysicsBody(texture: hotDog.texture!,
+                                           size: CGSize(width: hotDog.size.width,
+                                                        height: hotDog.size.height))
+        hotDog.physicsBody?.restitution = 0.5
+        hotDog.physicsBody?.collisionBitMask = UInt32.random(in:0...3)
+        hotDog.zPosition = 30
         hotDog.setScene(scene: self)
+        
         lastHotDogSpawnTime = currentTime
+    }
+    
+    func spawnFloor(index: UInt32) {
+        let ground = SKShapeNode()
+        let pathToDraw = CGMutablePath()
+        let height: CGFloat = UIScreen.main.bounds.height / -2 + (65 - 20 * CGFloat(index))
+        let startPoint = CGPoint(x: UIScreen.main.bounds.width / -2, y: height)
+        pathToDraw.move(to: startPoint)
+        pathToDraw.addLine(to: CGPoint(x: UIScreen.main.bounds.width / 2, y: startPoint.y))
+        ground.physicsBody = SKPhysicsBody(edgeChainFrom: pathToDraw)
+        ground.physicsBody?.isDynamic = false
+        ground.physicsBody?.categoryBitMask = index
+        addChild(ground)
     }
 }

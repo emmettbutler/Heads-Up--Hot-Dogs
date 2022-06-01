@@ -46,7 +46,7 @@ class GameViewController: UIViewController {
             case is OptionsScene:
                 scene = TitleScene()
             default:
-                scene = LevelSelectScene()
+                scene = GameplayScene(levelSlug: "philly")
         }
         
         if let view = self.view as! SKView? {
