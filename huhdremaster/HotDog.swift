@@ -24,7 +24,7 @@ class HotDog: BaseSprite {
                                            size: CGSize(width: self.size.width,
                                                         height: self.size.height))
         self.physicsBody?.restitution = 0.2
-        self.physicsBody?.collisionBitMask = UInt32.random(in:0...3) | 0b1000
+        self.physicsBody?.collisionBitMask = GameplayScene.floorCategoryBitMasks.randomElement()! | GameplayScene.wallCategoryBitMask
         self.physicsBody?.categoryBitMask = HotDog.categoryBitMask
         self.zPosition = 30
         self.setScene(scene: scene)

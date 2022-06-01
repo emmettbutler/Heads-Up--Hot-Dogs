@@ -5,7 +5,8 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
     var level: Level? = nil
     var lastHotDogSpawnTime: TimeInterval = 0
     var allHotDogs: Array<HotDog> = []
-    let floorCategoryBitMasks: Array<UInt32> = [0, 1, 2, 3]
+    static let floorCategoryBitMasks: Array<UInt32> = [0, 1, 2, 3]
+    static let wallCategoryBitMask: UInt32 = 0b1000
     
     override init() {
         super.init()
@@ -38,7 +39,7 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
     func didBegin(_ contact: SKPhysicsContact) {
         guard let nodeA = contact.bodyA.node else { return }
         guard let nodeB = contact.bodyB.node else { return }
-        let nodeAIsFloor: Bool = self.floorCategoryBitMasks.contains(nodeA.physicsBody!.categoryBitMask)
+        let nodeAIsFloor: Bool = GameplayScene.floorCategoryBitMasks.contains(nodeA.physicsBody!.categoryBitMask)
         let nodeBIsHotDog: Bool = nodeB.physicsBody?.categoryBitMask == HotDog.categoryBitMask
         if (nodeAIsFloor && nodeBIsHotDog) {
             let hotDog: HotDog = nodeB as! HotDog
@@ -116,7 +117,7 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
     }
     
     func spawnBoundaries() {
-        for index in self.floorCategoryBitMasks {
+        for index in GameplayScene.floorCategoryBitMasks {
             spawnFloor(index: UInt32(index))
         }
         spawnWall(xPos: UIScreen.main.bounds.width / 2)
@@ -145,7 +146,7 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
         pathToDraw.addLine(to: CGPoint(x: startPoint.x, y: UIScreen.main.bounds.height / -2))
         wall.physicsBody = SKPhysicsBody(edgeChainFrom: pathToDraw)
         wall.physicsBody?.isDynamic = false
-        wall.physicsBody?.categoryBitMask = 0b1000
+        wall.physicsBody?.categoryBitMask = GameplayScene.wallCategoryBitMask
         addChild(wall)
     }
 }
