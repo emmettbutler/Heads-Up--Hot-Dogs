@@ -11,6 +11,8 @@ class HotDog: BaseSprite {
     let standardTexture: SKTexture = SKTexture(imageNamed: "dog54x12.png")
     let fallingTexture: SKTexture = SKTexture(imageNamed: "Dog_Fall.png")
     let risingTexture: SKTexture = SKTexture(imageNamed: "Dog_Rise.png")
+    var isGrabbed: Bool = false
+    var previousDragPosition: CGPoint = CGPoint(x:0, y:0)
     
     init(scene: BaseScene) {
         super.init(texture: standardTexture)
@@ -39,6 +41,25 @@ class HotDog: BaseSprite {
             self.texture = risingTexture
         } else if (self.texture != standardTexture) {
             self.texture = standardTexture
+        }
+    }
+    
+    func grab() {
+        self.isGrabbed = true
+        self.physicsBody?.isDynamic = false
+    }
+    
+    func releaseGrab() {
+        self.isGrabbed = false
+        self.physicsBody?.isDynamic = true
+        self.physicsBody?.applyImpulse(CGVector(dx:self.position.x - self.previousDragPosition.x,
+                                                dy: self.position.y - self.previousDragPosition.y))
+    }
+    
+    func drag(toPos: CGPoint) {
+        if self.isGrabbed {
+            self.previousDragPosition = self.position
+            self.position = toPos
         }
     }
 }

@@ -33,15 +33,25 @@ class GameplayScene: BaseScene {
     }
     
     func touchDown(atPoint pos : CGPoint) {
-        
+        for hotDog in allHotDogs {
+            if hotDog.contains(pos) {
+                hotDog.grab()
+            }
+        }
     }
     
     func touchMoved(toPoint pos : CGPoint) {
-        
+        for hotDog in allHotDogs {
+            hotDog.drag(toPos: pos)
+        }
     }
     
     func touchUp(atPoint pos : CGPoint) {
-       
+        for hotDog in allHotDogs {
+            if hotDog.contains(pos) {
+                hotDog.releaseGrab()
+            }
+        }
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
