@@ -20,7 +20,7 @@ class HotDog: BaseSprite {
         self.physicsBody = SKPhysicsBody(texture: self.texture!,
                                            size: CGSize(width: self.size.width,
                                                         height: self.size.height))
-        self.physicsBody?.restitution = 0.9
+        self.physicsBody?.restitution = 0.2
         self.physicsBody?.collisionBitMask = UInt32.random(in:0...3) | 0b1000
         self.zPosition = 30
         self.setScene(scene: scene)
@@ -35,9 +35,9 @@ class HotDog: BaseSprite {
     }
     
     func update() {
-        if ((self.physicsBody?.velocity.dy)! < 2 && self.texture != fallingTexture) {
+        if ((self.physicsBody?.velocity.dy)! < -10 && self.texture != fallingTexture) {
             self.texture = fallingTexture
-        } else if ((self.physicsBody?.velocity.dy)! > 2 && self.texture != risingTexture) {
+        } else if ((self.physicsBody?.velocity.dy)! > 10 && self.texture != risingTexture) {
             self.texture = risingTexture
         } else if (self.texture != standardTexture) {
             self.texture = standardTexture
