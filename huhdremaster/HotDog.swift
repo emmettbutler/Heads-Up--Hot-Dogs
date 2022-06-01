@@ -19,7 +19,7 @@ class HotDog: BaseSprite {
                                            size: CGSize(width: self.size.width,
                                                         height: self.size.height))
         self.physicsBody?.restitution = 0.9
-        self.physicsBody?.collisionBitMask = UInt32.random(in:0...3)
+        self.physicsBody?.collisionBitMask = UInt32.random(in:0...3) | 0b1000
         self.zPosition = 30
         self.setScene(scene: scene)
     }
