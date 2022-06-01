@@ -4,6 +4,7 @@ import GameplayKit
 class GameplayScene: BaseScene {
     var level: Level? = nil
     var lastHotDogSpawnTime: TimeInterval = 0
+    var allHotDogs: Array<HotDog> = []
     
     override init() {
         super.init()
@@ -69,22 +70,17 @@ class GameplayScene: BaseScene {
         if secondsPassed.truncatingRemainder(dividingBy: 2) == 0 {
             spawnHotDog(currentTime: currentTime)
         }
+        
+        for hotDog in allHotDogs {
+            hotDog.update()
+        }
     }
     
     func spawnHotDog(currentTime: TimeInterval) {
         if (currentTime - lastHotDogSpawnTime < 1) {
             return
         }
-        let hotDog: BaseSprite = BaseSprite(imageNamed: "dog54x12.png")
-        hotDog.setRandomPosition()
-        hotDog.physicsBody = SKPhysicsBody(texture: hotDog.texture!,
-                                           size: CGSize(width: hotDog.size.width,
-                                                        height: hotDog.size.height))
-        hotDog.physicsBody?.restitution = 0.5
-        hotDog.physicsBody?.collisionBitMask = UInt32.random(in:0...3)
-        hotDog.zPosition = 30
-        hotDog.setScene(scene: self)
-        
+        allHotDogs.append(HotDog(scene: self))
         lastHotDogSpawnTime = currentTime
     }
     

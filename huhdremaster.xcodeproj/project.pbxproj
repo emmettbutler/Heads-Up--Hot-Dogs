@@ -44,6 +44,7 @@
 		AA5DC07C2845BE350041AAF7 /* Level.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5DC07B2845BE350041AAF7 /* Level.swift */; };
 		AA5DC07E2846AB730041AAF7 /* TitleScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5DC07D2846AB730041AAF7 /* TitleScene.swift */; };
 		AA5DC0802846ABDE0041AAF7 /* GameplayScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5DC07F2846ABDE0041AAF7 /* GameplayScene.swift */; };
+		AA5DC0822846F1690041AAF7 /* HotDog.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5DC0812846F1690041AAF7 /* HotDog.swift */; };
 		AAA3D06628452380008AC525 /* LostPet.TTF in Resources */ = {isa = PBXBuildFile; fileRef = AAA3D06528452380008AC525 /* LostPet.TTF */; };
 		AAA3D068284530FB008AC525 /* BaseSprite.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA3D067284530FB008AC525 /* BaseSprite.swift */; };
 		AAA3D06A28453CF2008AC525 /* BaseScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA3D06928453CF2008AC525 /* BaseScene.swift */; };
@@ -93,6 +94,7 @@
 		AA5DC07B2845BE350041AAF7 /* Level.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Level.swift; sourceTree = "<group>"; };
 		AA5DC07D2846AB730041AAF7 /* TitleScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TitleScene.swift; sourceTree = "<group>"; };
 		AA5DC07F2846ABDE0041AAF7 /* GameplayScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameplayScene.swift; sourceTree = "<group>"; };
+		AA5DC0812846F1690041AAF7 /* HotDog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotDog.swift; sourceTree = "<group>"; };
 		AAA3D06528452380008AC525 /* LostPet.TTF */ = {isa = PBXFileReference; lastKnownFileType = file; path = LostPet.TTF; sourceTree = "<group>"; };
 		AAA3D067284530FB008AC525 /* BaseSprite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseSprite.swift; sourceTree = "<group>"; };
 		AAA3D06928453CF2008AC525 /* BaseScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseScene.swift; sourceTree = "<group>"; };
@@ -150,6 +152,7 @@
 				AA5DC07B2845BE350041AAF7 /* Level.swift */,
 				AA5DC07D2846AB730041AAF7 /* TitleScene.swift */,
 				AA5DC07F2846ABDE0041AAF7 /* GameplayScene.swift */,
+				AA5DC0812846F1690041AAF7 /* HotDog.swift */,
 			);
 			path = huhdremaster;
 			sourceTree = "<group>";
@@ -293,6 +296,7 @@
 				AAA3D06A28453CF2008AC525 /* BaseScene.swift in Sources */,
 				AA0502B828444B2B00E34D92 /* BackgroundClouds.swift in Sources */,
 				AA5DC07C2845BE350041AAF7 /* Level.swift in Sources */,
+				AA5DC0822846F1690041AAF7 /* HotDog.swift in Sources */,
 				AAA3D068284530FB008AC525 /* BaseSprite.swift in Sources */,
 				AA0502A72843E0DF00E34D92 /* GameViewController.swift in Sources */,
 				AAA3D06E28454252008AC525 /* Button.swift in Sources */,
