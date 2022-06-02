@@ -7,6 +7,8 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
     var allHotDogs: Array<HotDog> = []
     static let floorCategoryBitMasks: Array<UInt32> = [0, 1, 2, 3]
     static let wallCategoryBitMask: UInt32 = 0b1000
+    static let droppedMax: Int = 5
+    var hotDogsDropped: Int = 0
     
     override init() {
         super.init()
@@ -39,7 +41,8 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
     func didBegin(_ contact: SKPhysicsContact) {
         guard let nodeA = contact.bodyA.node else { return }
         guard let nodeB = contact.bodyB.node else { return }
-        if (GameplayScene.floorCategoryBitMasks.contains(nodeA.physicsBody!.categoryBitMask) && nodeB.physicsBody?.categoryBitMask == HotDog.categoryBitMask) {
+        if (GameplayScene.floorCategoryBitMasks.contains(nodeA.physicsBody!.categoryBitMask) &&
+            nodeB.physicsBody?.categoryBitMask == HotDog.categoryBitMask) {
             (nodeB as! HotDog).contactedFloor(currentTime: secondsPassed)
         }
     }
@@ -95,13 +98,22 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
             if child is BaseSprite && (child as! BaseSprite).shouldBeDespawned {
                 child.removeFromParent()
                 if child is HotDog {
-                    allHotDogs.remove(at: allHotDogs.firstIndex(of: child as! HotDog)!)
+                    self.despawnHotDog(hotDog: child as! HotDog)
                 }
             }
         }
         
         for hotDog in allHotDogs {
             hotDog.update(currentTime: secondsPassed)
+        }
+    }
+    
+    func despawnHotDog(hotDog: HotDog) {
+        allHotDogs.remove(at: allHotDogs.firstIndex(of: hotDog)!)
+        hotDogsDropped += 1
+        if hotDogsDropped >= GameplayScene.droppedMax {
+            let controller = self.view?.window?.rootViewController as! GameViewController
+            controller.changeScene(key: nil)
         }
     }
     

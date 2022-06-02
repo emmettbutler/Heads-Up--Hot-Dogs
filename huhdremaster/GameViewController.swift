@@ -45,6 +45,8 @@ class GameViewController: UIViewController {
                 }
             case is OptionsScene:
                 scene = TitleScene()
+            case is GameplayScene:
+                scene = TitleScene()
             default:
                 scene = GameplayScene(levelSlug: "philly")
         }
