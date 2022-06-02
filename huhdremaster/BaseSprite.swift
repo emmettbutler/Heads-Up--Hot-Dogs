@@ -25,7 +25,11 @@ class BaseSprite: SKSpriteNode {
     }
     
     func setRandomPosition() {
-        self.position = CGPoint(x:Int.random(in:(Int)(UIScreen.main.bounds.width / -2)...(Int)(UIScreen.main.bounds.width / 2)),
-                                y:Int.random(in:(Int)(UIScreen.main.bounds.height / -2)...(Int)(UIScreen.main.bounds.height / 2)))
+        let sideBuffer: Int = 55
+        let minHeight: Int = Int(UIScreen.main.bounds.height) / -3
+        let maxHeight: Int = Int(UIScreen.main.bounds.height) / 2
+        let minX: Int = Int(UIScreen.main.bounds.width) / -2 + sideBuffer
+        let maxX: Int = Int(UIScreen.main.bounds.width) / 2 - sideBuffer
+        self.position = CGPoint(x:Int.random(in:minX...maxX), y:Int.random(in:minHeight...maxHeight))
     }
 }

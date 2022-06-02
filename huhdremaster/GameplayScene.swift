@@ -5,7 +5,7 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
     var level: Level? = nil
     var lastHotDogSpawnTime: TimeInterval = 0
     var allHotDogs: Array<HotDog> = []
-    static let floorCategoryBitMasks: Array<UInt32> = [0, 1, 2, 3]
+    static let floorCategoryBitMasks: Array<UInt32> = [0b0001, 0b0010, 0b0011, 0b0100]
     static let wallCategoryBitMask: UInt32 = 0b1000
     static let droppedMax: Int = 5
     var hotDogsDropped: Int = 0
@@ -127,7 +127,7 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
     
     func spawnBoundaries() {
         for index in GameplayScene.floorCategoryBitMasks {
-            spawnFloor(index: UInt32(index))
+            spawnFloor(index: index)
         }
         spawnWall(xPos: UIScreen.main.bounds.width / 2)
         spawnWall(xPos: UIScreen.main.bounds.width / -2)
@@ -136,7 +136,7 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
     func spawnFloor(index: UInt32) {
         let ground = SKShapeNode()
         let pathToDraw = CGMutablePath()
-        let height: CGFloat = UIScreen.main.bounds.height / -2 + (65 - 20 * CGFloat(index))
+        let height: CGFloat = UIScreen.main.bounds.height / -2 + (65 - 15 * CGFloat(index))
         let startPoint = CGPoint(x: UIScreen.main.bounds.width / -2, y: height)
         pathToDraw.move(to: startPoint)
         pathToDraw.addLine(to: CGPoint(x: UIScreen.main.bounds.width / 2, y: startPoint.y))
