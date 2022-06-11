@@ -36,6 +36,8 @@ class HotDog: BaseSprite {
         self.countdownIndicator.setZ(zPos: self.zPosition)
         self.countdownIndicator.setScene(scene: scene)
         self.countdownIndicator.setHidden(hidden: true)
+        
+        self.color = .red
     }
     
     override init(texture: SKTexture?, color: SKColor, size: CGSize) {
@@ -71,13 +73,17 @@ class HotDog: BaseSprite {
     }
     
     func updateCountdown() {
-        let secondsRemaining: Int = 3 - Int(self.timeSinceFloorContact)
+        let lifespanSeconds: CGFloat = 3
+        let secondsRemaining: Int = Int(lifespanSeconds) - Int(self.timeSinceFloorContact)
         let text: String = String(secondsRemaining)
         if self.countdownIndicator.text != text {
             self.countdownIndicator.setText(text: text)
         }
         self.countdownIndicator.setPosition(pos: CGPoint(x: self.position.x + self.calculateAccumulatedFrame().width / 4,
                                                          y: self.position.y + 10 * self._scene!.scaleFactor))
+        if self.lastFloorContactTime != -1 {
+            self.colorBlendFactor = self.timeSinceFloorContact / lifespanSeconds
+        }
     }
     
     func contactedFloor(currentTime: TimeInterval) {
@@ -90,6 +96,8 @@ class HotDog: BaseSprite {
         self.lastGrabTime = currentTime
         self.lastFloorContactTime = -1
         self.physicsBody?.isDynamic = false
+        self.countdownIndicator.setHidden(hidden: true)
+        self.colorBlendFactor = 0
     }
     
     func releaseGrab() {
