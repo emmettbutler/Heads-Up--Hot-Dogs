@@ -12,6 +12,7 @@ class HotDog: BaseSprite {
     let standardTexture: SKTexture = SKTexture(imageNamed: "dog54x12.png")
     let fallingTexture: SKTexture = SKTexture(imageNamed: "Dog_Fall.png")
     let risingTexture: SKTexture = SKTexture(imageNamed: "Dog_Rise.png")
+    let grabbingTexture: SKTexture = SKTexture(imageNamed: "Dog_Grabbed.png")
     var isGrabbed: Bool = false
     var previousDragPosition: CGPoint = CGPoint(x:0, y:0)
     var lastFloorContactTime: TimeInterval = -1
@@ -57,19 +58,18 @@ class HotDog: BaseSprite {
     
     func update(currentTime: TimeInterval) {
         self.updateTexture()
-        self.updateCountdown()
+        self.updateCountdown(currentTime: currentTime)
         self.resolveGroundDeathConditions(currentTime: currentTime)
     }
     
     func resolveGroundDeathConditions(currentTime: TimeInterval) {
-        self.timeSinceFloorContact = currentTime - self.lastFloorContactTime
         let timeSinceGrab: TimeInterval = currentTime - self.lastGrabTime
         if self.lastFloorContactTime != -1 && !self.isGrabbed && timeSinceFloorContact > 3 && timeSinceGrab > 3 &&
             self.action(forKey: "ground-death") == nil
         {
             let groundDieAnimation: SKAction = SKAction.sequence([
                 SKAction.animate(with: (self._scene as! GameplayScene).hotDogGroundDeathFrames,
-                                 timePerFrame: 0.1, resize: true, restore: false),
+                                 timePerFrame: 0.2, resize: true, restore: false),
                 SKAction.run { self.shouldBeDespawned = true }])
             self.run(groundDieAnimation, withKey: "ground-death")
         }
@@ -79,16 +79,22 @@ class HotDog: BaseSprite {
         if self.hasActions() {
             return
         }
-        if ((self.physicsBody?.velocity.dy)! < -10 && self.texture != fallingTexture) {
-            self.texture = fallingTexture
-        } else if ((self.physicsBody?.velocity.dy)! > 10 && self.texture != risingTexture) {
-            self.texture = risingTexture
-        } else if (self.texture != standardTexture) {
-            self.texture = standardTexture
+        if (self.isGrabbed) {
+            self.texture = grabbingTexture
+        } else {
+            if ((self.physicsBody?.velocity.dy)! < -10 && self.texture != fallingTexture) {
+                self.texture = fallingTexture
+            } else if ((self.physicsBody?.velocity.dy)! > 10 && self.texture != risingTexture) {
+                self.texture = risingTexture
+            } else if (self.texture != standardTexture) {
+                self.texture = standardTexture
+            }
         }
+        self.size = self.texture!.size()
     }
     
-    func updateCountdown() {
+    func updateCountdown(currentTime: TimeInterval) {
+        self.timeSinceFloorContact = currentTime - self.lastFloorContactTime
         let lifespanSeconds: CGFloat = 3
         let secondsRemaining: Int = Int(lifespanSeconds) - Int(self.timeSinceFloorContact)
         let text: String = String(secondsRemaining)
