@@ -11,6 +11,7 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
     var hotDogsDropped: Int = 0
     var hotDogAppearFrames: [SKTexture] = [SKTexture]()
     var hotDogGroundDeathFrames: [SKTexture] = [SKTexture]()
+    var headsUpDisplay: HeadsUpDisplay? = nil
     
     override init() {
         super.init()
@@ -39,6 +40,8 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
         
         spawnBoundaries()
         buildTextures()
+        
+        self.headsUpDisplay = HeadsUpDisplay(scene: self)
     }
     
     func didBegin(_ contact: SKPhysicsContact) {
@@ -115,6 +118,7 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
         hotDog.cleanup()
         allHotDogs.remove(at: allHotDogs.firstIndex(of: hotDog)!)
         hotDogsDropped += 1
+        self.headsUpDisplay!.subtract()
         if hotDogsDropped >= GameplayScene.droppedMax {
             let controller = self.view?.window?.rootViewController as! GameViewController
             controller.changeScene(key: nil)
