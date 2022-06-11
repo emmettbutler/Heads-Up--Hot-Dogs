@@ -18,6 +18,7 @@ class HotDog: BaseSprite {
     var lastGrabTime: TimeInterval = -1
     let countdownIndicator: ShadowedText = ShadowedText()
     var timeSinceFloorContact: TimeInterval = -1
+    var appearAnimation: SKAction? = nil
     
     init(scene: BaseScene) {
         super.init(texture: standardTexture)
@@ -29,6 +30,7 @@ class HotDog: BaseSprite {
         self.physicsBody?.restitution = 0.2
         self.physicsBody?.collisionBitMask = GameplayScene.floorCategoryBitMasks.randomElement()! | GameplayScene.wallCategoryBitMask
         self.physicsBody?.categoryBitMask = HotDog.categoryBitMask
+        self.physicsBody?.isDynamic = false
         
         self.zPosition = 30
         self.setScene(scene: scene)
@@ -36,6 +38,11 @@ class HotDog: BaseSprite {
         self.countdownIndicator.setZ(zPos: self.zPosition)
         self.countdownIndicator.setScene(scene: scene)
         self.countdownIndicator.setHidden(hidden: true)
+        
+        self.appearAnimation = SKAction.sequence([SKAction.animate(with: (self._scene as! GameplayScene).appearFrames,
+                                                                   timePerFrame: 0.1, resize: true, restore: true),
+                                                  SKAction.run { self.physicsBody?.isDynamic = true } ])
+        self.run(self.appearAnimation!)
         
         self.color = .red
     }
@@ -63,6 +70,9 @@ class HotDog: BaseSprite {
     }
     
     func updateTexture() {
+        if self.hasActions() {
+            return
+        }
         if ((self.physicsBody?.velocity.dy)! < -10 && self.texture != fallingTexture) {
             self.texture = fallingTexture
         } else if ((self.physicsBody?.velocity.dy)! > 10 && self.texture != risingTexture) {

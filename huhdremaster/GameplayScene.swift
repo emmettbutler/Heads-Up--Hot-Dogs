@@ -9,6 +9,7 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
     static let wallCategoryBitMask: UInt32 = 0b1000
     static let droppedMax: Int = 5
     var hotDogsDropped: Int = 0
+    var appearFrames: [SKTexture] = [SKTexture]()
     
     override init() {
         super.init()
@@ -36,6 +37,7 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
         physicsWorld.contactDelegate = self
         
         spawnBoundaries()
+        buildTextures()
     }
     
     func didBegin(_ contact: SKPhysicsContact) {
@@ -119,11 +121,17 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
     }
     
     func spawnHotDog(currentTime: TimeInterval) {
-        if (currentTime - lastHotDogSpawnTime < 1) {
+        if (currentTime - lastHotDogSpawnTime < 0.3) {
             return
         }
         allHotDogs.append(HotDog(scene: self))
         lastHotDogSpawnTime = currentTime
+    }
+    
+    func buildTextures() {
+        for idx in 1 ... 10 {
+            appearFrames.append(SKTexture(imageNamed: NSString(format:"Dog_Appear_%d.png", idx) as String))
+        }
     }
     
     func spawnBoundaries() {
