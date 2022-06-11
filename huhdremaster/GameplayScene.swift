@@ -109,6 +109,7 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
     }
     
     func despawnHotDog(hotDog: HotDog) {
+        hotDog.cleanup()
         allHotDogs.remove(at: allHotDogs.firstIndex(of: hotDog)!)
         hotDogsDropped += 1
         if hotDogsDropped >= GameplayScene.droppedMax {

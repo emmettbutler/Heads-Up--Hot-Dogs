@@ -24,6 +24,8 @@ class BaseSprite: SKSpriteNode {
         self._scene = scene
     }
     
+    func cleanup() {}
+    
     func setRandomPosition() {
         let sideBuffer: Int = 55
         let minHeight: Int = Int(UIScreen.main.bounds.height) / -3

@@ -16,18 +16,26 @@ class HotDog: BaseSprite {
     var previousDragPosition: CGPoint = CGPoint(x:0, y:0)
     var lastFloorContactTime: TimeInterval = -1
     var lastGrabTime: TimeInterval = -1
+    let countdownIndicator: ShadowedText = ShadowedText()
+    var timeSinceFloorContact: TimeInterval = -1
     
     init(scene: BaseScene) {
         super.init(texture: standardTexture)
         self.setRandomPosition()
+        
         self.physicsBody = SKPhysicsBody(texture: self.texture!,
                                            size: CGSize(width: self.size.width,
                                                         height: self.size.height))
         self.physicsBody?.restitution = 0.2
         self.physicsBody?.collisionBitMask = GameplayScene.floorCategoryBitMasks.randomElement()! | GameplayScene.wallCategoryBitMask
         self.physicsBody?.categoryBitMask = HotDog.categoryBitMask
+        
         self.zPosition = 30
         self.setScene(scene: scene)
+        
+        self.countdownIndicator.setZ(zPos: self.zPosition)
+        self.countdownIndicator.setScene(scene: scene)
+        self.countdownIndicator.setHidden(hidden: true)
     }
     
     override init(texture: SKTexture?, color: SKColor, size: CGSize) {
@@ -40,11 +48,12 @@ class HotDog: BaseSprite {
     
     func update(currentTime: TimeInterval) {
         self.updateTexture()
+        self.updateCountdown()
         self.resolveDespawnConditions(currentTime: currentTime)
     }
     
     func resolveDespawnConditions(currentTime: TimeInterval) {
-        let timeSinceFloorContact: TimeInterval = currentTime - self.lastFloorContactTime
+        self.timeSinceFloorContact = currentTime - self.lastFloorContactTime
         let timeSinceGrab: TimeInterval = currentTime - self.lastGrabTime
         if self.lastFloorContactTime != -1 && !self.isGrabbed && timeSinceFloorContact > 3 && timeSinceGrab > 3 {
             self.shouldBeDespawned = true
@@ -61,8 +70,19 @@ class HotDog: BaseSprite {
         }
     }
     
+    func updateCountdown() {
+        let secondsRemaining: Int = 3 - Int(self.timeSinceFloorContact)
+        let text: String = String(secondsRemaining)
+        if self.countdownIndicator.text != text {
+            self.countdownIndicator.setText(text: text)
+        }
+        self.countdownIndicator.setPosition(pos: CGPoint(x: self.position.x + self.calculateAccumulatedFrame().width / 4,
+                                                         y: self.position.y + 10 * self._scene!.scaleFactor))
+    }
+    
     func contactedFloor(currentTime: TimeInterval) {
         self.lastFloorContactTime = currentTime
+        self.countdownIndicator.setHidden(hidden: false)
     }
     
     func grab(currentTime: TimeInterval) {
@@ -84,5 +104,11 @@ class HotDog: BaseSprite {
             self.previousDragPosition = self.position
             self.position = toPos
         }
+    }
+    
+    override func cleanup() {
+        super.cleanup()
+        self.countdownIndicator.cleanup()
+        self.countdownIndicator.removeFromParent()
     }
 }
