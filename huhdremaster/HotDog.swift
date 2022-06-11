@@ -69,7 +69,7 @@ class HotDog: BaseSprite {
         {
             let groundDieAnimation: SKAction = SKAction.sequence([
                 SKAction.animate(with: (self._scene as! GameplayScene).hotDogGroundDeathFrames,
-                                 timePerFrame: 0.2, resize: true, restore: false),
+                                 timePerFrame: 0.15, resize: true, restore: false),
                 SKAction.run { self.shouldBeDespawned = true }])
             self.run(groundDieAnimation, withKey: "ground-death")
         }
