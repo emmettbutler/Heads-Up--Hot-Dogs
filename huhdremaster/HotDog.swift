@@ -18,7 +18,6 @@ class HotDog: BaseSprite {
     var lastGrabTime: TimeInterval = -1
     let countdownIndicator: ShadowedText = ShadowedText()
     var timeSinceFloorContact: TimeInterval = -1
-    var appearAnimation: SKAction? = nil
     
     init(scene: BaseScene) {
         super.init(texture: standardTexture)
@@ -39,10 +38,11 @@ class HotDog: BaseSprite {
         self.countdownIndicator.setScene(scene: scene)
         self.countdownIndicator.setHidden(hidden: true)
         
-        self.appearAnimation = SKAction.sequence([SKAction.animate(with: (self._scene as! GameplayScene).appearFrames,
-                                                                   timePerFrame: 0.1, resize: true, restore: true),
-                                                  SKAction.run { self.physicsBody?.isDynamic = true } ])
-        self.run(self.appearAnimation!)
+        let appearAnimation: SKAction = SKAction.sequence([
+            SKAction.animate(with: (self._scene as! GameplayScene).hotDogAppearFrames,
+                             timePerFrame: 0.1, resize: true, restore: true),
+            SKAction.run { self.physicsBody?.isDynamic = true } ])
+        self.run(appearAnimation)
         
         self.color = .red
     }
@@ -58,14 +58,20 @@ class HotDog: BaseSprite {
     func update(currentTime: TimeInterval) {
         self.updateTexture()
         self.updateCountdown()
-        self.resolveDespawnConditions(currentTime: currentTime)
+        self.resolveGroundDeathConditions(currentTime: currentTime)
     }
     
-    func resolveDespawnConditions(currentTime: TimeInterval) {
+    func resolveGroundDeathConditions(currentTime: TimeInterval) {
         self.timeSinceFloorContact = currentTime - self.lastFloorContactTime
         let timeSinceGrab: TimeInterval = currentTime - self.lastGrabTime
-        if self.lastFloorContactTime != -1 && !self.isGrabbed && timeSinceFloorContact > 3 && timeSinceGrab > 3 {
-            self.shouldBeDespawned = true
+        if self.lastFloorContactTime != -1 && !self.isGrabbed && timeSinceFloorContact > 3 && timeSinceGrab > 3 &&
+            self.action(forKey: "ground-death") == nil
+        {
+            let groundDieAnimation: SKAction = SKAction.sequence([
+                SKAction.animate(with: (self._scene as! GameplayScene).hotDogGroundDeathFrames,
+                                 timePerFrame: 0.1, resize: true, restore: false),
+                SKAction.run { self.shouldBeDespawned = true }])
+            self.run(groundDieAnimation, withKey: "ground-death")
         }
     }
     
