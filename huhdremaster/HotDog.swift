@@ -67,6 +67,7 @@ class HotDog: BaseSprite {
         if self.lastFloorContactTime != -1 && !self.isGrabbed && timeSinceFloorContact > 3 && timeSinceGrab > 3 &&
             self.action(forKey: "ground-death") == nil
         {
+            self.countdownIndicator.setHidden(hidden: true)
             let groundDieAnimation: SKAction = SKAction.sequence([
                 SKAction.animate(with: (self._scene as! GameplayScene).hotDogGroundDeathFrames,
                                  timePerFrame: 0.15, resize: true, restore: false),
@@ -97,7 +98,7 @@ class HotDog: BaseSprite {
     func updateCountdown(currentTime: TimeInterval) {
         self.timeSinceFloorContact = currentTime - self.lastFloorContactTime
         let lifespanSeconds: CGFloat = 3
-        let secondsRemaining: Int = Int(lifespanSeconds) - Int(self.timeSinceFloorContact)
+        let secondsRemaining: Int = max(Int(lifespanSeconds) - Int(self.timeSinceFloorContact), 1)
         let text: String = String(secondsRemaining)
         if self.countdownIndicator.text != text {
             self.countdownIndicator.setText(text: text)
