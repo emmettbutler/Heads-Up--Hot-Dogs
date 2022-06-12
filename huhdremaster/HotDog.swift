@@ -79,12 +79,9 @@ class HotDog: BaseSprite {
         if self.hasActions() {
             return
         }
-        var changed: Bool = false
         if (self.isGrabbed && self.texture != grabbingTexture) {
             self.texture = grabbingTexture
-            changed = true
-        }
-        if (!self.isGrabbed && self.texture == grabbingTexture){
+        } else if (!self.isGrabbed) {
             if ((self.physicsBody?.velocity.dy)! < -10 && self.texture != fallingTexture) {
                 self.texture = fallingTexture
             } else if ((self.physicsBody?.velocity.dy)! > 10 && self.texture != risingTexture) {
@@ -92,12 +89,9 @@ class HotDog: BaseSprite {
             } else if (self.texture != standardTexture) {
                 self.texture = standardTexture
             }
-            changed = true
         }
-        if changed {
-            self.size = self.texture!.size()
-            self.setScale()
-        }
+        self.size = CGSize(width: self.texture!.size().width * self._scene!.scaleFactor,
+                           height: self.texture!.size().height * self._scene!.scaleFactor)
     }
     
     func updateCountdown(currentTime: TimeInterval) {
@@ -117,7 +111,11 @@ class HotDog: BaseSprite {
     
     func contactedFloor(currentTime: TimeInterval) {
         self.lastFloorContactTime = currentTime
+        if abs((self.physicsBody?.velocity.dy)!) > 5 {
+            return
+        }
         self.countdownIndicator.setHidden(hidden: false)
+        self.physicsBody?.isDynamic = false
     }
     
     func grab(currentTime: TimeInterval) {
