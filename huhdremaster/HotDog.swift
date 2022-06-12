@@ -105,7 +105,8 @@ class HotDog: BaseSprite {
     
     func updateHelpIndicator() {
         self.helpIndicator!.position = CGPoint(x: self.position.x, y: self.position.y + 60 * self._scene!.scaleFactor)
-        self.helpIndicator!.isHidden = self.physicsBody!.isDynamic || self.isGrabbed || self.hasActions()
+        let aDogHasBeenDropped: Bool = (self._scene as! GameplayScene).hotDogsDropped > 0
+        self.helpIndicator!.isHidden = self.physicsBody!.isDynamic || self.isGrabbed || self.hasActions() || !aDogHasBeenDropped
     }
     
     func updateCountdown(currentTime: TimeInterval) {
