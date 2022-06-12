@@ -8,6 +8,7 @@ class Person: BaseSprite {
     
     init(scene: BaseScene) {
         super.init(texture: standardTexture)
+        self._scene = scene
         
         self.zPosition = GameplayScene.spriteZPositions["Person"]!
         
@@ -26,6 +27,8 @@ class Person: BaseSprite {
         
         headOffset = (body?.calculateAccumulatedFrame().height)! / 2 + (head?.calculateAccumulatedFrame().height)! / 2 - 10 * scene.scaleFactor
         head?.position = CGPoint(x: body!.position.x, y: body!.position.y + headOffset)
+        
+        spawnHeadCollider()
     }
     
     override init(texture: SKTexture?, color: SKColor, size: CGSize) {
@@ -34,6 +37,24 @@ class Person: BaseSprite {
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder:aDecoder)
+    }
+    
+    func spawnHeadCollider() {
+        let headCollider = SKShapeNode()
+        let pathToDraw = CGMutablePath()
+        headCollider.position = CGPoint(x: (self.head?.position.x)!,
+                                        y: (self.head?.position.y)! + (self.head?.calculateAccumulatedFrame().height)! / 2 - 10 * (self._scene?.scaleFactor)!)
+        let startPoint = CGPoint(x: (self.head?.calculateAccumulatedFrame().width)! / -2,
+                                 y: 0)
+        pathToDraw.move(to: CGPoint(x: startPoint.x, y: 0))
+        pathToDraw.addLine(to: CGPoint(x: (self.head?.calculateAccumulatedFrame().width)! / 2, y: 0))
+        headCollider.strokeColor = .red
+        headCollider.zPosition = self.zPosition + 5
+        headCollider.physicsBody = SKPhysicsBody(edgeChainFrom: pathToDraw)
+        headCollider.physicsBody?.isDynamic = false
+        headCollider.physicsBody?.categoryBitMask = 1
+        headCollider.physicsBody?.contactTestBitMask = HotDog.categoryBitMask
+        self._scene!.addChild(headCollider)
     }
     
     func update(currentTime: TimeInterval) {
