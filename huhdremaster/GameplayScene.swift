@@ -11,6 +11,7 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
     var hotDogsDropped: Int = 0
     var hotDogAppearFrames: [SKTexture] = [SKTexture]()
     var hotDogGroundDeathFrames: [SKTexture] = [SKTexture]()
+    var helpDragFrames: [SKTexture] = [SKTexture]()
     var headsUpDisplay: HeadsUpDisplay? = nil
     
     override init() {
@@ -58,6 +59,7 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
             if hotDog.contains(pos) {
                 hotDog.grab(currentTime: secondsPassed)
             }
+            hotDog.helpIndicator?.isHidden = true
         }
     }
     
@@ -72,6 +74,7 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
             if hotDog.contains(pos) {
                 hotDog.releaseGrab()
             }
+            hotDog.helpIndicator?.isHidden = false
         }
     }
     
@@ -139,6 +142,9 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
         }
         for idx in 1 ... 7 {
             hotDogGroundDeathFrames.append(SKTexture(imageNamed: NSString(format:"Dog_Die_%d.png", idx) as String))
+        }
+        for idx in 1 ... 12 {
+            helpDragFrames.append(SKTexture(imageNamed: NSString(format:"Drag_Overlay_%d.png", idx) as String))
         }
     }
     

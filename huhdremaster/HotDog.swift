@@ -19,6 +19,7 @@ class HotDog: BaseSprite {
     var lastGrabTime: TimeInterval = -1
     let countdownIndicator: ShadowedText = ShadowedText()
     var timeSinceFloorContact: TimeInterval = -1
+    var helpIndicator: BaseSprite? = nil
     
     init(scene: BaseScene) {
         super.init(texture: standardTexture)
@@ -38,6 +39,12 @@ class HotDog: BaseSprite {
         self.countdownIndicator.setZ(zPos: self.zPosition)
         self.countdownIndicator.setScene(scene: scene)
         self.countdownIndicator.setHidden(hidden: true)
+    
+        self.helpIndicator = BaseSprite(imageNamed: "Drag_Overlay_1.png")
+        self.helpIndicator?.zPosition = self.zPosition
+        self.helpIndicator?.setScene(scene: scene)
+        self.helpIndicator?.run(SKAction.repeatForever(SKAction.animate(with: (self._scene as! GameplayScene).helpDragFrames,
+                                                                        timePerFrame: 0.1, resize: true, restore: false)))
         
         let appearAnimation: SKAction = SKAction.sequence([
             SKAction.animate(with: (self._scene as! GameplayScene).hotDogAppearFrames,
@@ -59,6 +66,7 @@ class HotDog: BaseSprite {
     func update(currentTime: TimeInterval) {
         self.updateTexture()
         self.updateCountdown(currentTime: currentTime)
+        self.updateHelpIndicator()
         self.resolveGroundDeathConditions(currentTime: currentTime)
     }
     
@@ -93,6 +101,11 @@ class HotDog: BaseSprite {
         }
         self.size = CGSize(width: self.texture!.size().width * self._scene!.scaleFactor,
                            height: self.texture!.size().height * self._scene!.scaleFactor)
+    }
+    
+    func updateHelpIndicator() {
+        self.helpIndicator!.position = CGPoint(x: self.position.x, y: self.position.y + 60 * self._scene!.scaleFactor)
+        self.helpIndicator!.isHidden = self.physicsBody!.isDynamic || self.isGrabbed || self.hasActions()
     }
     
     func updateCountdown(currentTime: TimeInterval) {
@@ -146,5 +159,6 @@ class HotDog: BaseSprite {
         super.cleanup()
         self.countdownIndicator.cleanup()
         self.countdownIndicator.removeFromParent()
+        self.helpIndicator?.removeFromParent()
     }
 }
