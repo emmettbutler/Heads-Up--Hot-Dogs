@@ -159,6 +159,7 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
         pathToDraw.addLine(to: CGPoint(x: UIScreen.main.bounds.width / 2, y: startPoint.y))
         ground.physicsBody = SKPhysicsBody(edgeChainFrom: pathToDraw)
         ground.physicsBody?.isDynamic = false
+        ground.physicsBody?.restitution = 0
         ground.physicsBody?.categoryBitMask = index
         ground.physicsBody?.contactTestBitMask = HotDog.categoryBitMask
         addChild(ground)

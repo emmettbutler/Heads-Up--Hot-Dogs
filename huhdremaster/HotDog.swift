@@ -79,9 +79,12 @@ class HotDog: BaseSprite {
         if self.hasActions() {
             return
         }
-        if (self.isGrabbed) {
+        var changed: Bool = false
+        if (self.isGrabbed && self.texture != grabbingTexture) {
             self.texture = grabbingTexture
-        } else {
+            changed = true
+        }
+        if (!self.isGrabbed && self.texture == grabbingTexture){
             if ((self.physicsBody?.velocity.dy)! < -10 && self.texture != fallingTexture) {
                 self.texture = fallingTexture
             } else if ((self.physicsBody?.velocity.dy)! > 10 && self.texture != risingTexture) {
@@ -89,8 +92,12 @@ class HotDog: BaseSprite {
             } else if (self.texture != standardTexture) {
                 self.texture = standardTexture
             }
+            changed = true
         }
-        self.size = self.texture!.size()
+        if changed {
+            self.size = self.texture!.size()
+            self.setScale()
+        }
     }
     
     func updateCountdown(currentTime: TimeInterval) {

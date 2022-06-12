@@ -17,11 +17,15 @@ class BaseSprite: SKSpriteNode {
         super.init(texture: texture, color: color, size: size)
     }
     
+    func setScale() {
+        self.xScale = self._scene!.scaleFactor
+        self.yScale = self._scene!.scaleFactor
+    }
+    
     func setScene(scene: BaseScene) {
-        self.xScale = scene.scaleFactor
-        self.yScale = scene.scaleFactor
         scene.addChild(self)
         self._scene = scene
+        self.setScale()
     }
     
     func cleanup() {}

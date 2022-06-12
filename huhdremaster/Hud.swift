@@ -16,11 +16,11 @@ class HeadsUpDisplay: BaseSprite {
         
         for idx in (-2 ... 2).reversed() {
             let indicator = BaseSprite(texture: hotDogTexture)
+            indicator.setScene(scene: scene)
             indicator.zPosition = self.zPosition + 1
             indicator.position = CGPoint(
                 x: self.position.x + (CGFloat(idx) * (indicator.calculateAccumulatedFrame().width + 7 * scene.scaleFactor)),
                 y: self.position.y)
-            indicator.setScene(scene: scene)
             indicators.append(indicator)
         }
         
