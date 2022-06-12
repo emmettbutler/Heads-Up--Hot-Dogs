@@ -33,7 +33,7 @@ class HotDog: BaseSprite {
         self.physicsBody?.categoryBitMask = HotDog.categoryBitMask
         self.physicsBody?.isDynamic = false
         
-        self.zPosition = 30
+        self.zPosition = GameplayScene.spriteZPositions["HotDog"]!
         self.setScene(scene: scene)
         
         self.countdownIndicator.setZ(zPos: self.zPosition)

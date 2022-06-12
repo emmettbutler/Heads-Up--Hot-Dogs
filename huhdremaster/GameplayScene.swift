@@ -4,7 +4,8 @@ import GameplayKit
 class GameplayScene: BaseScene, SKPhysicsContactDelegate {
     var level: Level? = nil
     var lastHotDogSpawnTime: TimeInterval = 0
-    var allHotDogs: Array<HotDog> = []
+    var allHotDogs: [HotDog] = [HotDog]()
+    var allPeople: [Person] = [Person]()
     static let floorCategoryBitMasks: Array<UInt32> = [0b0001, 0b0010, 0b0011, 0b0100]
     static let wallCategoryBitMask: UInt32 = 0b1000
     static let droppedMax: Int = 5
@@ -13,6 +14,8 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
     var hotDogGroundDeathFrames: [SKTexture] = [SKTexture]()
     var helpDragFrames: [SKTexture] = [SKTexture]()
     var headsUpDisplay: HeadsUpDisplay? = nil
+    var highestFloor: SKShapeNode? = nil
+    static let spriteZPositions: Dictionary = ["Person": 40.0, "HotDog": 50.0]
     
     override init() {
         super.init()
@@ -41,6 +44,7 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
         
         spawnBoundaries()
         buildTextures()
+        allPeople.append(Person(scene: self))
         
         self.headsUpDisplay = HeadsUpDisplay(scene: self)
     }
@@ -161,13 +165,17 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
         let pathToDraw = CGMutablePath()
         let height: CGFloat = UIScreen.main.bounds.height / -2 + (65 - 15 * CGFloat(index))
         let startPoint = CGPoint(x: UIScreen.main.bounds.width / -2, y: height)
-        pathToDraw.move(to: startPoint)
-        pathToDraw.addLine(to: CGPoint(x: UIScreen.main.bounds.width / 2, y: startPoint.y))
+        ground.position = CGPoint(x: 0, y: startPoint.y)
+        pathToDraw.move(to: CGPoint(x: startPoint.x, y: 0))
+        pathToDraw.addLine(to: CGPoint(x: UIScreen.main.bounds.width / 2, y: 0))
         ground.physicsBody = SKPhysicsBody(edgeChainFrom: pathToDraw)
         ground.physicsBody?.isDynamic = false
         ground.physicsBody?.categoryBitMask = index
         ground.physicsBody?.contactTestBitMask = HotDog.categoryBitMask
         addChild(ground)
+        if highestFloor == nil || ground.position.y > (highestFloor?.position.y)! {
+            highestFloor = ground
+        }
     }
     
     func spawnWall(xPos: CGFloat) {

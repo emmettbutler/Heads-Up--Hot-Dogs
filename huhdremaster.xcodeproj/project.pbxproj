@@ -53,6 +53,7 @@
 		AAA3D06E28454252008AC525 /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA3D06D28454252008AC525 /* Button.swift */; };
 		AAA3D07028454CE3008AC525 /* LevelSelectScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA3D06F28454CE3008AC525 /* LevelSelectScene.swift */; };
 		AAA3D07228454E68008AC525 /* OptionsScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA3D07128454E68008AC525 /* OptionsScene.swift */; };
+		AAB4DFFA28569AC200CC808D /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAB4DFF928569AC200CC808D /* Person.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -104,6 +105,7 @@
 		AAA3D06D28454252008AC525 /* Button.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
 		AAA3D06F28454CE3008AC525 /* LevelSelectScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelSelectScene.swift; sourceTree = "<group>"; };
 		AAA3D07128454E68008AC525 /* OptionsScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionsScene.swift; sourceTree = "<group>"; };
+		AAB4DFF928569AC200CC808D /* Person.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Person.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -156,6 +158,7 @@
 				AA5DC07F2846ABDE0041AAF7 /* GameplayScene.swift */,
 				AA5DC0812846F1690041AAF7 /* HotDog.swift */,
 				AA6BFE232855515300C8BC49 /* Hud.swift */,
+				AAB4DFF928569AC200CC808D /* Person.swift */,
 			);
 			path = huhdremaster;
 			sourceTree = "<group>";
@@ -307,6 +310,7 @@
 				AA05029F2843E0DF00E34D92 /* AppDelegate.swift in Sources */,
 				AAA3D07028454CE3008AC525 /* LevelSelectScene.swift in Sources */,
 				AA5DC07E2846AB730041AAF7 /* TitleScene.swift in Sources */,
+				AAB4DFFA28569AC200CC808D /* Person.swift in Sources */,
 				AA5DC0802846ABDE0041AAF7 /* GameplayScene.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
