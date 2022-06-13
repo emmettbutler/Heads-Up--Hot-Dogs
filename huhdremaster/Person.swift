@@ -5,6 +5,7 @@ class Person: BaseSprite {
     var head: BaseSprite? = nil
     var body: BaseSprite? = nil
     var headOffset: CGFloat = 0
+    static let categoryBitMask: UInt32 = 0b0101
     
     init(scene: BaseScene) {
         super.init(texture: standardTexture)
@@ -48,11 +49,10 @@ class Person: BaseSprite {
                                  y: 0)
         pathToDraw.move(to: CGPoint(x: startPoint.x, y: 0))
         pathToDraw.addLine(to: CGPoint(x: (self.head?.calculateAccumulatedFrame().width)! / 2, y: 0))
-        headCollider.strokeColor = .red
         headCollider.zPosition = self.zPosition + 5
         headCollider.physicsBody = SKPhysicsBody(edgeChainFrom: pathToDraw)
         headCollider.physicsBody?.isDynamic = false
-        headCollider.physicsBody?.categoryBitMask = 1
+        headCollider.physicsBody?.categoryBitMask = Person.categoryBitMask
         headCollider.physicsBody?.contactTestBitMask = HotDog.categoryBitMask
         self._scene!.addChild(headCollider)
     }

@@ -29,7 +29,7 @@ class HotDog: BaseSprite {
                                            size: CGSize(width: self.size.width,
                                                         height: self.size.height))
         self.physicsBody?.restitution = 0.2
-        self.physicsBody?.collisionBitMask = GameplayScene.floorCategoryBitMasks.randomElement()! | GameplayScene.wallCategoryBitMask
+        self.physicsBody?.collisionBitMask = GameplayScene.floorCategoryBitMasks.randomElement()! | GameplayScene.wallCategoryBitMask | Person.categoryBitMask
         self.physicsBody?.categoryBitMask = HotDog.categoryBitMask
         self.physicsBody?.isDynamic = false
         
