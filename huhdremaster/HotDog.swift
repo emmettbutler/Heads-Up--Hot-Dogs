@@ -70,6 +70,15 @@ class HotDog: BaseSprite {
         self.updateCountdown(currentTime: currentTime)
         self.updateHelpIndicator()
         self.resolveGroundDeathConditions(currentTime: currentTime)
+        self.resolveRestConditions(currentTime: currentTime)
+    }
+    
+    func resolveRestConditions(currentTime: TimeInterval) {
+        if self.previousFloorContactTimes.count != 0 && currentTime - self.previousFloorContactTimes.first! > 0.6 {
+            self.countdownIndicator.setHidden(hidden: false)
+            self.showHelpIndicator()
+            self.physicsBody?.isDynamic = false
+        }
     }
     
     func resolveGroundDeathConditions(currentTime: TimeInterval) {
@@ -137,11 +146,6 @@ class HotDog: BaseSprite {
     
     func contactedFloor(currentTime: TimeInterval) {
         self.previousFloorContactTimes.append(currentTime)
-        if self.previousFloorContactTimes.count >= 3 {
-            self.countdownIndicator.setHidden(hidden: false)
-            self.showHelpIndicator()
-            self.physicsBody?.isDynamic = false
-        }
     }
     
     func contactedPerson(currentTime: TimeInterval, contactedNode: SKShapeNode) {
