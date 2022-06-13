@@ -7,6 +7,9 @@ class Person: BaseSprite {
     var headOffset: CGFloat = 0
     static let categoryBitMask: UInt32 = 0b0101
     var helpIndicator: BaseSprite? = nil
+    var heartEmitter: SKEmitterNode = SKEmitterNode(fileNamed: "HeartParticles.sks")!
+    let headCollider: SKShapeNode = SKShapeNode()
+    var previousHotDogContactTimes: [TimeInterval] = [TimeInterval]()
     
     init(scene: BaseScene) {
         super.init(texture: standardTexture)
@@ -39,6 +42,10 @@ class Person: BaseSprite {
         self.helpIndicator?.run(SKAction.repeatForever(SKAction.animate(with: (self._scene as! GameplayScene).helpDropFrames,
                                                                         timePerFrame: 0.1, resize: true, restore: false)))
         self.helpIndicator?.position = CGPoint(x: self.position.x, y: (self.head?.position.y)! + (self.head?.calculateAccumulatedFrame().height)! / 2 + (self.helpIndicator?.calculateAccumulatedFrame().height)! / 2)
+        
+        heartEmitter.particleBirthRate = 0
+        heartEmitter.zPosition = self.zPosition + 3
+        self._scene?.addChild(heartEmitter)
     }
     
     override init(texture: SKTexture?, color: SKColor, size: CGSize) {
@@ -50,7 +57,8 @@ class Person: BaseSprite {
     }
     
     func contactedHotDog(currentTime: TimeInterval) {
-        
+        self.previousHotDogContactTimes.append(currentTime)
+        self.heartEmitter.particleBirthRate = 25
     }
     
     func hideHelpIndicator() {
@@ -65,7 +73,6 @@ class Person: BaseSprite {
     }
     
     func spawnHeadCollider() {
-        let headCollider = SKShapeNode()
         let pathToDraw = CGMutablePath()
         headCollider.position = CGPoint(x: (self.head?.position.x)!,
                                         y: (self.head?.position.y)! + (self.head?.calculateAccumulatedFrame().height)! / 2 - 10 * (self._scene?.scaleFactor)!)
@@ -83,6 +90,10 @@ class Person: BaseSprite {
     }
     
     func update(currentTime: TimeInterval) {
+        if self.previousHotDogContactTimes.count != 0 && currentTime - self.previousHotDogContactTimes.last! > 1 {
+            heartEmitter.particleBirthRate = 0
+        }
+        heartEmitter.position = self.headCollider.position
     }
     
     override func cleanup() {

@@ -144,6 +144,10 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
         for hotDog in allHotDogs {
             hotDog.update(currentTime: secondsPassed)
         }
+        
+        for person in allPeople {
+            person.update(currentTime: secondsPassed)
+        }
     }
     
     func despawnHotDog(hotDog: HotDog) {
