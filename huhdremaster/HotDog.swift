@@ -154,12 +154,14 @@ class HotDog: BaseSprite {
     }
     
     func grab(currentTime: TimeInterval) {
-        self.isGrabbed = true
-        self.lastGrabTime = currentTime
-        self.lastFloorContactTime = -1
-        self.physicsBody?.isDynamic = false
-        self.countdownIndicator.setHidden(hidden: true)
-        self.colorBlendFactor = 0
+        if !self.hasActions() {
+            self.isGrabbed = true
+            self.lastGrabTime = currentTime
+            self.lastFloorContactTime = -1
+            self.physicsBody?.isDynamic = false
+            self.countdownIndicator.setHidden(hidden: true)
+            self.colorBlendFactor = 0
+        }
     }
     
     func releaseGrab() {

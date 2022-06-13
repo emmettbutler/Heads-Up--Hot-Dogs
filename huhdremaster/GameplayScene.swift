@@ -64,11 +64,12 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
                 collidingHotDog.contactedFloor(currentTime: secondsPassed)
                 
             } else if (nodeA.physicsBody!.categoryBitMask == Person.categoryBitMask) {
-                if !collidingHotDog.nogginsTouched.contains(nodeA as! SKShapeNode) {
+                let collidingHead: SKShapeNode = nodeA as! SKShapeNode
+                if !collidingHotDog.nogginsTouched.contains(collidingHead) {
                     timesAnyNogginWasTopped += 1
                 }
                 
-                collidingHotDog.contactedPerson(currentTime: secondsPassed, contactedNode: (nodeA as! SKShapeNode))
+                collidingHotDog.contactedPerson(currentTime: secondsPassed, contactedNode: collidingHead)
                 (nodeA.userData!["person"] as! Person).contactedHotDog(currentTime: secondsPassed)
             }
         }
@@ -76,7 +77,7 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
     
     func touchDown(atPoint pos : CGPoint) {
         for hotDog in allHotDogs {
-            if hotDog.contains(pos) {
+            if !aHotDogIsGrabbed && hotDog.contains(pos){
                 hotDog.grab(currentTime: secondsPassed)
                 aHotDogIsGrabbed = true
             }
