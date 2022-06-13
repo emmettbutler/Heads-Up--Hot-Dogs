@@ -15,7 +15,7 @@ class HotDog: BaseSprite {
     let grabbingTexture: SKTexture = SKTexture(imageNamed: "Dog_Grabbed.png")
     var isGrabbed: Bool = false
     var previousDragPosition: CGPoint = CGPoint(x:0, y:0)
-    var lastFloorContactTime: TimeInterval = -1
+    var previousFloorContactTimes: [TimeInterval] = [TimeInterval]()
     var lastGrabTime: TimeInterval = -1
     let countdownIndicator: ShadowedText = ShadowedText()
     var timeSinceFloorContact: TimeInterval = -1
@@ -74,7 +74,7 @@ class HotDog: BaseSprite {
     
     func resolveGroundDeathConditions(currentTime: TimeInterval) {
         let timeSinceGrab: TimeInterval = currentTime - self.lastGrabTime
-        if self.lastFloorContactTime != -1 && !self.isGrabbed && timeSinceFloorContact > 3 && timeSinceGrab > 3 &&
+        if self.previousFloorContactTimes.count != 0 && !self.isGrabbed && timeSinceFloorContact > 3 && timeSinceGrab > 3 &&
             self.action(forKey: "ground-death") == nil
         {
             self.countdownIndicator.setHidden(hidden: true)
@@ -107,11 +107,6 @@ class HotDog: BaseSprite {
     
     func updateHelpIndicator() {
         self.helpIndicator!.position = CGPoint(x: self.position.x, y: self.position.y + 60 * self._scene!.scaleFactor)
-        let aDogHasBeenDropped: Bool = (self._scene as! GameplayScene).hotDogsDropped > 0
-        let aDogIsGrabbed: Bool = (self._scene as! GameplayScene).aHotDogIsGrabbed
-        if (self._scene as! GameplayScene).timesAnyNogginWasTopped < GameplayScene.howManyInteractionsToHelpWith {
-            self.helpIndicator!.isHidden = self.physicsBody!.isDynamic || aDogIsGrabbed || self.hasActions() || !aDogHasBeenDropped
-        }
     }
     
     func hideHelpIndicator() {
@@ -126,7 +121,7 @@ class HotDog: BaseSprite {
     }
     
     func updateCountdown(currentTime: TimeInterval) {
-        self.timeSinceFloorContact = currentTime - self.lastFloorContactTime
+        self.timeSinceFloorContact = currentTime - ((self.previousFloorContactTimes.last != nil) ? self.previousFloorContactTimes.last! : -1)
         let lifespanSeconds: CGFloat = 3
         let secondsRemaining: Int = max(Int(lifespanSeconds) - Int(self.timeSinceFloorContact), 1)
         let text: String = String(secondsRemaining)
@@ -135,18 +130,18 @@ class HotDog: BaseSprite {
         }
         self.countdownIndicator.setPosition(pos: CGPoint(x: self.position.x + self.calculateAccumulatedFrame().width / 4,
                                                          y: self.position.y + 10 * self._scene!.scaleFactor))
-        if self.lastFloorContactTime != -1 {
+        if self.previousFloorContactTimes.count != 0 {
             self.colorBlendFactor = self.timeSinceFloorContact / lifespanSeconds
         }
     }
     
     func contactedFloor(currentTime: TimeInterval) {
-        self.lastFloorContactTime = currentTime
-        if abs((self.physicsBody?.velocity.dy)!) > 5 {
-            return
+        self.previousFloorContactTimes.append(currentTime)
+        if self.previousFloorContactTimes.count >= 3 {
+            self.countdownIndicator.setHidden(hidden: false)
+            self.showHelpIndicator()
+            self.physicsBody?.isDynamic = false
         }
-        self.countdownIndicator.setHidden(hidden: false)
-        self.physicsBody?.isDynamic = false
     }
     
     func contactedPerson(currentTime: TimeInterval, contactedNode: SKShapeNode) {
@@ -157,7 +152,7 @@ class HotDog: BaseSprite {
         if !self.hasActions() {
             self.isGrabbed = true
             self.lastGrabTime = currentTime
-            self.lastFloorContactTime = -1
+            self.previousFloorContactTimes = [TimeInterval]()
             self.physicsBody?.isDynamic = false
             self.countdownIndicator.setHidden(hidden: true)
             self.colorBlendFactor = 0
