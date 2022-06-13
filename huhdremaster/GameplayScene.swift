@@ -13,9 +13,13 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
     var hotDogAppearFrames: [SKTexture] = [SKTexture]()
     var hotDogGroundDeathFrames: [SKTexture] = [SKTexture]()
     var helpDragFrames: [SKTexture] = [SKTexture]()
+    var helpDropFrames: [SKTexture] = [SKTexture]()
     var headsUpDisplay: HeadsUpDisplay? = nil
     var highestFloor: SKShapeNode? = nil
+    var timesAnyNogginWasTopped: Int = 0
     static let spriteZPositions: Dictionary = ["Person": 40.0, "HotDog": 50.0]
+    var aHotDogIsGrabbed: Bool = false
+    static let howManyInteractionsToHelpWith: Int = 2
     
     override init() {
         super.init()
@@ -52,9 +56,21 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
     func didBegin(_ contact: SKPhysicsContact) {
         guard let nodeA = contact.bodyA.node else { return }
         guard let nodeB = contact.bodyB.node else { return }
-        if (GameplayScene.floorCategoryBitMasks.contains(nodeA.physicsBody!.categoryBitMask) &&
-            nodeB.physicsBody?.categoryBitMask == HotDog.categoryBitMask) {
-            (nodeB as! HotDog).contactedFloor(currentTime: secondsPassed)
+        
+        if nodeB.physicsBody?.categoryBitMask == HotDog.categoryBitMask {
+            let collidingHotDog: HotDog = nodeB as! HotDog
+        
+            if (GameplayScene.floorCategoryBitMasks.contains(nodeA.physicsBody!.categoryBitMask)){
+                collidingHotDog.contactedFloor(currentTime: secondsPassed)
+                
+            } else if (nodeA.physicsBody!.categoryBitMask == Person.categoryBitMask) {
+                if !collidingHotDog.nogginsTouched.contains(nodeA as! SKShapeNode) {
+                    timesAnyNogginWasTopped += 1
+                }
+                
+                collidingHotDog.contactedPerson(currentTime: secondsPassed, contactedNode: (nodeA as! SKShapeNode))
+                (nodeA.userData!["person"] as! Person).contactedHotDog(currentTime: secondsPassed)
+            }
         }
     }
     
@@ -62,8 +78,14 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
         for hotDog in allHotDogs {
             if hotDog.contains(pos) {
                 hotDog.grab(currentTime: secondsPassed)
+                aHotDogIsGrabbed = true
             }
-            hotDog.helpIndicator?.isHidden = true
+            hotDog.hideHelpIndicator()
+        }
+        if aHotDogIsGrabbed {
+            for person in allPeople {
+                person.showHelpIndicator()
+            }
         }
     }
     
@@ -78,8 +100,12 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
             if hotDog.contains(pos) {
                 hotDog.releaseGrab()
             }
-            hotDog.helpIndicator?.isHidden = false
+            hotDog.showHelpIndicator()
         }
+        for person in allPeople {
+            person.hideHelpIndicator()
+        }
+        aHotDogIsGrabbed = false
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -149,6 +175,7 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
         }
         for idx in 1 ... 12 {
             helpDragFrames.append(SKTexture(imageNamed: NSString(format:"Drag_Overlay_%d.png", idx) as String))
+            helpDropFrames.append(SKTexture(imageNamed: NSString(format:"Drop_Overlay_%d.png", idx) as String))
         }
     }
     

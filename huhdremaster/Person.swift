@@ -6,6 +6,7 @@ class Person: BaseSprite {
     var body: BaseSprite? = nil
     var headOffset: CGFloat = 0
     static let categoryBitMask: UInt32 = 0b0101
+    var helpIndicator: BaseSprite? = nil
     
     init(scene: BaseScene) {
         super.init(texture: standardTexture)
@@ -30,6 +31,14 @@ class Person: BaseSprite {
         head?.position = CGPoint(x: body!.position.x, y: body!.position.y + headOffset)
         
         spawnHeadCollider()
+        
+        self.helpIndicator = BaseSprite(imageNamed: "Drop_Overlay_1.png")
+        self.helpIndicator?.zPosition = self.zPosition
+        self.helpIndicator?.setScene(scene: scene)
+        self.helpIndicator?.isHidden = true
+        self.helpIndicator?.run(SKAction.repeatForever(SKAction.animate(with: (self._scene as! GameplayScene).helpDropFrames,
+                                                                        timePerFrame: 0.1, resize: true, restore: false)))
+        self.helpIndicator?.position = CGPoint(x: self.position.x, y: (self.head?.position.y)! + (self.head?.calculateAccumulatedFrame().height)! / 2 + (self.helpIndicator?.calculateAccumulatedFrame().height)! / 2)
     }
     
     override init(texture: SKTexture?, color: SKColor, size: CGSize) {
@@ -38,6 +47,21 @@ class Person: BaseSprite {
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder:aDecoder)
+    }
+    
+    func contactedHotDog(currentTime: TimeInterval) {
+        
+    }
+    
+    func hideHelpIndicator() {
+        helpIndicator?.isHidden = true
+    }
+    
+    func showHelpIndicator() {
+        let __scene: GameplayScene = self._scene as! GameplayScene
+        if __scene.timesAnyNogginWasTopped < 2 {
+            helpIndicator?.isHidden = false
+        }
     }
     
     func spawnHeadCollider() {
@@ -50,6 +74,7 @@ class Person: BaseSprite {
         pathToDraw.move(to: CGPoint(x: startPoint.x, y: 0))
         pathToDraw.addLine(to: CGPoint(x: (self.head?.calculateAccumulatedFrame().width)! / 2, y: 0))
         headCollider.zPosition = self.zPosition + 5
+        headCollider.userData = ["person": self]
         headCollider.physicsBody = SKPhysicsBody(edgeChainFrom: pathToDraw)
         headCollider.physicsBody?.isDynamic = false
         headCollider.physicsBody?.categoryBitMask = Person.categoryBitMask

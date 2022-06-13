@@ -20,6 +20,7 @@ class HotDog: BaseSprite {
     let countdownIndicator: ShadowedText = ShadowedText()
     var timeSinceFloorContact: TimeInterval = -1
     var helpIndicator: BaseSprite? = nil
+    var nogginsTouched: [SKShapeNode] = [SKShapeNode]()
     
     init(scene: BaseScene) {
         super.init(texture: standardTexture)
@@ -43,6 +44,7 @@ class HotDog: BaseSprite {
         self.helpIndicator = BaseSprite(imageNamed: "Drag_Overlay_1.png")
         self.helpIndicator?.zPosition = self.zPosition
         self.helpIndicator?.setScene(scene: scene)
+        self.helpIndicator?.isHidden = true
         self.helpIndicator?.run(SKAction.repeatForever(SKAction.animate(with: (self._scene as! GameplayScene).helpDragFrames,
                                                                         timePerFrame: 0.1, resize: true, restore: false)))
         
@@ -106,7 +108,21 @@ class HotDog: BaseSprite {
     func updateHelpIndicator() {
         self.helpIndicator!.position = CGPoint(x: self.position.x, y: self.position.y + 60 * self._scene!.scaleFactor)
         let aDogHasBeenDropped: Bool = (self._scene as! GameplayScene).hotDogsDropped > 0
-        self.helpIndicator!.isHidden = self.physicsBody!.isDynamic || self.isGrabbed || self.hasActions() || !aDogHasBeenDropped
+        let aDogIsGrabbed: Bool = (self._scene as! GameplayScene).aHotDogIsGrabbed
+        if (self._scene as! GameplayScene).timesAnyNogginWasTopped < GameplayScene.howManyInteractionsToHelpWith {
+            self.helpIndicator!.isHidden = self.physicsBody!.isDynamic || aDogIsGrabbed || self.hasActions() || !aDogHasBeenDropped
+        }
+    }
+    
+    func hideHelpIndicator() {
+        helpIndicator?.isHidden = true
+    }
+    
+    func showHelpIndicator() {
+        let __scene: GameplayScene = self._scene as! GameplayScene
+        if __scene.timesAnyNogginWasTopped < GameplayScene.howManyInteractionsToHelpWith {
+            helpIndicator?.isHidden = false
+        }
     }
     
     func updateCountdown(currentTime: TimeInterval) {
@@ -131,6 +147,10 @@ class HotDog: BaseSprite {
         }
         self.countdownIndicator.setHidden(hidden: false)
         self.physicsBody?.isDynamic = false
+    }
+    
+    func contactedPerson(currentTime: TimeInterval, contactedNode: SKShapeNode) {
+        self.nogginsTouched.append(contactedNode)
     }
     
     func grab(currentTime: TimeInterval) {
