@@ -76,7 +76,6 @@ class HotDog: BaseSprite {
     func resolveRestConditions(currentTime: TimeInterval) {
         if self.previousFloorContactTimes.count != 0 && currentTime - self.previousFloorContactTimes.first! > 0.6 {
             self.countdownIndicator.setHidden(hidden: false)
-            self.showHelpIndicator()
             self.physicsBody?.isDynamic = false
         }
     }
@@ -116,16 +115,11 @@ class HotDog: BaseSprite {
     
     func updateHelpIndicator() {
         self.helpIndicator!.position = CGPoint(x: self.position.x, y: self.position.y + 60 * self._scene!.scaleFactor)
-    }
-    
-    func hideHelpIndicator() {
-        helpIndicator?.isHidden = true
-    }
-    
-    func showHelpIndicator() {
         let __scene: GameplayScene = self._scene as! GameplayScene
-        if __scene.timesAnyNogginWasTopped < GameplayScene.howManyInteractionsToHelpWith {
+        if __scene.hotDogsDropped > 0 && __scene.timesAnyNogginWasTopped < GameplayScene.howManyInteractionsToHelpWith && !__scene.aHotDogIsGrabbed {
             helpIndicator?.isHidden = false
+        } else {
+            helpIndicator?.isHidden = true
         }
     }
     

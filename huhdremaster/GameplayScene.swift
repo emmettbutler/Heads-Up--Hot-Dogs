@@ -81,7 +81,6 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
                 hotDog.grab(currentTime: secondsPassed)
                 aHotDogIsGrabbed = true
             }
-            hotDog.hideHelpIndicator()
         }
         if aHotDogIsGrabbed {
             for person in allPeople {
@@ -101,7 +100,6 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
             if hotDog.contains(pos) {
                 hotDog.releaseGrab()
             }
-            hotDog.showHelpIndicator()
         }
         for person in allPeople {
             person.hideHelpIndicator()
