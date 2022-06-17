@@ -20,6 +20,7 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
     static let spriteZPositions: Dictionary = ["Person": 40.0, "HotDog": 50.0]
     var aHotDogIsGrabbed: Bool = false
     static let howManyInteractionsToHelpWith: Int = 2
+    let characterTextureLoader: CharacterTextureLoader = CharacterTextureLoader()
     
     override init() {
         super.init()
@@ -48,7 +49,7 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
         
         spawnBoundaries()
         buildTextures()
-        allPeople.append(Person(scene: self))
+        allPeople.append(Person(scene: self, textureLoader: characterTextureLoader))
         
         self.headsUpDisplay = HeadsUpDisplay(scene: self)
     }

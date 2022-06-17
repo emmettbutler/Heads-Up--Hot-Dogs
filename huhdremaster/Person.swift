@@ -11,16 +11,16 @@ class Person: BaseSprite {
     let headCollider: SKShapeNode = SKShapeNode()
     var previousHotDogContactTimes: [TimeInterval] = [TimeInterval]()
     
-    init(scene: BaseScene) {
+    init(scene: BaseScene, textureLoader: CharacterTextureLoader) {
         super.init(texture: standardTexture)
         self._scene = scene
         
         self.zPosition = GameplayScene.spriteZPositions["Person"]!
         
-        body = BaseSprite(imageNamed: "BusinessMan_Idle_1.png")
+        body = BaseSprite(texture: textureLoader.characterTextures[0].idleBodyFrames[0])
         body!.setScene(scene: scene)
         body?.zPosition = self.zPosition
-        head = BaseSprite(imageNamed: "BusinessHead_Idle_NoDog.png")
+        head = BaseSprite(texture: textureLoader.characterTextures[0].idleHeadFrames[0])
         head!.setScene(scene: scene)
         head?.zPosition = self.zPosition + 1
         
