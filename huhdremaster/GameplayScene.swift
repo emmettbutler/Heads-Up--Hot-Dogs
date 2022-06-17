@@ -71,7 +71,7 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
                 }
                 
                 collidingHotDog.contactedPerson(currentTime: secondsPassed, contactedNode: collidingHead)
-                (nodeA.userData!["person"] as! Person).contactedHotDog(currentTime: secondsPassed)
+                (nodeA.userData!["person"] as! Person).contactedHotDog(currentTime: secondsPassed, hotDog: collidingHotDog)
             }
         }
     }

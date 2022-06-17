@@ -9,7 +9,9 @@ class Person: BaseSprite {
     var helpIndicator: BaseSprite? = nil
     var heartEmitter: SKEmitterNode = SKEmitterNode(fileNamed: "HeartParticles.sks")!
     let headCollider: SKShapeNode = SKShapeNode()
+    var headHotDogDetector: SKShapeNode? = nil
     var previousHotDogContactTimes: [TimeInterval] = [TimeInterval]()
+    var hotDogsCurrentlyOnHead: [HotDog] = [HotDog]()
     static let slug: String = "businessman"
     var textureMap: CharacterTextureMap? = nil
     
@@ -63,9 +65,12 @@ class Person: BaseSprite {
         super.init(coder:aDecoder)
     }
     
-    func contactedHotDog(currentTime: TimeInterval) {
+    func contactedHotDog(currentTime: TimeInterval, hotDog: HotDog) {
         self.previousHotDogContactTimes.append(currentTime)
         self.heartEmitter.particleBirthRate = 25
+        if (!self.hotDogsCurrentlyOnHead.contains(hotDog)) {
+            self.hotDogsCurrentlyOnHead.append(hotDog)
+        }
     }
     
     func hideHelpIndicator() {
@@ -94,13 +99,41 @@ class Person: BaseSprite {
         headCollider.physicsBody?.categoryBitMask = Person.categoryBitMask
         headCollider.physicsBody?.contactTestBitMask = HotDog.categoryBitMask
         self._scene!.addChild(headCollider)
+        
+        headHotDogDetector = SKShapeNode(rectOf: CGSize(width: (self.head?.calculateAccumulatedFrame().width)!, height: 30 * self._scene!.scaleFactor))
+        headHotDogDetector?.zPosition = headCollider.zPosition
+        headHotDogDetector?.position = CGPoint(x: headCollider.position.x, y: headCollider.position.y + (headHotDogDetector?.calculateAccumulatedFrame().height)! / 2)
+        headHotDogDetector?.isHidden = true
+        self._scene!.addChild(headHotDogDetector!)
     }
     
     func update(currentTime: TimeInterval) {
+        updateHeartEmitter(currentTime: currentTime)
+        countHotDogsOnHead()
+        updateFace()
+    }
+    
+    func updateHeartEmitter(currentTime: TimeInterval) {
         if self.previousHotDogContactTimes.count != 0 && currentTime - self.previousHotDogContactTimes.last! > 1 {
             heartEmitter.particleBirthRate = 0
         }
         heartEmitter.position = self.headCollider.position
+    }
+    
+    func countHotDogsOnHead() {
+        for hotDogOnHead in hotDogsCurrentlyOnHead {
+            if !(headHotDogDetector?.contains(hotDogOnHead.position))! {
+                hotDogsCurrentlyOnHead.remove(at: hotDogsCurrentlyOnHead.firstIndex(of: hotDogOnHead)!)
+            }
+        }
+    }
+    
+    func updateFace() {
+        if hotDogsCurrentlyOnHead.count == 0 {
+            head?.texture = textureMap?.idleHeadFrames[0]
+        } else {
+            head?.texture = textureMap?.idleHotDogHeadFrames[0]
+        }
     }
     
     override func cleanup() {
