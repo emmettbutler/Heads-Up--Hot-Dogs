@@ -15,6 +15,7 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
     var helpDragFrames: [SKTexture] = [SKTexture]()
     var helpDropFrames: [SKTexture] = [SKTexture]()
     var headsUpDisplay: HeadsUpDisplay? = nil
+    var pointCounter: PointCounter? = nil
     var highestFloor: SKShapeNode? = nil
     var timesAnyNogginWasTopped: Int = 0
     static let spriteZPositions: Dictionary = ["Person": 40.0, "HotDog": 50.0]
@@ -52,6 +53,7 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
         allPeople.append(Person(scene: self, textureLoader: characterTextureLoader))
         
         self.headsUpDisplay = HeadsUpDisplay(scene: self)
+        self.pointCounter = PointCounter(scene: self)
     }
     
     func didBegin(_ contact: SKPhysicsContact) {
@@ -149,6 +151,8 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
         for person in allPeople {
             person.update(currentTime: secondsPassed)
         }
+        
+        self.pointCounter!.update(currentTime: currentTime)
     }
     
     func despawnHotDog(hotDog: HotDog) {

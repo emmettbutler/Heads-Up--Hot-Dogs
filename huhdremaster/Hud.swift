@@ -6,12 +6,13 @@ class HeadsUpDisplay: BaseSprite {
     var xTextures: [SKTexture] = [SKTexture]()
     var indicators: [BaseSprite] = [BaseSprite]()
     var subtractAnimation: SKAction? = nil
+    static let _zPosition: CGFloat = 60
     
     init(scene: BaseScene) {
         super.init(texture: backgroundTexture)
         self.setScene(scene: scene)
         
-        self.zPosition = 60
+        self.zPosition = HeadsUpDisplay._zPosition
         self.position = CGPoint(x: 0, y: UIScreen.main.bounds.height / 2 - 50 * scene.scaleFactor)
         
         for idx in (-2 ... 2).reversed() {
@@ -56,5 +57,39 @@ class HeadsUpDisplay: BaseSprite {
                 break
             }
         }
+    }
+}
+
+class PointCounter: BaseSprite {
+    let backgroundTexture: SKTexture = SKTexture(imageNamed: "Score_BG.png")
+    let pointsText: BaseText = BaseText()
+    var points: Int = 0
+    
+    init(scene: BaseScene) {
+        super.init(texture: backgroundTexture)
+        self.position = CGPoint(x: UIScreen.main.bounds.width / 2 - self.calculateAccumulatedFrame().width / 2 - 20 * (scene as! GameplayScene).scaleFactor,
+                                y: UIScreen.main.bounds.height / 2 - self.calculateAccumulatedFrame().height / 2 - 20 * (scene as! GameplayScene).scaleFactor)
+        self.zPosition = HeadsUpDisplay._zPosition
+        self.setScene(scene: scene)
+        
+        pointsText.zPosition = self.zPosition + 1
+        pointsText.text = NSString(format: "%07d", self.points) as String
+        pointsText.position = CGPoint(x: self.position.x + self.calculateAccumulatedFrame().width / 2 - 5, y: self.position.y - self.calculateAccumulatedFrame().height / 2)
+        pointsText.preferredMaxLayoutWidth = self.calculateAccumulatedFrame().width
+        pointsText.horizontalAlignmentMode = .right
+        pointsText.fontSize = 40 * (scene as! GameplayScene).scaleFactor
+        pointsText.setScene(scene: scene)
+    }
+    
+    override init(texture: SKTexture?, color: SKColor, size: CGSize) {
+        super.init(texture: texture, color: color, size: size)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder:aDecoder)
+    }
+    
+    func update(currentTime: TimeInterval) {
+        pointsText.text = NSString(format: "%07d", self.points) as String
     }
 }
