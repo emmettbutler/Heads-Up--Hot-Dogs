@@ -10,6 +10,8 @@ class Person: BaseSprite {
     var heartEmitter: SKEmitterNode = SKEmitterNode(fileNamed: "HeartParticles.sks")!
     let headCollider: SKShapeNode = SKShapeNode()
     var previousHotDogContactTimes: [TimeInterval] = [TimeInterval]()
+    static let slug: String = "businessman"
+    var textureMap: CharacterTextureMap? = nil
     
     init(scene: BaseScene, textureLoader: CharacterTextureLoader) {
         super.init(texture: standardTexture)
@@ -17,10 +19,15 @@ class Person: BaseSprite {
         
         self.zPosition = GameplayScene.spriteZPositions["Person"]!
         
-        body = BaseSprite(texture: textureLoader.characterTextures[0].idleBodyFrames[0])
+        textureMap = textureLoader.getTextureMapBySlug(slug: type(of:self).slug)
+        
+        body = BaseSprite(texture: textureMap!.idleBodyFrames[0])
         body!.setScene(scene: scene)
         body?.zPosition = self.zPosition
-        head = BaseSprite(texture: textureLoader.characterTextures[0].idleHeadFrames[0])
+        let idleBodyFrames: [SKTexture] = textureMap!.idleBodyFrames
+        self.body?.run(SKAction.repeatForever(SKAction.animate(with: idleBodyFrames, timePerFrame: 0.1)))
+        
+        head = BaseSprite(texture: textureMap!.idleHeadFrames[0])
         head!.setScene(scene: scene)
         head?.zPosition = self.zPosition + 1
         

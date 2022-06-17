@@ -6,9 +6,19 @@ class CharacterTextureLoader {
     init() {
         characterTextures.append(BusinessmanTextureMap())
     }
+    
+    func getTextureMapBySlug(slug: String) -> CharacterTextureMap{
+        for textureMap in characterTextures {
+            if slug == textureMap.slug {
+                return textureMap
+            }
+        }
+        return characterTextures[0]
+    }
 }
 
 class CharacterTextureMap {
+    var slug: String = ""
     var idleHeadFrames: [SKTexture] = [SKTexture]()
     var idleHotDogHeadFrames: [SKTexture] = [SKTexture]()
     var idleBodyFrames: [SKTexture] = [SKTexture]()
@@ -20,6 +30,8 @@ class CharacterTextureMap {
 class BusinessmanTextureMap: CharacterTextureMap {
     override init() {
         super.init()
+        
+        slug = Person.slug
         
         idleHeadFrames.append(SKTexture(imageNamed: "BusinessHead_Idle_NoDog.png"))
         idleHotDogHeadFrames.append(SKTexture(imageNamed: "BusinessHead_Idle_Dog.png"))
