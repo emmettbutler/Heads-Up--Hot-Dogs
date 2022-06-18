@@ -22,6 +22,8 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
     var aHotDogIsGrabbed: Bool = false
     static let howManyInteractionsToHelpWith: Int = 2
     let characterTextureLoader: CharacterTextureLoader = CharacterTextureLoader()
+    static let pointsForHeadContact: Int = 50
+    static let pointsForHotDogStayedOnHead: Int = 25
     
     override init() {
         super.init()
@@ -76,7 +78,7 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
     func handleHotDogHeadContact(collidingHotDog: HotDog, collidingHead: SKShapeNode, collidingPerson: Person) {
         if !collidingHotDog.nogginsTouchedSinceLastGrab.contains(collidingHead) {
             timesAnyNogginWasTopped += 1
-            pointCounter?.points += 25
+            pointCounter?.points += GameplayScene.pointsForHeadContact
         }
         
         collidingHotDog.contactedPerson(currentTime: secondsPassed, contactedNode: collidingHead)

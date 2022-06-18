@@ -14,6 +14,7 @@ class Person: BaseSprite {
     var hotDogsCurrentlyOnHead: [HotDog] = [HotDog]()
     static let slug: String = "businessman"
     var textureMap: CharacterTextureMap? = nil
+    var pointTallyTimes: [TimeInterval] = [TimeInterval]()
     
     init(scene: BaseScene, textureLoader: CharacterTextureLoader) {
         super.init(texture: standardTexture)
@@ -111,6 +112,15 @@ class Person: BaseSprite {
         updateHeartEmitter(currentTime: currentTime)
         countHotDogsOnHead()
         updateFace()
+        resolvePointsForHeldHotDogs(currentTime: currentTime)
+    }
+    
+    func resolvePointsForHeldHotDogs(currentTime: TimeInterval) {
+        let bucketedTime: CGFloat = currentTime.rounded()
+        if !pointTallyTimes.contains(bucketedTime) {
+            pointTallyTimes.append(bucketedTime)
+            (self._scene as! GameplayScene).pointCounter?.points += GameplayScene.pointsForHotDogStayedOnHead * self.hotDogsCurrentlyOnHead.count
+        }
     }
     
     func updateHeartEmitter(currentTime: TimeInterval) {
