@@ -18,7 +18,7 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
     var pointCounter: PointCounter? = nil
     var highestFloor: SKShapeNode? = nil
     var timesAnyNogginWasTopped: Int = 0
-    static let spriteZPositions: Dictionary = ["Person": 40.0, "HotDog": 50.0]
+    static let spriteZPositions: Dictionary = ["Person": 40.0, "HotDog": 50.0, "Notification": 60.0]
     var aHotDogIsGrabbed: Bool = false
     static let howManyInteractionsToHelpWith: Int = 2
     let characterTextureLoader: CharacterTextureLoader = CharacterTextureLoader()
