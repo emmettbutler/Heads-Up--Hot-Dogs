@@ -20,7 +20,7 @@ class HotDog: BaseSprite {
     let countdownIndicator: ShadowedText = ShadowedText()
     var timeSinceFloorContact: TimeInterval = -1
     var helpIndicator: BaseSprite? = nil
-    var nogginsTouched: [SKShapeNode] = [SKShapeNode]()
+    var nogginsTouchedSinceLastGrab: [SKShapeNode] = [SKShapeNode]()
     
     init(scene: BaseScene) {
         super.init(texture: standardTexture)
@@ -143,7 +143,7 @@ class HotDog: BaseSprite {
     }
     
     func contactedPerson(currentTime: TimeInterval, contactedNode: SKShapeNode) {
-        self.nogginsTouched.append(contactedNode)
+        self.nogginsTouchedSinceLastGrab.append(contactedNode)
     }
     
     func grab(currentTime: TimeInterval) {
@@ -154,6 +154,7 @@ class HotDog: BaseSprite {
             self.physicsBody?.isDynamic = false
             self.countdownIndicator.setHidden(hidden: true)
             self.colorBlendFactor = 0
+            self.nogginsTouchedSinceLastGrab = [SKShapeNode]()
         }
     }
     
