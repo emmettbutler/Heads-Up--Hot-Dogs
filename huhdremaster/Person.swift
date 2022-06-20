@@ -105,14 +105,16 @@ class Person: BaseSprite {
         headCollider.zPosition = self.zPosition + 5
         headCollider.userData = ["person": self]
         headCollider.physicsBody = SKPhysicsBody(edgeChainFrom: pathToDraw)
-        headCollider.physicsBody?.isDynamic = false
+        headCollider.physicsBody?.isDynamic = true
+        headCollider.strokeColor = .red
+        headCollider.path = pathToDraw
         headCollider.physicsBody?.categoryBitMask = Person.categoryBitMask
         headCollider.physicsBody?.contactTestBitMask = HotDog.categoryBitMask
         self._scene!.addChild(headCollider)
         
         headHotDogDetector = SKShapeNode(rectOf: CGSize(width: (self.head?.calculateAccumulatedFrame().width)!, height: 30 * self._scene!.scaleFactor))
         headHotDogDetector?.zPosition = headCollider.zPosition
-        headHotDogDetector?.isHidden = true
+        headHotDogDetector?.fillColor = UIColor(red: 255.0, green: 0.0, blue: 0.0, alpha: 0.5)
         self._scene!.addChild(headHotDogDetector!)
     }
     
