@@ -8,7 +8,7 @@ class Person: BaseSprite {
     static let categoryBitMask: UInt32 = 0b0101
     var helpIndicator: BaseSprite? = nil
     var heartEmitter: SKEmitterNode = SKEmitterNode(fileNamed: "HeartParticles.sks")!
-    let headCollider: SKShapeNode = SKShapeNode()
+    var headCollider: SKShapeNode? = nil
     var headHotDogDetector: SKShapeNode? = nil
     var previousHotDogContactTimes: [TimeInterval] = [TimeInterval]()
     var hotDogsCurrentlyOnHead: [HotDog] = [HotDog]()
@@ -16,7 +16,7 @@ class Person: BaseSprite {
     var textureMap: CharacterTextureMap? = nil
     var pointTallyTimes: [TimeInterval] = [TimeInterval]()
     var pointNotification: BaseSprite? = nil
-    var walkSpeed: CGFloat = 1.0
+    var walkSpeed: CGFloat = 50.0
     var spawnXSign: Int = 1
     
     init(scene: BaseScene, textureLoader: CharacterTextureLoader) {
@@ -58,8 +58,8 @@ class Person: BaseSprite {
         pointNotification?.setScene(scene: scene)
         
         spawnXSign = [1, -1].randomElement()!
-        let minY: Int = Int(UIScreen.main.bounds.height) / -2 + Int((body?.calculateAccumulatedFrame().height)!) / 2
-        let maxY: Int = Int((scene as! GameplayScene).highestFloor!.position.y) + Int((body?.calculateAccumulatedFrame().height)!) / 2
+        let minY: Int = Int(UIScreen.main.bounds.height) / -2 + Int((body?.calculateAccumulatedFrame().height)!) / 2 + Int(getHeadColliderOffsetFromBody())
+        let maxY: Int = Int((scene as! GameplayScene).highestFloor!.position.y) + Int((body?.calculateAccumulatedFrame().height)!) / 2 + Int(getHeadColliderOffsetFromBody())
         let spawnX: Int = (Int(UIScreen.main.bounds.width) / (spawnXSign * 2)) + Int((body?.calculateAccumulatedFrame().width)!) / (spawnXSign * 2)
         updatePosition(pos: CGPoint(x:spawnX, y:Int.random(in:minY...maxY)))
     }
@@ -97,24 +97,25 @@ class Person: BaseSprite {
     }
     
     func spawnHeadCollider() {
-        let pathToDraw = CGMutablePath()
-        let startPoint = CGPoint(x: (self.head?.calculateAccumulatedFrame().width)! / -2,
-                                 y: 0)
-        pathToDraw.move(to: CGPoint(x: startPoint.x, y: 0))
-        pathToDraw.addLine(to: CGPoint(x: (self.head?.calculateAccumulatedFrame().width)! / 2, y: 0))
-        headCollider.zPosition = self.zPosition + 5
-        headCollider.userData = ["person": self]
-        headCollider.physicsBody = SKPhysicsBody(edgeChainFrom: pathToDraw)
-        headCollider.physicsBody?.isDynamic = true
-        headCollider.strokeColor = .red
-        headCollider.path = pathToDraw
-        headCollider.physicsBody?.categoryBitMask = Person.categoryBitMask
-        headCollider.physicsBody?.contactTestBitMask = HotDog.categoryBitMask
-        self._scene!.addChild(headCollider)
+        headCollider = SKShapeNode(rectOf: CGSize(width: (self.head?.calculateAccumulatedFrame().width)!, height: 10 * self._scene!.scaleFactor))
+        headCollider?.position = self.head!.position
+        headCollider?.zPosition = self.zPosition + 5
+        headCollider?.userData = ["person": self]
+        headCollider?.fillColor = .red
+        headCollider?.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: (headCollider?.calculateAccumulatedFrame().width)!,
+                                                                      height: (headCollider?.calculateAccumulatedFrame().height)!))
+        headCollider?.physicsBody?.isDynamic = true
+        headCollider?.physicsBody?.affectedByGravity = false
+        headCollider?.physicsBody?.mass = 99999999
+        headCollider?.physicsBody?.allowsRotation = false
+        headCollider?.physicsBody?.categoryBitMask = Person.categoryBitMask
+        headCollider?.physicsBody?.contactTestBitMask = HotDog.categoryBitMask
+        headCollider?.physicsBody?.collisionBitMask = HotDog.categoryBitMask
+        self._scene!.addChild(headCollider!)
         
         headHotDogDetector = SKShapeNode(rectOf: CGSize(width: (self.head?.calculateAccumulatedFrame().width)!, height: 30 * self._scene!.scaleFactor))
-        headHotDogDetector?.zPosition = headCollider.zPosition
-        headHotDogDetector?.fillColor = UIColor(red: 255.0, green: 0.0, blue: 0.0, alpha: 0.5)
+        headHotDogDetector?.zPosition = headCollider!.zPosition
+        headHotDogDetector?.fillColor = UIColor(red: 1.0, green: 0.0, blue: 0.0, alpha: 0.5)
         self._scene!.addChild(headHotDogDetector!)
     }
     
@@ -125,24 +126,34 @@ class Person: BaseSprite {
         resolvePointsForHeldHotDogs(currentTime: currentTime)
         self.pointNotification?.size = CGSize(width: (self.pointNotification?.texture!.size().width)! * self._scene!.scaleFactor,
                                               height: (self.pointNotification?.texture!.size().height)! * self._scene!.scaleFactor)
-        updatePosition(pos: CGPoint(x: self.position.x + self.walkSpeed * CGFloat((self.spawnXSign * -1)), y: self.position.y))
+        updatePosition(pos: nil)
     }
     
-    func updatePosition(pos: CGPoint) {
-        self.position = pos
-        body?.position = self.position
+    func getHeadColliderOffsetFromBody() -> CGFloat {
+        return headOffset + (self.body?.calculateAccumulatedFrame().height)! / 2 - 10 * (self._scene?.scaleFactor)!
+    }
+    
+    func updatePosition(pos: CGPoint?) {
+        if pos != nil {
+            headCollider!.position = pos!
+        } else {
+            headCollider!.physicsBody?.applyForce(CGVector(dx:self.walkSpeed * CGFloat(self.spawnXSign * -1) * (headCollider!.physicsBody?.mass)!, dy:0))
+            let multiplier: CGFloat = walkSpeed / CGFloat(hypotf(Float((headCollider!.physicsBody?.velocity.dx)!), Float((headCollider!.physicsBody?.velocity.dy)!)))
+            headCollider!.physicsBody?.velocity.dx *= multiplier
+            headCollider!.physicsBody?.velocity.dy *= multiplier
+        }
+        self.position = headCollider!.position
+        body?.position = CGPoint(x: self.position.x, y: self.position.y - getHeadColliderOffsetFromBody())
         head?.position = CGPoint(x: body!.position.x, y: body!.position.y + headOffset)
-        headCollider.position = CGPoint(x: (self.head?.position.x)!,
-                                        y: (self.head?.position.y)! + (self.head?.calculateAccumulatedFrame().height)! / 2 - 10 * (self._scene?.scaleFactor)!)
         headHotDogDetector?.position = CGPoint(
-            x: headCollider.position.x,
-            y: headCollider.position.y + (headHotDogDetector?.calculateAccumulatedFrame().height)! / 2
+            x: (headCollider?.position.x)!,
+            y: (headCollider?.position.y)! + (headHotDogDetector?.calculateAccumulatedFrame().height)! / 2
         )
         helpIndicator?.position = CGPoint(
             x: self.position.x,
             y: (self.head?.position.y)! + (self.head?.calculateAccumulatedFrame().height)! / 2 + (self.helpIndicator?.calculateAccumulatedFrame().height)! / 2)
-        heartEmitter.position = self.headCollider.position
-        pointNotification?.position = headCollider.position
+        heartEmitter.position = self.headCollider!.position
+        pointNotification?.position = headCollider!.position
     }
     
     func resolvePointsForHeldHotDogs(currentTime: TimeInterval) {
