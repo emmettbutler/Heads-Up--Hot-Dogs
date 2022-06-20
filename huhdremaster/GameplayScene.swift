@@ -179,8 +179,8 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
         }
         let hotDog: HotDog = HotDog(scene: self)
         allHotDogs.append(hotDog)
-        let headToSpawnAbove: Person = allPeople.randomElement()!
-        hotDog.position = CGPoint(x:headToSpawnAbove.position.x + CGFloat(headToSpawnAbove.spawnXSign * -1 * 70), y: headToSpawnAbove.position.y + 50)
+        //let headToSpawnAbove: Person = allPeople.randomElement()!
+        //hotDog.position = CGPoint(x:headToSpawnAbove.position.x + CGFloat(headToSpawnAbove.spawnXSign * -1 * 70), y: headToSpawnAbove.position.y + 50)
         lastHotDogSpawnTime = currentTime
     }
     

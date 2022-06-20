@@ -34,7 +34,7 @@ class HotDog: BaseSprite {
         noPeopleCollisionMask = randomFloorMask
         noWallsCollisionMask = randomFloorMask | Person.categoryBitMask
         
-        //self.setRandomPosition()
+        self.setRandomPosition()
         
         self.physicsBody = SKPhysicsBody(texture: self.texture!,
                                            size: CGSize(width: self.size.width,
