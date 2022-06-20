@@ -6,8 +6,8 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
     var lastHotDogSpawnTime: TimeInterval = 0
     var allHotDogs: [HotDog] = [HotDog]()
     var allPeople: [Person] = [Person]()
-    static let floorCategoryBitMasks: Array<UInt32> = [0b0001, 0b0010, 0b0011, 0b0100]
-    static let wallCategoryBitMask: UInt32 = 0b1000
+    static let floorCategoryBitMasks: Array<UInt32> = [0b0001, 0b0010, 0b0100, 0b1000]
+    static let wallCategoryBitMask: UInt32 = 0b10000
     static let droppedMax: Int = 5
     var hotDogsDropped: Int = 0
     var hotDogAppearFrames: [SKTexture] = [SKTexture]()
@@ -177,7 +177,10 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
         if (currentTime - lastHotDogSpawnTime < 0.3) {
             return
         }
-        allHotDogs.append(HotDog(scene: self))
+        let hotDog: HotDog = HotDog(scene: self)
+        allHotDogs.append(hotDog)
+        let headToSpawnAbove: Person = allPeople.randomElement()!
+        hotDog.position = CGPoint(x:headToSpawnAbove.position.x + CGFloat(headToSpawnAbove.spawnXSign * -1 * 70), y: headToSpawnAbove.position.y + 50)
         lastHotDogSpawnTime = currentTime
     }
     
@@ -195,24 +198,27 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
     }
     
     func spawnBoundaries() {
-        for index in GameplayScene.floorCategoryBitMasks {
+        for index in 0 ... GameplayScene.floorCategoryBitMasks.count - 1 {
             spawnFloor(index: index)
         }
         spawnWall(xPos: UIScreen.main.bounds.width / 2)
         spawnWall(xPos: UIScreen.main.bounds.width / -2)
     }
     
-    func spawnFloor(index: UInt32) {
+    func spawnFloor(index: Int) {
         let ground = SKShapeNode()
         let pathToDraw = CGMutablePath()
-        let height: CGFloat = UIScreen.main.bounds.height / -2 + (65 - 15 * CGFloat(index))
+        let height: CGFloat = UIScreen.main.bounds.height / -2 + (55 - 15 * CGFloat(index))
         let startPoint = CGPoint(x: UIScreen.main.bounds.width / -2, y: height)
         ground.position = CGPoint(x: 0, y: startPoint.y)
         pathToDraw.move(to: CGPoint(x: startPoint.x, y: 0))
         pathToDraw.addLine(to: CGPoint(x: UIScreen.main.bounds.width / 2, y: 0))
+        ground.path = pathToDraw
+        ground.zPosition = 100
+        ground.strokeColor = .blue
         ground.physicsBody = SKPhysicsBody(edgeChainFrom: pathToDraw)
         ground.physicsBody?.isDynamic = false
-        ground.physicsBody?.categoryBitMask = index
+        ground.physicsBody?.categoryBitMask = GameplayScene.floorCategoryBitMasks[index]
         ground.physicsBody?.contactTestBitMask = HotDog.categoryBitMask
         addChild(ground)
         if highestFloor == nil || ground.position.y > (highestFloor?.position.y)! {

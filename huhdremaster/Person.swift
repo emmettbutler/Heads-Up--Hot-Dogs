@@ -5,7 +5,7 @@ class Person: BaseSprite {
     var head: BaseSprite? = nil
     var body: BaseSprite? = nil
     var headOffset: CGFloat = 0
-    static let categoryBitMask: UInt32 = 0b0101
+    static let categoryBitMask: UInt32 = 0b100000
     var helpIndicator: BaseSprite? = nil
     var heartEmitter: SKEmitterNode = SKEmitterNode(fileNamed: "HeartParticles.sks")!
     var headCollider: SKShapeNode? = nil
@@ -110,7 +110,7 @@ class Person: BaseSprite {
         headCollider?.physicsBody?.allowsRotation = false
         headCollider?.physicsBody?.categoryBitMask = Person.categoryBitMask
         headCollider?.physicsBody?.contactTestBitMask = HotDog.categoryBitMask
-        headCollider?.physicsBody?.collisionBitMask = HotDog.categoryBitMask
+        headCollider?.physicsBody?.collisionBitMask = 0
         self._scene!.addChild(headCollider!)
         
         headHotDogDetector = SKShapeNode(rectOf: CGSize(width: (self.head?.calculateAccumulatedFrame().width)!, height: 30 * self._scene!.scaleFactor))

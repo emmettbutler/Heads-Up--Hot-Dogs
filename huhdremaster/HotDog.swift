@@ -21,16 +21,26 @@ class HotDog: BaseSprite {
     var timeSinceFloorContact: TimeInterval = -1
     var helpIndicator: BaseSprite? = nil
     var nogginsTouchedSinceLastGrab: [SKShapeNode] = [SKShapeNode]()
+    var everythingCollisionMask: UInt32 = 0
+    static let nothingCollisionMask: UInt32 = 0
+    var noPeopleCollisionMask: UInt32 = 0
+    var noWallsCollisionMask: UInt32 = 0
     
     init(scene: BaseScene) {
         super.init(texture: standardTexture)
-        self.setRandomPosition()
+        
+        let randomFloorMask: UInt32 = GameplayScene.floorCategoryBitMasks.randomElement()!
+        everythingCollisionMask = randomFloorMask | GameplayScene.wallCategoryBitMask | Person.categoryBitMask
+        noPeopleCollisionMask = randomFloorMask
+        noWallsCollisionMask = randomFloorMask | Person.categoryBitMask
+        
+        //self.setRandomPosition()
         
         self.physicsBody = SKPhysicsBody(texture: self.texture!,
                                            size: CGSize(width: self.size.width,
                                                         height: self.size.height))
         self.physicsBody?.restitution = 0.2
-        self.physicsBody?.collisionBitMask = GameplayScene.floorCategoryBitMasks.randomElement()! | GameplayScene.wallCategoryBitMask | Person.categoryBitMask
+        self.physicsBody?.collisionBitMask = noPeopleCollisionMask
         self.physicsBody?.categoryBitMask = HotDog.categoryBitMask
         self.physicsBody?.isDynamic = false
         
@@ -55,6 +65,13 @@ class HotDog: BaseSprite {
         self.run(appearAnimation)
         
         self.color = .red
+    }
+    
+    override func cleanup() {
+        super.cleanup()
+        self.countdownIndicator.cleanup()
+        self.countdownIndicator.removeFromParent()
+        self.helpIndicator?.removeFromParent()
     }
     
     override init(texture: SKTexture?, color: SKColor, size: CGSize) {
@@ -140,10 +157,13 @@ class HotDog: BaseSprite {
     
     func contactedFloor(currentTime: TimeInterval) {
         self.previousFloorContactTimes.append(currentTime)
+        self.physicsBody?.collisionBitMask = everythingCollisionMask
     }
     
     func contactedPerson(currentTime: TimeInterval, contactedNode: SKShapeNode) {
+        if (self.physicsBody!.collisionBitMask & Person.categoryBitMask == 0) { return }
         self.nogginsTouchedSinceLastGrab.append(contactedNode)
+        self.physicsBody?.collisionBitMask = noWallsCollisionMask
     }
     
     func grab(currentTime: TimeInterval) {
@@ -155,6 +175,7 @@ class HotDog: BaseSprite {
             self.countdownIndicator.setHidden(hidden: true)
             self.colorBlendFactor = 0
             self.nogginsTouchedSinceLastGrab = [SKShapeNode]()
+            self.physicsBody?.collisionBitMask = HotDog.nothingCollisionMask
         }
     }
     
@@ -163,6 +184,7 @@ class HotDog: BaseSprite {
         self.physicsBody?.isDynamic = true
         self.physicsBody?.applyImpulse(CGVector(dx:self.position.x - self.previousDragPosition.x,
                                                 dy: self.position.y - self.previousDragPosition.y))
+        self.physicsBody?.collisionBitMask = everythingCollisionMask
     }
     
     func drag(toPos: CGPoint) {
@@ -170,12 +192,5 @@ class HotDog: BaseSprite {
             self.previousDragPosition = self.position
             self.position = toPos
         }
-    }
-    
-    override func cleanup() {
-        super.cleanup()
-        self.countdownIndicator.cleanup()
-        self.countdownIndicator.removeFromParent()
-        self.helpIndicator?.removeFromParent()
     }
 }
