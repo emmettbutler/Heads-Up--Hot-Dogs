@@ -4,6 +4,7 @@ class Person: BaseSprite {
     let standardTexture: SKTexture = SKTexture(imageNamed: "dog54x12.png")
     var head: BaseSprite? = nil
     var body: BaseSprite? = nil
+    var alternateHead: BaseSprite? = nil
     var headOffset: CGFloat = 0
     static let categoryBitMask: UInt32 = 0b100000
     var helpIndicator: BaseSprite? = nil
@@ -30,12 +31,18 @@ class Person: BaseSprite {
         body = BaseSprite(texture: textureMap!.idleBodyFrames[0])
         body!.setScene(scene: scene)
         body?.zPosition = self.zPosition
-        let idleBodyFrames: [SKTexture] = textureMap!.idleBodyFrames
-        self.body?.run(SKAction.repeatForever(SKAction.animate(with: idleBodyFrames, timePerFrame: 0.1)))
+        self.body?.run(SKAction.repeatForever(SKAction.animate(with: textureMap!.walkBodyFrames, timePerFrame: 0.1)))
         
         head = BaseSprite(texture: textureMap!.idleHeadFrames[0])
         head!.setScene(scene: scene)
         head?.zPosition = self.zPosition + 1
+        self.head?.run(SKAction.repeatForever(SKAction.animate(with: textureMap!.walkHeadFrames, timePerFrame: 0.1)))
+        
+        alternateHead = BaseSprite(texture: textureMap!.idleHeadFrames[0])
+        alternateHead!.setScene(scene: scene)
+        alternateHead?.zPosition = self.zPosition + 1
+        self.alternateHead?.run(SKAction.repeatForever(SKAction.animate(with: textureMap!.walkHotDogHeadFrames, timePerFrame: 0.1)))
+        alternateHead?.isHidden = true
         
         headOffset = (body?.calculateAccumulatedFrame().height)! / 2 + (head?.calculateAccumulatedFrame().height)! / 2 - 10 * scene.scaleFactor
         
@@ -58,6 +65,8 @@ class Person: BaseSprite {
         pointNotification?.setScene(scene: scene)
         
         spawnXSign = [1, -1].randomElement()!
+        head?.xScale = CGFloat(spawnXSign)
+        body?.xScale = CGFloat(spawnXSign)
         let minY: Int = Int(UIScreen.main.bounds.height) / -2 + Int((body?.calculateAccumulatedFrame().height)!) / 2 + Int(getHeadColliderOffsetFromBody())
         let maxY: Int = Int((scene as! GameplayScene).highestFloor!.position.y) + Int((body?.calculateAccumulatedFrame().height)!) / 2 + Int(getHeadColliderOffsetFromBody())
         let spawnX: Int = (Int(UIScreen.main.bounds.width) / (spawnXSign * 2)) + Int((body?.calculateAccumulatedFrame().width)!) / (spawnXSign * 2)
@@ -145,6 +154,7 @@ class Person: BaseSprite {
         self.position = headCollider!.position
         body?.position = CGPoint(x: self.position.x, y: self.position.y - getHeadColliderOffsetFromBody())
         head?.position = CGPoint(x: body!.position.x, y: body!.position.y + headOffset)
+        alternateHead?.position = head!.position
         headHotDogDetector?.position = CGPoint(
             x: (headCollider?.position.x)!,
             y: (headCollider?.position.y)! + (headHotDogDetector?.calculateAccumulatedFrame().height)! / 2
@@ -186,9 +196,11 @@ class Person: BaseSprite {
     
     func updateFace() {
         if hotDogsCurrentlyOnHead.count == 0 {
-            head?.texture = textureMap?.idleHeadFrames[0]
+            head?.isHidden = false
+            alternateHead?.isHidden = true
         } else {
-            head?.texture = textureMap?.idleHotDogHeadFrames[0]
+            head?.isHidden = true
+            alternateHead?.isHidden = false
         }
     }
     
