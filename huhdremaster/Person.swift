@@ -70,7 +70,7 @@ class Person: BaseSprite {
         let minY: Int = Int(UIScreen.main.bounds.height) / -2 + Int((body?.calculateAccumulatedFrame().height)!) / 2 + Int(getHeadColliderOffsetFromBody())
         let maxY: Int = Int((scene as! GameplayScene).highestFloor!.position.y) + Int((body?.calculateAccumulatedFrame().height)!) / 2 + Int(getHeadColliderOffsetFromBody())
         let spawnX: Int = (Int(UIScreen.main.bounds.width) / (spawnXSign * 2)) + Int((body?.calculateAccumulatedFrame().width)!) / (spawnXSign * 2)
-        updatePosition(pos: CGPoint(x:spawnX, y:Int.random(in:minY...maxY)))
+        updatePosition(pos: CGPoint(x:spawnX, y:Int.random(in:minY...maxY)), currentTime: 0)
     }
     
     override init(texture: SKTexture?, color: SKColor, size: CGSize) {
@@ -135,21 +135,28 @@ class Person: BaseSprite {
         resolvePointsForHeldHotDogs(currentTime: currentTime)
         self.pointNotification?.size = CGSize(width: (self.pointNotification?.texture!.size().width)! * self._scene!.scaleFactor,
                                               height: (self.pointNotification?.texture!.size().height)! * self._scene!.scaleFactor)
-        updatePosition(pos: nil)
+        updatePosition(pos: nil, currentTime: currentTime)
     }
     
     func getHeadColliderOffsetFromBody() -> CGFloat {
         return headOffset + (self.body?.calculateAccumulatedFrame().height)! / 2 - 10 * (self._scene?.scaleFactor)!
     }
     
-    func updatePosition(pos: CGPoint?) {
+    func applyForce(force: CGVector) {
+        headCollider!.physicsBody?.applyForce(force)
+        let multiplier: CGFloat = walkSpeed / CGFloat(hypotf(Float((headCollider!.physicsBody?.velocity.dx)!),
+                                                             Float((headCollider!.physicsBody?.velocity.dy)!)))
+        headCollider!.physicsBody?.velocity.dx *= multiplier
+        headCollider!.physicsBody?.velocity.dy *= multiplier
+    }
+    
+    func updatePosition(pos: CGPoint?, currentTime: TimeInterval) {
         if pos != nil {
             headCollider!.position = pos!
         } else {
-            headCollider!.physicsBody?.applyForce(CGVector(dx:self.walkSpeed * CGFloat(self.spawnXSign * -1) * (headCollider!.physicsBody?.mass)!, dy:0))
-            let multiplier: CGFloat = walkSpeed / CGFloat(hypotf(Float((headCollider!.physicsBody?.velocity.dx)!), Float((headCollider!.physicsBody?.velocity.dy)!)))
-            headCollider!.physicsBody?.velocity.dx *= multiplier
-            headCollider!.physicsBody?.velocity.dy *= multiplier
+            applyForce(force: CGVector(
+                dx:self.walkSpeed * CGFloat(self.spawnXSign * -1) * (headCollider!.physicsBody?.mass)!,
+                dy:(cos(currentTime) * 10) * (headCollider!.physicsBody?.mass)!))
         }
         self.position = headCollider!.position
         body?.position = CGPoint(x: self.position.x, y: self.position.y - getHeadColliderOffsetFromBody())
