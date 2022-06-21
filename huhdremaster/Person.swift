@@ -67,6 +67,7 @@ class Person: BaseSprite {
         spawnXSign = [1, -1].randomElement()!
         head?.xScale = CGFloat(spawnXSign)
         body?.xScale = CGFloat(spawnXSign)
+        alternateHead?.xScale = CGFloat(spawnXSign)
         let minY: Int = Int(UIScreen.main.bounds.height) / -2 + Int((body?.calculateAccumulatedFrame().height)!) / 2 + Int(getHeadColliderOffsetFromBody())
         let maxY: Int = Int((scene as! GameplayScene).highestFloor!.position.y) + Int((body?.calculateAccumulatedFrame().height)!) / 2 + Int(getHeadColliderOffsetFromBody())
         let spawnX: Int = (Int(UIScreen.main.bounds.width) / (spawnXSign * 2)) + Int((body?.calculateAccumulatedFrame().width)!) / (spawnXSign * 2)
@@ -110,7 +111,7 @@ class Person: BaseSprite {
         headCollider?.position = self.head!.position
         headCollider?.zPosition = self.zPosition + 5
         headCollider?.userData = ["person": self]
-        headCollider?.fillColor = .red
+        headCollider?.fillColor = UIColor(red: 0.0, green: 0.5, blue: 0.5, alpha: 0.1)
         headCollider?.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: (headCollider?.calculateAccumulatedFrame().width)!,
                                                                       height: (headCollider?.calculateAccumulatedFrame().height)!))
         headCollider?.physicsBody?.isDynamic = true
@@ -124,7 +125,7 @@ class Person: BaseSprite {
         
         headHotDogDetector = SKShapeNode(rectOf: CGSize(width: (self.head?.calculateAccumulatedFrame().width)!, height: 30 * self._scene!.scaleFactor))
         headHotDogDetector?.zPosition = headCollider!.zPosition
-        headHotDogDetector?.fillColor = UIColor(red: 1.0, green: 0.0, blue: 0.0, alpha: 0.5)
+        headHotDogDetector?.fillColor = UIColor(red: 1.0, green: 0.0, blue: 0.0, alpha: 0.1)
         self._scene!.addChild(headHotDogDetector!)
     }
     
@@ -133,13 +134,18 @@ class Person: BaseSprite {
         countHotDogsOnHead()
         updateFace()
         resolvePointsForHeldHotDogs(currentTime: currentTime)
-        self.pointNotification?.size = CGSize(width: (self.pointNotification?.texture!.size().width)! * self._scene!.scaleFactor,
-                                              height: (self.pointNotification?.texture!.size().height)! * self._scene!.scaleFactor)
         updatePosition(pos: nil, currentTime: currentTime)
+        evaluateDespawnConditions()
     }
     
     func getHeadColliderOffsetFromBody() -> CGFloat {
         return headOffset + (self.body?.calculateAccumulatedFrame().height)! / 2 - 10 * (self._scene?.scaleFactor)!
+    }
+    
+    func evaluateDespawnConditions() {
+        if abs(self.position.x) > UIScreen.main.bounds.width + (self.head?.calculateAccumulatedFrame().width)! + 100 {
+            shouldBeDespawned = true
+        }
     }
     
     func applyForce(force: CGVector) {
@@ -171,6 +177,8 @@ class Person: BaseSprite {
             y: (self.head?.position.y)! + (self.head?.calculateAccumulatedFrame().height)! / 2 + (self.helpIndicator?.calculateAccumulatedFrame().height)! / 2)
         heartEmitter.position = self.headCollider!.position
         pointNotification?.position = headCollider!.position
+        pointNotification?.size = CGSize(width: (pointNotification?.texture!.size().width)! * self._scene!.scaleFactor,
+                                         height: (pointNotification?.texture!.size().height)! * self._scene!.scaleFactor)
     }
     
     func resolvePointsForHeldHotDogs(currentTime: TimeInterval) {
@@ -213,5 +221,13 @@ class Person: BaseSprite {
     
     override func cleanup() {
         super.cleanup()
+        body?.removeFromParent()
+        head?.removeFromParent()
+        alternateHead?.removeFromParent()
+        headCollider?.removeFromParent()
+        headHotDogDetector?.removeFromParent()
+        helpIndicator?.removeFromParent()
+        heartEmitter.removeFromParent()
+        pointNotification?.removeFromParent()
     }
 }

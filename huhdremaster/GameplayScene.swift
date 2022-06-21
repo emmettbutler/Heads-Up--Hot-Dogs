@@ -4,6 +4,7 @@ import GameplayKit
 class GameplayScene: BaseScene, SKPhysicsContactDelegate {
     var level: Level? = nil
     var lastHotDogSpawnTime: TimeInterval = 0
+    var lastPersonSpawnTime: TimeInterval = 0
     var allHotDogs: [HotDog] = [HotDog]()
     var allPeople: [Person] = [Person]()
     static let floorCategoryBitMasks: Array<UInt32> = [0b0001, 0b0010, 0b0100, 0b1000]
@@ -52,7 +53,6 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
         
         spawnBoundaries()
         buildTextures()
-        allPeople.append(Person(scene: self, textureLoader: characterTextureLoader))
         
         self.headsUpDisplay = HeadsUpDisplay(scene: self)
         self.pointCounter = PointCounter(scene: self)
@@ -141,6 +141,7 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
         if secondsPassed.truncatingRemainder(dividingBy: 2) == 0 {
             spawnHotDog(currentTime: currentTime)
         }
+        spawnPerson(currentTime: currentTime)
         
         for child in self.children {
             if child is BaseSprite && (child as! BaseSprite).shouldBeDespawned {
@@ -157,6 +158,9 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
         
         for person in allPeople {
             person.update(currentTime: secondsPassed)
+            if person.shouldBeDespawned {
+                despawnPerson(person: person)
+            }
         }
         
         self.pointCounter!.update(currentTime: currentTime)
@@ -169,8 +173,13 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
         self.headsUpDisplay!.subtract()
         if hotDogsDropped >= GameplayScene.droppedMax {
             let controller = self.view?.window?.rootViewController as! GameViewController
-            controller.changeScene(key: nil)
+            //controller.changeScene(key: nil)
         }
+    }
+    
+    func despawnPerson(person: Person) {
+        person.cleanup()
+        allPeople.remove(at: allPeople.firstIndex(of: person)!)
     }
     
     func spawnHotDog(currentTime: TimeInterval) {
@@ -182,6 +191,14 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
         //let headToSpawnAbove: Person = allPeople.randomElement()!
         //hotDog.position = CGPoint(x:headToSpawnAbove.position.x + CGFloat(headToSpawnAbove.spawnXSign * -1 * 70), y: headToSpawnAbove.position.y + 50)
         lastHotDogSpawnTime = currentTime
+    }
+    
+    func spawnPerson(currentTime: TimeInterval) {
+        if (currentTime - lastPersonSpawnTime < 2) {
+            return
+        }
+        allPeople.append(Person(scene: self, textureLoader: characterTextureLoader))
+        lastPersonSpawnTime = currentTime
     }
     
     func buildTextures() {
