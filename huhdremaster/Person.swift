@@ -22,6 +22,9 @@ class Person: BaseSprite {
     var spawnXSign: Int = 1
     var idleStartTime: TimeInterval = -1
     var isIdling: Bool = false
+    var walkHeadAnimation: SKAction? = nil
+    var walkAlternateHeadAnimation: SKAction? = nil
+    var walkBodyAnimation: SKAction? = nil
     
     init(scene: BaseScene, textureLoader: CharacterTextureLoader) {
         super.init(texture: standardTexture)
@@ -34,17 +37,20 @@ class Person: BaseSprite {
         body = BaseSprite(texture: textureMap!.idleBodyFrames[0])
         body!.setScene(scene: scene)
         body?.zPosition = self.zPosition
-        self.body?.run(SKAction.repeatForever(SKAction.animate(with: textureMap!.walkBodyFrames, timePerFrame: 0.1)))
+        walkBodyAnimation = SKAction.repeatForever(SKAction.animate(with: textureMap!.walkBodyFrames, timePerFrame: 0.1))
+        self.body?.run(walkBodyAnimation!)
         
         head = BaseSprite(texture: textureMap!.idleHeadFrames[0])
         head!.setScene(scene: scene)
         head?.zPosition = self.zPosition + 1
-        self.head?.run(SKAction.repeatForever(SKAction.animate(with: textureMap!.walkHeadFrames, timePerFrame: 0.1)))
+        walkHeadAnimation = SKAction.repeatForever(SKAction.animate(with: textureMap!.walkHeadFrames, timePerFrame: 0.1))
+        self.head?.run(walkHeadAnimation!)
         
         alternateHead = BaseSprite(texture: textureMap!.idleHeadFrames[0])
         alternateHead!.setScene(scene: scene)
         alternateHead?.zPosition = self.zPosition + 1
-        self.alternateHead?.run(SKAction.repeatForever(SKAction.animate(with: textureMap!.walkHotDogHeadFrames, timePerFrame: 0.1)))
+        walkAlternateHeadAnimation = SKAction.repeatForever(SKAction.animate(with: textureMap!.walkHotDogHeadFrames, timePerFrame: 0.1))
+        self.alternateHead?.run(walkAlternateHeadAnimation!)
         alternateHead?.isHidden = true
         
         headOffset = (body?.calculateAccumulatedFrame().height)! / 2 + (head?.calculateAccumulatedFrame().height)! / 2 - 10 * scene.scaleFactor
@@ -150,11 +156,13 @@ class Person: BaseSprite {
             self.headCollider?.physicsBody?.velocity.dy = 0
             self.body?.run(SKAction.repeatForever(SKAction.animate(with: textureMap!.idleBodyFrames, timePerFrame: 0.1)))
             self.head?.run(SKAction.repeatForever(SKAction.animate(with: textureMap!.idleHeadFrames, timePerFrame: 0.1)))
+            self.alternateHead?.run(SKAction.repeatForever(SKAction.animate(with: textureMap!.idleHotDogHeadFrames, timePerFrame: 0.1)))
         } else if (isIdling) {
             if currentTime - idleStartTime >= 5 {
                 isIdling = false
-                self.body?.run(SKAction.repeatForever(SKAction.animate(with: textureMap!.walkBodyFrames, timePerFrame: 0.1)))
-                self.head?.run(SKAction.repeatForever(SKAction.animate(with: textureMap!.walkHeadFrames, timePerFrame: 0.1)))
+                self.body?.run(walkBodyAnimation!)
+                self.head?.run(walkHeadAnimation!)
+                self.alternateHead?.run(walkAlternateHeadAnimation!)
             }
         }
     }
