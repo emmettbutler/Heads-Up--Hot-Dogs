@@ -260,3 +260,11 @@ class Person: BaseSprite {
         pointNotification?.removeFromParent()
     }
 }
+
+class Businessman: Person {
+    
+}
+
+class YoungProfessional: Person {
+    
+}
