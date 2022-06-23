@@ -194,7 +194,7 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
     }
     
     func spawnPerson(currentTime: TimeInterval) {
-        if (currentTime - lastPersonSpawnTime < 2) {
+        if (currentTime - lastPersonSpawnTime < 4) {
             return
         }
         allPeople.append(Person(scene: self, textureLoader: characterTextureLoader))

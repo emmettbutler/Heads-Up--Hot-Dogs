@@ -2,6 +2,7 @@ import SpriteKit
 
 class Person: BaseSprite {
     let standardTexture: SKTexture = SKTexture(imageNamed: "dog54x12.png")
+    let randomSeed: Int = Int.random(in: 1 ... 10)
     var head: BaseSprite? = nil
     var body: BaseSprite? = nil
     var alternateHead: BaseSprite? = nil
@@ -19,6 +20,8 @@ class Person: BaseSprite {
     var pointNotification: BaseSprite? = nil
     var walkSpeed: CGFloat = 50.0
     var spawnXSign: Int = 1
+    var idleStartTime: TimeInterval = -1
+    var isIdling: Bool = false
     
     init(scene: BaseScene, textureLoader: CharacterTextureLoader) {
         super.init(texture: standardTexture)
@@ -136,6 +139,24 @@ class Person: BaseSprite {
         resolvePointsForHeldHotDogs(currentTime: currentTime)
         updatePosition(pos: nil, currentTime: currentTime)
         evaluateDespawnConditions()
+        evaluateIdleConditions(currentTime: currentTime)
+    }
+    
+    func evaluateIdleConditions(currentTime: TimeInterval) {
+        if abs(self.position.x) < UIScreen.main.bounds.width / 4 && Int.random(in: 1 ... 100) == 1 && idleStartTime == -1 {
+            idleStartTime = currentTime
+            isIdling = true
+            self.headCollider?.physicsBody?.velocity.dx = 0
+            self.headCollider?.physicsBody?.velocity.dy = 0
+            self.body?.run(SKAction.repeatForever(SKAction.animate(with: textureMap!.idleBodyFrames, timePerFrame: 0.1)))
+            self.head?.run(SKAction.repeatForever(SKAction.animate(with: textureMap!.idleHeadFrames, timePerFrame: 0.1)))
+        } else if (isIdling) {
+            if currentTime - idleStartTime >= 5 {
+                isIdling = false
+                self.body?.run(SKAction.repeatForever(SKAction.animate(with: textureMap!.walkBodyFrames, timePerFrame: 0.1)))
+                self.head?.run(SKAction.repeatForever(SKAction.animate(with: textureMap!.walkHeadFrames, timePerFrame: 0.1)))
+            }
+        }
     }
     
     func getHeadColliderOffsetFromBody() -> CGFloat {
@@ -159,10 +180,10 @@ class Person: BaseSprite {
     func updatePosition(pos: CGPoint?, currentTime: TimeInterval) {
         if pos != nil {
             headCollider!.position = pos!
-        } else {
+        } else if (!isIdling){
             applyForce(force: CGVector(
                 dx:self.walkSpeed * CGFloat(self.spawnXSign * -1) * (headCollider!.physicsBody?.mass)!,
-                dy:(cos(currentTime) * 10) * (headCollider!.physicsBody?.mass)!))
+                dy:(cos(currentTime + CGFloat(randomSeed)) * 10) * (headCollider!.physicsBody?.mass)!))
         }
         self.position = headCollider!.position
         body?.position = CGPoint(x: self.position.x, y: self.position.y - getHeadColliderOffsetFromBody())
