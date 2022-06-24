@@ -240,7 +240,7 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
     func spawnFloor(index: Int) {
         let ground = SKShapeNode()
         let pathToDraw = CGMutablePath()
-        let height: CGFloat = UIScreen.main.bounds.height / -2 + (55 - 15 * CGFloat(index))
+        let height: CGFloat = UIScreen.main.bounds.height / -2 + (55 * scaleFactor - 15 * CGFloat(index) * scaleFactor)
         let startPoint = CGPoint(x: UIScreen.main.bounds.width / -2, y: height)
         ground.position = CGPoint(x: 0, y: startPoint.y)
         pathToDraw.move(to: CGPoint(x: startPoint.x, y: 0))
