@@ -184,9 +184,9 @@ class Person: BaseSprite {
         }
     }
     
-    func applyForce(force: CGVector) {
+    func applyForce(force: CGVector, power: CGFloat) {
         headCollider!.physicsBody?.applyForce(force)
-        let multiplier: CGFloat = walkSpeed / CGFloat(hypotf(Float((headCollider!.physicsBody?.velocity.dx)!),
+        let multiplier: CGFloat = power / CGFloat(hypotf(Float((headCollider!.physicsBody?.velocity.dx)!),
                                                              Float((headCollider!.physicsBody?.velocity.dy)!)))
         headCollider!.physicsBody?.velocity.dx *= multiplier
         headCollider!.physicsBody?.velocity.dy *= multiplier
@@ -196,9 +196,10 @@ class Person: BaseSprite {
         if pos != nil {
             headCollider!.position = pos!
         } else {
+            let power: CGFloat = CGFloat(randomSeed) * 2 + walkSpeed
             applyForce(force: CGVector(
-                dx:self.walkSpeed * CGFloat(self.spawnXSign * -1) * (headCollider!.physicsBody?.mass)!,
-                dy:(cos(currentTime + CGFloat(randomSeed)) * 10) * (headCollider!.physicsBody?.mass)!))
+                dx:power * CGFloat(self.spawnXSign * -1) * (headCollider!.physicsBody?.mass)!,
+                dy:(cos(currentTime + CGFloat(randomSeed)) * 10) * (headCollider!.physicsBody?.mass)!), power: power)
         }
         self.position = headCollider!.position
         body?.position = CGPoint(x: self.position.x, y: self.position.y - getHeadColliderOffsetFromBody())
@@ -304,9 +305,9 @@ class Businessman: Person {
         evaluateIdleConditions(currentTime: currentTime)
     }
     
-    override func applyForce(force: CGVector) {
+    override func applyForce(force: CGVector, power: CGFloat) {
         if !isIdling {
-            super.applyForce(force: force)
+            super.applyForce(force: force, power: power)
         }
     }
     
