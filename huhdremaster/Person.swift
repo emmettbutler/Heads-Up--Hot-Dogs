@@ -31,6 +31,8 @@ class Person: BaseSprite {
     static var slugLion: String = "lion"
     static var slugCrustPunk: String = "crustpunk"
     static var slugAstronaut: String = "astronaut"
+    static var slugCop: String = "piglet"
+    static var slugDogEater: String = "dogeater"
     
     init(scene: BaseScene, textureLoader: CharacterTextureLoader) {
         super.init(texture: standardTexture)
@@ -419,6 +421,40 @@ class Nudie: Person {
     override init(scene: BaseScene, textureLoader: CharacterTextureLoader) {
         super.init(scene: scene, textureLoader: textureLoader)
         slug = Person.slugNudie
+        walkSpeed = 70.0
+        buildSprites(textureLoader: textureLoader)
+    }
+    
+    override init(texture: SKTexture?, color: SKColor, size: CGSize) {
+        super.init(texture: texture, color: color, size: size)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder:aDecoder)
+    }
+}
+
+class DogEater: Person {
+    override init(scene: BaseScene, textureLoader: CharacterTextureLoader) {
+        super.init(scene: scene, textureLoader: textureLoader)
+        slug = Person.slugDogEater
+        walkSpeed = 70.0
+        buildSprites(textureLoader: textureLoader)
+    }
+    
+    override init(texture: SKTexture?, color: SKColor, size: CGSize) {
+        super.init(texture: texture, color: color, size: size)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder:aDecoder)
+    }
+}
+
+class Cop: Person {
+    override init(scene: BaseScene, textureLoader: CharacterTextureLoader) {
+        super.init(scene: scene, textureLoader: textureLoader)
+        slug = Person.slugCop
         walkSpeed = 70.0
         buildSprites(textureLoader: textureLoader)
     }

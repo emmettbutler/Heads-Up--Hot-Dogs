@@ -210,7 +210,7 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
         if (currentTime - lastPersonSpawnTime < 4) {
             return
         }
-        let choice: Int = Int.random(in: 1 ... 8)
+        let choice: Int = Int.random(in: 1 ... 10)
         var person: Person? = nil;
         if choice == 1 {
             person = Businessman(scene: self, textureLoader: characterTextureLoader)
@@ -228,6 +228,10 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
             person = Lion(scene: self, textureLoader: characterTextureLoader)
         } else if choice == 8 {
             person = Astronaut(scene: self, textureLoader: characterTextureLoader)
+        } else if choice == 9 {
+            person = DogEater(scene: self, textureLoader: characterTextureLoader)
+        } else if choice == 10 {
+            person = Cop(scene: self, textureLoader: characterTextureLoader)
         }
         allPeople.append(person!)
         lastPersonSpawnTime = currentTime

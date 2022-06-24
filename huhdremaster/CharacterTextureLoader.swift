@@ -12,6 +12,8 @@ class CharacterTextureLoader {
         characterTextures.append(NudieTextureMap())
         characterTextures.append(CrustPunkTextureMap())
         characterTextures.append(AstronautTextureMap())
+        characterTextures.append(DogEaterTextureMap())
+        characterTextures.append(CopTextureMap())
     }
     
     func getTextureMapBySlug(slug: String) -> CharacterTextureMap{
@@ -195,6 +197,44 @@ class AstronautTextureMap: CharacterTextureMap {
         }
         for idx in 1 ... 12 {
             headContactPointNotifyFrames.append(SKTexture(imageNamed: NSString(format:"plusTwentyFive%d.png", idx) as String))
+        }
+    }
+}
+
+class CopTextureMap: CharacterTextureMap {
+    override init() {
+        super.init()
+        
+        slug = Person.slugCop
+        
+        for idx in 1 ... 4 {
+            walkHotDogHeadFrames.append(SKTexture(imageNamed: NSString(format:"Cop_Head_Dog_%d.png", idx) as String))
+            walkHeadFrames.append(SKTexture(imageNamed: NSString(format:"Cop_Head_NoDog_%d.png", idx) as String))
+        }
+        for idx in 1 ... 8 {
+            walkBodyFrames.append(SKTexture(imageNamed: NSString(format:"Cop_Run_%d.png", idx) as String))
+        }
+        for idx in 1 ... 11 {
+            headContactPointNotifyFrames.append(SKTexture(imageNamed: NSString(format:"PlusFifteen%d.png", idx) as String))
+        }
+    }
+}
+
+class DogEaterTextureMap: CharacterTextureMap {
+    override init() {
+        super.init()
+        
+        slug = Person.slugDogEater
+        
+        for idx in 1 ... 4 {
+            walkHotDogHeadFrames.append(SKTexture(imageNamed: NSString(format:"DogEater_Head_Dog_%d.png", idx) as String))
+            walkHeadFrames.append(SKTexture(imageNamed: NSString(format:"DogEater_Head_NoDog_%d.png", idx) as String))
+        }
+        for idx in 1 ... 8 {
+            walkBodyFrames.append(SKTexture(imageNamed: NSString(format:"DogEater_Walk_%d.png", idx) as String))
+        }
+        for idx in 1 ... 11 {
+            headContactPointNotifyFrames.append(SKTexture(imageNamed: NSString(format:"PlusFifteen%d.png", idx) as String))
         }
     }
 }
