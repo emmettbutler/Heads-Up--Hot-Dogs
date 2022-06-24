@@ -88,11 +88,11 @@ class Person: BaseSprite {
         pointNotification?.setScene(scene: _scene!)
         
         spawnXSign = [1, -1].randomElement()!
-        head?.xScale = CGFloat(spawnXSign)
-        body?.xScale = CGFloat(spawnXSign)
-        alternateHead?.xScale = CGFloat(spawnXSign)
+        head?.xScale *= CGFloat(spawnXSign)
+        body?.xScale *= CGFloat(spawnXSign)
+        alternateHead?.xScale *= CGFloat(spawnXSign)
         if ripples != nil {
-            ripples?.xScale = CGFloat(spawnXSign)
+            ripples?.xScale *= CGFloat(spawnXSign)
         }
         let minY: Int = Int(UIScreen.main.bounds.height) / -2 + Int((body?.calculateAccumulatedFrame().height)!) / 2 + Int(getHeadColliderOffsetFromBody())
         let maxY: Int = Int((_scene! as! GameplayScene).highestFloor!.position.y) + Int((body?.calculateAccumulatedFrame().height)!) / 2 + Int(getHeadColliderOffsetFromBody())
