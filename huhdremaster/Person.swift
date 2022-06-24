@@ -25,6 +25,7 @@ class Person: BaseSprite {
     var walkBodyAnimation: SKAction? = nil
     static var slugBusinessman: String = "businessman"
     static var slugYoungProfessional: String = "youngpro"
+    static var slugJogger: String = "jogger"
     
     init(scene: BaseScene, textureLoader: CharacterTextureLoader) {
         super.init(texture: standardTexture)
@@ -312,6 +313,23 @@ class YoungProfessional: Person {
         super.init(scene: scene, textureLoader: textureLoader)
         slug = Person.slugYoungProfessional
         walkSpeed = 90.0
+        buildSprites(textureLoader: textureLoader)
+    }
+    
+    override init(texture: SKTexture?, color: SKColor, size: CGSize) {
+        super.init(texture: texture, color: color, size: size)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder:aDecoder)
+    }
+}
+
+class Jogger: Person {
+    override init(scene: BaseScene, textureLoader: CharacterTextureLoader) {
+        super.init(scene: scene, textureLoader: textureLoader)
+        slug = Person.slugJogger
+        walkSpeed = 150.0
         buildSprites(textureLoader: textureLoader)
     }
     

@@ -62,16 +62,29 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
         guard let nodeA = contact.bodyA.node else { return }
         guard let nodeB = contact.bodyB.node else { return }
         
-        if nodeB.physicsBody?.categoryBitMask == HotDog.categoryBitMask {
-            let collidingHotDog: HotDog = nodeB as! HotDog
-        
-            if (GameplayScene.floorCategoryBitMasks.contains(nodeA.physicsBody!.categoryBitMask)){
-                collidingHotDog.contactedFloor(currentTime: secondsPassed)
-            } else if (nodeA.physicsBody!.categoryBitMask == Person.categoryBitMask) {
-                handleHotDogHeadContact(collidingHotDog: collidingHotDog,
-                                        collidingHead: nodeA as! SKShapeNode,
-                                        collidingPerson: nodeA.userData!["person"] as! Person)
-            }
+        var collidingHotDog: HotDog? = nil
+        var collidingOtherObject: SKNode? = nil
+        if nodeA.physicsBody?.categoryBitMask == HotDog.categoryBitMask {
+            collidingHotDog = nodeA as! HotDog
+            collidingOtherObject = nodeB
+        } else if nodeB.physicsBody?.categoryBitMask == HotDog.categoryBitMask {
+            collidingHotDog = nodeB as! HotDog
+            collidingOtherObject = nodeA
+        }
+        if collidingHotDog == nil {
+            return
+        }
+ 
+        handleContact(collidingHotDog: collidingHotDog!, collidingOtherObject: collidingOtherObject!)
+    }
+    
+    func handleContact(collidingHotDog: HotDog, collidingOtherObject: SKNode) {
+        if (GameplayScene.floorCategoryBitMasks.contains(collidingOtherObject.physicsBody!.categoryBitMask)){
+            collidingHotDog.contactedFloor(currentTime: secondsPassed)
+        } else if (collidingOtherObject.physicsBody!.categoryBitMask == Person.categoryBitMask) {
+            handleHotDogHeadContact(collidingHotDog: collidingHotDog,
+                                    collidingHead: collidingOtherObject as! SKShapeNode,
+                                    collidingPerson: collidingOtherObject.userData!["person"] as! Person)
         }
     }
     
@@ -197,12 +210,14 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
         if (currentTime - lastPersonSpawnTime < 4) {
             return
         }
-        let choice: Int = Int.random(in: 1 ... 2)
+        let choice: Int = Int.random(in: 1 ... 3)
         var person: Person? = nil;
         if choice == 1 {
             person = Businessman(scene: self, textureLoader: characterTextureLoader)
         } else if choice == 2 {
             person = YoungProfessional(scene: self, textureLoader: characterTextureLoader)
+        } else if choice == 3 {
+            person = Jogger(scene: self, textureLoader: characterTextureLoader)
         }
         allPeople.append(person!)
         lastPersonSpawnTime = currentTime
