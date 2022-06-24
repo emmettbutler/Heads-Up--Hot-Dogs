@@ -67,10 +67,10 @@ class PointCounter: BaseSprite {
     
     init(scene: BaseScene) {
         super.init(texture: backgroundTexture)
+        self.setScene(scene: scene)
         self.position = CGPoint(x: UIScreen.main.bounds.width / 2 - self.calculateAccumulatedFrame().width / 2 - 20 * (scene as! GameplayScene).scaleFactor,
                                 y: UIScreen.main.bounds.height / 2 - self.calculateAccumulatedFrame().height / 2 - 20 * (scene as! GameplayScene).scaleFactor)
         self.zPosition = HeadsUpDisplay._zPosition
-        self.setScene(scene: scene)
         
         pointsText.zPosition = self.zPosition + 1
         pointsText.text = NSString(format: "%07d", self.points) as String
