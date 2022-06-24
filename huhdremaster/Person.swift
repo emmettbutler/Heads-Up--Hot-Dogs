@@ -189,6 +189,8 @@ class Person: BaseSprite {
             y: (self.head?.position.y)! + (self.head?.calculateAccumulatedFrame().height)! / 2 + (self.helpIndicator?.calculateAccumulatedFrame().height)! / 2)
         heartEmitter.position = self.headCollider!.position
         pointNotification?.position = headCollider!.position
+        pointNotification?.size = CGSize(width: (pointNotification?.texture!.size().width)! * self._scene!.scaleFactor,
+                                         height: (pointNotification?.texture!.size().height)! * self._scene!.scaleFactor)
     }
     
     func updateSpriteSizes() {
