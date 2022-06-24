@@ -210,30 +210,9 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
         if (currentTime - lastPersonSpawnTime < 4) {
             return
         }
-        let choice: Int = Int.random(in: 1 ... 10)
-        var person: Person? = nil;
-        if choice == 1 {
-            person = Businessman(scene: self, textureLoader: characterTextureLoader)
-        } else if choice == 2 {
-            person = YoungProfessional(scene: self, textureLoader: characterTextureLoader)
-        } else if choice == 3 {
-            person = Jogger(scene: self, textureLoader: characterTextureLoader)
-        } else if choice == 4 {
-            person = Professor(scene: self, textureLoader: characterTextureLoader)
-        } else if choice == 5 {
-            person = Nudie(scene: self, textureLoader: characterTextureLoader)
-        } else if choice == 6 {
-            person = CrustPunk(scene: self, textureLoader: characterTextureLoader)
-        } else if choice == 7 {
-            person = Lion(scene: self, textureLoader: characterTextureLoader)
-        } else if choice == 8 {
-            person = Astronaut(scene: self, textureLoader: characterTextureLoader)
-        } else if choice == 9 {
-            person = DogEater(scene: self, textureLoader: characterTextureLoader)
-        } else if choice == 10 {
-            person = Cop(scene: self, textureLoader: characterTextureLoader)
-        }
-        allPeople.append(person!)
+        let choice: Person.Type = [Businessman.self, YoungProfessional.self, Jogger.self, Professor.self, Nudie.self,
+                                   CrustPunk.self, Lion.self, Astronaut.self, DogEater.self, Cop.self].randomElement()!
+        allPeople.append(choice.init(scene: self, textureLoader: characterTextureLoader))
         lastPersonSpawnTime = currentTime
     }
     

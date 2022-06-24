@@ -34,7 +34,7 @@ class Person: BaseSprite {
     static var slugCop: String = "piglet"
     static var slugDogEater: String = "dogeater"
     
-    init(scene: BaseScene, textureLoader: CharacterTextureLoader) {
+    required init(scene: BaseScene, textureLoader: CharacterTextureLoader) {
         super.init(texture: standardTexture)
         self._scene = scene
     }
@@ -269,7 +269,7 @@ class Businessman: Person {
     var idleStartTime: TimeInterval = -1
     var isIdling: Bool = false
     
-    override init(scene: BaseScene, textureLoader: CharacterTextureLoader) {
+    required init(scene: BaseScene, textureLoader: CharacterTextureLoader) {
         super.init(scene: scene, textureLoader: textureLoader)
         slug = Person.slugBusinessman
         walkSpeed = 70.0
@@ -316,7 +316,7 @@ class Businessman: Person {
 }
 
 class YoungProfessional: Person {
-    override init(scene: BaseScene, textureLoader: CharacterTextureLoader) {
+    required init(scene: BaseScene, textureLoader: CharacterTextureLoader) {
         super.init(scene: scene, textureLoader: textureLoader)
         slug = Person.slugYoungProfessional
         walkSpeed = 90.0
@@ -333,7 +333,7 @@ class YoungProfessional: Person {
 }
 
 class Jogger: Person {
-    override init(scene: BaseScene, textureLoader: CharacterTextureLoader) {
+    required init(scene: BaseScene, textureLoader: CharacterTextureLoader) {
         super.init(scene: scene, textureLoader: textureLoader)
         slug = Person.slugJogger
         walkSpeed = 150.0
@@ -350,7 +350,7 @@ class Jogger: Person {
 }
 
 class Professor: Person {
-    override init(scene: BaseScene, textureLoader: CharacterTextureLoader) {
+    required init(scene: BaseScene, textureLoader: CharacterTextureLoader) {
         super.init(scene: scene, textureLoader: textureLoader)
         slug = Person.slugProfessor
         walkSpeed = 70.0
@@ -367,7 +367,7 @@ class Professor: Person {
 }
 
 class Lion: Person {
-    override init(scene: BaseScene, textureLoader: CharacterTextureLoader) {
+    required init(scene: BaseScene, textureLoader: CharacterTextureLoader) {
         super.init(scene: scene, textureLoader: textureLoader)
         slug = Person.slugLion
         walkSpeed = 70.0
@@ -384,7 +384,7 @@ class Lion: Person {
 }
 
 class CrustPunk: Person {
-    override init(scene: BaseScene, textureLoader: CharacterTextureLoader) {
+    required init(scene: BaseScene, textureLoader: CharacterTextureLoader) {
         super.init(scene: scene, textureLoader: textureLoader)
         slug = Person.slugCrustPunk
         walkSpeed = 70.0
@@ -401,7 +401,7 @@ class CrustPunk: Person {
 }
 
 class Astronaut: Person {
-    override init(scene: BaseScene, textureLoader: CharacterTextureLoader) {
+    required init(scene: BaseScene, textureLoader: CharacterTextureLoader) {
         super.init(scene: scene, textureLoader: textureLoader)
         slug = Person.slugAstronaut
         walkSpeed = 70.0
@@ -418,7 +418,7 @@ class Astronaut: Person {
 }
 
 class Nudie: Person {
-    override init(scene: BaseScene, textureLoader: CharacterTextureLoader) {
+    required init(scene: BaseScene, textureLoader: CharacterTextureLoader) {
         super.init(scene: scene, textureLoader: textureLoader)
         slug = Person.slugNudie
         walkSpeed = 70.0
@@ -435,7 +435,7 @@ class Nudie: Person {
 }
 
 class DogEater: Person {
-    override init(scene: BaseScene, textureLoader: CharacterTextureLoader) {
+    required init(scene: BaseScene, textureLoader: CharacterTextureLoader) {
         super.init(scene: scene, textureLoader: textureLoader)
         slug = Person.slugDogEater
         walkSpeed = 70.0
@@ -452,7 +452,7 @@ class DogEater: Person {
 }
 
 class Cop: Person {
-    override init(scene: BaseScene, textureLoader: CharacterTextureLoader) {
+    required init(scene: BaseScene, textureLoader: CharacterTextureLoader) {
         super.init(scene: scene, textureLoader: textureLoader)
         slug = Person.slugCop
         walkSpeed = 70.0
