@@ -7,6 +7,11 @@ class CharacterTextureLoader {
         characterTextures.append(BusinessmanTextureMap())
         characterTextures.append(YoungProfessionalTextureMap())
         characterTextures.append(JoggerTextureMap())
+        characterTextures.append(ProfessorTextureMap())
+        characterTextures.append(LionTextureMap())
+        characterTextures.append(NudieTextureMap())
+        characterTextures.append(CrustPunkTextureMap())
+        characterTextures.append(AstronautTextureMap())
     }
     
     func getTextureMapBySlug(slug: String) -> CharacterTextureMap{
@@ -92,6 +97,101 @@ class JoggerTextureMap: CharacterTextureMap {
         for idx in 1 ... 8 {
             walkHeadFrames.append(SKTexture(imageNamed: NSString(format:"Jogger_Head_NoDog_%d.png", idx) as String))
             walkBodyFrames.append(SKTexture(imageNamed: NSString(format:"Jogger_Run_%d.png", idx) as String))
+        }
+        for idx in 1 ... 12 {
+            headContactPointNotifyFrames.append(SKTexture(imageNamed: NSString(format:"plusTwentyFive%d.png", idx) as String))
+        }
+    }
+}
+
+class ProfessorTextureMap: CharacterTextureMap {
+    override init() {
+        super.init()
+        
+        slug = Person.slugProfessor
+        
+        for idx in 1 ... 4 {
+            walkHotDogHeadFrames.append(SKTexture(imageNamed: NSString(format:"Professor_Head_Dog_%d.png", idx) as String))
+            walkHeadFrames.append(SKTexture(imageNamed: NSString(format:"Professor_Head_NoDog_%d.png", idx) as String))
+        }
+        for idx in 1 ... 8 {
+            walkBodyFrames.append(SKTexture(imageNamed: NSString(format:"Professor_Walk_%d.png", idx) as String))
+        }
+        for idx in 1 ... 12 {
+            headContactPointNotifyFrames.append(SKTexture(imageNamed: NSString(format:"plusTwentyFive%d.png", idx) as String))
+        }
+    }
+}
+
+class NudieTextureMap: CharacterTextureMap {
+    override init() {
+        super.init()
+        
+        slug = Person.slugNudie
+        
+        for idx in 1 ... 4 {
+            walkHotDogHeadFrames.append(SKTexture(imageNamed: NSString(format:"Nudie_Head_Dog_%d.png", idx) as String))
+            walkHeadFrames.append(SKTexture(imageNamed: NSString(format:"Nudie_Head_NoDog_%d.png", idx) as String))
+        }
+        for idx in 1 ... 8 {
+            walkBodyFrames.append(SKTexture(imageNamed: NSString(format:"Nudie_Walk_%d.png", idx) as String))
+        }
+        for idx in 1 ... 12 {
+            headContactPointNotifyFrames.append(SKTexture(imageNamed: NSString(format:"plusTwentyFive%d.png", idx) as String))
+        }
+    }
+}
+
+class LionTextureMap: CharacterTextureMap {
+    override init() {
+        super.init()
+        
+        slug = Person.slugLion
+        
+        for idx in 1 ... 4 {
+            walkHotDogHeadFrames.append(SKTexture(imageNamed: NSString(format:"Lion_Head_Dog_%d.png", idx) as String))
+            walkHeadFrames.append(SKTexture(imageNamed: NSString(format:"Lion_Head_NoDog_%d.png", idx) as String))
+        }
+        for idx in 1 ... 8 {
+            walkBodyFrames.append(SKTexture(imageNamed: NSString(format:"Lion_Run_%d.png", idx) as String))
+        }
+        for idx in 1 ... 11 {
+            headContactPointNotifyFrames.append(SKTexture(imageNamed: NSString(format:"plusTen%d.png", idx) as String))
+        }
+    }
+}
+
+class CrustPunkTextureMap: CharacterTextureMap {
+    override init() {
+        super.init()
+        
+        slug = Person.slugCrustPunk
+        
+        for idx in 1 ... 4 {
+            walkHotDogHeadFrames.append(SKTexture(imageNamed: NSString(format:"CrustPunk_Head_Dog_%d.png", idx) as String))
+            walkHeadFrames.append(SKTexture(imageNamed: NSString(format:"CrustPunk_Head_NoDog_%d.png", idx) as String))
+        }
+        for idx in 1 ... 8 {
+            walkBodyFrames.append(SKTexture(imageNamed: NSString(format:"CrustPunk_Walk_%d.png", idx) as String))
+        }
+        for idx in 1 ... 11 {
+            headContactPointNotifyFrames.append(SKTexture(imageNamed: NSString(format:"PlusFifteen%d.png", idx) as String))
+        }
+    }
+}
+
+class AstronautTextureMap: CharacterTextureMap {
+    override init() {
+        super.init()
+        
+        slug = Person.slugAstronaut
+        
+        for idx in 1 ... 4 {
+            walkHotDogHeadFrames.append(SKTexture(imageNamed: NSString(format:"Astronaut_Head_Dog_%d.png", idx) as String))
+            walkHeadFrames.append(SKTexture(imageNamed: NSString(format:"Astronaut_Head_NoDog_%d.png", idx) as String))
+        }
+        for idx in 1 ... 8 {
+            walkBodyFrames.append(SKTexture(imageNamed: NSString(format:"Astronaunt_Walk_%d.png", idx) as String))
         }
         for idx in 1 ... 12 {
             headContactPointNotifyFrames.append(SKTexture(imageNamed: NSString(format:"plusTwentyFive%d.png", idx) as String))
