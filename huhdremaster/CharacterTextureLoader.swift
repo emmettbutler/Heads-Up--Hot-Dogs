@@ -36,6 +36,7 @@ class CharacterTextureMap {
     var walkBodyFrames: [SKTexture] = [SKTexture]()
     var headContactPointNotifyFrames: [SKTexture] = [SKTexture]()
     var heldHotDogsPointNotifyFrames: [SKTexture] = [SKTexture]()
+    var rippleWalkFrames: [SKTexture] = [SKTexture]()
     
     init() {
         for idx in 1 ... 13 {
@@ -61,6 +62,7 @@ class BusinessmanTextureMap: CharacterTextureMap {
         }
         for idx in 1 ... 6 {
             walkBodyFrames.append(SKTexture(imageNamed: NSString(format:"BusinessMan_Walk_%d.png", idx) as String))
+            rippleWalkFrames.append(SKTexture(imageNamed: NSString(format:"BusinessMan_Ripple_Walk_%d.png", idx) as String))
         }
         for idx in 1 ... 11 {
             headContactPointNotifyFrames.append(SKTexture(imageNamed: NSString(format:"plusTen%d.png", idx) as String))

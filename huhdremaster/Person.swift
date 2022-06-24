@@ -5,6 +5,7 @@ class Person: BaseSprite {
     let randomSeed: Int = Int.random(in: 1 ... 10)
     var head: BaseSprite? = nil
     var body: BaseSprite? = nil
+    var ripples: BaseSprite? = nil
     var alternateHead: BaseSprite? = nil
     var headOffset: CGFloat = 0
     static let categoryBitMask: UInt32 = 0b100000
@@ -23,6 +24,7 @@ class Person: BaseSprite {
     var walkHeadAnimation: SKAction? = nil
     var walkAlternateHeadAnimation: SKAction? = nil
     var walkBodyAnimation: SKAction? = nil
+    var rippleAnimation: SKAction? = nil
     static var slugBusinessman: String = "businessman"
     static var slugYoungProfessional: String = "youngpro"
     static var slugJogger: String = "jogger"
@@ -49,6 +51,8 @@ class Person: BaseSprite {
         body?.zPosition = self.zPosition
         walkBodyAnimation = SKAction.repeatForever(SKAction.animate(with: textureMap!.walkBodyFrames, timePerFrame: 0.1))
         self.body?.run(walkBodyAnimation!)
+        
+        buildRipple()
         
         head = BaseSprite(texture: textureMap!.walkHeadFrames[0])
         head!.setScene(scene: _scene!)
@@ -87,6 +91,9 @@ class Person: BaseSprite {
         head?.xScale = CGFloat(spawnXSign)
         body?.xScale = CGFloat(spawnXSign)
         alternateHead?.xScale = CGFloat(spawnXSign)
+        if ripples != nil {
+            ripples?.xScale = CGFloat(spawnXSign)
+        }
         let minY: Int = Int(UIScreen.main.bounds.height) / -2 + Int((body?.calculateAccumulatedFrame().height)!) / 2 + Int(getHeadColliderOffsetFromBody())
         let maxY: Int = Int((_scene! as! GameplayScene).highestFloor!.position.y) + Int((body?.calculateAccumulatedFrame().height)!) / 2 + Int(getHeadColliderOffsetFromBody())
         let spawnX: Int = (Int(UIScreen.main.bounds.width) / (spawnXSign * 2)) + Int((body?.calculateAccumulatedFrame().width)!) / (spawnXSign * 2)
@@ -100,6 +107,15 @@ class Person: BaseSprite {
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder:aDecoder)
+    }
+    
+    func buildRipple() {
+        if textureMap!.rippleWalkFrames.count == 0 { return }
+        ripples = BaseSprite(texture: textureMap!.rippleWalkFrames[0])
+        ripples!.setScene(scene: _scene!)
+        ripples?.zPosition = body!.zPosition + 1
+        rippleAnimation = SKAction.repeatForever(SKAction.animate(with: textureMap!.rippleWalkFrames, timePerFrame: 0.1))
+        self.ripples?.run(rippleAnimation!)
     }
     
     func contactedHotDog(currentTime: TimeInterval, hotDog: HotDog) {
@@ -186,6 +202,10 @@ class Person: BaseSprite {
         }
         self.position = headCollider!.position
         body?.position = CGPoint(x: self.position.x, y: self.position.y - getHeadColliderOffsetFromBody())
+        if ripples != nil {
+            ripples?.position = CGPoint(x: body!.position.x,
+                                        y: body!.position.y - body!.calculateAccumulatedFrame().height / 2 + (ripples?.calculateAccumulatedFrame().height)! / 2)
+        }
         head?.position = CGPoint(x: body!.position.x, y: body!.position.y + headOffset)
         alternateHead?.position = head!.position
         headHotDogDetector?.position = CGPoint(
@@ -262,6 +282,9 @@ class Person: BaseSprite {
         helpIndicator?.removeFromParent()
         heartEmitter.removeFromParent()
         pointNotification?.removeFromParent()
+        if ripples != nil {
+            ripples?.removeFromParent()
+        }
     }
 }
 
