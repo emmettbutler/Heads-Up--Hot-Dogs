@@ -197,7 +197,14 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
         if (currentTime - lastPersonSpawnTime < 4) {
             return
         }
-        allPeople.append(Person(scene: self, textureLoader: characterTextureLoader))
+        let choice: Int = Int.random(in: 1 ... 2)
+        var person: Person? = nil;
+        if choice == 1 {
+            person = Businessman(scene: self, textureLoader: characterTextureLoader)
+        } else if choice == 2 {
+            person = YoungProfessional(scene: self, textureLoader: characterTextureLoader)
+        }
+        allPeople.append(person!)
         lastPersonSpawnTime = currentTime
     }
     

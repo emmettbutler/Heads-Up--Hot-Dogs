@@ -34,7 +34,7 @@ class BusinessmanTextureMap: CharacterTextureMap {
     override init() {
         super.init()
         
-        slug = Person.slug
+        slug = Person.slugBusinessman
         
         idleHeadFrames.append(SKTexture(imageNamed: "BusinessHead_Idle_NoDog.png"))
         idleHotDogHeadFrames.append(SKTexture(imageNamed: "BusinessHead_Idle_Dog.png"))
@@ -61,7 +61,7 @@ class YoungProfessionalTextureMap: CharacterTextureMap {
     override init() {
         super.init()
         
-        slug = "youngpro"
+        slug = Person.slugYoungProfessional
         
         for idx in 1 ... 4 {
             walkHeadFrames.append(SKTexture(imageNamed: NSString(format:"YoungProfesh_Head_NoDog_%d.png", idx) as String))

@@ -14,52 +14,54 @@ class Person: BaseSprite {
     var headHotDogDetector: SKShapeNode? = nil
     var previousHotDogContactTimes: [TimeInterval] = [TimeInterval]()
     var hotDogsCurrentlyOnHead: [HotDog] = [HotDog]()
-    static let slug: String = "businessman"
+    var slug: String = "default"
     var textureMap: CharacterTextureMap? = nil
     var pointTallyTimes: [TimeInterval] = [TimeInterval]()
     var pointNotification: BaseSprite? = nil
     var walkSpeed: CGFloat = 50.0
     var spawnXSign: Int = 1
-    var idleStartTime: TimeInterval = -1
-    var isIdling: Bool = false
     var walkHeadAnimation: SKAction? = nil
     var walkAlternateHeadAnimation: SKAction? = nil
     var walkBodyAnimation: SKAction? = nil
+    static var slugBusinessman: String = "businessman"
+    static var slugYoungProfessional: String = "youngpro"
     
     init(scene: BaseScene, textureLoader: CharacterTextureLoader) {
         super.init(texture: standardTexture)
         self._scene = scene
-        
+    }
+    
+    func buildSprites(textureLoader: CharacterTextureLoader) {
         self.zPosition = GameplayScene.spriteZPositions["Person"]!
         
-        textureMap = textureLoader.getTextureMapBySlug(slug: type(of:self).slug)
+        textureMap = textureLoader.getTextureMapBySlug(slug: slug)
         
-        body = BaseSprite(texture: textureMap!.idleBodyFrames[0])
-        body!.setScene(scene: scene)
+        body = BaseSprite(texture: textureMap!.walkBodyFrames[0])
+        body!.setScene(scene: _scene!)
         body?.zPosition = self.zPosition
         walkBodyAnimation = SKAction.repeatForever(SKAction.animate(with: textureMap!.walkBodyFrames, timePerFrame: 0.1))
         self.body?.run(walkBodyAnimation!)
         
-        head = BaseSprite(texture: textureMap!.idleHeadFrames[0])
-        head!.setScene(scene: scene)
+        head = BaseSprite(texture: textureMap!.walkHeadFrames[0])
+        head!.setScene(scene: _scene!)
         head?.zPosition = self.zPosition + 1
         walkHeadAnimation = SKAction.repeatForever(SKAction.animate(with: textureMap!.walkHeadFrames, timePerFrame: 0.1))
         self.head?.run(walkHeadAnimation!)
         
-        alternateHead = BaseSprite(texture: textureMap!.idleHeadFrames[0])
-        alternateHead!.setScene(scene: scene)
+        alternateHead = BaseSprite(texture: textureMap!.walkHeadFrames[0])
+        alternateHead!.setScene(scene: _scene!)
         alternateHead?.zPosition = self.zPosition + 1
         walkAlternateHeadAnimation = SKAction.repeatForever(SKAction.animate(with: textureMap!.walkHotDogHeadFrames, timePerFrame: 0.1))
         self.alternateHead?.run(walkAlternateHeadAnimation!)
         alternateHead?.isHidden = true
         
-        headOffset = (body?.calculateAccumulatedFrame().height)! / 2 + (head?.calculateAccumulatedFrame().height)! / 2 - 10 * scene.scaleFactor
+        headOffset = (body?.calculateAccumulatedFrame().height)! / 2 + (head?.calculateAccumulatedFrame().height)! / 2 - 10 * _scene!.scaleFactor
         
         spawnHeadCollider()
         
         self.helpIndicator = BaseSprite(imageNamed: "Drop_Overlay_1.png")
         self.helpIndicator?.zPosition = GameplayScene.spriteZPositions["Notification"]!
-        self.helpIndicator?.setScene(scene: scene)
+        self.helpIndicator?.setScene(scene: _scene!)
         self.helpIndicator?.isHidden = true
         self.helpIndicator?.run(SKAction.repeatForever(SKAction.animate(with: (self._scene as! GameplayScene).helpDropFrames,
                                                                         timePerFrame: 0.1, resize: true, restore: false)))
@@ -71,15 +73,16 @@ class Person: BaseSprite {
         pointNotification = BaseSprite(texture: textureMap!.headContactPointNotifyFrames[0])
         pointNotification?.isHidden = true
         pointNotification?.zPosition = GameplayScene.spriteZPositions["Notification"]!
-        pointNotification?.setScene(scene: scene)
+        pointNotification?.setScene(scene: _scene!)
         
         spawnXSign = [1, -1].randomElement()!
         head?.xScale = CGFloat(spawnXSign)
         body?.xScale = CGFloat(spawnXSign)
         alternateHead?.xScale = CGFloat(spawnXSign)
         let minY: Int = Int(UIScreen.main.bounds.height) / -2 + Int((body?.calculateAccumulatedFrame().height)!) / 2 + Int(getHeadColliderOffsetFromBody())
-        let maxY: Int = Int((scene as! GameplayScene).highestFloor!.position.y) + Int((body?.calculateAccumulatedFrame().height)!) / 2 + Int(getHeadColliderOffsetFromBody())
+        let maxY: Int = Int((_scene! as! GameplayScene).highestFloor!.position.y) + Int((body?.calculateAccumulatedFrame().height)!) / 2 + Int(getHeadColliderOffsetFromBody())
         let spawnX: Int = (Int(UIScreen.main.bounds.width) / (spawnXSign * 2)) + Int((body?.calculateAccumulatedFrame().width)!) / (spawnXSign * 2)
+
         updatePosition(pos: CGPoint(x:spawnX, y:Int.random(in:minY...maxY)), currentTime: 0)
     }
     
@@ -145,26 +148,6 @@ class Person: BaseSprite {
         resolvePointsForHeldHotDogs(currentTime: currentTime)
         updatePosition(pos: nil, currentTime: currentTime)
         evaluateDespawnConditions()
-        evaluateIdleConditions(currentTime: currentTime)
-    }
-    
-    func evaluateIdleConditions(currentTime: TimeInterval) {
-        if abs(self.position.x) < UIScreen.main.bounds.width / 4 && Int.random(in: 1 ... 100) == 1 && idleStartTime == -1 {
-            idleStartTime = currentTime
-            isIdling = true
-            self.headCollider?.physicsBody?.velocity.dx = 0
-            self.headCollider?.physicsBody?.velocity.dy = 0
-            self.body?.run(SKAction.repeatForever(SKAction.animate(with: textureMap!.idleBodyFrames, timePerFrame: 0.1)))
-            self.head?.run(SKAction.repeatForever(SKAction.animate(with: textureMap!.idleHeadFrames, timePerFrame: 0.1)))
-            self.alternateHead?.run(SKAction.repeatForever(SKAction.animate(with: textureMap!.idleHotDogHeadFrames, timePerFrame: 0.1)))
-        } else if (isIdling) {
-            if currentTime - idleStartTime >= 5 {
-                isIdling = false
-                self.body?.run(walkBodyAnimation!)
-                self.head?.run(walkHeadAnimation!)
-                self.alternateHead?.run(walkAlternateHeadAnimation!)
-            }
-        }
     }
     
     func getHeadColliderOffsetFromBody() -> CGFloat {
@@ -188,7 +171,7 @@ class Person: BaseSprite {
     func updatePosition(pos: CGPoint?, currentTime: TimeInterval) {
         if pos != nil {
             headCollider!.position = pos!
-        } else if (!isIdling){
+        } else {
             applyForce(force: CGVector(
                 dx:self.walkSpeed * CGFloat(self.spawnXSign * -1) * (headCollider!.physicsBody?.mass)!,
                 dy:(cos(currentTime + CGFloat(randomSeed)) * 10) * (headCollider!.physicsBody?.mass)!))
@@ -206,6 +189,17 @@ class Person: BaseSprite {
             y: (self.head?.position.y)! + (self.head?.calculateAccumulatedFrame().height)! / 2 + (self.helpIndicator?.calculateAccumulatedFrame().height)! / 2)
         heartEmitter.position = self.headCollider!.position
         pointNotification?.position = headCollider!.position
+    }
+    
+    func updateSpriteSizes() {
+        body?.size = CGSize(width: (body?.texture!.size().width)! * self._scene!.scaleFactor,
+                            height: (body?.texture!.size().height)! * self._scene!.scaleFactor)
+        head?.size = CGSize(width: (head?.texture!.size().width)! * self._scene!.scaleFactor,
+                            height: (head?.texture!.size().height)! * self._scene!.scaleFactor)
+        alternateHead?.size = CGSize(width: (alternateHead?.texture!.size().width)! * self._scene!.scaleFactor,
+                                     height: (alternateHead?.texture!.size().height)! * self._scene!.scaleFactor)
+        helpIndicator?.size = CGSize(width: (helpIndicator?.texture!.size().width)! * self._scene!.scaleFactor,
+                                     height: (helpIndicator?.texture!.size().height)! * self._scene!.scaleFactor)
         pointNotification?.size = CGSize(width: (pointNotification?.texture!.size().width)! * self._scene!.scaleFactor,
                                          height: (pointNotification?.texture!.size().height)! * self._scene!.scaleFactor)
     }
@@ -262,9 +256,68 @@ class Person: BaseSprite {
 }
 
 class Businessman: Person {
+    var idleStartTime: TimeInterval = -1
+    var isIdling: Bool = false
     
+    override init(scene: BaseScene, textureLoader: CharacterTextureLoader) {
+        super.init(scene: scene, textureLoader: textureLoader)
+        slug = Person.slugBusinessman
+        walkSpeed = 70.0
+        buildSprites(textureLoader: textureLoader)
+    }
+    
+    override func update(currentTime: TimeInterval) {
+        super.update(currentTime: currentTime)
+        evaluateIdleConditions(currentTime: currentTime)
+    }
+    
+    override func applyForce(force: CGVector) {
+        if !isIdling {
+            super.applyForce(force: force)
+        }
+    }
+    
+    func evaluateIdleConditions(currentTime: TimeInterval) {
+        if abs(self.position.x) < UIScreen.main.bounds.width / 4 && Int.random(in: 1 ... 100) == 1 && idleStartTime == -1 {
+            idleStartTime = currentTime
+            isIdling = true
+            self.headCollider?.physicsBody?.velocity.dx = 0
+            self.headCollider?.physicsBody?.velocity.dy = 0
+            self.body?.run(SKAction.repeatForever(SKAction.animate(with: textureMap!.idleBodyFrames, timePerFrame: 0.1)))
+            self.head?.run(SKAction.repeatForever(SKAction.animate(with: textureMap!.idleHeadFrames, timePerFrame: 0.1)))
+            self.alternateHead?.run(SKAction.repeatForever(SKAction.animate(with: textureMap!.idleHotDogHeadFrames, timePerFrame: 0.1)))
+        } else if (isIdling) {
+            if currentTime - idleStartTime >= 5 {
+                isIdling = false
+                self.body?.run(walkBodyAnimation!)
+                self.head?.run(walkHeadAnimation!)
+                self.alternateHead?.run(walkAlternateHeadAnimation!)
+            }
+        }
+    }
+    
+    override init(texture: SKTexture?, color: SKColor, size: CGSize) {
+        super.init(texture: texture, color: color, size: size)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder:aDecoder)
+    }
 }
 
 class YoungProfessional: Person {
+    override init(scene: BaseScene, textureLoader: CharacterTextureLoader) {
+        super.init(scene: scene, textureLoader: textureLoader)
+        slug = Person.slugYoungProfessional
+        walkSpeed = 90.0
+        buildSprites(textureLoader: textureLoader)
+    }
     
+    override init(texture: SKTexture?, color: SKColor, size: CGSize) {
+        super.init(texture: texture, color: color, size: size)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder:aDecoder)
+    }
 }
