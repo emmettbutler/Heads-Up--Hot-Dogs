@@ -222,20 +222,7 @@ class Person: BaseSprite {
         pointNotification?.size = CGSize(width: (pointNotification?.texture!.size().width)! * self._scene!.scaleFactor,
                                          height: (pointNotification?.texture!.size().height)! * self._scene!.scaleFactor)
     }
-    
-    func updateSpriteSizes() {
-        body?.size = CGSize(width: (body?.texture!.size().width)! * self._scene!.scaleFactor,
-                            height: (body?.texture!.size().height)! * self._scene!.scaleFactor)
-        head?.size = CGSize(width: (head?.texture!.size().width)! * self._scene!.scaleFactor,
-                            height: (head?.texture!.size().height)! * self._scene!.scaleFactor)
-        alternateHead?.size = CGSize(width: (alternateHead?.texture!.size().width)! * self._scene!.scaleFactor,
-                                     height: (alternateHead?.texture!.size().height)! * self._scene!.scaleFactor)
-        helpIndicator?.size = CGSize(width: (helpIndicator?.texture!.size().width)! * self._scene!.scaleFactor,
-                                     height: (helpIndicator?.texture!.size().height)! * self._scene!.scaleFactor)
-        pointNotification?.size = CGSize(width: (pointNotification?.texture!.size().width)! * self._scene!.scaleFactor,
-                                         height: (pointNotification?.texture!.size().height)! * self._scene!.scaleFactor)
-    }
-    
+
     func resolvePointsForHeldHotDogs(currentTime: TimeInterval) {
         let bucketedTime: CGFloat = (currentTime - (previousHotDogContactTimes.last ?? currentTime)).rounded()
         if self.hotDogsCurrentlyOnHead.count > 0 && !pointTallyTimes.contains(bucketedTime) {
