@@ -205,7 +205,7 @@ class Person: BaseSprite {
         body?.position = CGPoint(x: self.position.x, y: self.position.y - getHeadColliderOffsetFromBody())
         if ripples != nil {
             ripples?.position = CGPoint(x: body!.position.x,
-                                        y: body!.position.y - body!.calculateAccumulatedFrame().height / 2 + (ripples?.calculateAccumulatedFrame().height)! / 2)
+                                        y: body!.position.y - body!.calculateAccumulatedFrame().height / 2)
         }
         head?.position = CGPoint(x: body!.position.x, y: body!.position.y + headOffset)
         alternateHead?.position = head!.position
@@ -318,12 +318,18 @@ class Businessman: Person {
             self.headCollider?.physicsBody?.velocity.dx = 0
             self.headCollider?.physicsBody?.velocity.dy = 0
             self.body?.run(SKAction.repeatForever(SKAction.animate(with: textureMap!.idleBodyFrames, timePerFrame: 0.1)))
+            if self.ripples != nil {
+                self.ripples?.run(SKAction.repeatForever(SKAction.animate(with: textureMap!.rippleIdleFrames, timePerFrame: 0.1)))
+            }
             self.head?.run(SKAction.repeatForever(SKAction.animate(with: textureMap!.idleHeadFrames, timePerFrame: 0.1)))
             self.alternateHead?.run(SKAction.repeatForever(SKAction.animate(with: textureMap!.idleHotDogHeadFrames, timePerFrame: 0.1)))
         } else if (isIdling) {
             if currentTime - idleStartTime >= 5 {
                 isIdling = false
                 self.body?.run(walkBodyAnimation!)
+                if self.ripples != nil {
+                    self.ripples?.run(rippleAnimation!)
+                }
                 self.head?.run(walkHeadAnimation!)
                 self.alternateHead?.run(walkAlternateHeadAnimation!)
             }
