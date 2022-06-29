@@ -81,7 +81,8 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
     func handleContact(collidingHotDog: HotDog, collidingOtherObject: SKNode) {
         if (GameplayScene.floorCategoryBitMasks.contains(collidingOtherObject.physicsBody!.categoryBitMask)){
             collidingHotDog.contactedFloor(currentTime: secondsPassed)
-        } else if (collidingOtherObject.physicsBody!.categoryBitMask == Person.categoryBitMask) {
+        } else if (collidingOtherObject.physicsBody!.categoryBitMask == Person.categoryBitMask && (collidingHotDog.physicsBody!.collisionBitMask & Person.categoryBitMask != 0))
+        {
             handleHotDogHeadContact(collidingHotDog: collidingHotDog,
                                     collidingHead: collidingOtherObject as! SKShapeNode,
                                     collidingPerson: collidingOtherObject.userData!["person"] as! Person)
