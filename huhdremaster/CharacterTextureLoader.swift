@@ -84,6 +84,7 @@ class YoungProfessionalTextureMap: CharacterTextureMap {
         }
         for idx in 1 ... 8 {
             walkBodyFrames.append(SKTexture(imageNamed: NSString(format:"YoungProfesh_Walk_%d.png", idx) as String))
+            rippleWalkFrames.append(SKTexture(imageNamed: NSString(format:"YoungProfesh_Ripple_Walk_%d.png", idx) as String))
         }
         for idx in 1 ... 11 {
             headContactPointNotifyFrames.append(SKTexture(imageNamed: NSString(format:"PlusFifteen%d.png", idx) as String))
@@ -103,6 +104,7 @@ class JoggerTextureMap: CharacterTextureMap {
         for idx in 1 ... 8 {
             walkHeadFrames.append(SKTexture(imageNamed: NSString(format:"Jogger_Head_NoDog_%d.png", idx) as String))
             walkBodyFrames.append(SKTexture(imageNamed: NSString(format:"Jogger_Run_%d.png", idx) as String))
+            rippleWalkFrames.append(SKTexture(imageNamed: NSString(format:"Jogger_Ripple_Run_%d.png", idx) as String))
         }
         for idx in 1 ... 12 {
             headContactPointNotifyFrames.append(SKTexture(imageNamed: NSString(format:"plusTwentyFive%d.png", idx) as String))
@@ -141,6 +143,7 @@ class NudieTextureMap: CharacterTextureMap {
         }
         for idx in 1 ... 8 {
             walkBodyFrames.append(SKTexture(imageNamed: NSString(format:"Nudie_Walk_%d.png", idx) as String))
+            rippleWalkFrames.append(SKTexture(imageNamed: NSString(format:"Nudie_Ripple_Walk_%d.png", idx) as String))
         }
         for idx in 1 ... 12 {
             headContactPointNotifyFrames.append(SKTexture(imageNamed: NSString(format:"plusTwentyFive%d.png", idx) as String))
@@ -217,6 +220,7 @@ class CopTextureMap: CharacterTextureMap {
         }
         for idx in 1 ... 8 {
             walkBodyFrames.append(SKTexture(imageNamed: NSString(format:"Cop_Run_%d.png", idx) as String))
+            rippleWalkFrames.append(SKTexture(imageNamed: NSString(format:"Cop_Ripple_Walk_%d.png", idx) as String))
         }
         for idx in 1 ... 11 {
             headContactPointNotifyFrames.append(SKTexture(imageNamed: NSString(format:"PlusFifteen%d.png", idx) as String))
@@ -236,6 +240,7 @@ class DogEaterTextureMap: CharacterTextureMap {
         }
         for idx in 1 ... 8 {
             walkBodyFrames.append(SKTexture(imageNamed: NSString(format:"DogEater_Walk_%d.png", idx) as String))
+            rippleWalkFrames.append(SKTexture(imageNamed: NSString(format:"DogEater_Ripple_Walk_%d.png", idx) as String))
         }
         for idx in 1 ... 11 {
             headContactPointNotifyFrames.append(SKTexture(imageNamed: NSString(format:"PlusFifteen%d.png", idx) as String))
