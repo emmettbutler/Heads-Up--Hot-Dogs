@@ -21,6 +21,7 @@ class Person: BaseSprite {
     var pointNotification: BaseSprite? = nil
     var walkSpeed: CGFloat = 50.0
     var spawnXSign: Int = 1
+    var textureFacingSign: Int = 1
     var walkHeadAnimation: SKAction? = nil
     var walkAlternateHeadAnimation: SKAction? = nil
     var walkBodyAnimation: SKAction? = nil
@@ -88,11 +89,11 @@ class Person: BaseSprite {
         pointNotification?.setScene(scene: _scene!)
         
         spawnXSign = [1, -1].randomElement()!
-        head?.xScale *= CGFloat(spawnXSign)
-        body?.xScale *= CGFloat(spawnXSign)
-        alternateHead?.xScale *= CGFloat(spawnXSign)
+        head?.xScale *= CGFloat(spawnXSign) * CGFloat(textureFacingSign)
+        body?.xScale *= CGFloat(spawnXSign) * CGFloat(textureFacingSign)
+        alternateHead?.xScale *= CGFloat(spawnXSign) * CGFloat(textureFacingSign)
         if ripples != nil {
-            ripples?.xScale *= CGFloat(spawnXSign)
+            ripples?.xScale *= CGFloat(spawnXSign) * CGFloat(textureFacingSign)
         }
         let minY: Int = Int(UIScreen.main.bounds.height) / -2 + Int((body?.calculateAccumulatedFrame().height)!) / 2 + Int(getHeadColliderOffsetFromBody())
         let maxY: Int = Int((_scene! as! GameplayScene).highestFloor!.position.y) + Int((body?.calculateAccumulatedFrame().height)!) / 2 + Int(getHeadColliderOffsetFromBody())
@@ -384,6 +385,7 @@ class Professor: Person {
         super.init(scene: scene, textureLoader: textureLoader)
         slug = Person.slugProfessor
         walkSpeed = 70.0
+        textureFacingSign = -1
         buildSprites(textureLoader: textureLoader)
     }
     
@@ -401,6 +403,7 @@ class Lion: Person {
         super.init(scene: scene, textureLoader: textureLoader)
         slug = Person.slugLion
         walkSpeed = 70.0
+        textureFacingSign = -1
         buildSprites(textureLoader: textureLoader)
     }
     
@@ -469,6 +472,7 @@ class DogEater: Person {
         super.init(scene: scene, textureLoader: textureLoader)
         slug = Person.slugDogEater
         walkSpeed = 70.0
+        textureFacingSign = -1
         buildSprites(textureLoader: textureLoader)
     }
     
