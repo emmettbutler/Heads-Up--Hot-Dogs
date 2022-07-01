@@ -200,8 +200,8 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
         if (currentTime - lastHotDogSpawnTime < 0.3) {
             return
         }
-        let hotDog: HotDog = HotDog(scene: self)
-        allHotDogs.append(hotDog)
+        let choice: HotDog.Type = [BasicHotDog.self, Cheesesteak.self].randomElement()!
+        allHotDogs.append(choice.init(scene: self))
         //let headToSpawnAbove: Person = allPeople.randomElement()!
         //hotDog.position = CGPoint(x:headToSpawnAbove.position.x + CGFloat(headToSpawnAbove.spawnXSign * -1 * 70), y: headToSpawnAbove.position.y + 50)
         lastHotDogSpawnTime = currentTime

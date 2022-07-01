@@ -9,10 +9,10 @@ import SpriteKit
 
 class HotDog: BaseSprite {
     static let categoryBitMask: UInt32 = 0b10000000
-    let standardTexture: SKTexture = SKTexture(imageNamed: "dog54x12.png")
-    let fallingTexture: SKTexture = SKTexture(imageNamed: "Dog_Fall.png")
-    let risingTexture: SKTexture = SKTexture(imageNamed: "Dog_Rise.png")
-    let grabbingTexture: SKTexture = SKTexture(imageNamed: "Dog_Grabbed.png")
+    var standardTexture: SKTexture? = nil
+    var fallingTexture: SKTexture? = nil
+    var risingTexture: SKTexture? = nil
+    var grabbingTexture: SKTexture? = nil
     var isGrabbed: Bool = false
     var previousDragPosition: CGPoint = CGPoint(x:0, y:0)
     var previousFloorContactTimes: [TimeInterval] = [TimeInterval]()
@@ -26,9 +26,12 @@ class HotDog: BaseSprite {
     var noPeopleCollisionMask: UInt32 = 0
     var noWallsCollisionMask: UInt32 = 0
     
-    init(scene: BaseScene) {
-        super.init(texture: standardTexture)
-        
+    required init(scene: BaseScene) {
+        super.init(imageNamed: "dog54x12.png")
+        self.setScene(scene: scene)
+    }
+    
+    func buildSprites() {
         let randomFloorMask: UInt32 = GameplayScene.floorCategoryBitMasks.randomElement()!
         everythingCollisionMask = randomFloorMask | GameplayScene.wallCategoryBitMask | Person.categoryBitMask
         noPeopleCollisionMask = randomFloorMask
@@ -45,15 +48,14 @@ class HotDog: BaseSprite {
         self.physicsBody?.isDynamic = false
         
         self.zPosition = GameplayScene.spriteZPositions["HotDog"]!
-        self.setScene(scene: scene)
         
         self.countdownIndicator.setZ(zPos: self.zPosition)
-        self.countdownIndicator.setScene(scene: scene)
+        self.countdownIndicator.setScene(scene: _scene!)
         self.countdownIndicator.setHidden(hidden: true)
     
         self.helpIndicator = BaseSprite(imageNamed: "Drag_Overlay_1.png")
         self.helpIndicator?.zPosition = self.zPosition
-        self.helpIndicator?.setScene(scene: scene)
+        self.helpIndicator?.setScene(scene: _scene!)
         self.helpIndicator?.isHidden = true
         self.helpIndicator?.run(SKAction.repeatForever(SKAction.animate(with: (self._scene as! GameplayScene).helpDragFrames,
                                                                         timePerFrame: 0.1, resize: true, restore: false)))
@@ -192,5 +194,43 @@ class HotDog: BaseSprite {
             self.previousDragPosition = self.position
             self.position = toPos
         }
+    }
+}
+
+class BasicHotDog: HotDog {
+    required init(scene: BaseScene) {
+        super.init(scene: scene)
+        standardTexture = SKTexture(imageNamed: "dog54x12.png")
+        fallingTexture = SKTexture(imageNamed: "Dog_Fall.png")
+        risingTexture = SKTexture(imageNamed: "Dog_Rise.png")
+        grabbingTexture = SKTexture(imageNamed: "Dog_Grabbed.png")
+        buildSprites()
+    }
+    
+    override init(texture: SKTexture?, color: SKColor, size: CGSize) {
+        super.init(texture: texture, color: color, size: size)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder:aDecoder)
+    }
+}
+
+class Cheesesteak: HotDog {
+    required init(scene: BaseScene) {
+        super.init(scene: scene)
+        standardTexture = SKTexture(imageNamed: "Steak.png")
+        fallingTexture = SKTexture(imageNamed: "Steak_Fall.png")
+        risingTexture = SKTexture(imageNamed: "Steak_Rise.png")
+        grabbingTexture = SKTexture(imageNamed: "Steak_Grabbed.png")
+        buildSprites()
+    }
+    
+    override init(texture: SKTexture?, color: SKColor, size: CGSize) {
+        super.init(texture: texture, color: color, size: size)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder:aDecoder)
     }
 }
