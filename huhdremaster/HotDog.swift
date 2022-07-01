@@ -13,6 +13,8 @@ class HotDog: BaseSprite {
     var fallingTexture: SKTexture? = nil
     var risingTexture: SKTexture? = nil
     var grabbingTexture: SKTexture? = nil
+    var appearFrames: [SKTexture] = [SKTexture]()
+    var groundDeathFrames: [SKTexture] = [SKTexture]()
     var isGrabbed: Bool = false
     var previousDragPosition: CGPoint = CGPoint(x:0, y:0)
     var previousFloorContactTimes: [TimeInterval] = [TimeInterval]()
@@ -28,10 +30,15 @@ class HotDog: BaseSprite {
     
     required init(scene: BaseScene) {
         super.init(imageNamed: "dog54x12.png")
+        self.isHidden = true
         self.setScene(scene: scene)
     }
     
     func buildSprites() {
+        for idx in 1 ... 10 {
+            appearFrames.append(SKTexture(imageNamed: NSString(format:"Dog_Appear_%d.png", idx) as String))
+        }
+        
         let randomFloorMask: UInt32 = GameplayScene.floorCategoryBitMasks.randomElement()!
         everythingCollisionMask = randomFloorMask | GameplayScene.wallCategoryBitMask | Person.categoryBitMask
         noPeopleCollisionMask = randomFloorMask
@@ -61,12 +68,12 @@ class HotDog: BaseSprite {
                                                                         timePerFrame: 0.1, resize: true, restore: false)))
         
         let appearAnimation: SKAction = SKAction.sequence([
-            SKAction.animate(with: (self._scene as! GameplayScene).hotDogAppearFrames,
-                             timePerFrame: 0.1, resize: true, restore: true),
+            SKAction.animate(with: appearFrames, timePerFrame: 0.1, resize: true, restore: true),
             SKAction.run { self.physicsBody?.isDynamic = true } ])
         self.run(appearAnimation)
         
         self.color = .red
+        self.isHidden = false
     }
     
     override func cleanup() {
@@ -106,8 +113,7 @@ class HotDog: BaseSprite {
         {
             self.countdownIndicator.setHidden(hidden: true)
             let groundDieAnimation: SKAction = SKAction.sequence([
-                SKAction.animate(with: (self._scene as! GameplayScene).hotDogGroundDeathFrames,
-                                 timePerFrame: 0.15, resize: true, restore: false),
+                SKAction.animate(with: groundDeathFrames, timePerFrame: 0.15, resize: true, restore: false),
                 SKAction.run { self.shouldBeDespawned = true }])
             self.run(groundDieAnimation, withKey: "ground-death")
         }
@@ -204,6 +210,9 @@ class BasicHotDog: HotDog {
         fallingTexture = SKTexture(imageNamed: "Dog_Fall.png")
         risingTexture = SKTexture(imageNamed: "Dog_Rise.png")
         grabbingTexture = SKTexture(imageNamed: "Dog_Grabbed.png")
+        for idx in 1 ... 7 {
+            groundDeathFrames.append(SKTexture(imageNamed: NSString(format:"Dog_Die_%d.png", idx) as String))
+        }
         buildSprites()
     }
     
@@ -223,6 +232,9 @@ class Cheesesteak: HotDog {
         fallingTexture = SKTexture(imageNamed: "Steak_Fall.png")
         risingTexture = SKTexture(imageNamed: "Steak_Rise.png")
         grabbingTexture = SKTexture(imageNamed: "Steak_Grabbed.png")
+        for idx in 1 ... 7 {
+            groundDeathFrames.append(SKTexture(imageNamed: NSString(format:"Steak_Die_%d.png", idx) as String))
+        }
         buildSprites()
     }
     

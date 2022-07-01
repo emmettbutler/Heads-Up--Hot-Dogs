@@ -11,8 +11,6 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
     static let wallCategoryBitMask: UInt32 = 0b10000
     static let droppedMax: Int = 5
     var hotDogsDropped: Int = 0
-    var hotDogAppearFrames: [SKTexture] = [SKTexture]()
-    var hotDogGroundDeathFrames: [SKTexture] = [SKTexture]()
     var helpDragFrames: [SKTexture] = [SKTexture]()
     var helpDropFrames: [SKTexture] = [SKTexture]()
     var headsUpDisplay: HeadsUpDisplay? = nil
@@ -218,12 +216,6 @@ class GameplayScene: BaseScene, SKPhysicsContactDelegate {
     }
     
     func buildTextures() {
-        for idx in 1 ... 10 {
-            hotDogAppearFrames.append(SKTexture(imageNamed: NSString(format:"Dog_Appear_%d.png", idx) as String))
-        }
-        for idx in 1 ... 7 {
-            hotDogGroundDeathFrames.append(SKTexture(imageNamed: NSString(format:"Dog_Die_%d.png", idx) as String))
-        }
         for idx in 1 ... 12 {
             helpDragFrames.append(SKTexture(imageNamed: NSString(format:"Drag_Overlay_%d.png", idx) as String))
             helpDropFrames.append(SKTexture(imageNamed: NSString(format:"Drop_Overlay_%d.png", idx) as String))
