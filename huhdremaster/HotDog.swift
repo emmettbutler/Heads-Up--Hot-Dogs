@@ -35,10 +35,6 @@ class HotDog: BaseSprite {
     }
     
     func buildSprites() {
-        for idx in 1 ... 10 {
-            appearFrames.append(SKTexture(imageNamed: NSString(format:"Dog_Appear_%d.png", idx) as String))
-        }
-        
         let randomFloorMask: UInt32 = GameplayScene.floorCategoryBitMasks.randomElement()!
         everythingCollisionMask = randomFloorMask | GameplayScene.wallCategoryBitMask | Person.categoryBitMask
         noPeopleCollisionMask = randomFloorMask
@@ -213,6 +209,9 @@ class BasicHotDog: HotDog {
         for idx in 1 ... 7 {
             groundDeathFrames.append(SKTexture(imageNamed: NSString(format:"Dog_Die_%d.png", idx) as String))
         }
+        for idx in 1 ... 10 {
+            appearFrames.append(SKTexture(imageNamed: NSString(format:"Dog_Appear_%d.png", idx) as String))
+        }
         buildSprites()
     }
     
@@ -225,7 +224,20 @@ class BasicHotDog: HotDog {
     }
 }
 
-class Cheesesteak: HotDog {
+protocol SpecialHotDog: HotDog {
+    var doAppearAnimation: Int { get }
+}
+
+extension SpecialHotDog {
+    var doAppearAnimation: Int {
+        for idx in 1 ... 6 {
+            appearFrames.append(SKTexture(imageNamed: NSString(format:"BonusAppear%d.png", idx) as String))
+        }
+        return 0
+    }
+}
+
+class Cheesesteak: HotDog, SpecialHotDog {
     required init(scene: BaseScene) {
         super.init(scene: scene)
         standardTexture = SKTexture(imageNamed: "Steak.png")
@@ -235,6 +247,7 @@ class Cheesesteak: HotDog {
         for idx in 1 ... 7 {
             groundDeathFrames.append(SKTexture(imageNamed: NSString(format:"Steak_Die_%d.png", idx) as String))
         }
+        doAppearAnimation
         buildSprites()
     }
     
